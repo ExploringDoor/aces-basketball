@@ -133,6 +133,12 @@ export default function App() {
         ::-webkit-scrollbar-thumb { background: var(--maroon); border-radius: 3px; }
         table { border-collapse: collapse; }
         a, button { cursor: pointer; }
+        .desktop-nav { display: flex; }
+        .mobile-btn { display: none; }
+        @media (max-width: 768px) {
+          .desktop-nav { display: none !important; }
+          .mobile-btn { display: block !important; }
+        }
       `}</style>
 
       {/* ── Navigation ── */}
