@@ -205,8 +205,10 @@ export default function AcesBasketball() {
     { id: "alumni", label: "Alumni" },
     { id: "coaching", label: "Coaching Staff" },
     { id: "roster", label: "Roster" },
+    { id: "records", label: "Record Book" },
     { id: "photos", label: "Photos" },
     { id: "videos", label: "Videos" },
+    { id: "kobe", label: "Kobe" },
     { id: "social", label: "Follow Us" },
   ];
 
@@ -1280,6 +1282,186 @@ export default function AcesBasketball() {
         </div>
       </section>
 
+      {/* Record Book */}
+      <section id="records" style={{ background: "linear-gradient(180deg, var(--maroon-deep) 0%, var(--dark) 50%, var(--maroon-deep) 100%)", padding: "100px 5% 80px" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <FadeIn>
+            <div className="section-label" style={{ justifyContent: "center" }}>
+              <SpadeIcon size={14} color="#840036" /> Stats & Records
+            </div>
+            <h2 className="section-title" style={{ textAlign: "center" }}>
+              Record<br /><span style={{ color: "var(--gold)" }}>Book</span>
+            </h2>
+            <div className="divider divider-center" />
+          </FadeIn>
+
+          {/* Season Selector */}
+          <FadeIn delay={0.15}>
+            {(() => {
+              const seasons = {
+                "2024-25": {
+                  record: "19-5",
+                  games: 24,
+                  leaders: [
+                    { name: "Kyle Parrish", number: "24", gp: 24, pts: 310, reb: 72, ast: 119, stl: 51, blk: 2, threes: 29, fgPct: "43.1", ftPct: "70.8", mins: 651 },
+                    { name: "Israel Ingram", number: "5", gp: 24, pts: 286, reb: 83, ast: 33, stl: 33, blk: 7, threes: 54, fgPct: "37.3", ftPct: "60.3", mins: 626 },
+                    { name: "William Yard", number: "13", gp: 24, pts: 168, reb: 86, ast: 40, stl: 28, blk: 10, threes: 36, fgPct: "52.5", ftPct: "66.7", mins: 540 },
+                    { name: "Finn Pulsifer", number: "4", gp: 24, pts: 165, reb: 94, ast: 28, stl: 29, blk: 18, threes: 3, fgPct: "49.3", ftPct: "78.6", mins: 476 },
+                    { name: "Bereket Darsenie", number: "1", gp: 24, pts: 140, reb: 40, ast: 27, stl: 17, blk: 2, threes: 35, fgPct: "40.7", ftPct: "50.0", mins: 390 },
+                    { name: "Arjay Miller", number: "0", gp: 24, pts: 105, reb: 36, ast: 30, stl: 19, blk: 0, threes: 28, fgPct: "34.0", ftPct: "60.0", mins: 520 },
+                    { name: "Nicholas Dragut", number: "35", gp: 16, pts: 72, reb: 46, ast: 18, stl: 4, blk: 7, threes: 2, fgPct: "68.9", ftPct: "66.7", mins: 191 },
+                    { name: "Darius Mitchell", number: "2", gp: 21, pts: 59, reb: 31, ast: 10, stl: 11, blk: 0, threes: 6, fgPct: "50.0", ftPct: "65.0", mins: 204 },
+                  ],
+                },
+                "2023-24": {
+                  record: "24-6",
+                  games: 30,
+                  leaders: [
+                    { name: "Carson Kasmer", number: "14", gp: 30, pts: 530, reb: 93, ast: 60, stl: 47, blk: 0, threes: 60, fgPct: "48.6", ftPct: "85.7", mins: 902 },
+                    { name: "Rashyne Patterson", number: "4", gp: 30, pts: 348, reb: 182, ast: 58, stl: 39, blk: 51, threes: 36, fgPct: "53.0", ftPct: "82.1", mins: 773 },
+                    { name: "Sami Singletary", number: "—", gp: 30, pts: 321, reb: 115, ast: 59, stl: 40, blk: 4, threes: 32, fgPct: "44.8", ftPct: "67.9", mins: 757 },
+                    { name: "Gus Wright", number: "11", gp: 30, pts: 301, reb: 107, ast: 82, stl: 66, blk: 1, threes: 42, fgPct: "43.7", ftPct: "66.3", mins: 854 },
+                    { name: "LaMont Grier", number: "1", gp: 28, pts: 176, reb: 59, ast: 37, stl: 54, blk: 5, threes: 24, fgPct: "50.8", ftPct: "77.4", mins: 613 },
+                    { name: "Kyle Parrish", number: "24", gp: 30, pts: 93, reb: 38, ast: 38, stl: 36, blk: 4, threes: 11, fgPct: "40.4", ftPct: "45.5", mins: 366 },
+                    { name: "William Yard", number: "13", gp: 28, pts: 56, reb: 33, ast: 17, stl: 9, blk: 2, threes: 10, fgPct: "38.6", ftPct: "75.0", mins: 219 },
+                    { name: "Chris Cook", number: "23", gp: 24, pts: 37, reb: 40, ast: 9, stl: 6, blk: 4, threes: 0, fgPct: "60.9", ftPct: "75.0", mins: 173 },
+                  ],
+                },
+              };
+
+              const [activeSeason, setActiveSeason] = useState("2024-25");
+              const season = seasons[activeSeason];
+
+              return (
+                <div style={{ marginTop: 48 }}>
+                  {/* Season Tabs */}
+                  <div style={{ display: "flex", justifyContent: "center", gap: 12, marginBottom: 36 }}>
+                    {Object.keys(seasons).map(key => (
+                      <button key={key} onClick={() => setActiveSeason(key)} style={{
+                        fontFamily: "'Oswald', sans-serif", fontSize: 15, letterSpacing: 2,
+                        padding: "10px 28px", border: "1px solid",
+                        borderColor: activeSeason === key ? "var(--maroon)" : "rgba(255,255,255,0.1)",
+                        background: activeSeason === key ? "rgba(132,0,54,0.3)" : "rgba(255,255,255,0.02)",
+                        color: activeSeason === key ? "#fff" : "rgba(255,255,255,0.5)",
+                        borderRadius: 8, cursor: "pointer", textTransform: "uppercase",
+                        transition: "all 0.3s ease"
+                      }}>
+                        {key}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Season Record */}
+                  <div style={{ textAlign: "center", marginBottom: 36 }}>
+                    <div style={{
+                      fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 4,
+                      color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: 8
+                    }}>
+                      Season Record
+                    </div>
+                    <div style={{
+                      fontFamily: "'Playfair Display', serif", fontSize: 36, fontWeight: 700,
+                      color: "var(--gold)"
+                    }}>
+                      {season.record}
+                    </div>
+                    <div style={{
+                      fontFamily: "'Source Sans 3', sans-serif", fontSize: 13,
+                      color: "rgba(255,255,255,0.4)", marginTop: 4
+                    }}>
+                      {season.games} Games Played
+                    </div>
+                  </div>
+
+                  {/* Stat Leaders Grid */}
+                  <div style={{
+                    display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                    gap: 2, borderRadius: 12, overflow: "hidden", marginBottom: 36
+                  }}>
+                    {[
+                      { label: "Points Leader", value: season.leaders[0].pts, player: season.leaders[0].name },
+                      { label: "Rebounds Leader", value: season.leaders.sort((a, b) => b.reb - a.reb)[0].reb, player: season.leaders.sort((a, b) => b.reb - a.reb)[0].name },
+                      { label: "Assists Leader", value: season.leaders.sort((a, b) => b.ast - a.ast)[0].ast, player: season.leaders.sort((a, b) => b.ast - a.ast)[0].name },
+                      { label: "Steals Leader", value: season.leaders.sort((a, b) => b.stl - a.stl)[0].stl, player: season.leaders.sort((a, b) => b.stl - a.stl)[0].name },
+                      { label: "Blocks Leader", value: season.leaders.sort((a, b) => b.blk - a.blk)[0].blk, player: season.leaders.sort((a, b) => b.blk - a.blk)[0].name },
+                      { label: "3-Pointers", value: season.leaders.sort((a, b) => b.threes - a.threes)[0].threes, player: season.leaders.sort((a, b) => b.threes - a.threes)[0].name },
+                    ].map((s, idx) => (
+                      <div key={idx} style={{
+                        background: "rgba(255,255,255,0.03)", padding: "24px 12px", textAlign: "center"
+                      }}>
+                        <div style={{
+                          fontFamily: "'Oswald', sans-serif", fontSize: 30, fontWeight: 700,
+                          color: "var(--gold)", lineHeight: 1
+                        }}>{s.value}</div>
+                        <div style={{
+                          fontFamily: "'Source Sans 3', sans-serif", fontSize: 13,
+                          color: "rgba(255,255,255,0.6)", marginTop: 6
+                        }}>{s.player}</div>
+                        <div style={{
+                          fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2,
+                          color: "rgba(255,255,255,0.3)", textTransform: "uppercase", marginTop: 6
+                        }}>{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Stats Table */}
+                  <div style={{
+                    overflowX: "auto", borderRadius: 12,
+                    border: "1px solid rgba(255,255,255,0.06)"
+                  }}>
+                    <table style={{
+                      width: "100%", borderCollapse: "collapse", minWidth: 700,
+                      fontFamily: "'Source Sans 3', sans-serif", fontSize: 13
+                    }}>
+                      <thead>
+                        <tr style={{ background: "rgba(132,0,54,0.25)" }}>
+                          {["#", "Player", "GP", "PTS", "PPG", "REB", "RPG", "AST", "APG", "STL", "BLK", "3PM", "FG%", "FT%", "MIN"].map(h => (
+                            <th key={h} style={{
+                              padding: "12px 8px", textAlign: h === "Player" ? "left" : "center",
+                              fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2,
+                              color: "rgba(255,255,255,0.5)", textTransform: "uppercase",
+                              borderBottom: "1px solid rgba(255,255,255,0.08)", whiteSpace: "nowrap"
+                            }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {season.leaders.map((p, idx) => (
+                          <tr key={idx} style={{
+                            background: idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
+                            transition: "background 0.2s"
+                          }}
+                            onMouseEnter={e => e.currentTarget.style.background = "rgba(132,0,54,0.12)"}
+                            onMouseLeave={e => e.currentTarget.style.background = idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent"}
+                          >
+                            <td style={{ padding: "10px 8px", textAlign: "center", color: "var(--gold)", fontFamily: "'Oswald', sans-serif", fontSize: 14 }}>{p.number}</td>
+                            <td style={{ padding: "10px 8px", fontWeight: 600, whiteSpace: "nowrap" }}>{p.name}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "center", color: "rgba(255,255,255,0.5)" }}>{p.gp}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "center", fontWeight: 700, color: "#fff" }}>{p.pts}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "center", color: "rgba(255,255,255,0.7)" }}>{(p.pts / p.gp).toFixed(1)}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "center", color: "rgba(255,255,255,0.7)" }}>{p.reb}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "center", color: "rgba(255,255,255,0.5)" }}>{(p.reb / p.gp).toFixed(1)}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "center", color: "rgba(255,255,255,0.7)" }}>{p.ast}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "center", color: "rgba(255,255,255,0.5)" }}>{(p.ast / p.gp).toFixed(1)}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "center", color: "rgba(255,255,255,0.7)" }}>{p.stl}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "center", color: "rgba(255,255,255,0.7)" }}>{p.blk}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "center", color: "rgba(255,255,255,0.7)" }}>{p.threes}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "center", color: "rgba(255,255,255,0.5)" }}>{p.fgPct}%</td>
+                            <td style={{ padding: "10px 8px", textAlign: "center", color: "rgba(255,255,255,0.5)" }}>{p.ftPct}%</td>
+                            <td style={{ padding: "10px 8px", textAlign: "center", color: "rgba(255,255,255,0.4)" }}>{p.mins}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              );
+            })()}
+          </FadeIn>
+        </div>
+      </section>
+
       {/* Photo Gallery */}
       <section id="photos" style={{ background: "linear-gradient(180deg, var(--maroon-deep), var(--dark))", padding: "100px 5% 80px" }}>
         <FadeIn>
@@ -1568,6 +1750,304 @@ export default function AcesBasketball() {
               </div>
             </FadeIn>
           ))}
+        </div>
+      </section>
+
+      {/* Kobe Bryant Tribute */}
+      <section id="kobe" style={{ background: "linear-gradient(180deg, #0a0a0a 0%, #1a0a12 15%, #0d0005 50%, #1a0a12 85%, #0a0a0a 100%)", padding: "120px 5% 100px", position: "relative", overflow: "hidden" }}>
+        {/* Background 33 watermark */}
+        <div style={{
+          position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+          fontSize: "min(50vw, 500px)", fontFamily: "'Oswald', sans-serif", fontWeight: 900,
+          color: "rgba(132,0,54,0.04)", lineHeight: 1, pointerEvents: "none", userSelect: "none"
+        }}>33</div>
+
+        <div style={{ maxWidth: 900, margin: "0 auto", position: "relative", zIndex: 1 }}>
+          <FadeIn>
+            <div className="section-label" style={{ justifyContent: "center" }}>
+              <SpadeIcon size={14} color="#840036" /> 1978 – 2020
+            </div>
+            <h2 style={{
+              fontFamily: "'Playfair Display', serif", fontSize: "clamp(42px, 6vw, 64px)", fontWeight: 700,
+              textAlign: "center", lineHeight: 1.05, marginBottom: 8
+            }}>
+              Kobe Bean<br /><span style={{ color: "var(--gold)" }}>Bryant</span>
+            </h2>
+            <div style={{
+              textAlign: "center", fontFamily: "'Oswald', sans-serif", fontSize: 14,
+              letterSpacing: 4, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginTop: 12
+            }}>
+              Lower Merion '96 · #33 · The Black Mamba
+            </div>
+            <div className="divider divider-center" style={{ marginTop: 24 }} />
+          </FadeIn>
+
+          {/* Quote */}
+          <FadeIn delay={0.2}>
+            <div style={{
+              marginTop: 48, textAlign: "center", padding: "0 20px"
+            }}>
+              <div style={{
+                fontFamily: "'Playfair Display', serif", fontSize: "clamp(18px, 2.5vw, 24px)",
+                fontStyle: "italic", color: "rgba(255,255,255,0.7)", lineHeight: 1.7, maxWidth: 700, margin: "0 auto"
+              }}>
+                "I didn't go to college, so this is my university. This is where all my memories lie."
+              </div>
+              <div style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 3,
+                color: "var(--gold)", marginTop: 16, textTransform: "uppercase"
+              }}>
+                — Kobe Bryant, Gymnasium Dedication · December 16, 2010
+              </div>
+            </div>
+          </FadeIn>
+
+          {/* Kobe Photos */}
+          <FadeIn delay={0.25}>
+            <div style={{
+              marginTop: 56, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: 20, maxWidth: 900, margin: "56px auto 0"
+            }}>
+              {[
+                { id: "1FHihWDtAnEkF2DJYPpv_Y_cddj3wE5Bo", caption: "Kobe Bryant #33 — Lower Merion Aces", alt: "Kobe Bryant sitting on the court surrounded by basketballs in his Lower Merion #33 jersey" },
+                { id: "1GUyWZIR0djugEyCFxhR0_sOgiVB3Cima", caption: "Kobe rises for a dunk at Lower Merion", alt: "Kobe Bryant dunking in a Lower Merion Aces game" },
+                { id: "1o3si_FEEkoEXYsh0fnxjr4gFdG6P-bmf", caption: "The Mamba's high school days", alt: "Kobe Bryant during his time at Lower Merion High School" },
+              ].map((photo, idx) => (
+                <div key={idx} style={{
+                  borderRadius: 12, overflow: "hidden",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "rgba(0,0,0,0.3)"
+                }}>
+                  <img
+                    src={`https://drive.google.com/thumbnail?id=${photo.id}&sz=w800`}
+                    alt={photo.alt}
+                    loading="lazy"
+                    style={{
+                      width: "100%", height: 280, objectFit: "cover", display: "block",
+                      filter: "saturate(0.85) contrast(1.05)"
+                    }}
+                  />
+                  <div style={{
+                    padding: "14px 18px",
+                    fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3,
+                    color: "rgba(255,255,255,0.45)", textTransform: "uppercase"
+                  }}>
+                    {photo.caption}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
+
+          {/* Career Timeline */}
+          <FadeIn delay={0.3}>
+            <div style={{ marginTop: 64 }}>
+              <h3 style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 4,
+                color: "var(--gold)", textTransform: "uppercase", textAlign: "center", marginBottom: 32
+              }}>
+                The Lower Merion Years · 1992–1996
+              </h3>
+
+              {[
+                { year: "Freshman · 1992-93", title: "The Arrival", text: "Kobe moved to Ardmore from Italy where his father Joe \"Jellybean\" Bryant had been playing professionally. He became the first freshman in decades to start for Lower Merion's varsity team. The Aces finished 4-20, but Coach Gregg Downer knew immediately he had something special." },
+                { year: "Sophomore · 1993-94", title: "Building the Foundation", text: "With Kobe developing rapidly and playing all five positions, Lower Merion began its dramatic turnaround. The Aces posted a winning record as Bryant continued to hone his craft under Coach Downer's guidance." },
+                { year: "Junior · 1994-95", title: "State Recognition", text: "Bryant exploded onto the state scene averaging 31.1 points, 10.4 rebounds, 5.2 assists, 3.8 blocks, and 2.3 steals per game. He was named Pennsylvania Player of the Year and earned Parade All-American honors. College powerhouses Duke, Michigan, UNC, and Villanova came calling." },
+                { year: "Senior · 1995-96", title: "Championship Season", text: "In his final season, Kobe averaged 30.8 points, 12.0 rebounds, 6.5 assists, 4.0 steals, and 3.8 blocks. He led the Aces to a 31-3 record and Lower Merion's first PIAA State Championship since 1943, scoring 17 points in the title game. He finished with 2,883 career points — the most in Southeastern Pennsylvania history, surpassing Wilt Chamberlain." },
+              ].map((item, idx) => (
+                <div key={idx} style={{
+                  display: "flex", gap: 24, marginBottom: 32, flexWrap: "wrap"
+                }}>
+                  <div style={{ minWidth: 160 }}>
+                    <div style={{
+                      fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3,
+                      color: "var(--gold)", textTransform: "uppercase", marginBottom: 4
+                    }}>{item.year}</div>
+                    <div style={{
+                      fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700
+                    }}>{item.title}</div>
+                  </div>
+                  <div style={{
+                    flex: 1, minWidth: 280,
+                    fontFamily: "'Source Sans 3', sans-serif", fontSize: 15,
+                    color: "rgba(255,255,255,0.65)", lineHeight: 1.8,
+                    borderLeft: "2px solid rgba(132,0,54,0.4)", paddingLeft: 20
+                  }}>
+                    {item.text}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
+
+          {/* Senior Year Awards */}
+          <FadeIn delay={0.2}>
+            <div style={{
+              marginTop: 48, background: "rgba(132,0,54,0.12)",
+              border: "1px solid rgba(132,0,54,0.25)", borderRadius: 16, padding: "32px 36px"
+            }}>
+              <h3 style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 4,
+                color: "var(--gold)", textTransform: "uppercase", marginBottom: 24, textAlign: "center"
+              }}>Senior Year Honors · 1996</h3>
+              <div style={{
+                display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+                gap: 16, textAlign: "center"
+              }}>
+                {[
+                  "Naismith HS Player of the Year",
+                  "Gatorade National Player of the Year",
+                  "McDonald's All-American",
+                  "Parade First Team All-American",
+                  "USA Today All-USA First Team",
+                  "PA Player of the Year (2×)",
+                ].map((award, idx) => (
+                  <div key={idx} style={{
+                    fontFamily: "'Source Sans 3', sans-serif", fontSize: 14,
+                    color: "rgba(255,255,255,0.7)", padding: "12px 8px",
+                    background: "rgba(0,0,0,0.3)", borderRadius: 8,
+                    border: "1px solid rgba(255,255,255,0.05)"
+                  }}>
+                    <span style={{ color: "var(--gold)", marginRight: 6 }}>♠</span> {award}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </FadeIn>
+
+          {/* Stats Card */}
+          <FadeIn delay={0.2}>
+            <div style={{
+              marginTop: 48, display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
+              gap: 2, borderRadius: 16, overflow: "hidden"
+            }}>
+              {[
+                { stat: "2,883", label: "Career Points" },
+                { stat: "30.8", label: "PPG (Senior)" },
+                { stat: "12.0", label: "RPG (Senior)" },
+                { stat: "6.5", label: "APG (Senior)" },
+                { stat: "31-3", label: "Senior Record" },
+                { stat: "#33", label: "Retired Jersey" },
+              ].map((s, idx) => (
+                <div key={idx} style={{
+                  background: "rgba(255,255,255,0.03)", padding: "28px 16px", textAlign: "center"
+                }}>
+                  <div style={{
+                    fontFamily: "'Oswald', sans-serif", fontSize: 32, fontWeight: 700,
+                    color: "var(--gold)", lineHeight: 1
+                  }}>{s.stat}</div>
+                  <div style={{
+                    fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2,
+                    color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginTop: 8
+                  }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
+
+          {/* NBA Legacy + LM Connection */}
+          <FadeIn delay={0.2}>
+            <div style={{
+              marginTop: 64, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 32
+            }}>
+              <div style={{
+                background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)",
+                borderRadius: 16, padding: "32px 28px"
+              }}>
+                <h3 style={{
+                  fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 4,
+                  color: "var(--gold)", textTransform: "uppercase", marginBottom: 20
+                }}>NBA Legacy</h3>
+                <div style={{
+                  fontFamily: "'Source Sans 3', sans-serif", fontSize: 14,
+                  color: "rgba(255,255,255,0.6)", lineHeight: 1.9
+                }}>
+                  {[
+                    "5× NBA Champion (2000–02, 2009–10)",
+                    "2× NBA Finals MVP (2009, 2010)",
+                    "NBA MVP (2008)",
+                    "18× NBA All-Star",
+                    "2× NBA Scoring Champion",
+                    "NBA All-Star Game MVP (4×)",
+                    "33,643 Career Points",
+                    "Hall of Fame Class of 2020",
+                    "NBA 75th Anniversary Team",
+                    "Academy Award Winner (2018)",
+                  ].map((item, idx) => (
+                    <div key={idx} style={{ marginBottom: 4 }}>
+                      <span style={{ color: "var(--gold)", marginRight: 8, fontSize: 10 }}>▸</span>{item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{
+                background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)",
+                borderRadius: 16, padding: "32px 28px"
+              }}>
+                <h3 style={{
+                  fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 4,
+                  color: "var(--gold)", textTransform: "uppercase", marginBottom: 20
+                }}>Lower Merion Connection</h3>
+                <div style={{
+                  fontFamily: "'Source Sans 3', sans-serif", fontSize: 14,
+                  color: "rgba(255,255,255,0.6)", lineHeight: 1.9
+                }}>
+                  {[
+                    "Kobe Bryant Gymnasium dedicated Dec. 16, 2010",
+                    "Donated $411,000 to Lower Merion School District",
+                    "#33 jersey retired and hangs over the gym door",
+                    "Wore LM shorts under Lakers shorts every game",
+                    "Jersey #33 retired by Lower Merion in 2002",
+                    "33 seconds of silence opens every Aces season",
+                    "Memorabilia display in the athletic atrium",
+                    "Largest individual donation in LMSD history",
+                    "Credited English teacher Jeanne Mastriano for sparking his love of writing",
+                    "\"Aces Nation has lost its heartbeat\" — Coach Downer, Jan. 26, 2020",
+                  ].map((item, idx) => (
+                    <div key={idx} style={{ marginBottom: 4 }}>
+                      <span style={{ color: "var(--gold)", marginRight: 8, fontSize: 10 }}>▸</span>{item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </FadeIn>
+
+          {/* Memorial */}
+          <FadeIn delay={0.2}>
+            <div style={{
+              marginTop: 64, textAlign: "center", padding: "48px 24px",
+              background: "linear-gradient(135deg, rgba(132,0,54,0.15), rgba(0,0,0,0.4))",
+              borderRadius: 16, border: "1px solid rgba(201,164,74,0.15)"
+            }}>
+              <div style={{
+                fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700,
+                marginBottom: 8
+              }}>
+                January 26, 2020
+              </div>
+              <div style={{
+                fontFamily: "'Source Sans 3', sans-serif", fontSize: 15,
+                color: "rgba(255,255,255,0.6)", lineHeight: 1.8, maxWidth: 600, margin: "0 auto"
+              }}>
+                Kobe Bryant, his daughter Gianna, and seven others tragically lost their lives in a helicopter crash in Calabasas, California. The Lower Merion community gathered at the Bryant Gymnasium, placing flowers, jerseys, and basketballs at the doors of the gym that bears his name.
+              </div>
+              <div style={{
+                fontFamily: "'Playfair Display', serif", fontSize: 20, fontStyle: "italic",
+                color: "var(--gold)", marginTop: 32, lineHeight: 1.6
+              }}>
+                Mamba Mentality Forever
+              </div>
+              <div style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 4,
+                color: "rgba(255,255,255,0.3)", textTransform: "uppercase", marginTop: 16
+              }}>
+                Rest in Peace · Kobe & Gianna Bryant
+              </div>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
