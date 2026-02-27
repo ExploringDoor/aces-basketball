@@ -101,14 +101,19 @@ const Dropdown = ({ item, page, goTo, onTabHover, onTabLeave, btnRef }) => {
       {/* Dropdown panel */}
       {open && (
         <div style={{
-          position:"absolute", top:"calc(100% + 8px)", left:"50%",
+          position:"absolute", top:"100%", left:"50%",
           transform:"translateX(-50%)",
-          background:"rgba(8,0,4,0.97)", border:"1px solid rgba(132,0,54,0.5)",
-          borderRadius:10, padding:"8px 0", minWidth:180,
-          boxShadow:"0 16px 50px rgba(0,0,0,0.7), 0 0 30px rgba(132,0,54,0.15)",
-          zIndex:2000,
+          paddingTop:6,
+          zIndex:2000, minWidth:180,
         }}>
-          <div style={{ position:"absolute", top:-5, left:"50%", width:10, height:10, background:"rgba(8,0,4,0.97)", borderLeft:"1px solid rgba(132,0,54,0.5)", borderTop:"1px solid rgba(132,0,54,0.5)", transform:"translateX(-50%) rotate(45deg)" }} />
+          {/* Invisible bridge fills the gap so hover stays active */}
+          <div style={{ position:"absolute", top:0, left:0, right:0, height:6 }} />
+          <div style={{
+            background:"rgba(8,0,4,0.97)", border:"1px solid rgba(132,0,54,0.5)",
+            borderRadius:10, padding:"8px 0",
+            boxShadow:"0 16px 50px rgba(0,0,0,0.7), 0 0 30px rgba(132,0,54,0.15)",
+          }}>
+          <div style={{ position:"absolute", top:1, left:"50%", width:10, height:10, background:"rgba(8,0,4,0.97)", borderLeft:"1px solid rgba(132,0,54,0.5)", borderTop:"1px solid rgba(132,0,54,0.5)", transform:"translateX(-50%) rotate(45deg)" }} />
           {item.children.map(child => (
             <button key={child.id} onClick={() => goTo(child.id)} style={{
               display:"block", width:"100%", background:"none", border:"none",
@@ -122,6 +127,7 @@ const Dropdown = ({ item, page, goTo, onTabHover, onTabLeave, btnRef }) => {
               {child.label}
             </button>
           ))}
+          </div>
         </div>
       )}
     </div>
@@ -217,7 +223,9 @@ export default function App() {
 
         {/* Logo */}
         <button onClick={() => goTo("home")} style={{ background:"none", border:"none", display:"flex", alignItems:"center", gap:10, marginRight:32, flexShrink:0 }}>
-          <Spade size={17} color="#840036" />
+          <img src="/LM_Logo.png" alt="LM" style={{ height:38, width:"auto", filter:"drop-shadow(0 0 6px rgba(132,0,54,0.6))", transition:"filter 0.3s" }}
+            onMouseEnter={e => e.currentTarget.style.filter="drop-shadow(0 0 12px rgba(132,0,54,0.9))"}
+            onMouseLeave={e => e.currentTarget.style.filter="drop-shadow(0 0 6px rgba(132,0,54,0.6))"} />
           <div style={{ textAlign:"left" }}>
             <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:15, fontWeight:700, letterSpacing:4, color:"#fff", lineHeight:1 }}>ACES</div>
             <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:8, letterSpacing:2, color:"rgba(255,255,255,0.25)", textTransform:"uppercase" }}>Lower Merion</div>
