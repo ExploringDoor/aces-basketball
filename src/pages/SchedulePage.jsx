@@ -1,6 +1,6 @@
 // pages/SchedulePage.jsx
 import { useState } from "react";
-import { FadeIn, SpadeIcon, seasonData } from "../shared";
+import { FadeIn, Spade, seasonData } from "../shared";
 
 export default function SchedulePage() {
   const [selectedSeason, setSelectedSeason] = useState("2025-26");
@@ -10,7 +10,7 @@ export default function SchedulePage() {
     <section id="schedule" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
         <FadeIn>
-          <div className="section-label"><SpadeIcon size={14} color="#840036" /> 2025–26 Season</div>
+          <div className="section-label"><Spade size={14} color="#840036" /> 2025–26 Season</div>
           <h2 className="section-title">Schedule &<br /><span style={{ color: "var(--gold)" }}>Results</span></h2>
           <div className="divider" />
         </FadeIn>

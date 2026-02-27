@@ -1,12 +1,12 @@
 // pages/CentralLeaguePage.jsx
-import { FadeIn, SpadeIcon, centralLeagueTeams } from "../shared";
+import { FadeIn, Spade, centralLeagueTeams } from "../shared";
 
 export default function CentralLeaguePage() {
   return (
     <section id="league" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <FadeIn>
-          <div className="section-label"><SpadeIcon size={14} color="#840036" /> Our Conference</div>
+          <div className="section-label"><Spade size={14} color="#840036" /> Our Conference</div>
           <h2 className="section-title">The Central<br /><span style={{ color: "var(--gold)" }}>League</span></h2>
           <div className="divider" />
           <p style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.55)", marginTop: 20, lineHeight: 1.8, maxWidth: 700 }}>

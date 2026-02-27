@@ -1,5 +1,5 @@
 // pages/HistoryPage.jsx
-import { FadeIn, SpadeIcon } from "../shared";
+import { FadeIn, Spade } from "../shared";
 
 const coaches = [
   { name: "Gregg Downer",    years: "1990–Present", record: "738-278", pct: ".726", titles: "3× State Champs ('96, '06, '13)", highlight: true },
@@ -18,7 +18,7 @@ export default function HistoryPage() {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label">
-            <SpadeIcon size={14} color="#840036" /> Program History
+            <Spade size={14} color="#840036" /> Program History
           </div>
           <h2 className="section-title">A Legacy<br /><span style={{ color: "var(--gold)" }}>Like No Other</span></h2>
           <div className="divider" />

@@ -1,12 +1,12 @@
 // pages/AlumniPage.jsx
-import { FadeIn, SpadeIcon, alumni } from "../shared";
+import { FadeIn, Spade, alumni } from "../shared";
 
 export default function AlumniPage() {
   return (
     <section id="alumni" style={{ background: "#0a0005", padding: "120px 5% 100px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <FadeIn>
-          <div className="section-label"><SpadeIcon size={14} color="#840036" /> Notable Alumni</div>
+          <div className="section-label"><Spade size={14} color="#840036" /> Notable Alumni</div>
           <h2 className="section-title">College &<br /><span style={{ color: "var(--gold)" }}>Professional Players</span></h2>
           <div className="divider" />
           <p style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.55)", marginTop: 20, lineHeight: 1.8, maxWidth: 700 }}>

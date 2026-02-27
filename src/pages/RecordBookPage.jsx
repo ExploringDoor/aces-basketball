@@ -1,6 +1,6 @@
 // pages/RecordBookPage.jsx
 import { useState } from "react";
-import { FadeIn, SpadeIcon, recordBookSeasons } from "../shared";
+import { FadeIn, Spade, recordBookSeasons } from "../shared";
 
 export default function RecordBookPage() {
   const [activeSeason, setActiveSeason] = useState("2025-26");
@@ -12,7 +12,7 @@ export default function RecordBookPage() {
     <section id="records" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <FadeIn>
-          <div className="section-label"><SpadeIcon size={14} color="#840036" /> Stats &amp; Records</div>
+          <div className="section-label"><Spade size={14} color="#840036" /> Stats &amp; Records</div>
           <h2 className="section-title">Record<br /><span style={{ color: "var(--gold)" }}>Book</span></h2>
           <div className="divider" />
         </FadeIn>

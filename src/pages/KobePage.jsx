@@ -1,5 +1,5 @@
 // pages/KobePage.jsx
-import { FadeIn, SpadeIcon } from "../shared";
+import { FadeIn, Spade } from "../shared";
 
 const timeline = [
   { year: "Freshman · 1992-93", title: "The Arrival", text: "Kobe moved to Ardmore from Italy where his father Joe \"Jellybean\" Bryant had been playing professionally. He became the first freshman in decades to start for Lower Merion's varsity team. The Aces finished 4-20, but Coach Gregg Downer knew immediately he had something special." },
@@ -16,7 +16,7 @@ export default function KobePage() {
 
       <div style={{ maxWidth: 900, margin: "0 auto", position: "relative", zIndex: 1 }}>
         <FadeIn>
-          <div className="section-label" style={{ justifyContent: "center" }}><SpadeIcon size={14} color="#840036" /> 1978 – 2020</div>
+          <div className="section-label" style={{ justifyContent: "center" }}><Spade size={14} color="#840036" /> 1978 – 2020</div>
           <h2 className="section-title" style={{ textAlign: "center" }}>Kobe Bean<br /><span style={{ color: "var(--gold)" }}>Bryant</span></h2>
           <div style={{ textAlign: "center", fontFamily: "'Oswald', sans-serif", fontSize: 14, letterSpacing: 4, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginTop: 12 }}>
             Lower Merion '96 · #33 · The Black Mamba

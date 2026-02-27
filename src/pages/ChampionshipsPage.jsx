@@ -1,6 +1,6 @@
 // pages/ChampionshipsPage.jsx
 import { useState } from "react";
-import { FadeIn, SpadeIcon, championships } from "../shared";
+import { FadeIn, Spade, championships } from "../shared";
 
 export default function ChampionshipsPage() {
   const [activeTab, setActiveTab] = useState("state");
@@ -15,7 +15,7 @@ export default function ChampionshipsPage() {
     <section id="championships" style={{ background: "#0a0005", padding: "120px 5% 100px" }}>
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <FadeIn>
-          <div className="section-label"><SpadeIcon size={14} color="#840036" /> Championship History</div>
+          <div className="section-label"><Spade size={14} color="#840036" /> Championship History</div>
           <h2 className="section-title">Banners<br /><span style={{ color: "var(--gold)" }}>&amp; Titles</span></h2>
           <div className="divider" />
         </FadeIn>

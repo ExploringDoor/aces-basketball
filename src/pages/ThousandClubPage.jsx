@@ -1,5 +1,5 @@
 // pages/ThousandClubPage.jsx
-import { FadeIn, SpadeIcon, thousandPointClub } from "../shared";
+import { FadeIn, Spade, thousandPointClub } from "../shared";
 
 export default function ThousandClubPage() {
   return (
@@ -7,7 +7,7 @@ export default function ThousandClubPage() {
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label">
-            <SpadeIcon size={14} color="#840036" /> All-Time Greats
+            <Spade size={14} color="#840036" /> All-Time Greats
           </div>
           <h2 className="section-title">1,000 Point<br /><span style={{ color: "var(--gold)" }}>Club</span></h2>
           <div className="divider" />

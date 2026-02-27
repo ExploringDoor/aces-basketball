@@ -1,12 +1,12 @@
 // pages/SocialPage.jsx
-import { FadeIn, SpadeIcon } from "../shared";
+import { FadeIn, Spade } from "../shared";
 
 export default function SocialPage() {
   return (
     <section id="social" style={{ background: "#0a0005", padding: "120px 5% 100px", textAlign: "center" }}>
       <div style={{ maxWidth: 700, margin: "0 auto" }}>
         <FadeIn>
-          <div className="section-label" style={{ justifyContent: "center" }}><SpadeIcon size={14} color="#840036" /> Connect</div>
+          <div className="section-label" style={{ justifyContent: "center" }}><Spade size={14} color="#840036" /> Connect</div>
           <h2 className="section-title" style={{ textAlign: "center" }}>Follow<br /><span style={{ color: "var(--gold)" }}>Aces Nation</span></h2>
           <div className="divider divider-center" />
         </FadeIn>

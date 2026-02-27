@@ -1,6 +1,6 @@
 // pages/HomePage.jsx
 import { useState, useEffect } from "react";
-import { FadeIn, CountUp, SpadeIcon } from "../shared";
+import { FadeIn, CountUp, Spade } from "../shared";
 
 const bannerTexts = [
   { title: "7× PIAA State Champions",     sub: "The Pride of the Main Line" },

@@ -1,5 +1,5 @@
 // pages/VideosPage.jsx
-import { FadeIn, SpadeIcon } from "../shared";
+import { FadeIn, Spade } from "../shared";
 
 const videos = [
   { id: "12WUvT4kHs3ZhTdz8OmrqoDYdwKPvHwVs", title: "2022–2023 LM Season Highlights", season: "2022-23 Season" },
@@ -10,7 +10,7 @@ export default function VideosPage() {
     <section id="videos" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" }}>
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <FadeIn>
-          <div className="section-label"><SpadeIcon size={14} color="#840036" /> Film Room</div>
+          <div className="section-label"><Spade size={14} color="#840036" /> Film Room</div>
           <h2 className="section-title">Aces<br /><span style={{ color: "var(--gold)" }}>Videos</span></h2>
           <div className="divider" />
         </FadeIn>

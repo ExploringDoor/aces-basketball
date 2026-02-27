@@ -1,12 +1,12 @@
 // pages/CoachingPage.jsx
-import { FadeIn, SpadeIcon, coachingStaff } from "../shared";
+import { FadeIn, Spade, coachingStaff } from "../shared";
 
 export default function CoachingPage() {
   return (
     <section id="coaching" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" }}>
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <FadeIn>
-          <div className="section-label"><SpadeIcon size={14} color="#840036" /> Coaching Staff</div>
+          <div className="section-label"><Spade size={14} color="#840036" /> Coaching Staff</div>
           <h2 className="section-title">Led By<br /><span style={{ color: "var(--gold)" }}>The Best</span></h2>
           <div className="divider" />
         </FadeIn>

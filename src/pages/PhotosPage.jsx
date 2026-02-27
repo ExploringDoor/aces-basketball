@@ -1,6 +1,6 @@
 // pages/PhotosPage.jsx
 import { useState } from "react";
-import { FadeIn, SpadeIcon } from "../shared";
+import { FadeIn, Spade } from "../shared";
 
 const galleries = [
   {
@@ -39,7 +39,7 @@ export default function PhotosPage() {
     <section id="photos" style={{ background: "#0a0005", padding: "120px 5% 100px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <FadeIn>
-          <div className="section-label"><SpadeIcon size={14} color="#840036" /> Game Day</div>
+          <div className="section-label"><Spade size={14} color="#840036" /> Game Day</div>
           <h2 className="section-title">Photo<br /><span style={{ color: "var(--gold)" }}>Gallery</span></h2>
           <div className="divider" />
         </FadeIn>

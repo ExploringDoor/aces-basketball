@@ -1,12 +1,12 @@
 // pages/RosterPage.jsx
-import { FadeIn, SpadeIcon } from "../shared";
+import { FadeIn, Spade } from "../shared";
 
 export default function RosterPage() {
   return (
     <section id="roster" style={{ background: "#0a0005", padding: "120px 5% 100px" }}>
       <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
         <FadeIn>
-          <div className="section-label" style={{ justifyContent: "center" }}><SpadeIcon size={14} color="#840036" /> Current Team</div>
+          <div className="section-label" style={{ justifyContent: "center" }}><Spade size={14} color="#840036" /> Current Team</div>
           <h2 className="section-title" style={{ textAlign: "center" }}>2025-26<br /><span style={{ color: "var(--gold)" }}>Roster</span></h2>
           <div className="divider divider-center" />
         </FadeIn>
