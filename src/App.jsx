@@ -710,18 +710,99 @@ export default function AcesBasketball() {
           </FadeIn>
           <FadeIn delay={0.2}>
             <p className="section-text">
-              Lower Merion basketball is one of the most successful programs in Pennsylvania history, with roots stretching back over a century. The Aces have amassed more than 1,600 victories, a .634 all-time winning percentage, and seven PIAA State Championships — the second-most of any program in the Commonwealth.
+              Lower Merion basketball is one of the most successful programs in Pennsylvania history, with roots stretching back to 1921. The Aces have amassed more than 1,660 victories, a 66.3% all-time winning percentage, and seven PIAA State Championships — the second-most of any program in the Commonwealth.
             </p>
           </FadeIn>
           <FadeIn delay={0.3}>
             <p className="section-text" style={{ marginTop: 24 }}>
-              The foundation was built by legendary coach William "Andy" Anderson, who compiled a remarkable 346-49 record from 1927 to 1945, capturing four state titles — including three consecutive championships in 1941, '42, and '43. His innovations helped shape the modern game, leading to rule changes including the elimination of the center jump after each score.
+              The foundation was built by legendary coach William "Andy" Anderson, who compiled a remarkable 346-55 record (.863) from 1927 to 1945, capturing four state titles — including three consecutive championships in 1941, '42, and '43, a first in PA history. His innovations helped shape the modern game and established Lower Merion as a powerhouse.
             </p>
           </FadeIn>
           <FadeIn delay={0.4}>
             <p className="section-text" style={{ marginTop: 24 }}>
-              In 1990, a young Gregg Downer took the reins and ushered in a new era. Three years later, a freshman named Kobe Bryant arrived and the program exploded onto the national stage. The 1996 Aces rode a 30-game winning streak to the state title, finishing 31-3. Downer has since led the program to two more state championships (2006, 2013), surpassed Anderson's win record, and sent more than 70 players to college and professional basketball. Today, Lower Merion remains the standard for public school basketball excellence in Pennsylvania.
+              In 1990, a young Gregg Downer took the reins and ushered in a new era. Three years later, a freshman named Kobe Bryant arrived and the program exploded onto the national stage. The 1996 Aces rode a 30-game winning streak to the state title, finishing 31-3. Downer has since led the program to two more state championships (2006, 2013), surpassed Anderson's win record, and sent more than 70 players to college and professional basketball. Now in his 36th season with over 730 victories, Downer remains the standard for coaching excellence in Pennsylvania.
             </p>
+          </FadeIn>
+
+          {/* All-Time Stats Bar */}
+          <FadeIn delay={0.5}>
+            <div style={{
+              marginTop: 56, display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+              gap: 2, borderRadius: 16, overflow: "hidden"
+            }}>
+              {[
+                { stat: "1,663", label: "All-Time Wins" },
+                { stat: "104", label: "Seasons" },
+                { stat: ".663", label: "Win Percentage" },
+                { stat: "7", label: "State Championships" },
+                { stat: "17", label: "District 1 Titles" },
+                { stat: "23", label: "League Titles" },
+              ].map((s, idx) => (
+                <div key={idx} style={{
+                  background: "rgba(255,255,255,0.03)", padding: "28px 16px", textAlign: "center"
+                }}>
+                  <div style={{
+                    fontFamily: "'Oswald', sans-serif", fontSize: 32, fontWeight: 700,
+                    color: "var(--gold)", lineHeight: 1
+                  }}>{s.stat}</div>
+                  <div style={{
+                    fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2,
+                    color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginTop: 8
+                  }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
+
+          {/* Coaching History */}
+          <FadeIn delay={0.6}>
+            <div style={{ marginTop: 64 }}>
+              <h3 style={{
+                fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 4,
+                color: "var(--gold)", textTransform: "uppercase", textAlign: "center", marginBottom: 32
+              }}>Coaching History</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
+                {[
+                  { name: "Gregg Downer", years: "1990–Present", record: "738-278", pct: ".726", titles: "3× State Champs ('96, '06, '13)", highlight: true },
+                  { name: "William Anderson", years: "1927–1945", record: "346-55", pct: ".863", titles: "4× State Champs ('33, '41, '42, '43)" },
+                  { name: "Bill Stephens", years: "1970–1979", record: "145-64", pct: ".694", titles: "4× League Champs, 2× District 1" },
+                  { name: "Larry Davis", years: "1960–1970", record: "111-92", pct: ".547", titles: "Central League Champ ('68)" },
+                  { name: "Michael Manning", years: "1979–1990", record: "100-142", pct: ".413", titles: "Central League Champ ('84)" },
+                  { name: "Robert Ruoff", years: "1953–1958", record: "58-38", pct: ".604", titles: "" },
+                  { name: "Jack Hinchey", years: "1947–1952", record: "48-54", pct: ".471", titles: "" },
+                  { name: "O. Robinson", years: "1945–47, 52–53", record: "29-29", pct: ".500", titles: "Suburban League ('46)" },
+                ].map((c, idx) => (
+                  <div key={idx} style={{
+                    background: c.highlight ? "rgba(132,0,54,0.15)" : "rgba(255,255,255,0.02)",
+                    border: `1px solid ${c.highlight ? "rgba(132,0,54,0.3)" : "rgba(255,255,255,0.06)"}`,
+                    borderRadius: 12, padding: "20px 24px"
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                      <div style={{
+                        fontFamily: "'Oswald', sans-serif", fontSize: 17, fontWeight: 600, letterSpacing: 1
+                      }}>{c.name}</div>
+                      <div style={{
+                        fontFamily: "'Oswald', sans-serif", fontSize: 20, fontWeight: 700,
+                        color: "var(--gold)"
+                      }}>{c.record}</div>
+                    </div>
+                    <div style={{
+                      fontFamily: "'Source Sans 3', sans-serif", fontSize: 12,
+                      color: "rgba(255,255,255,0.4)", marginTop: 4
+                    }}>
+                      {c.years} · {c.pct} winning pct
+                    </div>
+                    {c.titles && <div style={{
+                      fontFamily: "'Source Sans 3', sans-serif", fontSize: 12,
+                      color: "rgba(255,255,255,0.55)", marginTop: 8
+                    }}>
+                      {c.titles}
+                    </div>}
+                  </div>
+                ))}
+              </div>
+            </div>
           </FadeIn>
         </div>
       </section>
@@ -1295,13 +1376,11 @@ export default function AcesBasketball() {
             <div className="divider divider-center" />
           </FadeIn>
 
-          {/* Season Selector */}
           <FadeIn delay={0.15}>
             {(() => {
               const seasons = {
-                "2024-25": {
-                  record: "19-5",
-                  games: 24,
+                "2025-26": {
+                  record: "15-9", games: 24,
                   leaders: [
                     { name: "Kyle Parrish", number: "24", gp: 24, pts: 310, reb: 72, ast: 119, stl: 51, blk: 2, threes: 29, fgPct: "43.1", ftPct: "70.8", mins: 651 },
                     { name: "Israel Ingram", number: "5", gp: 24, pts: 286, reb: 83, ast: 33, stl: 33, blk: 7, threes: 54, fgPct: "37.3", ftPct: "60.3", mins: 626 },
@@ -1313,9 +1392,8 @@ export default function AcesBasketball() {
                     { name: "Darius Mitchell", number: "2", gp: 21, pts: 59, reb: 31, ast: 10, stl: 11, blk: 0, threes: 6, fgPct: "50.0", ftPct: "65.0", mins: 204 },
                   ],
                 },
-                "2023-24": {
-                  record: "24-6",
-                  games: 30,
+                "2024-25": {
+                  record: "22-7", games: 30,
                   leaders: [
                     { name: "Carson Kasmer", number: "14", gp: 30, pts: 530, reb: 93, ast: 60, stl: 47, blk: 0, threes: 60, fgPct: "48.6", ftPct: "85.7", mins: 902 },
                     { name: "Rashyne Patterson", number: "4", gp: 30, pts: 348, reb: 182, ast: 58, stl: 39, blk: 51, threes: 36, fgPct: "53.0", ftPct: "82.1", mins: 773 },
@@ -1327,19 +1405,98 @@ export default function AcesBasketball() {
                     { name: "Chris Cook", number: "23", gp: 24, pts: 37, reb: 40, ast: 9, stl: 6, blk: 4, threes: 0, fgPct: "60.9", ftPct: "75.0", mins: 173 },
                   ],
                 },
+                "2023-24": {
+                  record: "28-2", games: 30,
+                  leaders: [
+                    { name: "John Mobley", number: "4", gp: 30, pts: 437, reb: 180, ast: 84, stl: 68, blk: 27, threes: 38, fgPct: "45.8", ftPct: "67.5", mins: 831 },
+                    { name: "Owen McCabe", number: "0", gp: 30, pts: 427, reb: 64, ast: 75, stl: 46, blk: 0, threes: 68, fgPct: "47.5", ftPct: "76.6", mins: 862 },
+                    { name: "Adam Herrenkohl", number: "2", gp: 30, pts: 397, reb: 173, ast: 139, stl: 68, blk: 4, threes: 50, fgPct: "53.0", ftPct: "73.3", mins: 818 },
+                    { name: "Carson Kasmer", number: "14", gp: 30, pts: 298, reb: 54, ast: 36, stl: 25, blk: 2, threes: 55, fgPct: "51.9", ftPct: "91.1", mins: 601 },
+                    { name: "Jayden Robinson", number: "21", gp: 29, pts: 247, reb: 97, ast: 15, stl: 22, blk: 20, threes: 5, fgPct: "59.7", ftPct: "74.4", mins: 525 },
+                    { name: "Justin Mebane", number: "10", gp: 29, pts: 122, reb: 76, ast: 23, stl: 12, blk: 13, threes: 0, fgPct: "55.8", ftPct: "76.2", mins: 440 },
+                    { name: "Gus Wright", number: "11", gp: 29, pts: 79, reb: 38, ast: 23, stl: 22, blk: 0, threes: 16, fgPct: "39.7", ftPct: "56.5", mins: 426 },
+                    { name: "Sami Singletary", number: "—", gp: 13, pts: 28, reb: 12, ast: 7, stl: 8, blk: 1, threes: 4, fgPct: "39.1", ftPct: "60.0", mins: 64 },
+                    { name: "Cole Nocek", number: "30", gp: 18, pts: 30, reb: 22, ast: 6, stl: 3, blk: 0, threes: 1, fgPct: "50.0", ftPct: "56.3", mins: 127 },
+                  ],
+                },
+                "2022-23": {
+                  record: "24-6", games: 30,
+                  leaders: [
+                    { name: "Sam Brown", number: "11", gp: 30, pts: 530, reb: 128, ast: 80, stl: 34, blk: 10, threes: 80, fgPct: "43.6", ftPct: "85.0", mins: 834 },
+                    { name: "Sam Wright", number: "24", gp: 29, pts: 381, reb: 104, ast: 59, stl: 43, blk: 6, threes: 45, fgPct: "41.0", ftPct: "83.2", mins: 773 },
+                    { name: "John Mobley", number: "4", gp: 29, pts: 258, reb: 137, ast: 53, stl: 35, blk: 12, threes: 3, fgPct: "53.6", ftPct: "68.1", mins: 641 },
+                    { name: "Justin Poles", number: "2", gp: 29, pts: 223, reb: 101, ast: 78, stl: 33, blk: 3, threes: 4, fgPct: "54.3", ftPct: "80.7", mins: 657 },
+                    { name: "Jordan Meekins", number: "15", gp: 29, pts: 161, reb: 96, ast: 13, stl: 22, blk: 19, threes: 28, fgPct: "44.1", ftPct: "76.5", mins: 495 },
+                    { name: "Teddy Pendergrass III", number: "1", gp: 29, pts: 151, reb: 39, ast: 29, stl: 16, blk: 5, threes: 23, fgPct: "44.2", ftPct: "73.3", mins: 455 },
+                    { name: "Owen McCabe", number: "0", gp: 30, pts: 113, reb: 41, ast: 20, stl: 26, blk: 1, threes: 22, fgPct: "44.0", ftPct: "84.6", mins: 591 },
+                    { name: "Carson Kasmer", number: "14", gp: 16, pts: 33, reb: 7, ast: 7, stl: 4, blk: 0, threes: 7, fgPct: "55.6", ftPct: "100", mins: 78 },
+                  ],
+                },
+                "2021-22": {
+                  record: "27-4", games: 30,
+                  leaders: [
+                    { name: "Demetrius Lilley", number: "14", gp: 26, pts: 465, reb: 325, ast: 17, stl: 21, blk: 25, threes: 18, fgPct: "56.2", ftPct: "61.5", mins: 703 },
+                    { name: "Sam Brown", number: "11", gp: 22, pts: 359, reb: 73, ast: 40, stl: 21, blk: 3, threes: 63, fgPct: "44.7", ftPct: "76.7", mins: 620 },
+                    { name: "Sam Wright", number: "24", gp: 29, pts: 237, reb: 85, ast: 51, stl: 30, blk: 7, threes: 46, fgPct: "35.8", ftPct: "72.5", mins: 756 },
+                    { name: "Jaylen Shippen", number: "0", gp: 29, pts: 206, reb: 88, ast: 105, stl: 30, blk: 0, threes: 15, fgPct: "34.4", ftPct: "43.2", mins: 806 },
+                    { name: "Justin Poles", number: "2", gp: 29, pts: 189, reb: 98, ast: 56, stl: 26, blk: 1, threes: 5, fgPct: "50.0", ftPct: "75.3", mins: 680 },
+                    { name: "Peter Gribbin", number: "4", gp: 28, pts: 114, reb: 42, ast: 18, stl: 11, blk: 0, threes: 13, fgPct: "43.0", ftPct: "81.8", mins: 406 },
+                    { name: "Henry Bard", number: "22", gp: 23, pts: 38, reb: 53, ast: 23, stl: 9, blk: 6, threes: 5, fgPct: "30.8", ftPct: "60.0", mins: 354 },
+                    { name: "Teddy Pendergrass III", number: "1", gp: 19, pts: 33, reb: 14, ast: 8, stl: 9, blk: 0, threes: 3, fgPct: "47.8", ftPct: "72.7", mins: 139 },
+                  ],
+                },
+                "2020-21": {
+                  record: "13-5", games: 18,
+                  leaders: [
+                    { name: "Demetrius Lilley", number: "14", gp: 17, pts: 348, reb: 210, ast: 16, stl: 10, blk: 16, threes: 13, fgPct: "59.2", ftPct: "75.0", mins: 468 },
+                    { name: "Sam Davison", number: "1", gp: 18, pts: 212, reb: 63, ast: 65, stl: 23, blk: 3, threes: 18, fgPct: "50.3", ftPct: "75.0", mins: 524 },
+                    { name: "Sam Brown", number: "11", gp: 18, pts: 204, reb: 44, ast: 31, stl: 15, blk: 3, threes: 37, fgPct: "43.1", ftPct: "86.0", mins: 514 },
+                    { name: "Jaylen Shippen", number: "0", gp: 18, pts: 124, reb: 42, ast: 53, stl: 18, blk: 1, threes: 12, fgPct: "39.1", ftPct: "56.5", mins: 425 },
+                    { name: "Zack Wong", number: "21", gp: 18, pts: 113, reb: 65, ast: 36, stl: 17, blk: 11, threes: 15, fgPct: "48.9", ftPct: "62.5", mins: 387 },
+                    { name: "Sam Wright", number: "24", gp: 18, pts: 61, reb: 22, ast: 15, stl: 5, blk: 0, threes: 17, fgPct: "38.8", ftPct: "85.7", mins: 217 },
+                    { name: "Phil Cook", number: "5", gp: 17, pts: 35, reb: 40, ast: 6, stl: 6, blk: 1, threes: 1, fgPct: "37.8", ftPct: "50.0", mins: 126 },
+                    { name: "Peter Gribbin", number: "4", gp: 15, pts: 25, reb: 9, ast: 9, stl: 3, blk: 0, threes: 5, fgPct: "38.5", ftPct: "—", mins: 103 },
+                  ],
+                },
+                "2019-20": {
+                  record: "20-8", games: 30,
+                  leaders: [
+                    { name: "Demetrius Lilley", number: "14", gp: 27, pts: 449, reb: 331, ast: 21, stl: 13, blk: 23, threes: 6, fgPct: "56.4", ftPct: "66.3", mins: 732 },
+                    { name: "James Simples", number: "4", gp: 26, pts: 297, reb: 144, ast: 119, stl: 39, blk: 35, threes: 5, fgPct: "55.5", ftPct: "46.5", mins: 795 },
+                    { name: "Sam Brown", number: "11", gp: 25, pts: 260, reb: 53, ast: 26, stl: 26, blk: 4, threes: 67, fgPct: "38.2", ftPct: "72.1", mins: 735 },
+                    { name: "Jaylen Shippen", number: "0", gp: 29, pts: 154, reb: 64, ast: 67, stl: 31, blk: 0, threes: 20, fgPct: "35.8", ftPct: "53.7", mins: 721 },
+                    { name: "Phil Cook", number: "5", gp: 28, pts: 115, reb: 97, ast: 15, stl: 12, blk: 4, threes: 6, fgPct: "45.7", ftPct: "67.6", mins: 401 },
+                    { name: "Eli Rothman", number: "0", gp: 24, pts: 109, reb: 50, ast: 22, stl: 20, blk: 0, threes: 9, fgPct: "30.6", ftPct: "61.5", mins: 368 },
+                    { name: "Peter Gribbin", number: "4", gp: 28, pts: 73, reb: 33, ast: 24, stl: 15, blk: 0, threes: 10, fgPct: "38.0", ftPct: "56.3", mins: 371 },
+                    { name: "Lance Chestnut", number: "10", gp: 20, pts: 73, reb: 48, ast: 31, stl: 11, blk: 1, threes: 4, fgPct: "41.4", ftPct: "57.9", mins: 313 },
+                  ],
+                },
+                "2018-19": {
+                  record: "25-4", games: 29,
+                  leaders: [
+                    { name: "Steve Payne", number: "1", gp: 29, pts: 501, reb: 184, ast: 109, stl: 38, blk: 3, threes: 42, fgPct: "49.6", ftPct: "78.5", mins: 874 },
+                    { name: "Jack Forrest", number: "2", gp: 19, pts: 369, reb: 117, ast: 35, stl: 16, blk: 11, threes: 66, fgPct: "46.8", ftPct: "76.5", mins: 533 },
+                    { name: "Matt O'Connor", number: "12", gp: 29, pts: 213, reb: 52, ast: 36, stl: 5, blk: 6, threes: 61, fgPct: "39.4", ftPct: "75.9", mins: 689 },
+                    { name: "Julian Hairston", number: "3", gp: 29, pts: 190, reb: 52, ast: 21, stl: 21, blk: 8, threes: 40, fgPct: "39.0", ftPct: "59.1", mins: 525 },
+                    { name: "Theo Henry", number: "15", gp: 26, pts: 169, reb: 106, ast: 55, stl: 26, blk: 0, threes: 15, fgPct: "42.2", ftPct: "67.6", mins: 579 },
+                    { name: "Darryl Taylor", number: "5", gp: 28, pts: 167, reb: 68, ast: 40, stl: 23, blk: 7, threes: 12, fgPct: "46.7", ftPct: "63.0", mins: 612 },
+                    { name: "Josh Martin", number: "30", gp: 29, pts: 162, reb: 197, ast: 26, stl: 15, blk: 17, threes: 0, fgPct: "48.9", ftPct: "57.6", mins: 558 },
+                    { name: "Sam Oshtry", number: "14", gp: 13, pts: 37, reb: 15, ast: 2, stl: 5, blk: 0, threes: 2, fgPct: "53.3", ftPct: "75.0", mins: 78 },
+                  ],
+                },
               };
 
-              const [activeSeason, setActiveSeason] = useState("2024-25");
+              const [activeSeason, setActiveSeason] = useState("2025-26");
               const season = seasons[activeSeason];
 
               return (
                 <div style={{ marginTop: 48 }}>
                   {/* Season Tabs */}
-                  <div style={{ display: "flex", justifyContent: "center", gap: 12, marginBottom: 36 }}>
+                  <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 36, flexWrap: "wrap" }}>
                     {Object.keys(seasons).map(key => (
                       <button key={key} onClick={() => setActiveSeason(key)} style={{
-                        fontFamily: "'Oswald', sans-serif", fontSize: 15, letterSpacing: 2,
-                        padding: "10px 28px", border: "1px solid",
+                        fontFamily: "'Oswald', sans-serif", fontSize: 14, letterSpacing: 1,
+                        padding: "8px 18px", border: "1px solid",
                         borderColor: activeSeason === key ? "var(--maroon)" : "rgba(255,255,255,0.1)",
                         background: activeSeason === key ? "rgba(132,0,54,0.3)" : "rgba(255,255,255,0.02)",
                         color: activeSeason === key ? "#fff" : "rgba(255,255,255,0.5)",
@@ -1378,31 +1535,34 @@ export default function AcesBasketball() {
                     display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
                     gap: 2, borderRadius: 12, overflow: "hidden", marginBottom: 36
                   }}>
-                    {[
-                      { label: "Points Leader", value: season.leaders[0].pts, player: season.leaders[0].name },
-                      { label: "Rebounds Leader", value: season.leaders.sort((a, b) => b.reb - a.reb)[0].reb, player: season.leaders.sort((a, b) => b.reb - a.reb)[0].name },
-                      { label: "Assists Leader", value: season.leaders.sort((a, b) => b.ast - a.ast)[0].ast, player: season.leaders.sort((a, b) => b.ast - a.ast)[0].name },
-                      { label: "Steals Leader", value: season.leaders.sort((a, b) => b.stl - a.stl)[0].stl, player: season.leaders.sort((a, b) => b.stl - a.stl)[0].name },
-                      { label: "Blocks Leader", value: season.leaders.sort((a, b) => b.blk - a.blk)[0].blk, player: season.leaders.sort((a, b) => b.blk - a.blk)[0].name },
-                      { label: "3-Pointers", value: season.leaders.sort((a, b) => b.threes - a.threes)[0].threes, player: season.leaders.sort((a, b) => b.threes - a.threes)[0].name },
-                    ].map((s, idx) => (
-                      <div key={idx} style={{
-                        background: "rgba(255,255,255,0.03)", padding: "24px 12px", textAlign: "center"
-                      }}>
-                        <div style={{
-                          fontFamily: "'Oswald', sans-serif", fontSize: 30, fontWeight: 700,
-                          color: "var(--gold)", lineHeight: 1
-                        }}>{s.value}</div>
-                        <div style={{
-                          fontFamily: "'Source Sans 3', sans-serif", fontSize: 13,
-                          color: "rgba(255,255,255,0.6)", marginTop: 6
-                        }}>{s.player}</div>
-                        <div style={{
-                          fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2,
-                          color: "rgba(255,255,255,0.3)", textTransform: "uppercase", marginTop: 6
-                        }}>{s.label}</div>
-                      </div>
-                    ))}
+                    {(() => {
+                      const sorted = (key) => [...season.leaders].sort((a, b) => b[key] - a[key])[0];
+                      return [
+                        { label: "Points Leader", value: sorted("pts").pts, player: sorted("pts").name },
+                        { label: "Rebounds Leader", value: sorted("reb").reb, player: sorted("reb").name },
+                        { label: "Assists Leader", value: sorted("ast").ast, player: sorted("ast").name },
+                        { label: "Steals Leader", value: sorted("stl").stl, player: sorted("stl").name },
+                        { label: "Blocks Leader", value: sorted("blk").blk, player: sorted("blk").name },
+                        { label: "3-Pointers", value: sorted("threes").threes, player: sorted("threes").name },
+                      ].map((s, idx) => (
+                        <div key={idx} style={{
+                          background: "rgba(255,255,255,0.03)", padding: "24px 12px", textAlign: "center"
+                        }}>
+                          <div style={{
+                            fontFamily: "'Oswald', sans-serif", fontSize: 30, fontWeight: 700,
+                            color: "var(--gold)", lineHeight: 1
+                          }}>{s.value}</div>
+                          <div style={{
+                            fontFamily: "'Source Sans 3', sans-serif", fontSize: 13,
+                            color: "rgba(255,255,255,0.6)", marginTop: 6
+                          }}>{s.player}</div>
+                          <div style={{
+                            fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2,
+                            color: "rgba(255,255,255,0.3)", textTransform: "uppercase", marginTop: 6
+                          }}>{s.label}</div>
+                        </div>
+                      ));
+                    })()}
                   </div>
 
                   {/* Stats Table */}
