@@ -203,6 +203,7 @@ export default function AcesBasketball() {
     { id: "coaching", label: "Coaching Staff" },
     { id: "roster", label: "Roster" },
     { id: "photos", label: "Photos" },
+    { id: "videos", label: "Videos" },
     { id: "social", label: "Follow Us" },
   ];
 
@@ -1158,6 +1159,72 @@ export default function AcesBasketball() {
             </>
           );
         })()}
+      </section>
+
+      {/* Videos */}
+      <section id="videos" style={{ background: "var(--dark)", padding: "100px 5% 80px" }}>
+        <FadeIn>
+          <div className="section-label" style={{ justifyContent: "center" }}>
+            <SpadeIcon size={14} color="#840036" /> Film Room
+          </div>
+          <h2 className="section-title" style={{ textAlign: "center" }}>
+            Aces<br /><span style={{ color: "var(--gold)" }}>Videos</span>
+          </h2>
+          <div className="divider divider-center" />
+        </FadeIn>
+
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(480px, 1fr))",
+          gap: 24,
+          marginTop: 40,
+          maxWidth: 1200,
+          marginLeft: "auto",
+          marginRight: "auto"
+        }}>
+          {[
+            { id: "12WUvT4kHs3ZhTdz8OmrqoDYdwKPvHwVs", title: "2022–2023 LM Season Highlights", season: "2022-23 Season" },
+          ].map((video, idx) => (
+            <FadeIn key={idx} delay={0.2 + idx * 0.1}>
+              <div style={{
+                background: "rgba(255,255,255,0.03)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 12,
+                overflow: "hidden",
+                transition: "border-color 0.3s ease",
+              }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"}
+              >
+                <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, overflow: "hidden" }}>
+                  <iframe
+                    src={`https://drive.google.com/file/d/${video.id}/preview`}
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                    style={{
+                      position: "absolute", top: 0, left: 0,
+                      width: "100%", height: "100%", border: "none"
+                    }}
+                  />
+                </div>
+                <div style={{ padding: "16px 20px" }}>
+                  <div style={{
+                    fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3,
+                    color: "var(--gold)", textTransform: "uppercase", marginBottom: 6
+                  }}>
+                    {video.season}
+                  </div>
+                  <h3 style={{
+                    fontFamily: "'Oswald', sans-serif", fontSize: 20, fontWeight: 500,
+                    letterSpacing: 1, margin: 0
+                  }}>
+                    {video.title}
+                  </h3>
+                </div>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
       </section>
 
       {/* Social / Follow */}
