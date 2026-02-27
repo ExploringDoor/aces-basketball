@@ -175,6 +175,7 @@ export default function AcesBasketball() {
   const [activeChampTab, setActiveChampTab] = useState("state");
   const [lightbox, setLightbox] = useState(null);
   const [openGallery, setOpenGallery] = useState(null);
+  const [selectedSeason, setSelectedSeason] = useState("2025-26");
 
   const bannerTexts = [
     { title: "7× PIAA State Champions", sub: "The Pride of the Main Line" },
@@ -197,6 +198,8 @@ export default function AcesBasketball() {
   const navItems = [
     { id: "home", label: "Home" },
     { id: "history", label: "History" },
+    { id: "thousand", label: "1000 Club" },
+    { id: "schedule", label: "Schedule" },
     { id: "championships", label: "Championships" },
     { id: "league", label: "Central League" },
     { id: "alumni", label: "Alumni" },
@@ -754,6 +757,347 @@ export default function AcesBasketball() {
             <p className="section-text" style={{ margin: "40px auto 0", textAlign: "center", fontSize: 15 }}>
               The Kobe Bryant Gymnasium at Lower Merion High School was dedicated in 2010, funded in part by Kobe's personal $400,000 donation. His #33 jersey is retired. Every season opens with 33 seconds of silence in his honor. Mamba Mentality lives on in every Ace who wears the Maroon & White.
             </p>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* 1000 Point Club */}
+      <section id="thousand" style={{ background: "linear-gradient(180deg, var(--dark) 0%, var(--maroon-deep) 50%, var(--dark) 100%)", padding: "100px 5% 80px" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <FadeIn>
+            <div className="section-label" style={{ justifyContent: "center" }}>
+              <SpadeIcon size={14} color="#840036" /> All-Time Greats
+            </div>
+            <h2 className="section-title" style={{ textAlign: "center" }}>
+              1,000 Point<br /><span style={{ color: "var(--gold)" }}>Club</span>
+            </h2>
+            <div className="divider divider-center" />
+            <p className="section-text" style={{ textAlign: "center", margin: "20px auto 0", maxWidth: 600 }}>
+              The elite scorers in Lower Merion boys basketball history who reached the 1,000 career point milestone.
+            </p>
+          </FadeIn>
+
+          {/* Kobe Feature Card */}
+          <FadeIn delay={0.2}>
+            <div style={{
+              marginTop: 48,
+              background: "linear-gradient(135deg, rgba(132,0,54,0.4) 0%, rgba(0,0,0,0.6) 100%)",
+              border: "2px solid var(--gold)",
+              borderRadius: 16,
+              padding: "32px 36px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: 20,
+              position: "relative",
+              overflow: "hidden"
+            }}>
+              <div style={{
+                position: "absolute", top: -20, right: -10, fontSize: 160,
+                fontFamily: "'Oswald', sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.03)",
+                lineHeight: 1, pointerEvents: "none"
+              }}>33</div>
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <div style={{
+                  fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3,
+                  color: "var(--gold)", textTransform: "uppercase", marginBottom: 6
+                }}>
+                  All-Time Leading Scorer · Class of 1996
+                </div>
+                <div style={{
+                  fontFamily: "'Playfair Display', serif", fontSize: 36, fontWeight: 700,
+                  lineHeight: 1.1
+                }}>
+                  Kobe Bryant
+                </div>
+                <div style={{
+                  fontFamily: "'Source Sans 3', sans-serif", fontSize: 14, color: "rgba(255,255,255,0.5)",
+                  marginTop: 8
+                }}>
+                  Single Game High: 50 pts vs Marple Newtown (1996) · 50 pts vs Academy Park (1996)
+                </div>
+              </div>
+              <div style={{ position: "relative", zIndex: 1, textAlign: "right" }}>
+                <div style={{
+                  fontFamily: "'Oswald', sans-serif", fontSize: 64, fontWeight: 700,
+                  color: "var(--gold)", lineHeight: 1
+                }}>
+                  2,883
+                </div>
+                <div style={{
+                  fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 3,
+                  color: "rgba(255,255,255,0.5)", textTransform: "uppercase"
+                }}>
+                  Career Points
+                </div>
+              </div>
+            </div>
+          </FadeIn>
+
+          {/* Leaderboard Table */}
+          <FadeIn delay={0.3}>
+            <div style={{ marginTop: 36, borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)" }}>
+              {/* Header */}
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "50px 1fr 100px 80px",
+                padding: "14px 24px",
+                background: "rgba(132,0,54,0.3)",
+                fontFamily: "'Oswald', sans-serif",
+                fontSize: 11,
+                letterSpacing: 3,
+                color: "var(--gold)",
+                textTransform: "uppercase",
+                borderBottom: "1px solid rgba(255,255,255,0.1)"
+              }}>
+                <span>#</span>
+                <span>Player</span>
+                <span style={{ textAlign: "right" }}>Points</span>
+                <span style={{ textAlign: "right" }}>Class</span>
+              </div>
+
+              {/* Rows */}
+              {[
+                { rank: 1, name: "Kobe Bryant", points: "2,883", year: "1996", highlight: true },
+                { rank: 2, name: "Greg Robbins", points: "1,619", year: "2009" },
+                { rank: 3, name: "Steve Payne", points: "1,480", year: "2019" },
+                { rank: 4, name: "Garrett Williamson", points: "1,349", year: "2006" },
+                { rank: 5, name: "Sam Brown", points: "1,325", year: "2023" },
+                { rank: 6, name: "Ryan Brooks", points: "1,319", year: "2006" },
+                { rank: 7, name: "Jared Lewis", points: "1,306", year: "2003" },
+                { rank: 8, name: "Demetrius Lilley", points: "1,301", year: "2022" },
+                { rank: 9, name: "B.J. Johnson", points: "1,241", year: "2013" },
+                { rank: 10, name: "Jack Forrest", points: "1,209", year: "2019" },
+                { rank: 11, name: "Mike Venafra", points: "1,146", year: "2000" },
+                { rank: 12, name: "Dan Capkin", points: "1,072", year: "2005" },
+                { rank: 13, name: "Alex Goodman", points: "1,021", year: "1991" },
+                { rank: 14, name: "Mitch McDaniel", points: "1,017", year: "1963" },
+              ].map((player, idx) => (
+                <div key={idx} style={{
+                  display: "grid",
+                  gridTemplateColumns: "50px 1fr 100px 80px",
+                  padding: "16px 24px",
+                  background: player.highlight ? "rgba(132,0,54,0.15)" : idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
+                  borderBottom: "1px solid rgba(255,255,255,0.05)",
+                  alignItems: "center",
+                  transition: "background 0.2s ease"
+                }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(132,0,54,0.2)"}
+                  onMouseLeave={e => e.currentTarget.style.background = player.highlight ? "rgba(132,0,54,0.15)" : idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent"}
+                >
+                  <span style={{
+                    fontFamily: "'Oswald', sans-serif",
+                    fontSize: player.highlight ? 22 : 16,
+                    fontWeight: player.highlight ? 700 : 400,
+                    color: player.highlight ? "var(--gold)" : "rgba(255,255,255,0.4)"
+                  }}>
+                    {player.rank}
+                  </span>
+                  <span style={{
+                    fontFamily: "'Oswald', sans-serif",
+                    fontSize: player.highlight ? 20 : 16,
+                    fontWeight: player.highlight ? 600 : 400,
+                    letterSpacing: 1,
+                    color: player.highlight ? "#fff" : "rgba(255,255,255,0.85)"
+                  }}>
+                    {player.name}
+                    {player.highlight && <span style={{ marginLeft: 10, fontSize: 12, color: "var(--gold)" }}>♠</span>}
+                  </span>
+                  <span style={{
+                    textAlign: "right",
+                    fontFamily: "'Oswald', sans-serif",
+                    fontSize: player.highlight ? 22 : 17,
+                    fontWeight: player.highlight ? 700 : 500,
+                    color: player.highlight ? "var(--gold)" : "#fff",
+                    letterSpacing: 1
+                  }}>
+                    {player.points}
+                  </span>
+                  <span style={{
+                    textAlign: "right",
+                    fontFamily: "'Source Sans 3', sans-serif",
+                    fontSize: 14,
+                    color: "rgba(255,255,255,0.4)"
+                  }}>
+                    {player.year}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* Schedule & Results */}
+      <section id="schedule" style={{ background: "var(--dark)", padding: "100px 5% 80px" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <FadeIn>
+            <div className="section-label" style={{ justifyContent: "center" }}>
+              <SpadeIcon size={14} color="#840036" /> 2025–26 Season
+            </div>
+            <h2 className="section-title" style={{ textAlign: "center" }}>
+              Schedule &<br /><span style={{ color: "var(--gold)" }}>Results</span>
+            </h2>
+            <div className="divider divider-center" />
+          </FadeIn>
+
+          {/* Season Selector */}
+          <FadeIn delay={0.15}>
+            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 32, flexWrap: "wrap" }}>
+              {["2025-26","2024-25","2023-24","2022-23","2021-22","2020-21","2019-20"].map(s => (
+                <button key={s} onClick={() => setSelectedSeason(s)} style={{
+                  padding: "8px 16px", borderRadius: 6, cursor: "pointer",
+                  fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1,
+                  background: selectedSeason === s ? "var(--maroon)" : "rgba(255,255,255,0.05)",
+                  border: selectedSeason === s ? "1px solid var(--gold)" : "1px solid rgba(255,255,255,0.1)",
+                  color: selectedSeason === s ? "var(--gold)" : "rgba(255,255,255,0.6)",
+                  transition: "all 0.2s ease"
+                }}>{s}</button>
+              ))}
+            </div>
+          </FadeIn>
+
+          {/* Record Display */}
+          <FadeIn delay={0.2}>
+            {(() => {
+              const seasonData = {
+                "2025-26": { wins: 15, losses: 9, confW: 10, confL: 6, confPlace: "5th", notes: "Central League", games: [
+                  { date: "12/5", opp: "Coatesville", loc: "@", r: "L", lm: 62, them: 76 },
+                  { date: "12/6", opp: "Downingtown West", loc: "vs", r: "W", lm: 75, them: 55 },
+                  { date: "12/9", opp: "Garnet Valley", loc: "vs", r: "L", lm: 60, them: 69, conf: true },
+                  { date: "12/11", opp: "Conestoga", loc: "@", r: "L", lm: 45, them: 50, conf: true },
+                  { date: "12/16", opp: "Ridley", loc: "@", r: "W", lm: 61, them: 49, conf: true },
+                  { date: "12/18", opp: "Haverford", loc: "@", r: "W", lm: 61, them: 48, conf: true },
+                  { date: "12/23", opp: "Upper Darby", loc: "vs", r: "W", lm: 60, them: 52, conf: true },
+                  { date: "12/29", opp: "St. Joseph's CA", loc: "vs", r: "W", lm: 62, them: 35, tag: "TOURNEY" },
+                  { date: "12/30", opp: "State College", loc: "@", r: "W", lm: 59, them: 53, tag: "TOURNEY" },
+                  { date: "1/3", opp: "Marple Newtown", loc: "vs", r: "W", lm: 55, them: 47, conf: true },
+                  { date: "1/6", opp: "Strath Haven", loc: "@", r: "W", lm: 65, them: 36, conf: true },
+                  { date: "1/8", opp: "Penncrest", loc: "vs", r: "L", lm: 45, them: 55, conf: true },
+                  { date: "1/10", opp: "Northampton", loc: "@", r: "W", lm: 71, them: 45 },
+                  { date: "1/13", opp: "Radnor", loc: "@", r: "W", lm: 69, them: 47, conf: true },
+                  { date: "1/15", opp: "Harriton", loc: "vs", r: "W", lm: 71, them: 39, conf: true },
+                  { date: "1/21", opp: "Springfield", loc: "@", r: "L", lm: 52, them: 53, conf: true },
+                  { date: "1/23", opp: "Garnet Valley", loc: "@", r: "W", lm: 52, them: 43, conf: true },
+                  { date: "1/24", opp: "Liberty", loc: "@", r: "W", lm: 55, them: 41 },
+                  { date: "1/28", opp: "Conestoga", loc: "vs", r: "L", lm: 55, them: 61, conf: true },
+                  { date: "1/29", opp: "Ridley", loc: "vs", r: "W", lm: 75, them: 45, conf: true },
+                  { date: "1/31", opp: "Haverford", loc: "vs", r: "W", lm: 60, them: 47, conf: true },
+                  { date: "2/3", opp: "Upper Darby", loc: "@", r: "L", lm: 45, them: 48, conf: true },
+                  { date: "2/5", opp: "Garnet Valley", loc: "@", r: "L", lm: 46, them: 66, tag: "CAL PLAYOFF" },
+                  { date: "2/13", opp: "Pennsbury", loc: "vs", r: "L", lm: 45, them: 51, tag: "D1 PLAYOFF" },
+                ]},
+                "2024-25": { wins: 22, losses: 8, confW: 14, confL: 2, confPlace: "1st", notes: "Central League Champions · PIAA 6A State Tournament R2 · Lost to Roman Catholic 63-74", highlight: "CAL Champs", games: [] },
+                "2023-24": { wins: 28, losses: 2, confW: 16, confL: 0, confPlace: "1st", notes: "Central League Champions · District 1 Champions · PIAA 6A State Tournament R2", highlight: "District 1 Champs · 28-2", games: [] },
+                "2022-23": { wins: 23, losses: 7, confW: 13, confL: 3, confPlace: "2nd", notes: "Central League Finalist · District 1 Champions · PIAA 6A State Quarterfinalist", highlight: "District 1 Champs", games: [] },
+                "2021-22": { wins: 27, losses: 4, confW: 15, confL: 1, confPlace: "1st", notes: "Central League Champions · District 1 Champions · PIAA 6A State Runner-Up", highlight: "District 1 Champs · State Runner-Up", games: [] },
+                "2020-21": { wins: 17, losses: 4, confW: 12, confL: 2, confPlace: "1st", notes: "Central League Co-Champions · District 1 Champions · COVID-shortened season", highlight: "District 1 Champs", games: [] },
+                "2019-20": { wins: 21, losses: 5, confW: 13, confL: 3, confPlace: "2nd", notes: "District 1 Semifinalist · Season ended early due to COVID-19", highlight: "", games: [] },
+              };
+              const s = seasonData[selectedSeason];
+              if (!s) return null;
+              return (
+                <div>
+                  {/* Record header */}
+                  <div style={{ display: "flex", justifyContent: "center", gap: 48, marginTop: 32, flexWrap: "wrap" }}>
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 44, fontWeight: 700 }}>
+                        <span style={{ color: "var(--gold)" }}>{s.wins}</span>
+                        <span style={{ color: "rgba(255,255,255,0.2)" }}>-</span>
+                        <span>{s.losses}</span>
+                      </div>
+                      <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: "rgba(255,255,255,0.4)" }}>OVERALL</div>
+                    </div>
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 44, fontWeight: 700 }}>
+                        <span style={{ color: "var(--gold)" }}>{s.confW}</span>
+                        <span style={{ color: "rgba(255,255,255,0.2)" }}>-</span>
+                        <span>{s.confL}</span>
+                      </div>
+                      <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: "rgba(255,255,255,0.4)" }}>CONFERENCE ({s.confPlace})</div>
+                    </div>
+                  </div>
+
+                  {/* Season notes */}
+                  <div style={{ textAlign: "center", marginTop: 16, fontFamily: "'Source Sans 3', sans-serif", fontSize: 14, color: "rgba(255,255,255,0.5)" }}>
+                    {s.notes}
+                  </div>
+                  {s.highlight && (
+                    <div style={{ textAlign: "center", marginTop: 8 }}>
+                      <span style={{
+                        fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 2,
+                        color: "var(--gold)", background: "rgba(132,0,54,0.3)",
+                        padding: "4px 14px", borderRadius: 4, border: "1px solid rgba(201,164,74,0.3)"
+                      }}>{s.highlight}</span>
+                    </div>
+                  )}
+
+                  {/* Game-by-game table (only for 2025-26) */}
+                  {s.games.length > 0 ? (
+                    <div style={{ marginTop: 32, borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)" }}>
+                      <div style={{
+                        display: "grid", gridTemplateColumns: "65px 1fr 50px 70px 70px",
+                        padding: "12px 20px", background: "rgba(132,0,54,0.3)",
+                        fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3,
+                        color: "var(--gold)", textTransform: "uppercase"
+                      }}>
+                        <span>Date</span><span>Opponent</span><span style={{ textAlign: "center" }}>W/L</span>
+                        <span style={{ textAlign: "center" }}>LM</span><span style={{ textAlign: "center" }}>OPP</span>
+                      </div>
+                      {s.games.map((g, i) => (
+                        <div key={i} style={{
+                          display: "grid", gridTemplateColumns: "65px 1fr 50px 70px 70px",
+                          padding: "13px 20px",
+                          background: i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
+                          borderBottom: "1px solid rgba(255,255,255,0.04)", alignItems: "center",
+                          transition: "background 0.2s ease"
+                        }}
+                          onMouseEnter={e => e.currentTarget.style.background = "rgba(132,0,54,0.12)"}
+                          onMouseLeave={e => e.currentTarget.style.background = i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent"}
+                        >
+                          <span style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13, color: "rgba(255,255,255,0.45)" }}>{g.date}</span>
+                          <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 15, letterSpacing: 0.5 }}>
+                            <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginRight: 5 }}>{g.loc}</span>
+                            {g.opp}
+                            {g.conf && <span style={{ color: "var(--gold)", fontSize: 10, marginLeft: 6 }}>★</span>}
+                            {g.tag && <span style={{ color: g.tag.includes("PLAYOFF") ? "#f87171" : "#4a9eff", fontSize: 9, marginLeft: 8, letterSpacing: 1, fontWeight: 600 }}>{g.tag}</span>}
+                          </span>
+                          <span style={{ textAlign: "center", fontFamily: "'Oswald', sans-serif", fontSize: 15, fontWeight: 700, color: g.r === "W" ? "#4ade80" : "#f87171" }}>{g.r}</span>
+                          <span style={{ textAlign: "center", fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: g.r === "W" ? 700 : 400, color: g.r === "W" ? "#fff" : "rgba(255,255,255,0.45)" }}>{g.lm}</span>
+                          <span style={{ textAlign: "center", fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: g.r === "L" ? 700 : 400, color: g.r === "L" ? "#fff" : "rgba(255,255,255,0.45)" }}>{g.them}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div style={{
+                      marginTop: 32, padding: "40px 24px", textAlign: "center",
+                      background: "rgba(255,255,255,0.02)", borderRadius: 12,
+                      border: "1px solid rgba(255,255,255,0.06)"
+                    }}>
+                      <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.4)" }}>
+                        Full game-by-game results for this season coming soon.
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Legend */}
+                  {s.games.length > 0 && (
+                    <div style={{ display: "flex", gap: 20, justifyContent: "center", marginTop: 16, flexWrap: "wrap" }}>
+                      {[
+                        { icon: "★", color: "var(--gold)", label: "Conference Game" },
+                        { icon: "●", color: "#4a9eff", label: "Tournament" },
+                        { icon: "●", color: "#f87171", label: "Playoff" },
+                      ].map((l, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "'Source Sans 3', sans-serif", fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
+                          <span style={{ color: l.color, fontSize: 10 }}>{l.icon}</span> {l.label}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </FadeIn>
         </div>
       </section>
