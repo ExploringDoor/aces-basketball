@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import { Spade } from "./shared";
 
-// Pages
 import HomePage          from "./pages/HomePage";
 import HistoryPage       from "./pages/HistoryPage";
 import ThousandClubPage  from "./pages/ThousandClubPage";
@@ -17,25 +16,14 @@ import VideosPage        from "./pages/VideosPage";
 import KobePage          from "./pages/KobePage";
 import SocialPage        from "./pages/SocialPage";
 
-// ── Page map ──────────────────────────────────────────────
 const PAGES = {
-  home:          null,
-  history:       HistoryPage,
-  thousand:      ThousandClubPage,
-  schedule:      SchedulePage,
-  championships: ChampionshipsPage,
-  league:        CentralLeaguePage,
-  alumni:        AlumniPage,
-  coaching:      CoachingPage,
-  roster:        RosterPage,
-  records:       RecordBookPage,
-  photos:        PhotosPage,
-  videos:        VideosPage,
-  kobe:          KobePage,
-  social:        SocialPage,
+  home: null, history: HistoryPage, thousand: ThousandClubPage,
+  schedule: SchedulePage, championships: ChampionshipsPage,
+  league: CentralLeaguePage, alumni: AlumniPage, coaching: CoachingPage,
+  roster: RosterPage, records: RecordBookPage, photos: PhotosPage,
+  videos: VideosPage, kobe: KobePage, social: SocialPage,
 };
 
-// ── Nav structure ─────────────────────────────────────────
 const NAV = [
   { id:"home", label:"Home" },
   { label:"Season", children:[
@@ -60,7 +48,6 @@ const NAV = [
   ]},
 ];
 
-// ── Dropdown component ────────────────────────────────────
 const DropdownMenu = ({ item, page, goTo }) => {
   const [open, setOpen] = useState(false);
   const isActive = item.children.some(c => c.id === page);
@@ -76,8 +63,7 @@ const DropdownMenu = ({ item, page, goTo }) => {
         padding:"6px 10px", textTransform:"uppercase", transition:"all 0.2s",
         whiteSpace:"nowrap", cursor:"pointer", display:"flex", alignItems:"center", gap:5,
       }}>
-        {item.label}
-        <span style={{ fontSize:8, opacity:0.6, marginTop:1 }}>▼</span>
+        {item.label} <span style={{ fontSize:8, opacity:0.6 }}>▼</span>
       </button>
       {open && (
         <div style={{
@@ -90,8 +76,7 @@ const DropdownMenu = ({ item, page, goTo }) => {
             <button key={child.id} onClick={() => goTo(child.id)} style={{
               display:"block", width:"100%",
               background: page===child.id ? "rgba(132,0,54,0.25)" : "none",
-              border:"none",
-              color: page===child.id ? "var(--gold)" : "rgba(255,255,255,0.72)",
+              border:"none", color: page===child.id ? "var(--gold)" : "rgba(255,255,255,0.72)",
               padding:"10px 18px", textAlign:"left",
               fontFamily:"'Oswald',sans-serif", fontSize:12, letterSpacing:1.5,
               textTransform:"uppercase", cursor:"pointer", transition:"all 0.15s", whiteSpace:"nowrap",
@@ -107,11 +92,10 @@ const DropdownMenu = ({ item, page, goTo }) => {
   );
 };
 
-// ── App ───────────────────────────────────────────────────
 export default function App() {
-  const [page, setPage]           = useState("home");
+  const [page, setPage] = useState("home");
   const [mobileOpen, setMobileOpen] = useState(false);
-  const contentRef                = useRef(null);
+  const contentRef = useRef(null);
 
   const goTo = (id) => {
     setPage(id);
@@ -133,15 +117,14 @@ export default function App() {
         ::-webkit-scrollbar-thumb { background: var(--maroon); border-radius: 3px; }
         table { border-collapse: collapse; }
         a, button { cursor: pointer; }
-        .desktop-nav { display: flex; }
-        .mobile-btn { display: none; }
+        .desktop-nav { display: flex; align-items: center; gap: 2px; }
+        .hamburger { display: none; }
         @media (max-width: 768px) {
           .desktop-nav { display: none !important; }
-          .mobile-btn { display: block !important; }
+          .hamburger { display: block !important; }
         }
       `}</style>
 
-      {/* ── Navigation ── */}
       <nav style={{
         position:"fixed", top:0, left:0, right:0, zIndex:1000,
         background:"rgba(10,0,5,0.97)", backdropFilter:"blur(14px)",
@@ -149,15 +132,14 @@ export default function App() {
         height:58, display:"flex", alignItems:"center",
         justifyContent:"space-between", padding:"0 4%",
       }}>
-        {/* Logo */}
         <button onClick={() => goTo("home")} style={{ background:"none", border:"none", color:"#fff", display:"flex", alignItems:"center", gap:9, flexShrink:0 }}>
           <Spade size={18} color="#840036" />
           <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:15, fontWeight:700, letterSpacing:3 }}>ACES</span>
           <span style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10, color:"rgba(255,255,255,0.36)", letterSpacing:2 }}>LOWER MERION</span>
         </button>
 
-        {/* Desktop nav */}
-        <div style={{ display:"flex", alignItems:"center", gap:2 }}>
+        {/* Desktop nav — hidden on mobile via CSS */}
+        <div className="desktop-nav">
           {NAV.map((item, i) =>
             item.children
               ? <DropdownMenu key={i} item={item} page={page} goTo={goTo} />
@@ -176,13 +158,14 @@ export default function App() {
           )}
         </div>
 
-        {/* Mobile hamburger */}
-        <button onClick={() => setMobileOpen(!mobileOpen)} style={{ background:"none", border:"none", color:"#fff", fontSize:22, paddingLeft:10, cursor:"pointer" }}>
+        {/* Hamburger — hidden on desktop via CSS */}
+        <button className="hamburger" onClick={() => setMobileOpen(!mobileOpen)}
+          style={{ background:"none", border:"none", color:"#fff", fontSize:24, cursor:"pointer", padding:"0 4px" }}>
           {mobileOpen ? "✕" : "☰"}
         </button>
       </nav>
 
-      {/* Mobile menu */}
+      {/* Mobile dropdown menu */}
       {mobileOpen && (
         <div style={{ position:"fixed", top:58, left:0, right:0, zIndex:999, background:"rgba(10,0,5,0.98)", borderBottom:"1px solid rgba(132,0,54,0.3)", padding:"8px 0", maxHeight:"80vh", overflowY:"auto" }}>
           {NAV.map((item, i) =>
@@ -190,7 +173,7 @@ export default function App() {
               ? <div key={i}>
                   <div style={{ padding:"10px 5% 4px", fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:3, color:"var(--gold)", textTransform:"uppercase" }}>{item.label}</div>
                   {item.children.map(child => (
-                    <button key={child.id} onClick={() => goTo(child.id)} style={{ display:"block", width:"100%", background: page===child.id?"rgba(132,0,54,0.2)":"none", border:"none", color: page===child.id?"var(--gold)":"rgba(255,255,255,0.65)", padding:"11px 8%", textAlign:"left", fontFamily:"'Oswald',sans-serif", fontSize:13, letterSpacing:2, textTransform:"uppercase", cursor:"pointer" }}>
+                    <button key={child.id} onClick={() => goTo(child.id)} style={{ display:"block", width:"100%", background: page===child.id?"rgba(132,0,54,0.2)":"none", border:"none", color: page===child.id?"var(--gold)":"rgba(255,255,255,0.65)", padding:"12px 8%", textAlign:"left", fontFamily:"'Oswald',sans-serif", fontSize:14, letterSpacing:2, textTransform:"uppercase", cursor:"pointer" }}>
                       {child.label}
                     </button>
                   ))}
@@ -202,14 +185,8 @@ export default function App() {
         </div>
       )}
 
-      {/* ── Page content ── */}
       <div ref={contentRef} style={{ paddingTop:58, minHeight:"100vh", background:"#0a0005" }}>
-        {page === "home"
-          ? <HomePage goTo={goTo} />
-          : PageComponent && <PageComponent />
-        }
-
-        {/* Footer */}
+        {page === "home" ? <HomePage goTo={goTo} /> : PageComponent && <PageComponent />}
         <footer style={{ background:"#050003", borderTop:"1px solid rgba(132,0,54,0.28)", padding:"44px 6%", textAlign:"center", marginTop:40 }}>
           <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:15, letterSpacing:4 }}>LOWER MERION ACES BASKETBALL</div>
           <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:12, color:"rgba(255,255,255,0.32)", marginTop:7 }}>245 E. Montgomery Avenue · Ardmore, PA 19003</div>
