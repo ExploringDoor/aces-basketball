@@ -77,7 +77,7 @@ const Dropdown = ({ item, page, goTo, onTabHover, onTabLeave, btnRef }) => {
           color: isActive ? "var(--gold)" : "rgba(255,255,255,0.32)",
           fontFamily:"'Oswald',sans-serif", fontSize:12,
           letterSpacing: isActive ? "2.8px" : "2px",
-          padding:"0 18px", height:62, textTransform:"uppercase", cursor:"pointer",
+          padding:"0 24px", height:72, textTransform:"uppercase", cursor:"pointer",
           display:"flex", alignItems:"center", gap:6,
           transition:"color 0.25s, letter-spacing 0.25s",
           textShadow: isActive ? "0 0 18px rgba(201,164,74,0.7)" : "none",
@@ -221,7 +221,7 @@ export default function App() {
 
       <nav style={{
         position:"fixed", top:0, left:0, right:0, zIndex:1000,
-        display:"flex", alignItems:"center", height:62, padding:"0 32px",
+        display:"flex", alignItems:"center", height:72, padding:"0 40px",
         background:"rgba(8,0,4,0.99)",
         borderBottom:"1px solid rgba(132,0,54,0.4)",
         boxShadow:"0 4px 40px rgba(0,0,0,0.5)",
@@ -231,12 +231,12 @@ export default function App() {
 
         {/* Logo */}
         <button onClick={() => goTo("home")} style={{ background:"none", border:"none", display:"flex", alignItems:"center", gap:10, marginRight:32, flexShrink:0 }}>
-          <img src="/LM_Logo.png" alt="LM" style={{ height:38, width:"auto", filter:"drop-shadow(0 0 6px rgba(132,0,54,0.6))", transition:"filter 0.3s" }}
+          <img src="/LM_Logo.png" alt="LM" style={{ height:46, width:"auto", filter:"drop-shadow(0 0 6px rgba(132,0,54,0.6))", transition:"filter 0.3s" }}
             onMouseEnter={e => e.currentTarget.style.filter="drop-shadow(0 0 12px rgba(132,0,54,0.9))"}
             onMouseLeave={e => e.currentTarget.style.filter="drop-shadow(0 0 6px rgba(132,0,54,0.6))"} />
           <div style={{ textAlign:"left" }}>
-            <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:15, fontWeight:700, letterSpacing:4, color:"#fff", lineHeight:1 }}>ACES</div>
-            <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:8, letterSpacing:2, color:"rgba(255,255,255,0.25)", textTransform:"uppercase" }}>Lower Merion</div>
+            <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:700, letterSpacing:5, color:"#fff", lineHeight:1 }}>ACES</div>
+            <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10, letterSpacing:3, color:"rgba(255,255,255,0.35)", textTransform:"uppercase" }}>Lower Merion</div>
           </div>
         </button>
 
@@ -282,7 +282,7 @@ export default function App() {
                   color: isActive ? "var(--gold)" : "rgba(255,255,255,0.32)",
                   fontFamily:"'Oswald',sans-serif", fontSize:12,
                   letterSpacing: isActive ? "2.8px" : "2px",
-                  padding:"0 18px", height:62, textTransform:"uppercase", cursor:"pointer",
+                  padding:"0 24px", height:72, textTransform:"uppercase", cursor:"pointer",
                   transition:"color 0.25s, letter-spacing 0.25s",
                   textShadow: isActive ? "0 0 18px rgba(201,164,74,0.7)" : "none",
                   overflow:"hidden",
@@ -310,7 +310,7 @@ export default function App() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div style={{ position:"fixed", top:62, left:0, right:0, zIndex:999, background:"rgba(8,0,4,0.98)", borderBottom:"1px solid rgba(132,0,54,0.3)", padding:"8px 0", maxHeight:"80vh", overflowY:"auto" }}>
+        <div style={{ position:"fixed", top:72, left:0, right:0, zIndex:999, background:"rgba(8,0,4,0.98)", borderBottom:"1px solid rgba(132,0,54,0.3)", padding:"8px 0", maxHeight:"80vh", overflowY:"auto" }}>
           {NAV.map((item, i) =>
             item.children
               ? <div key={i}>
@@ -329,7 +329,7 @@ export default function App() {
       )}
 
       {/* Page content */}
-      <div style={{ paddingTop:62, minHeight:"100vh", background:"#0a0005" }}>
+      <div style={{ paddingTop:72, minHeight:"100vh", background:"#0a0005" }}>
         {page === "home" ? <HomePage goTo={goTo} /> : PageComponent && <PageComponent />}
         <footer style={{ background:"#050003", borderTop:"1px solid rgba(132,0,54,0.28)", padding:"44px 6%", textAlign:"center", marginTop:40 }}>
           <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:15, letterSpacing:4 }}>LOWER MERION ACES BASKETBALL</div>
