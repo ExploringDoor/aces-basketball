@@ -170,16 +170,24 @@ export default function App() {
     }
   };
 
+  const getActiveKey = (p) => {
+    for (const item of NAV) {
+      if (item.id === p) return item.id;
+      if (item.children && item.children.some(c => c.id === p)) return item.label;
+    }
+    return "home";
+  };
+
   const snapToActive = () => {
-    // Find the active button ref and snap back
-    const activeBtn = btnRefs.current[page] || btnRefs.current["home"];
+    const key = getActiveKey(page);
+    const activeBtn = btnRefs.current[key];
     if (activeBtn) moveGlider(activeBtn);
   };
 
-  // On page change, reposition glider
   useEffect(() => {
     setTimeout(() => {
-      const activeBtn = btnRefs.current[page];
+      const key = getActiveKey(page);
+      const activeBtn = btnRefs.current[key];
       if (activeBtn) moveGlider(activeBtn, true);
     }, 50);
   }, [page]);
