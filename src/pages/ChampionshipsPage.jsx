@@ -2,9 +2,14 @@
 import { useState } from "react";
 import { FadeIn, Spade, championships } from "../shared";
 
+const lightboxStyle = `
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+`;
+
 export default function ChampionshipsPage() {
   const [activeTab, setActiveTab] = useState("state");
   const [popup, setPopup] = useState({ visible: false, x: 0, y: 0 });
+  const [lightbox, setLightbox] = useState(false);
 
   const tabs = [
     { key: "state",    label: "State Championships (7)" },
@@ -18,6 +23,43 @@ export default function ChampionshipsPage() {
 
   return (
     <section id="championships" style={{ background: "#0a0005", padding: "120px 5% 100px" }}>
+      <style>{lightboxStyle}</style>
+
+      {/* Fullscreen lightbox on click */}
+      {lightbox && (
+        <div onClick={() => setLightbox(false)} style={{
+          position:"fixed", inset:0, zIndex:99999,
+          background:"rgba(0,0,0,0.95)",
+          display:"flex", alignItems:"center", justifyContent:"center",
+          cursor:"zoom-out",
+          animation:"fadeIn 0.25s ease",
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            position:"relative", maxWidth:"90vw", maxHeight:"90vh",
+            borderRadius:16, overflow:"hidden",
+            border:"2px solid rgba(201,164,74,0.5)",
+            boxShadow:"0 0 80px rgba(132,0,54,0.5)",
+          }}>
+            <img
+              src="/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg"
+              alt="2025 Central League Champions"
+              style={{ width:"100%", height:"auto", maxHeight:"80vh", objectFit:"contain", display:"block" }}
+            />
+            <div style={{ background:"rgba(8,0,4,0.97)", padding:"16px 24px", textAlign:"center" }}>
+              <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:18, letterSpacing:4, color:"var(--gold)", textTransform:"uppercase" }}>2025 Central League Champions</div>
+              <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:12, color:"rgba(255,255,255,0.4)", marginTop:4, letterSpacing:1 }}>Lower Merion Aces Basketball</div>
+            </div>
+            {/* Close button */}
+            <button onClick={() => setLightbox(false)} style={{
+              position:"absolute", top:12, right:12,
+              background:"rgba(0,0,0,0.7)", border:"1px solid rgba(255,255,255,0.2)",
+              color:"#fff", borderRadius:"50%", width:36, height:36,
+              fontSize:18, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+            }}>✕</button>
+          </div>
+          <div style={{ position:"absolute", bottom:24, color:"rgba(255,255,255,0.3)", fontSize:12, letterSpacing:2, fontFamily:"'Source Sans 3',sans-serif" }}>CLICK ANYWHERE TO CLOSE</div>
+        </div>
+      )}
 
       {/* Fixed photo popup that follows mouse */}
       {popup.visible && (
@@ -92,6 +134,7 @@ export default function ChampionshipsPage() {
             return (
               <FadeIn key={i} delay={i * 0.03}>
                 <div
+                  onClick={() => is2025 && setLightbox(true)}
                   onMouseEnter={() => is2025 && setPopup(p => ({ ...p, visible: true }))}
                   onMouseLeave={() => is2025 && setPopup(p => ({ ...p, visible: false }))}
                   onMouseMove={is2025 ? handleMouseMove : undefined}
