@@ -40,6 +40,10 @@ export default function HomePage({ goTo }) {
       <section style={{ minHeight:"100vh", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", position:"relative", overflow:"hidden", background:"radial-gradient(ellipse at 50% 40%, #2a0018 0%, #0a0005 65%)", textAlign:"center", padding:"0 5%" }}>
         <div style={{ position:"absolute", inset:0, backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E\")", opacity:0.35, pointerEvents:"none" }} />
         <div style={{ position:"relative", zIndex:1 }}>
+          {/* Bulldog */}
+          <div style={{ opacity:heroIn?1:0, transform:heroIn?"translateY(0)":"translateY(-30px)", transition:"opacity 0.7s ease 0.1s, transform 0.7s cubic-bezier(0.22,1,0.36,1) 0.1s", marginBottom:8 }}>
+            <img src="/Bulldog.png" alt="Aces Bulldog" style={{ height:"clamp(120px,20vw,220px)", width:"auto", filter:"drop-shadow(0 0 30px rgba(132,0,54,0.5))", display:"block", margin:"0 auto" }} />
+          </div>
           <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:16, overflow:"hidden" }}>
             <span style={{ ...wordStyle(true), color:"#fff", textShadow:"0 0 100px rgba(132,0,54,0.3)" }}>LOWER</span>
             <span style={{ ...wordStyle(false), color:"#840036", textShadow:"0 0 100px rgba(132,0,54,0.4)" }}>MERION</span>
