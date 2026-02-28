@@ -88,7 +88,7 @@ export default function ChampionshipsPage() {
           ))}
 
           {activeTab === "league" && championships.league.map((y, i) => {
-            const is2025 = y === 2025;
+            const is2025 = String(y) === "2025";
             return (
               <FadeIn key={i} delay={i * 0.03}>
                 <div
