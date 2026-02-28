@@ -15,6 +15,8 @@ import PhotosPage        from "./pages/PhotosPage";
 import VideosPage        from "./pages/VideosPage";
 import KobePage          from "./pages/KobePage";
 import SocialPage        from "./pages/SocialPage";
+import HallOfFamePage    from "./pages/HallOfFamePage";
+import SupportPage       from "./pages/SupportPage";
 
 const PAGES = {
   home: null, history: HistoryPage, thousand: ThousandClubPage,
@@ -22,6 +24,7 @@ const PAGES = {
   league: CentralLeaguePage, alumni: AlumniPage, coaching: CoachingPage,
   roster: RosterPage, records: RecordBookPage, photos: PhotosPage,
   videos: VideosPage, kobe: KobePage, social: SocialPage,
+  hof: HallOfFamePage, support: SupportPage,
 };
 
 const NAV = [
@@ -39,12 +42,14 @@ const NAV = [
     { id:"thousand", label:"1,000 Club" },
     { id:"alumni",   label:"Alumni" },
     { id:"coaching", label:"Coaching Staff" },
+    { id:"hof",      label:"Hall of Fame" },
   ]},
   { label:"More", children:[
     { id:"kobe",   label:"Kobe" },
     { id:"photos", label:"Photos" },
     { id:"videos", label:"Videos" },
-    { id:"social", label:"Follow Us" },
+    { id:"social",   label:"Follow Us" },
+    { id:"support",  label:"Support the Aces" },
   ]},
 ];
 
