@@ -356,7 +356,7 @@ export default function App() {
           <div style={{ width:48, height:1, background:"rgba(132,0,54,0.38)", margin:"16px auto" }} />
           <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:11, color:"rgba(255,255,255,0.24)" }}>7× PIAA State Champions · Est. 1911 · Home of the Kobe Bryant Gymnasium</div>
           <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10, color:"rgba(255,255,255,0.16)", marginTop:9 }}>© {new Date().getFullYear()} Lower Merion Aces Basketball</div>
-          <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:"rgba(255,255,255,0.3)", marginTop:12, textTransform:"uppercase" }}>Designed by <span style={{ color:"var(--gold)" }}>Main Line Web Design</span></div>
+          <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:"rgba(255,255,255,0.3)", marginTop:12, textTransform:"uppercase" }}>Designed by <a href="https://mainline-webdesign.com/" target="_blank" rel="noopener noreferrer" style={{ color:"var(--gold)", textDecoration:"none", transition:"opacity 0.2s" }} onMouseEnter={e => e.currentTarget.style.textDecoration="underline"} onMouseLeave={e => e.currentTarget.style.textDecoration="none"}>Main Line Web Design</a></div>
         </footer>
       </div>
     </>
