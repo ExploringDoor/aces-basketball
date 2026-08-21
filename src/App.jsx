@@ -48,11 +48,12 @@ const NAV = [
     { id:"coaching", label:"Coaching Staff" },
     { id:"hof",      label:"Hall of Fame" },
   ]},
-  { label:"Programs", children:[
-    { id:"youth",     label:"Youth Programs" },
-    { id:"academics", label:"Academics" },
-    { id:"sponsors",  label:"Sponsorships" },
-  ]},
+  // Programs tab hidden for now (pages still exist — re-enable by uncommenting this block)
+  // { label:"Programs", children:[
+  //   { id:"youth",     label:"Youth Programs" },
+  //   { id:"academics", label:"Academics" },
+  //   { id:"sponsors",  label:"Sponsorships" },
+  // ]},
   { label:"More", children:[
     { id:"kobe",   label:"Kobe" },
     { id:"photos", label:"Photos" },
