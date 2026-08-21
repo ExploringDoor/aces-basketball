@@ -17,6 +17,9 @@ import KobePage          from "./pages/KobePage";
 import SocialPage        from "./pages/SocialPage";
 import HallOfFamePage    from "./pages/HallOfFamePage";
 import SupportPage       from "./pages/SupportPage";
+import YouthProgramsPage  from "./pages/YouthProgramsPage";
+import AcademicsPage      from "./pages/AcademicsPage";
+import SponsorshipsPage   from "./pages/SponsorshipsPage";
 
 const PAGES = {
   home: null, history: HistoryPage, thousand: ThousandClubPage,
@@ -25,6 +28,7 @@ const PAGES = {
   roster: RosterPage, records: RecordBookPage, photos: PhotosPage,
   videos: VideosPage, kobe: KobePage, social: SocialPage,
   hof: HallOfFamePage, support: SupportPage,
+  youth: YouthProgramsPage, academics: AcademicsPage, sponsors: SponsorshipsPage,
 };
 
 const NAV = [
@@ -43,6 +47,11 @@ const NAV = [
     { id:"alumni",   label:"Alumni" },
     { id:"coaching", label:"Coaching Staff" },
     { id:"hof",      label:"Hall of Fame" },
+  ]},
+  { label:"Programs", children:[
+    { id:"youth",     label:"Youth Programs" },
+    { id:"academics", label:"Academics" },
+    { id:"sponsors",  label:"Sponsorships" },
   ]},
   { label:"More", children:[
     { id:"kobe",   label:"Kobe" },
@@ -209,6 +218,10 @@ export default function App() {
         ::-webkit-scrollbar-thumb { background: var(--maroon); border-radius: 3px; }
         table { border-collapse: collapse; }
         a, button { cursor: pointer; }
+        /* shared section header hooks (used across all pages) */
+        .section-label { display:flex; align-items:center; gap:10px; font-family:'Oswald',sans-serif; font-size:12px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:16px; }
+        .section-title { font-family:'Oswald',sans-serif; font-weight:700; font-size:clamp(34px,6vw,58px); line-height:1.03; letter-spacing:1px; text-transform:uppercase; color:#fff; margin:0; }
+        .divider { width:64px; height:3px; margin-top:22px; background:linear-gradient(90deg,var(--gold),transparent); border-radius:2px; }
         @keyframes navburst {
           0% { opacity:1; transform:translate(0,0) scale(1); }
           100% { opacity:0; transform:translate(var(--tx),var(--ty)) scale(0); }
