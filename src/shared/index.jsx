@@ -369,9 +369,11 @@ export const teamLogos = {
   "Conestoga": "/logos/conestoga.png", "Garnet Valley": "/logos/garnet-valley.png",
   "Harriton": "/logos/harriton.png", "Haverford": "/logos/haverford.png",
   "Marple Newtown": "/logos/marple-newtown.png", "Penncrest": "/logos/penncrest.png",
-  "Radnor": "/logos/radnor.jpg", "Ridley": "/logos/ridley.png",
+  "Radnor": "/logos/radnor.png", "Ridley": "/logos/ridley.png",
   "Springfield": "/logos/springfield.png", "Strath Haven": "/logos/strath-haven.png",
   "Upper Darby": "/logos/upper-darby.png", "Lower Merion": "/Bulldog.png",
+  "Chester": "/logos/chester.png", "Coatesville": "/logos/coatesville.png",
+  "William Allen": "/logos/william-allen.png",
 };
 
 export const scheduleSeason = "2026-27";

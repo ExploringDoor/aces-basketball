@@ -8,7 +8,7 @@ const nextGame = schedule[0]?.games[0];
 const GameBadge = ({ team, size = 46 }) => {
   const logo = teamLogos[team];
   return logo
-    ? <div style={{ width: size, height: size, borderRadius: "50%", background: "#fff", border: "2px solid rgba(201,164,74,0.4)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}><img src={logo} alt={team} style={{ width: "82%", height: "82%", objectFit: "contain" }} /></div>
+    ? <div style={{ width: size, height: size, borderRadius: "50%", background: "#fff", border: "2px solid rgba(201,164,74,0.4)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}><img src={logo} alt={team} style={{ width: "88%", height: "88%", objectFit: "contain" }} /></div>
     : <div style={{ width: size, height: size, borderRadius: "50%", background: "rgba(132,0,54,0.3)", border: "2px solid rgba(132,0,54,0.5)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Oswald',sans-serif", fontSize: Math.round(size * 0.4), fontWeight: 700, color: "#fff" }}>{team[0]}</div>;
 };
 

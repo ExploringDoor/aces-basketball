@@ -4,7 +4,7 @@ import { FadeIn, Spade, Icon, schedule, scheduleSeason, homeVenue, teamLogos } f
 const OppBadge = ({ opp, size = 36 }) => {
   const logo = teamLogos[opp];
   return logo
-    ? <div style={{ width: size, height: size, borderRadius: "50%", background: "#fff", border: "2px solid rgba(255,255,255,0.15)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}><img src={logo} alt="" style={{ width: "76%", height: "76%", objectFit: "contain" }} /></div>
+    ? <div style={{ width: size, height: size, borderRadius: "50%", background: "#fff", border: "2px solid rgba(255,255,255,0.15)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}><img src={logo} alt="" style={{ width: "88%", height: "88%", objectFit: "contain" }} /></div>
     : <div style={{ width: size, height: size, borderRadius: "50%", background: "rgba(132,0,54,0.25)", border: "2px solid rgba(132,0,54,0.5)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Oswald',sans-serif", fontSize: Math.round(size * 0.4), fontWeight: 700, color: "#fff" }}>{opp[0]}</div>;
 };
 
