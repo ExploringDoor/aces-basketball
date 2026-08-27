@@ -1,5 +1,5 @@
 // pages/KobePage.jsx
-import { FadeIn, Spade } from "../shared";
+import { FadeIn, Spade, Icon } from "../shared";
 
 const timeline = [
   { year: "Freshman · 1992-93", title: "The Arrival", text: "Kobe moved to Ardmore from Italy where his father Joe \"Jellybean\" Bryant had been playing professionally. He became the first freshman in decades to start for Lower Merion's varsity team. The Aces finished 4-20, but Coach Gregg Downer knew immediately he had something special." },
@@ -21,7 +21,15 @@ export default function KobePage() {
           <div style={{ textAlign: "center", fontFamily: "'Oswald', sans-serif", fontSize: 14, letterSpacing: 4, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginTop: 12 }}>
             Lower Merion '96 · #33 · The Black Mamba
           </div>
-          <div className="divider divider-center" style={{ marginTop: 24 }} />
+          <div className="divider divider-center" style={{ marginTop: 24, marginLeft: "auto", marginRight: "auto" }} />
+        </FadeIn>
+
+        <FadeIn delay={0.15}>
+          <div style={{ display: "flex", justifyContent: "center", marginTop: 36 }}>
+            <div style={{ width: 188, height: 188, borderRadius: "50%", overflow: "hidden", border: "3px solid rgba(201,164,74,0.4)", boxShadow: "0 0 55px rgba(132,0,54,0.55)" }}>
+              <img src="/players/kobe-bryant.jpg" alt="Kobe Bryant" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 18%" }} />
+            </div>
+          </div>
         </FadeIn>
 
         {/* Quote */}
@@ -40,13 +48,17 @@ export default function KobePage() {
         <FadeIn delay={0.25}>
           <div style={{ marginTop: 56, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
             {[
-              { id: "1FHihWDtAnEkF2DJYPpv_Y_cddj3wE5Bo", caption: "Kobe Bryant #33 — Lower Merion Aces" },
-              { id: "1GUyWZIR0djugEyCFxhR0_sOgiVB3Cima", caption: "Kobe rises for a dunk at Lower Merion" },
-              { id: "1o3si_FEEkoEXYsh0fnxjr4gFdG6P-bmf", caption: "The Mamba's high school days" },
+              { src: "/players/kobe-action.jpg", caption: "The Black Mamba in his prime" },
+              { src: "/players/kobe-usa.jpg", caption: "Olympic gold with Team USA" },
+              { src: "/players/kobe-stage.jpg", caption: "A global icon" },
             ].map((photo, idx) => (
-              <div key={idx} style={{ borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)" }}>
-                <img src={`https://drive.google.com/thumbnail?id=${photo.id}&sz=w800`} alt={photo.caption} loading="lazy" style={{ width: "100%", height: 260, objectFit: "cover", display: "block", filter: "saturate(0.85) contrast(1.05)" }} />
-                <div style={{ padding: "12px 16px", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: "rgba(255,255,255,0.45)", textTransform: "uppercase" }}>{photo.caption}</div>
+              <div key={idx} style={{ borderRadius: 12, overflow: "hidden", border: "1px solid rgba(201,164,74,0.18)", background: "linear-gradient(135deg, rgba(132,0,54,0.35), rgba(10,0,5,0.95))" }}>
+                <div style={{ height: 300, overflow: "hidden" }}>
+                  <img src={photo.src} alt={photo.caption} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 18%", display: "block", transition: "transform 0.5s ease" }}
+                    onMouseEnter={e => e.currentTarget.style.transform = "scale(1.06)"}
+                    onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"} />
+                </div>
+                <div style={{ padding: "12px 16px", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>{photo.caption}</div>
               </div>
             ))}
           </div>

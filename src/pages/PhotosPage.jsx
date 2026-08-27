@@ -54,9 +54,12 @@ export default function PhotosPage() {
                   borderRadius: 12, overflow: "hidden", cursor: "pointer",
                   border: openGallery === gi ? "2px solid var(--gold)" : "2px solid rgba(255,255,255,0.1)",
                   transition: "all 0.3s ease",
-                  background: "linear-gradient(135deg, rgba(132,0,54,0.3), rgba(0,0,0,0.8))",
-                  minHeight: 180, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 24,
+                  backgroundImage: `linear-gradient(180deg, rgba(10,0,5,0.15) 0%, rgba(10,0,5,0.55) 55%, rgba(10,0,5,0.92) 100%), url(${toUrl(gallery.coverId)})`,
+                  backgroundSize: "cover", backgroundPosition: "center",
+                  minHeight: 210, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 24,
                 }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 16px 40px rgba(0,0,0,0.55)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
               >
                 <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 6 }}>{gallery.date}</div>
                 <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 500, marginBottom: 8 }}>{gallery.title}</div>

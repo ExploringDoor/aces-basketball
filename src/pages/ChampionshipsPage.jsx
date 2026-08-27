@@ -1,6 +1,6 @@
 // pages/ChampionshipsPage.jsx
 import { useState } from "react";
-import { FadeIn, Spade, championships } from "../shared";
+import { FadeIn, Spade, Icon, championships } from "../shared";
 
 const lightboxStyle = `
   @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
@@ -93,6 +93,21 @@ export default function ChampionshipsPage() {
           <div className="divider" />
         </FadeIn>
 
+        {/* Reigning champions team photo */}
+        <FadeIn delay={0.08}>
+          <div onClick={() => setLightbox(true)} style={{ marginTop: 36, borderRadius: 16, overflow: "hidden", cursor: "pointer", border: "1px solid rgba(201,164,74,0.3)", position: "relative", transition: "transform 0.25s, box-shadow 0.25s" }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 24px 60px rgba(0,0,0,0.5)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}>
+            <img src="/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg" alt="2025 Central League Champions" style={{ width: "100%", display: "block", maxHeight: 360, objectFit: "cover", objectPosition: "center 28%" }} />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 42%, rgba(10,0,5,0.92))" }} />
+            <div style={{ position: "absolute", left: 28, bottom: 22, right: 28 }}>
+              <div style={{ display: "inline-block", padding: "3px 12px", borderRadius: 20, background: "rgba(201,164,74,0.92)", color: "#1a0010", fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, fontWeight: 700, textTransform: "uppercase", marginBottom: 10 }}>Reigning Champions</div>
+              <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: "clamp(22px,3vw,32px)", fontWeight: 700, textTransform: "uppercase", lineHeight: 1.05 }}>2025 Central League Champions</div>
+              <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.65)", marginTop: 6 }}>Lower Merion's 23rd league title. Click to view the full photo.</div>
+            </div>
+          </div>
+        </FadeIn>
+
         {/* Tabs */}
         <FadeIn delay={0.1}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 36 }}>
@@ -148,7 +163,9 @@ export default function ChampionshipsPage() {
                   <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 32, fontWeight: 700, color: "var(--gold)" }}>{y}</div>
                   <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 4, letterSpacing: 1 }}>Central League</div>
                   {is2025 && (
-                    <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10, color:"var(--gold)", marginTop:6, opacity:0.6, letterSpacing:1 }}>📸 hover</div>
+                    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:5, fontFamily:"'Source Sans 3',sans-serif", fontSize:10, color:"var(--gold)", marginTop:7, opacity:0.7, letterSpacing:1, textTransform:"uppercase" }}>
+                      <Icon name="camera" size={12} color="var(--gold)" stroke={1.7} /> View Photo
+                    </div>
                   )}
                 </div>
               </FadeIn>

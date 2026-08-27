@@ -1,5 +1,5 @@
 // pages/SupportPage.jsx
-import { FadeIn, Spade } from "../shared";
+import { FadeIn, Spade, Icon } from "../shared";
 
 export default function SupportPage() {
   return (
@@ -47,12 +47,12 @@ export default function SupportPage() {
             <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:11, letterSpacing:4, color:"rgba(255,255,255,0.3)", textTransform:"uppercase", marginBottom:24 }}>What Your Support Funds</div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))", gap:12 }}>
               {[
-                { icon:"✈️", label:"Team Travel" },
-                { icon:"🏆", label:"Awards & Recognition" },
-                { icon:"📖", label:"Publications" },
-                { icon:"🎉", label:"Year-End Banquet" },
-                { icon:"🎓", label:"Tutoring Programs" },
-                { icon:"🤝", label:"Mentoring Programs" },
+                { icon:"plane",  label:"Team Travel" },
+                { icon:"trophy", label:"Awards & Recognition" },
+                { icon:"news",   label:"Publications" },
+                { icon:"star",   label:"Year-End Banquet" },
+                { icon:"grad",   label:"Tutoring Programs" },
+                { icon:"users",  label:"Mentoring Programs" },
               ].map((item, i) => (
                 <div key={i} style={{
                   background:"rgba(255,255,255,0.02)",
@@ -61,9 +61,9 @@ export default function SupportPage() {
                   display:"flex", alignItems:"center", gap:14,
                   transition:"all 0.2s",
                 }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor="rgba(132,0,54,0.4)"; e.currentTarget.style.background="rgba(132,0,54,0.08)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor="rgba(255,255,255,0.07)"; e.currentTarget.style.background="rgba(255,255,255,0.02)"; }}>
-                  <span style={{ fontSize:24 }}>{item.icon}</span>
+                  onMouseEnter={e => { e.currentTarget.style.borderColor="rgba(132,0,54,0.4)"; e.currentTarget.style.background="rgba(132,0,54,0.08)"; const ic=e.currentTarget.querySelector('.fund-ic'); if(ic) ic.style.color="var(--gold)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor="rgba(255,255,255,0.07)"; e.currentTarget.style.background="rgba(255,255,255,0.02)"; const ic=e.currentTarget.querySelector('.fund-ic'); if(ic) ic.style.color="rgba(201,164,74,0.85)"; }}>
+                  <span className="fund-ic" style={{ color:"rgba(201,164,74,0.85)", transition:"color 0.2s", flexShrink:0 }}><Icon name={item.icon} size={22} stroke={1.6} /></span>
                   <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:14, letterSpacing:1.5, color:"rgba(255,255,255,0.7)", textTransform:"uppercase" }}>{item.label}</span>
                 </div>
               ))}
@@ -81,9 +81,9 @@ export default function SupportPage() {
           }}>
             <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:20, letterSpacing:3, color:"var(--gold)", marginBottom:12, textTransform:"uppercase" }}>Get Involved</div>
             <p style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:14, color:"rgba(255,255,255,0.45)", lineHeight:1.8, maxWidth:500, margin:"0 auto 28px" }}>
-              Interested in supporting the program through a financial contribution or volunteering your time? Reach out to the Lower Merion Athletic Department.
+              Interested in supporting the program through a financial contribution or volunteering your time? Reach out and connect with the Aces.
             </p>
-            <a href="https://www.lmsd.org/lowermerion" target="_blank" rel="noreferrer" style={{
+            <a href="mailto:aceshoops@gmail.com?subject=Supporting%20Lower%20Merion%20Aces%20Basketball" style={{
               display:"inline-block",
               padding:"12px 32px",
               background:"rgba(132,0,54,0.4)",
@@ -96,7 +96,7 @@ export default function SupportPage() {
             }}
               onMouseEnter={e => { e.currentTarget.style.background="rgba(132,0,54,0.6)"; e.currentTarget.style.borderColor="rgba(201,164,74,0.7)"; }}
               onMouseLeave={e => { e.currentTarget.style.background="rgba(132,0,54,0.4)"; e.currentTarget.style.borderColor="rgba(201,164,74,0.4)"; }}>
-              Visit LMSD.org
+              Email the Aces
             </a>
           </div>
         </FadeIn>

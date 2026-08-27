@@ -56,6 +56,32 @@ export default function HistoryPage() {
           </div>
         </FadeIn>
 
+        {/* Defining Eras */}
+        <FadeIn delay={0.15}>
+          <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 4, color: "var(--gold)", textTransform: "uppercase", marginTop: 72, marginBottom: 28 }}>Defining Eras</h3>
+        </FadeIn>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
+          {[
+            { era: "The Anderson Dynasty", years: "1927 – 1945", stat: "346-55 · .863", text: "Coach William \"Andy\" Anderson built the foundation with four state titles, including three straight in 1941, '42 and '43 — a Pennsylvania first." },
+            { era: "The Kobe Years", years: "1993 – 1996", stat: "31-3 · State Champs", text: "A freshman phenom arrives on the Main Line. The 1996 Aces ride a 30-game winning streak to the state crown and launch a global legend.", highlight: true },
+            { era: "The Modern Aces", years: "1990 – Present", stat: "738+ Wins · 3 Titles", text: "Gregg Downer's era: three state championships, seventeen District 1 crowns, and a program that never stops competing at the top." },
+          ].map((e, i) => (
+            <FadeIn key={i} delay={i * 0.08}>
+              <div style={{
+                height: "100%",
+                background: e.highlight ? "linear-gradient(135deg, rgba(132,0,54,0.28), rgba(201,164,74,0.06))" : "rgba(255,255,255,0.02)",
+                border: e.highlight ? "1px solid rgba(201,164,74,0.35)" : "1px solid rgba(255,255,255,0.07)",
+                borderRadius: 14, padding: "26px 24px",
+              }}>
+                <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 11, letterSpacing: 2, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>{e.years}</div>
+                <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: e.highlight ? "var(--gold)" : "#fff", marginTop: 6, lineHeight: 1.1 }}>{e.era}</div>
+                <div style={{ display: "inline-block", marginTop: 12, marginBottom: 14, padding: "4px 12px", borderRadius: 20, background: e.highlight ? "rgba(201,164,74,0.15)" : "rgba(132,0,54,0.2)", border: `1px solid ${e.highlight ? "rgba(201,164,74,0.3)" : "rgba(132,0,54,0.35)"}`, fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1, color: e.highlight ? "var(--gold)" : "rgba(255,255,255,0.7)" }}>{e.stat}</div>
+                <p style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13.5, color: "rgba(255,255,255,0.55)", lineHeight: 1.75, margin: 0 }}>{e.text}</p>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
+
         {/* Coaching History */}
         <FadeIn delay={0.2}>
           <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 4, color: "var(--gold)", textTransform: "uppercase", marginTop: 72, marginBottom: 28 }}>Coaching History</h3>

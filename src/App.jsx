@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Spade } from "./shared";
 
 import HomePage          from "./pages/HomePage";
+import NewsPage          from "./pages/NewsPage";
 import HistoryPage       from "./pages/HistoryPage";
 import ThousandClubPage  from "./pages/ThousandClubPage";
 import SchedulePage      from "./pages/SchedulePage";
@@ -22,7 +23,7 @@ import AcademicsPage      from "./pages/AcademicsPage";
 import SponsorshipsPage   from "./pages/SponsorshipsPage";
 
 const PAGES = {
-  home: null, history: HistoryPage, thousand: ThousandClubPage,
+  home: null, news: NewsPage, history: HistoryPage, thousand: ThousandClubPage,
   schedule: SchedulePage, championships: ChampionshipsPage,
   league: CentralLeaguePage, alumni: AlumniPage, coaching: CoachingPage,
   roster: RosterPage, records: RecordBookPage, photos: PhotosPage,
@@ -33,6 +34,7 @@ const PAGES = {
 
 const NAV = [
   { id:"home", label:"Home" },
+  { id:"news", label:"News" },
   { label:"Season", children:[
     { id:"schedule", label:"Schedule" },
     { id:"records",  label:"Record Book" },

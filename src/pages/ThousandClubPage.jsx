@@ -1,9 +1,27 @@
 // pages/ThousandClubPage.jsx
-import { FadeIn, Spade, thousandPointClub } from "../shared";
+import { useState } from "react";
+import { FadeIn, Spade, Avatar, PlayerModal, photoFor, alumniByName, thousandPointClub } from "../shared";
+
+const buildPerson = (p) => {
+  const a = alumniByName(p.name);
+  return {
+    name: p.name,
+    photo: photoFor(p.name),
+    highlight: p.highlight,
+    eyebrow: `#${p.rank} All-Time Scorer · Class of ${p.year}`,
+    tags: ["1,000 Point Club"],
+    stats: `${p.points} career points at Lower Merion`,
+    rows: a ? [{ label: "College", value: a.college }, { label: "Pro / Career", value: a.pro }] : [],
+    funFacts: a?.funFacts || [],
+  };
+};
 
 export default function ThousandClubPage() {
+  const [selected, setSelected] = useState(null);
+
   return (
     <section id="thousand" style={{ background: "#0a0005", padding: "120px 5% 100px" }}>
+      <PlayerModal person={selected} onClose={() => setSelected(null)} />
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label">
@@ -12,14 +30,16 @@ export default function ThousandClubPage() {
           <h2 className="section-title">1,000 Point<br /><span style={{ color: "var(--gold)" }}>Club</span></h2>
           <div className="divider" />
           <p style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.55)", marginTop: 16, lineHeight: 1.8 }}>
-            The elite scorers in Lower Merion boys basketball history who reached the 1,000 career point milestone.
+            The elite scorers in Lower Merion boys basketball history who reached the 1,000 career point milestone. Click any player for their full profile.
           </p>
         </FadeIn>
 
         {/* Kobe Feature */}
         <FadeIn delay={0.15}>
-          <div style={{ marginTop: 48, background: "linear-gradient(135deg, rgba(132,0,54,0.3), rgba(0,0,0,0.6))", border: "1px solid rgba(201,164,74,0.3)", borderRadius: 16, padding: "36px 40px", display: "flex", flexWrap: "wrap", gap: 32, alignItems: "center" }}>
-            <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 80, fontWeight: 900, color: "var(--maroon)", lineHeight: 1, opacity: 0.6 }}>33</div>
+          <div onClick={() => setSelected(buildPerson(thousandPointClub[0]))} style={{ marginTop: 48, background: "linear-gradient(135deg, rgba(132,0,54,0.3), rgba(0,0,0,0.6))", border: "1px solid rgba(201,164,74,0.3)", borderRadius: 16, padding: "30px 36px", display: "flex", flexWrap: "wrap", gap: 28, alignItems: "center", cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 18px 44px rgba(0,0,0,0.5)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}>
+            <Avatar name="Kobe Bryant" photo={photoFor("Kobe Bryant")} size={92} highlight rounded="16px" />
             <div style={{ flex: 1, minWidth: 220 }}>
               <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 12, letterSpacing: 3, color: "var(--gold)", textTransform: "uppercase", marginBottom: 8 }}>All-Time Leading Scorer · Class of 1996</div>
               <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 32, fontWeight: 700 }}>Kobe Bryant</div>
@@ -37,33 +57,37 @@ export default function ThousandClubPage() {
         {/* Leaderboard */}
         <FadeIn delay={0.2}>
           <div style={{ marginTop: 32, borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.06)" }}>
-            {/* Header */}
-            <div style={{ display: "grid", gridTemplateColumns: "48px 1fr 100px 80px", gap: 0, padding: "12px 20px", background: "rgba(132,0,54,0.4)", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: "var(--gold)", textTransform: "uppercase" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "48px 1fr 100px 70px", gap: 0, padding: "12px 20px", background: "rgba(132,0,54,0.4)", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: "var(--gold)", textTransform: "uppercase" }}>
               <div>#</div><div>Player</div><div style={{ textAlign: "right" }}>Points</div><div style={{ textAlign: "right" }}>Class</div>
             </div>
-            {thousandPointClub.map((player, idx) => (
-              <div
-                key={idx}
-                style={{
-                  display: "grid", gridTemplateColumns: "48px 1fr 100px 80px", gap: 0,
-                  padding: "14px 20px",
-                  background: player.highlight ? "rgba(132,0,54,0.15)" : idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
-                  borderBottom: "1px solid rgba(255,255,255,0.04)",
-                  fontFamily: "'Source Sans 3', sans-serif", fontSize: 14,
-                  transition: "background 0.2s",
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = "rgba(132,0,54,0.2)"}
-                onMouseLeave={e => e.currentTarget.style.background = player.highlight ? "rgba(132,0,54,0.15)" : idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent"}
-              >
-                <div style={{ color: "rgba(255,255,255,0.3)", fontFamily: "'Oswald', sans-serif" }}>{player.rank}</div>
-                <div style={{ fontWeight: player.highlight ? 600 : 400 }}>
-                  {player.name} {player.highlight && <span style={{ color: "var(--gold)", fontSize: 12 }}>♠</span>}
+            {thousandPointClub.map((player, idx) => {
+              const medal = ({ 1: "#c9a44a", 2: "#cbd2da", 3: "#cd8b5a" })[player.rank];
+              return (
+                <div
+                  key={idx}
+                  onClick={() => setSelected(buildPerson(player))}
+                  style={{
+                    display: "grid", gridTemplateColumns: "48px 1fr 100px 70px", gap: 0, alignItems: "center",
+                    padding: "11px 20px",
+                    background: player.highlight ? "rgba(132,0,54,0.15)" : idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
+                    borderBottom: "1px solid rgba(255,255,255,0.04)",
+                    fontFamily: "'Source Sans 3', sans-serif", fontSize: 14, cursor: "pointer", transition: "background 0.2s",
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(132,0,54,0.25)"}
+                  onMouseLeave={e => e.currentTarget.style.background = player.highlight ? "rgba(132,0,54,0.15)" : idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent"}
+                >
+                  <div style={{ color: medal || "rgba(255,255,255,0.3)", fontFamily: "'Oswald', sans-serif", fontWeight: player.rank <= 3 ? 700 : 400 }}>{player.rank}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+                    <Avatar name={player.name} photo={photoFor(player.name)} size={34} highlight={player.highlight} />
+                    <span style={{ fontWeight: player.highlight ? 600 : 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{player.name}</span>
+                  </div>
+                  <div style={{ textAlign: "right", color: "var(--gold)", fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>{player.points}</div>
+                  <div style={{ textAlign: "right", color: "rgba(255,255,255,0.4)" }}>{player.year}</div>
                 </div>
-                <div style={{ textAlign: "right", color: "var(--gold)", fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>{player.points}</div>
-                <div style={{ textAlign: "right", color: "rgba(255,255,255,0.4)" }}>{player.year}</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
+          <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 12, textAlign: "center" }}>Tap a name for their full profile.</div>
         </FadeIn>
       </div>
     </section>

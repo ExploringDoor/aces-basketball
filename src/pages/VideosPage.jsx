@@ -27,7 +27,7 @@ export default function VideosPage() {
                     src={`https://drive.google.com/file/d/${video.id}/preview`}
                     title={video.title}
                     style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
-                    allow="autoplay"
+                    loading="lazy"
                   />
                 </div>
                 <div style={{ padding: "16px 20px" }}>

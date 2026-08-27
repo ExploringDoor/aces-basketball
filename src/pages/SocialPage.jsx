@@ -27,8 +27,6 @@ export default function SocialPage() {
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginTop: 24 }}>
             {[
               { label: "Instagram", href: "https://www.instagram.com/acesbasketball/", primary: true },
-              { label: "X / Twitter", href: "https://twitter.com/aceshoops" },
-              { label: "AcesHoops.com", href: "http://www.aceshoops.com" },
               { label: "MaxPreps", href: "https://www.maxpreps.com/pa/ardmore/lower-merion-aces/basketball/" },
             ].map((link, i) => (
               <a key={i} href={link.href} target="_blank" rel="noopener" style={{
@@ -39,7 +37,9 @@ export default function SocialPage() {
                 textDecoration: "none", borderRadius: 6,
                 fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 2, textTransform: "uppercase",
                 transition: "all 0.2s ease",
-              }}>{link.label}</a>
+              }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = "rgba(201,164,74,0.55)"; e.currentTarget.style.color = "var(--gold)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = link.primary ? "rgba(132,0,54,0.6)" : "rgba(255,255,255,0.1)"; e.currentTarget.style.color = link.primary ? "var(--gold)" : "rgba(255,255,255,0.7)"; }}>{link.label}</a>
             ))}
           </div>
         </FadeIn>

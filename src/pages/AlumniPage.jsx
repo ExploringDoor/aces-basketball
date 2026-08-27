@@ -1,6 +1,6 @@
 // pages/AlumniPage.jsx
 import { useState } from "react";
-import { FadeIn, Spade, alumni } from "../shared";
+import { FadeIn, Spade, Icon, Avatar, alumni } from "../shared";
 
 const rosterData = {
   "2005-06": [
@@ -404,8 +404,8 @@ function SeasonAccordion({ season, players }) {
                   {p.first} {p.last}
                 </span>
                 {p.college && (
-                  <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 11, color: "rgba(201,164,74,0.85)", marginTop: 1 }}>
-                    🎓 {p.college}
+                  <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 11, color: "rgba(201,164,74,0.85)", marginTop: 2, display:"flex", alignItems:"center", gap:5 }}>
+                    <Icon name="grad" size={12} color="rgba(201,164,74,0.85)" stroke={1.7} /> {p.college}
                   </div>
                 )}
               </div>
@@ -423,6 +423,7 @@ function SeasonAccordion({ season, players }) {
 export default function AlumniPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [selected, setSelected] = useState(null);
 
   // Unique player count
   const allPlayers = new Map();
@@ -450,6 +451,53 @@ export default function AlumniPage() {
 
   return (
     <section style={{ background: "#0a0005", padding: "120px 5% 100px", minHeight: "100vh" }}>
+
+      {/* Player profile modal */}
+      {selected && (
+        <div onClick={() => setSelected(null)} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.92)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"40px 20px", overflowY:"auto", cursor:"zoom-out" }}>
+          <style>{`@keyframes alumIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`}</style>
+          <div onClick={e=>e.stopPropagation()} style={{ background:"linear-gradient(135deg,rgba(26,0,14,0.99),rgba(10,0,5,0.99))", border:`1px solid ${selected.highlight?"rgba(201,164,74,0.4)":"rgba(132,0,54,0.4)"}`, borderRadius:16, maxWidth:600, width:"100%", padding:"36px 34px 40px", boxShadow:"0 40px 90px rgba(0,0,0,0.7)", cursor:"default", animation:"alumIn 0.3s ease", position:"relative" }}>
+            <button onClick={()=>setSelected(null)} style={{ position:"absolute", top:14, right:14, background:"rgba(255,255,255,0.07)", border:"1px solid rgba(255,255,255,0.15)", color:"#fff", borderRadius:"50%", width:34, height:34, fontSize:16, cursor:"pointer" }}>✕</button>
+            <div style={{ display:"flex", gap:20, alignItems:"center", marginBottom:24, paddingRight:30 }}>
+              <Avatar name={selected.name} photo={selected.photo} size={96} highlight={selected.highlight} rounded="14px" />
+              <div style={{ minWidth:0 }}>
+                <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:11, letterSpacing:3, color:"rgba(255,255,255,0.4)", textTransform:"uppercase", marginBottom:4 }}>Class of {selected.classYear}</div>
+                <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:26, fontWeight:700, color: selected.highlight?"var(--gold)":"#fff", lineHeight:1.1 }}>{selected.name}</div>
+                <div style={{ display:"flex", gap:6, marginTop:8, flexWrap:"wrap" }}>
+                  {selected.pro?.includes("NBA") && <span style={{ padding:"2px 9px", background:"rgba(30,120,200,0.2)", border:"1px solid rgba(30,120,200,0.4)", borderRadius:12, fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:1, color:"#4a9eff", textTransform:"uppercase" }}>NBA</span>}
+                  {selected.college && <span style={{ padding:"2px 9px", background:"rgba(201,164,74,0.12)", border:"1px solid rgba(201,164,74,0.3)", borderRadius:12, fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:1, color:"var(--gold)", textTransform:"uppercase" }}>College Player</span>}
+                </div>
+              </div>
+            </div>
+            {selected.stats && (
+              <div style={{ background:"rgba(201,164,74,0.08)", border:"1px solid rgba(201,164,74,0.2)", borderRadius:10, padding:"14px 16px", marginBottom:18 }}>
+                <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:"var(--gold)", textTransform:"uppercase", marginBottom:6 }}>Career Highlights</div>
+                <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:13.5, color:"rgba(255,255,255,0.78)", lineHeight:1.6 }}>{selected.stats}</div>
+              </div>
+            )}
+            <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+              {selected.college && (
+                <div><span style={{ fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:"rgba(255,255,255,0.35)", textTransform:"uppercase" }}>College</span><div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:14, color:"rgba(255,255,255,0.72)", marginTop:3 }}>{selected.college}</div></div>
+              )}
+              {selected.pro && (
+                <div><span style={{ fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:"rgba(255,255,255,0.35)", textTransform:"uppercase" }}>Pro / Career</span><div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:14, color:"rgba(255,255,255,0.72)", marginTop:3 }}>{selected.pro}</div></div>
+              )}
+            </div>
+            {selected.funFacts?.length > 0 && (
+              <div style={{ borderTop:"1px solid rgba(255,255,255,0.07)", paddingTop:18, marginTop:18 }}>
+                <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:"rgba(255,255,255,0.35)", textTransform:"uppercase", marginBottom:10 }}>Did You Know</div>
+                {selected.funFacts.map((f,i)=>(
+                  <div key={i} style={{ display:"flex", gap:10, marginBottom:8 }}>
+                    <span style={{ color:"var(--gold)", flexShrink:0 }}>▸</span>
+                    <span style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:13.5, color:"rgba(255,255,255,0.65)", lineHeight:1.6 }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label"><Spade size={14} color="#840036" /> Program History</div>
@@ -524,26 +572,28 @@ export default function AlumniPage() {
             <h3 style={{ fontFamily: "'Oswald',sans-serif", fontSize: 26, letterSpacing: 3, textTransform: "uppercase", marginBottom: 6 }}>
               College & <span style={{ color: "var(--gold)" }}>Professional Players</span>
             </h3>
-            <div className="divider" style={{ marginBottom: 28 }} />
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(270px, 1fr))", gap: 10 }}>
+            <div className="divider" style={{ marginBottom: 8 }} />
+            <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:12, color:"rgba(255,255,255,0.3)", marginBottom:24 }}>Click any player for their full profile, stats, and story.</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 12 }}>
               {alumni.map((a, i) => (
-                <div key={i} style={{
+                <div key={i} onClick={() => setSelected(a)} style={{
+                  display:"flex", alignItems:"center", gap:14,
                   background: a.highlight ? "rgba(132,0,54,0.15)" : "rgba(255,255,255,0.02)",
                   border: a.highlight ? "1px solid rgba(201,164,74,0.3)" : "1px solid rgba(255,255,255,0.06)",
-                  borderRadius: 10, padding: "16px 18px",
-                }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-                    <div>
-                      <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 15, fontWeight: 500 }}>{a.name}</div>
-                      <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 1 }}>Class of {a.classYear}</div>
-                    </div>
-                    <div style={{ display: "flex", gap: 4, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                      {a.pro?.includes("NBA") && <span style={{ padding: "2px 7px", background: "rgba(30,120,200,0.2)", border: "1px solid rgba(30,120,200,0.4)", borderRadius: 12, fontFamily: "'Oswald',sans-serif", fontSize: 9, letterSpacing: 1, color: "#4a9eff", textTransform: "uppercase" }}>NBA</span>}
-                      {a.college && <span style={{ padding: "2px 7px", background: "rgba(201,164,74,0.12)", border: "1px solid rgba(201,164,74,0.3)", borderRadius: 12, fontFamily: "'Oswald',sans-serif", fontSize: 9, letterSpacing: 1, color: "var(--gold)", textTransform: "uppercase" }}>College</span>}
+                  borderRadius: 12, padding: "14px 16px", cursor:"pointer", transition:"all 0.2s ease",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.borderColor = a.highlight ? "rgba(201,164,74,0.6)" : "rgba(132,0,54,0.5)"; e.currentTarget.style.boxShadow="0 10px 28px rgba(0,0,0,0.4)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform="none"; e.currentTarget.style.borderColor = a.highlight ? "rgba(201,164,74,0.3)" : "rgba(255,255,255,0.06)"; e.currentTarget.style.boxShadow="none"; }}>
+                  <Avatar name={a.name} photo={a.photo} size={54} highlight={a.highlight} />
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:15, fontWeight:500, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{a.name}</div>
+                    <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:11, color:"rgba(255,255,255,0.35)", marginTop:1 }}>Class of {a.classYear}</div>
+                    <div style={{ display:"flex", gap:4, marginTop:6, flexWrap:"wrap" }}>
+                      {a.pro?.includes("NBA") && <span style={{ padding:"1px 7px", background:"rgba(30,120,200,0.2)", border:"1px solid rgba(30,120,200,0.4)", borderRadius:12, fontFamily:"'Oswald',sans-serif", fontSize:8.5, letterSpacing:1, color:"#4a9eff", textTransform:"uppercase" }}>NBA</span>}
+                      {a.college && <span style={{ padding:"1px 7px", background:"rgba(201,164,74,0.12)", border:"1px solid rgba(201,164,74,0.3)", borderRadius:12, fontFamily:"'Oswald',sans-serif", fontSize:8.5, letterSpacing:1, color:"var(--gold)", textTransform:"uppercase" }}>College</span>}
                     </div>
                   </div>
-                  {a.college && <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 12, color: "rgba(255,255,255,0.4)" }}><span style={{ color: "rgba(255,255,255,0.2)" }}>College: </span>{a.college}</div>}
-                  {a.pro && <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}><span style={{ color: "rgba(255,255,255,0.2)" }}>Pro: </span>{a.pro}</div>}
+                  <span style={{ color:"rgba(255,255,255,0.25)", fontSize:18, flexShrink:0 }}>›</span>
                 </div>
               ))}
             </div>

@@ -1,6 +1,6 @@
 // pages/HallOfFamePage.jsx
 import { useState } from "react";
-import { FadeIn, Spade, hallOfFame } from "../shared";
+import { FadeIn, Spade, Avatar, photoFor, hallOfFame } from "../shared";
 
 export default function HallOfFamePage() {
   const [filter, setFilter] = useState("all");
@@ -43,15 +43,7 @@ export default function HallOfFamePage() {
             }}>✕</button>
 
             <div style={{ display:"flex", alignItems:"flex-start", gap:16, marginBottom:24 }}>
-              <div style={{
-                width:56, height:56, borderRadius:"50%", flexShrink:0,
-                background: selected.highlight ? "rgba(201,164,74,0.15)" : "rgba(132,0,54,0.2)",
-                border:`2px solid ${selected.highlight ? "rgba(201,164,74,0.5)" : "rgba(132,0,54,0.5)"}`,
-                display:"flex", alignItems:"center", justifyContent:"center",
-                fontFamily:"'Oswald',sans-serif", fontSize:13, color: selected.highlight ? "var(--gold)" : "#fff",
-              }}>
-                {selected.type === "coach" ? "C" : selected.era.replace("'","")}
-              </div>
+              <Avatar name={selected.name} photo={photoFor(selected.name)} size={64} highlight={selected.highlight} rounded="12px" />
               <div>
                 <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:11, letterSpacing:3, color:"rgba(255,255,255,0.4)", textTransform:"uppercase", marginBottom:4 }}>
                   {selected.type === "coach" ? "Coach" : "Player"} · {selected.era}
@@ -147,18 +139,7 @@ export default function HallOfFamePage() {
                 }}>
 
                 <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:14 }}>
-                  {/* Era badge */}
-                  <div style={{
-                    width:48, height:48, borderRadius:"50%", flexShrink:0,
-                    background: person.highlight ? "rgba(201,164,74,0.12)" : "rgba(132,0,54,0.18)",
-                    border:`2px solid ${person.highlight ? "rgba(201,164,74,0.4)" : "rgba(132,0,54,0.4)"}`,
-                    display:"flex", alignItems:"center", justifyContent:"center",
-                    fontFamily:"'Oswald',sans-serif", fontSize:11, fontWeight:700,
-                    color: person.highlight ? "var(--gold)" : "rgba(255,255,255,0.7)",
-                    letterSpacing:1, textAlign:"center", lineHeight:1.2,
-                  }}>
-                    {person.type === "coach" ? "COACH" : person.era}
-                  </div>
+                  <Avatar name={person.name} photo={photoFor(person.name)} size={50} highlight={person.highlight} />
                   <div>
                     <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:16, fontWeight:600, color: person.highlight ? "var(--gold)" : "#fff", lineHeight:1.2 }}>{person.name}</div>
                     <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:11, color:"rgba(255,255,255,0.35)", marginTop:3, letterSpacing:1 }}>

@@ -1,11 +1,13 @@
 // pages/HomePage.jsx
 import { useState, useEffect } from "react";
-import { FadeIn, CountUp, Spade } from "../shared";
+import { FadeIn, CountUp, Spade, Icon, news } from "../shared";
+
+const latestNews = [...news].sort((a, b) => (b.sortKey || 0) - (a.sortKey || 0));
 
 const bannerTexts = [
   { title: "7× PIAA State Champions",      sub: "The Pride of the Main Line" },
   { title: "Kobe Bryant's Alma Mater",     sub: "Where Mamba Mentality Was Born" },
-  { title: "600+ Wins Under Coach Downer", sub: "A Living Legend" },
+  { title: "700+ Wins Under Coach Downer", sub: "A Living Legend" },
   { title: "Est. 1911 · Ardmore, PA",      sub: "Over a Century of Excellence" },
 ];
 
@@ -38,6 +40,9 @@ export default function HomePage({ goTo }) {
   return (
     <>
       <section style={{ minHeight:"100vh", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", position:"relative", overflow:"hidden", background:"radial-gradient(ellipse at 50% 40%, #2a0018 0%, #0a0005 65%)", textAlign:"center", padding:"0 5%" }}>
+        {/* Real gym photo, held back so the wordmark stays crisp */}
+        <div style={{ position:"absolute", inset:0, backgroundImage:"url('/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg')", backgroundSize:"cover", backgroundPosition:"center 28%", opacity: heroIn ? 0.2 : 0, transform: heroIn ? "scale(1)" : "scale(1.08)", filter:"contrast(1.05)", transition:"opacity 1.4s ease, transform 6s ease-out", pointerEvents:"none" }} />
+        <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse at 50% 42%, rgba(42,0,24,0.5) 0%, rgba(10,0,5,0.86) 62%, #0a0005 100%)", pointerEvents:"none" }} />
         <div style={{ position:"absolute", inset:0, backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E\")", opacity:0.35, pointerEvents:"none" }} />
         <div style={{ position:"relative", zIndex:1 }}>
           {/* Bulldog */}
@@ -77,15 +82,95 @@ export default function HomePage({ goTo }) {
         </div>
       </section>
 
+      {/* Program identity band */}
+      <section style={{ background:"linear-gradient(180deg,#0a0005,#0d0008)", padding:"64px 5%", borderTop:"1px solid rgba(132,0,54,0.18)", overflow:"hidden" }}>
+        <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:48, alignItems:"center" }}>
+          <FadeIn direction="right">
+            <div style={{ position:"relative", borderRadius:14, overflow:"hidden", border:"1px solid rgba(201,164,74,0.22)", boxShadow:"0 30px 70px rgba(0,0,0,0.6), 0 0 0 1px rgba(132,0,54,0.25)" }}>
+              <img src="/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg" alt="Lower Merion Aces in action" style={{ width:"100%", display:"block", aspectRatio:"4/3", objectFit:"cover", objectPosition:"center 25%" }} />
+              <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg,transparent 55%,rgba(10,0,5,0.85))" }} />
+              <div style={{ position:"absolute", left:18, bottom:16, fontFamily:"'Oswald',sans-serif", fontSize:11, letterSpacing:2.5, color:"var(--gold)", textTransform:"uppercase" }}>Aces vs. Penncrest · Ardmore, PA</div>
+            </div>
+          </FadeIn>
+          <FadeIn direction="left" delay={0.1}>
+            <div>
+              <div className="section-label">Since 1911 <span style={{ flex:1, height:1, background:"linear-gradient(90deg,rgba(201,164,74,0.5),transparent)" }} /></div>
+              <h2 style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:"clamp(30px,4.4vw,50px)", lineHeight:1.04, textTransform:"uppercase", margin:"0 0 18px" }}>
+                More Than a Program.<br /><span style={{ color:"var(--maroon)" }}>A Tradition.</span>
+              </h2>
+              <p style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:16, lineHeight:1.7, color:"rgba(255,255,255,0.6)", maxWidth:460, margin:"0 0 28px" }}>
+                For over a century, Lower Merion basketball has defined excellence on the Main Line. Seven PIAA state titles, the gym that shaped Kobe Bryant, and more than three decades of Coach Gregg Downer on the sideline. This is Aces basketball.
+              </p>
+              <div style={{ display:"flex", gap:12, flexWrap:"wrap" }}>
+                {[{id:"history",label:"Our History",solid:true},{id:"championships",label:"Championships",solid:false}].map(b => (
+                  <button key={b.id} onClick={() => goTo(b.id)} style={{
+                    fontFamily:"'Oswald',sans-serif", fontSize:12.5, letterSpacing:2, textTransform:"uppercase",
+                    padding:"13px 26px", borderRadius:8, cursor:"pointer",
+                    color: b.solid ? "#fff" : "var(--gold)",
+                    background: b.solid ? "var(--maroon)" : "transparent",
+                    border: b.solid ? "1px solid var(--maroon)" : "1px solid rgba(201,164,74,0.4)",
+                    transition:"all 0.22s ease",
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow= b.solid ? "0 8px 26px rgba(132,0,54,0.5)" : "0 8px 26px rgba(201,164,74,0.18)"; if(!b.solid){e.currentTarget.style.background="rgba(201,164,74,0.1)";} }}
+                    onMouseLeave={e => { e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none"; if(!b.solid){e.currentTarget.style.background="transparent";} }}>
+                    {b.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* Latest from Aces Nation */}
+      <section style={{ background:"#0d0008", padding:"60px 5%", borderTop:"1px solid rgba(132,0,54,0.18)" }}>
+        <div style={{ maxWidth:1100, margin:"0 auto" }}>
+          <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", flexWrap:"wrap", gap:12, marginBottom:24 }}>
+            <div>
+              <div className="section-label">Latest <span style={{ flex:1, minWidth:40, height:1, background:"linear-gradient(90deg,rgba(201,164,74,0.5),transparent)" }} /></div>
+              <h2 style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:"clamp(26px,3.6vw,40px)", textTransform:"uppercase", margin:0, lineHeight:1 }}>From Aces Nation</h2>
+            </div>
+            <button onClick={() => goTo("news")} style={{ fontFamily:"'Oswald',sans-serif", fontSize:12, letterSpacing:2, textTransform:"uppercase", color:"var(--gold)", background:"transparent", border:"1px solid rgba(201,164,74,0.4)", borderRadius:8, padding:"11px 22px", cursor:"pointer", transition:"all 0.2s", whiteSpace:"nowrap" }}
+              onMouseEnter={e => { e.currentTarget.style.background="rgba(201,164,74,0.1)"; e.currentTarget.style.transform="translateY(-2px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background="transparent"; e.currentTarget.style.transform="translateY(0)"; }}>
+              View All News →
+            </button>
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:16 }}>
+            {latestNews.slice(0,3).map((post, i) => (
+              <FadeIn key={post.id} delay={i*0.08}>
+                <div onClick={() => goTo("news")} style={{
+                  height:"100%", background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.07)",
+                  borderRadius:14, overflow:"hidden", cursor:"pointer", display:"flex", flexDirection:"column",
+                  transition:"all 0.2s ease",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.borderColor="rgba(132,0,54,0.5)"; e.currentTarget.style.boxShadow="0 14px 36px rgba(0,0,0,0.4)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform="none"; e.currentTarget.style.borderColor="rgba(255,255,255,0.07)"; e.currentTarget.style.boxShadow="none"; }}>
+                  <div style={{ height:140, backgroundImage:`linear-gradient(180deg,transparent,rgba(10,0,5,0.55)), url(${post.image || "/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg"})`, backgroundSize:"cover", backgroundPosition:"center 25%" }} />
+                  <div style={{ padding:"20px 22px", display:"flex", flexDirection:"column", flex:1 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
+                      <span style={{ padding:"3px 10px", borderRadius:20, background:"rgba(132,0,54,0.25)", border:"1px solid rgba(132,0,54,0.4)", fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:1.5, color:"rgba(255,255,255,0.65)", textTransform:"uppercase" }}>{post.category}</span>
+                      <span style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:11, color:"rgba(255,255,255,0.35)" }}>{post.date}</span>
+                    </div>
+                    <h3 style={{ fontFamily:"'Oswald',sans-serif", fontWeight:600, fontSize:17, lineHeight:1.2, margin:"0 0 8px" }}>{post.title}</h3>
+                    <p style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:13, color:"rgba(255,255,255,0.5)", lineHeight:1.6, margin:0 }}>{post.excerpt}</p>
+                  </div>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section style={{ background:"#0a0005", padding:"44px 5% 60px" }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:11, letterSpacing:4, color:"rgba(255,255,255,0.3)", textTransform:"uppercase", marginBottom:20 }}>Explore the Program</div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:10 }}>
-            {[{id:"history",icon:"📜",label:"History"},{id:"thousand",icon:"🏀",label:"1,000 Club"},{id:"schedule",icon:"📅",label:"Schedule"},{id:"championships",icon:"🏆",label:"Championships"},{id:"league",icon:"🏫",label:"Central League"},{id:"alumni",icon:"🎓",label:"Alumni"},{id:"coaching",icon:"📋",label:"Staff"},{id:"records",icon:"📊",label:"Records"},{id:"photos",icon:"📸",label:"Photos"},{id:"videos",icon:"🎬",label:"Videos"},{id:"kobe",icon:"♠",label:"Kobe"},{id:"social",icon:"📱",label:"Follow Us"}].map(card => (
-              <button key={card.id} onClick={() => goTo(card.id)} style={{ padding:"18px 12px", background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:10, cursor:"pointer", color:"#fff", textAlign:"center", transition:"all 0.2s", display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}
-                onMouseEnter={e => { e.currentTarget.style.background="rgba(132,0,54,0.18)"; e.currentTarget.style.borderColor="rgba(132,0,54,0.4)"; }}
-                onMouseLeave={e => { e.currentTarget.style.background="rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.07)"; }}>
-                <span style={{ fontSize:22 }}>{card.icon}</span>
+            {[{id:"history",icon:"history",label:"History"},{id:"thousand",icon:"basketball",label:"1,000 Club"},{id:"schedule",icon:"calendar",label:"Schedule"},{id:"championships",icon:"trophy",label:"Championships"},{id:"league",icon:"building",label:"Central League"},{id:"alumni",icon:"grad",label:"Alumni"},{id:"coaching",icon:"clipboard",label:"Staff"},{id:"records",icon:"chart",label:"Records"},{id:"photos",icon:"camera",label:"Photos"},{id:"videos",icon:"video",label:"Videos"},{id:"kobe",icon:"spade",label:"Kobe"},{id:"social",icon:"phone",label:"Follow Us"}].map(card => (
+              <button key={card.id} onClick={() => goTo(card.id)} style={{ padding:"20px 12px", background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:10, cursor:"pointer", color:"#fff", textAlign:"center", transition:"all 0.2s", display:"flex", flexDirection:"column", alignItems:"center", gap:11 }}
+                onMouseEnter={e => { e.currentTarget.style.background="rgba(132,0,54,0.18)"; e.currentTarget.style.borderColor="rgba(132,0,54,0.4)"; e.currentTarget.style.transform="translateY(-2px)"; const ic=e.currentTarget.querySelector('.explore-ic'); if(ic) ic.style.color="var(--gold)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background="rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.07)"; e.currentTarget.style.transform="translateY(0)"; const ic=e.currentTarget.querySelector('.explore-ic'); if(ic) ic.style.color="rgba(255,255,255,0.75)"; }}>
+                <span className="explore-ic" style={{ color:"rgba(255,255,255,0.75)", transition:"color 0.2s" }}><Icon name={card.icon} size={26} stroke={1.5} /></span>
                 <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:13, letterSpacing:1.5, textTransform:"uppercase" }}>{card.label}</span>
               </button>
             ))}

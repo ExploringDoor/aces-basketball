@@ -10,12 +10,25 @@ export const useInView = (threshold = 0.15) => {
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
+    let done = false;
+    const reveal = () => { if (!done) { done = true; setIsVisible(true); } };
+    const el = ref.current;
+    // Already on screen when this mounts (e.g. right after switching pages)?
+    // Reveal immediately so content is NEVER stuck invisible on a fresh page.
+    if (el) {
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight || 800;
+      if (r.top < vh && r.bottom > 0) { reveal(); return; }
+    }
+    if (typeof IntersectionObserver === "undefined") { reveal(); return; }
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
-      { threshold }
+      ([entry]) => { if (entry.isIntersecting) reveal(); },
+      { threshold, rootMargin: "0px 0px -8% 0px" }
     );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
+    if (el) observer.observe(el);
+    // Failsafe: a reveal-on-scroll element can never stay hidden.
+    const failsafe = setTimeout(reveal, 2500);
+    return () => { observer.disconnect(); clearTimeout(failsafe); };
   }, []);
   return [ref, isVisible];
 };
@@ -65,6 +78,90 @@ export const Spade = ({ size = 24, color = "#fff" }) => (
   </svg>
 );
 
+// Clean line-icon set (replaces emoji across the UI). Uses currentColor so
+// the parent's `color` drives the stroke; pass a `name` from the keys below.
+export const Icon = ({ name, size = 22, color = "currentColor", stroke = 1.6 }) => {
+  const common = {
+    width: size, height: size, viewBox: "0 0 24 24", fill: "none",
+    stroke: color, strokeWidth: stroke, strokeLinecap: "round", strokeLinejoin: "round",
+  };
+  const paths = {
+    history:    <><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H18a2 2 0 0 1 2 2v13a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 17.5z"/><path d="M8 8h8M8 11.5h8M8 15h5"/></>,
+    basketball: <><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6c3.5 2.8 3.5 10 0 12.8M18.4 5.6c-3.5 2.8-3.5 10 0 12.8"/></>,
+    calendar:   <><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9h17M8 3v3M16 3v3"/></>,
+    trophy:     <><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.5 3M17 6h2.5a2.5 2.5 0 0 1-2.5 3"/><path d="M12 13v3M9 20h6M10 20l.5-4h3l.5 4"/></>,
+    building:   <><path d="M4 20V6l7-3 7 3v14"/><path d="M4 20h16M9 9h.01M14 9h.01M9 13h.01M14 13h.01M10 20v-3h4v3"/></>,
+    grad:       <><path d="M2 8.5 12 4l10 4.5-10 4.5z"/><path d="M6 10.5V15c0 1.4 2.7 3 6 3s6-1.6 6-3v-4.5M22 8.5V13"/></>,
+    clipboard:  <><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4.2A1 1 0 0 1 10 3h4a1 1 0 0 1 1 1.2M8.5 11h7M8.5 15h5"/></>,
+    chart:      <><path d="M4 20V4M4 20h16"/><path d="M7 17v-4M12 17V9M17 17v-6"/></>,
+    camera:     <><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7l1.4-2.4h5.2L16 7"/><circle cx="12" cy="13.3" r="3.1"/></>,
+    video:      <><rect x="3" y="6" width="12.5" height="12" rx="2"/><path d="M15.5 10l5.5-3v10l-5.5-3z"/></>,
+    spade:      <path fill={color} stroke="none" d="M12 2C12 2 3 9 3 14a4.5 4.5 0 0 0 7.5 3.35C10.1 18.8 9.5 20.5 8 21h8c-1.5-.5-2.1-2.2-2.5-3.65A4.5 4.5 0 0 0 21 14C21 9 12 2 12 2z"/>,
+    phone:      <><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></>,
+    star:       <path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 17l-5.2 2.6 1-5.8L3.5 9.7l5.9-.9z"/>,
+    news:       <><path d="M3.5 6.5h13v11a1.5 1.5 0 0 1-1.5 1.5H6a2.5 2.5 0 0 1-2.5-2.5z"/><path d="M16.5 9H19a1 1 0 0 1 1 1v6.5A2.5 2.5 0 0 1 17.5 19M6.5 9.5h7M6.5 12.5h7M6.5 15.5h4"/></>,
+    whistle:    <><circle cx="10" cy="14" r="6"/><path d="M10 8V5h6M14 11l6-4M4 14h2"/></>,
+    heart:      <path d="M12 20s-7-4.4-7-9.3A3.7 3.7 0 0 1 12 8a3.7 3.7 0 0 1 7-2.7C19 10.6 12 20 12 20z"/>,
+    pin:        <><path d="M12 21s6-5.3 6-10a6 6 0 0 0-12 0c0 4.7 6 10 6 10z"/><circle cx="12" cy="11" r="2.2"/></>,
+    ticket:     <><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2H5a2 2 0 0 1-2-2 2 2 0 0 0 0-4z"/><path d="M14 6v12"/></>,
+    plane:      <path d="M21 4 3.5 10.2a.5.5 0 0 0 0 .95L9 13l2 5.5a.5.5 0 0 0 .93.05L14 14l4.5 3.2a.6.6 0 0 0 .94-.36L21 4zM21 4 9 13"/>,
+    book:       <><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v14H6.5A1.5 1.5 0 0 0 5 18.5z"/><path d="M5 18.5A1.5 1.5 0 0 0 6.5 20H19"/></>,
+    users:      <><circle cx="9" cy="8.5" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M16 5.8a3 3 0 0 1 0 5.4M20.5 19a5.5 5.5 0 0 0-3.2-5"/></>,
+    gift:       <><rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5V20h14v-7.5M12 8.5V20M12 8.5C12 8.5 11 4 8.5 4a2 2 0 0 0 0 4.5zM12 8.5C12 8.5 13 4 15.5 4a2 2 0 0 1 0 4.5z"/></>,
+  };
+  return <svg {...common} aria-hidden="true" style={{ display:"block" }}>{paths[name] || paths.basketball}</svg>;
+};
+
+// Player/coach avatar: shows a photo if `photo` is set and loads, otherwise a
+// sharp initials badge on a maroon gradient. Never renders an empty/broken box.
+export const Avatar = ({ name = "", photo, size = 64, highlight = false, rounded = "50%" }) => {
+  const [failed, setFailed] = useState(false);
+  const initials = name.split(" ").filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase() || "LM";
+  const showPhoto = photo && !failed;
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: rounded, flexShrink: 0, overflow: "hidden",
+      border: `2px solid ${highlight ? "rgba(201,164,74,0.55)" : "rgba(132,0,54,0.5)"}`,
+      background: showPhoto ? "#0a0005" : "linear-gradient(135deg, #8a0038, #360017)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      boxShadow: highlight ? "0 0 0 3px rgba(201,164,74,0.12)" : "none",
+    }}>
+      {showPhoto
+        ? <img src={photo} alt={name} loading="lazy" onError={() => setFailed(true)} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 22%", display: "block" }} />
+        : <span style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 700, fontSize: Math.round(size * 0.36), color: highlight ? "var(--gold)" : "#fff", letterSpacing: 0.5 }}>{initials}</span>}
+    </div>
+  );
+};
+
+// Reusable profile modal shared by Alumni / 1,000 Club / Coaching / Hall of Fame.
+// person: { name, photo, highlight, eyebrow, tags[], quote, stats, rows[{label,value}],
+//           body, funFacts[], achievements[] }
+export const PlayerModal = ({ person, onClose }) => {
+  if (!person) return null;
+  return (
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.92)", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "40px 20px", overflowY: "auto", cursor: "zoom-out" }}>
+      <style>{`@keyframes pmIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`}</style>
+      <div onClick={e => e.stopPropagation()} style={{ background: "linear-gradient(135deg,rgba(26,0,14,0.99),rgba(10,0,5,0.99))", border: `1px solid ${person.highlight ? "rgba(201,164,74,0.4)" : "rgba(132,0,54,0.4)"}`, borderRadius: 16, maxWidth: 600, width: "100%", padding: "36px 34px 40px", boxShadow: "0 40px 90px rgba(0,0,0,0.7)", cursor: "default", animation: "pmIn 0.3s ease", position: "relative" }}>
+        <button onClick={onClose} style={{ position: "absolute", top: 14, right: 14, background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", borderRadius: "50%", width: 34, height: 34, fontSize: 16, cursor: "pointer", zIndex: 2 }}>✕</button>
+        <div style={{ display: "flex", gap: 20, alignItems: "center", marginBottom: 22, paddingRight: 30 }}>
+          <Avatar name={person.name} photo={person.photo} size={96} highlight={person.highlight} rounded="14px" />
+          <div style={{ minWidth: 0 }}>
+            {person.eyebrow && <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 11, letterSpacing: 3, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: 4 }}>{person.eyebrow}</div>}
+            <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 26, fontWeight: 700, color: person.highlight ? "var(--gold)" : "#fff", lineHeight: 1.1 }}>{person.name}</div>
+            {person.tags?.length > 0 && <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>{person.tags.map((t, i) => <span key={i} style={{ padding: "2px 9px", background: "rgba(201,164,74,0.12)", border: "1px solid rgba(201,164,74,0.3)", borderRadius: 12, fontFamily: "'Oswald',sans-serif", fontSize: 9, letterSpacing: 1, color: "var(--gold)", textTransform: "uppercase" }}>{t}</span>)}</div>}
+          </div>
+        </div>
+        {person.quote && <div style={{ borderLeft: "3px solid var(--gold)", paddingLeft: 16, marginBottom: 18, fontFamily: "'Playfair Display',serif", fontSize: 15, fontStyle: "italic", color: "rgba(255,255,255,0.7)", lineHeight: 1.6 }}>"{person.quote}"</div>}
+        {person.stats && <div style={{ background: "rgba(201,164,74,0.08)", border: "1px solid rgba(201,164,74,0.2)", borderRadius: 10, padding: "14px 16px", marginBottom: 18 }}><div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, color: "var(--gold)", textTransform: "uppercase", marginBottom: 6 }}>Career Highlights</div><div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 13.5, color: "rgba(255,255,255,0.78)", lineHeight: 1.6 }}>{person.stats}</div></div>}
+        {person.rows?.some(r => r.value) && <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>{person.rows.map((r, i) => r.value ? (<div key={i}><span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, color: "rgba(255,255,255,0.35)", textTransform: "uppercase" }}>{r.label}</span><div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 14, color: "rgba(255,255,255,0.72)", marginTop: 3 }}>{r.value}</div></div>) : null)}</div>}
+        {person.body && <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.8, marginTop: (person.stats || person.rows?.some(r => r.value)) ? 16 : 0, marginBottom: 0 }}>{person.body}</p>}
+        {person.funFacts?.length > 0 && <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: 18, marginTop: 18 }}><div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", marginBottom: 10 }}>Did You Know</div>{person.funFacts.map((f, i) => <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8 }}><span style={{ color: "var(--gold)", flexShrink: 0 }}>▸</span><span style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 13.5, color: "rgba(255,255,255,0.65)", lineHeight: 1.6 }}>{f}</span></div>)}</div>}
+        {person.achievements?.length > 0 && <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: 18, marginTop: 18 }}><div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", marginBottom: 10 }}>Achievements</div><div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>{person.achievements.map((a, i) => <span key={i} style={{ padding: "5px 12px", borderRadius: 20, background: "rgba(132,0,54,0.15)", border: "1px solid rgba(132,0,54,0.3)", fontFamily: "'Source Sans 3',sans-serif", fontSize: 11, color: "rgba(255,255,255,0.65)" }}>{a}</span>)}</div></div>}
+      </div>
+    </div>
+  );
+};
+
 // ─── Data ─────────────────────────────────────────────────────
 export const championships = {
   state: [
@@ -87,37 +184,170 @@ export const championships = {
   ],
 };
 
+// ─── News & Recaps ───────────────────────────────────────────
+// HOW TO ADD A POST: copy one object below, put the NEWEST at the TOP.
+//  · date      → shown on the card (any format you like)
+//  · sortKey   → YYYYMMDD number, only used to order posts (bigger = newer)
+//  · category  → small label chip (e.g. "Recap", "Championship", "News")
+//  · excerpt   → one-line teaser shown on cards + the home page
+//  · image     → optional; a path in /public or a full image URL
+//  · body      → array of paragraphs (the full story)
+//  · featured  → set true on ONE post to headline it
+export const news = [
+  {
+    id: "2025-central-league-champions",
+    date: "2024-25 Season",
+    sortKey: 20250215,
+    category: "Championship",
+    title: "Aces Capture 2025 Central League Title",
+    excerpt: "Lower Merion claims its 23rd Central League championship, the most of any program in league history.",
+    image: "/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg",
+    featured: true,
+    body: [
+      "Lower Merion added another banner to the rafters in 2025, capturing the program's 23rd Central League championship — the most of any school since the conference was founded in 1967.",
+      "The title extended a run of sustained success under longtime head coach Gregg Downer, whose teams have defined the top of the Central League for more than three decades.",
+      "The Aces will look to keep the tradition going when the new season tips off. Full game recaps will be posted here throughout the year.",
+    ],
+  },
+  {
+    id: "kobe-bryant-gymnasium",
+    date: "December 16, 2010",
+    sortKey: 20101216,
+    category: "Program History",
+    title: "The House That Kobe Built: Bryant Gymnasium Dedicated",
+    excerpt: "Lower Merion dedicates its gymnasium to its most famous alumnus, his No. 33 hanging above the doors.",
+    featured: false,
+    body: [
+      "On December 16, 2010, Lower Merion dedicated the Kobe Bryant Gymnasium, honoring the alumnus who put Aces basketball on the national map.",
+      "\"I didn't go to college, so this is my university,\" Bryant said at the dedication. \"This is where all my memories lie.\"",
+      "Bryant's retired No. 33 hangs above the gym doors, a permanent reminder to every Ace who walks onto the floor of the standard this program plays to.",
+    ],
+  },
+  {
+    id: "welcome-aces-nation",
+    date: "Program",
+    sortKey: 20240901,
+    category: "About the Program",
+    title: "Welcome to Aces Nation",
+    excerpt: "Seven state titles, 1,600-plus wins, and more than a century of Main Line basketball. This is Lower Merion.",
+    featured: false,
+    body: [
+      "Lower Merion basketball is one of the most decorated programs in Pennsylvania history: seven PIAA state championships, seventeen District 1 titles, and more than 1,600 all-time victories.",
+      "From the Anderson dynasty of the 1940s to the Kobe Bryant era to today's teams under Coach Gregg Downer, the standard has never changed: compete for championships, and represent the Main Line the right way.",
+      "Check back here all season for game recaps, milestones, and the latest from Aces Nation.",
+    ],
+  },
+];
+
 export const alumni = [
-  { name: "Kobe Bryant", classYear: "'96", college: "Direct to NBA", pro: "Los Angeles Lakers — 5× Champion, MVP, 18× All-Star, Hall of Famer", highlight: true },
-  { name: "Jim Brogan", classYear: "'78", college: "West Virginia Wesleyan", pro: "San Diego Clippers (NBA)" },
-  { name: "B.J. Johnson", classYear: "'14", college: "Syracuse → La Salle (D-I)", pro: "Orlando Magic (NBA) / Brisbane Bullets (NBL) / Overseas" },
-  { name: "Demetrius Lilley", classYear: "'22", college: "Penn State (D-I, Big Ten)", pro: "2× District 1 Champ, Central League MVP, 7th all-time scorer (1,301 pts)" },
-  { name: "Sam Brown", classYear: "'23", college: "University of Pennsylvania (D-I, Ivy League)", pro: "1,000+ career pts, 3× District champ" },
-  { name: "Jack Forrest", classYear: "'19", college: "Columbia → Saint Joseph's (D-I)", pro: "Central League MVP, 1,000+ pts" },
-  { name: "John Mobley", classYear: "'24", college: "Fork Union Military Academy → Edinboro University (D-II)", pro: "1st Team All-League, 2nd Team All-Philadelphia, District 1 Champ" },
-  { name: "Owen McCabe", classYear: "'24", college: "Penn State Behrend", pro: "All-Central League, District 1 Champion" },
-  { name: "Carson Kasmer", classYear: "'25", college: "Gettysburg College", pro: "Central League MVP (2025), LM record 7 threes in a game" },
-  { name: "Jaylen Shippen", classYear: "'22", college: "Clarion University (D-II)", pro: "Elite defender, 2× District 1 Champion" },
-  { name: "Garrett Williamson", classYear: "'06", college: "Saint Joseph's (D-I)", pro: "London Lightning (NBL Canada) — 2× Champion, Finals MVP" },
-  { name: "Ryan Brooks", classYear: "'06", college: "Temple University (D-I, All-Atlantic 10)", pro: "Professional career in Germany" },
-  { name: "Aaric Murray", classYear: "'10", college: "La Salle University (D-I)", pro: "Professional career overseas (Europe & Asia)" },
+  { name: "Kobe Bryant", classYear: "'96", college: "Direct to NBA", pro: "Los Angeles Lakers — 5× Champion, MVP, 18× All-Star, Hall of Famer", highlight: true,
+    photo: "/players/kobe-bryant.jpg",
+    stats: "2,883 career points (Southeastern PA record) · 30.8 PPG as a senior · led LM to the 1996 PIAA state title at 31-3",
+    funFacts: [
+      "Named Naismith and Gatorade National High School Player of the Year as a senior in 1996.",
+      "Wore his Lower Merion practice shorts under his Lakers uniform for every NBA game.",
+      "The Aces' home gym was renamed the Kobe Bryant Gymnasium in his honor in 2010.",
+    ] },
+  { name: "Jim Brogan", classYear: "'78", college: "West Virginia Wesleyan", pro: "San Diego Clippers (NBA)",
+    stats: "Reached the NBA with the San Diego Clippers (1981 to 1983), appearing in 121 games.",
+    funFacts: [
+      "Born in Ardmore, PA, the home of Lower Merion High School.",
+      "Became a pro shooting and skills trainer who has worked with athletes including Drew Brees and Cole Hamels.",
+    ] },
+  { name: "B.J. Johnson", classYear: "'14", college: "Syracuse → La Salle (D-I)", pro: "Orlando Magic (NBA) / overseas", photo: "/players/bj-johnson.jpg",
+    stats: "1,070 points at La Salle. As a senior averaged 20.8 points and 8.3 rebounds and made 2nd Team All-Atlantic 10.",
+    funFacts: [
+      "Signed with the Orlando Magic in 2018 and played for their G League affiliate, the Lakeland Magic.",
+      "Posted 22 points and 11 rebounds in Lower Merion's 2013 PIAA state title win over Chester.",
+    ] },
+  { name: "Demetrius Lilley", classYear: "'22", college: "Penn State → Binghamton (D-I)", pro: "2× District 1 6A Champion", photo: "/players/demetrius-lilley.jpg",
+    stats: "Played 25 games over two seasons at Penn State (2.8 pts, 2.7 reb as a sophomore) before transferring to Binghamton.",
+    funFacts: [
+      "Lower Merion's all-time leading rebounder, and led the Aces to back-to-back District 1 6A championships.",
+      "Reported to be the first Lower Merion player to average a double-double in three straight seasons since Kobe Bryant.",
+    ] },
+  { name: "Sam Brown", classYear: "'23", college: "Penn → Davidson (D-I)", pro: "Ivy League standout", photo: "/players/sam-brown.jpg",
+    stats: "Three-time Ivy League Rookie of the Week at Penn as a freshman (2023-24) before transferring to Davidson.",
+    funFacts: [
+      "Son of former Philadelphia 76ers head coach Brett Brown.",
+      "A four-year standout and one of the region's best shooters who grew up attending games at the Palestra.",
+    ] },
+  { name: "Jack Forrest", classYear: "'19", college: "Columbia → Saint Joseph's → Bucknell (D-I)", pro: "Central League MVP", photo: "/players/jack-forrest.jpg",
+    stats: "1,216 career college points. As a Bucknell senior started all 33 games at 16.0 points and 5.2 rebounds and was Patriot League Scholar-Athlete of the Year.",
+    funFacts: [
+      "Won three Central League titles at Lower Merion, scored over 1,000 points, and was league MVP as a senior.",
+      "Earned Ivy League Rookie of the Week at Columbia after a 23-point game against Cornell.",
+    ] },
+  { name: "John Mobley", classYear: "'24", college: "Fork Union → Edinboro (D-II)", pro: "District 1 Champion", photo: "/players/john-mobley.jpg",
+    funFacts: [
+      "A two-sport athlete in basketball and football who helped the Aces win a Central League championship.",
+      "Took a postgraduate year at Fork Union Military Academy before joining Edinboro.",
+    ] },
+  { name: "Owen McCabe", classYear: "'24", college: "Penn State Behrend (D-III)", pro: "All-Central League",
+    funFacts: [
+      "An All-Central League guard and two-time Central League champion, and a two-sport athlete at Lower Merion.",
+      "Missed his first college season (2024-25) at Penn State Behrend due to injury.",
+    ] },
+  { name: "Carson Kasmer", classYear: "'25", college: "Gettysburg College (D-III)", pro: "Central League MVP (2025)", photo: "/players/carson-kasmer.jpg",
+    funFacts: [
+      "Led Lower Merion in scoring at 20.4 points per game as a senior, a two-time District 1 champ and three-time Central League champ.",
+      "Ties for the most career wins in Lower Merion history and holds the school record with seven threes in a game.",
+    ] },
+  { name: "Jaylen Shippen", classYear: "'22", college: "Clarion University (D-II)", pro: "2× District 1 Champion", photo: "/players/jaylen-shippen.jpg",
+    stats: "Junior guard at Clarion University.",
+    funFacts: [
+      "Helped Lower Merion win back-to-back District 1 6A titles and led the team with 60 steals as a senior.",
+      "Part of Central League championship teams in both 2019 and 2022.",
+    ] },
+  { name: "Garrett Williamson", classYear: "'06", college: "Saint Joseph's (D-I)", pro: "London Lightning (NBL Canada)",
+    stats: "Two-time Atlantic 10 All-Defensive Team; career-best 12.1 points per game as a senior, All-Big 5 Second Team.",
+    funFacts: [
+      "Played on Saint Joseph's 2008 NCAA Tournament team and was one of the Hawks' best-ever defenders.",
+      "Named NBL Canada Player of the Year with the London Lightning, averaging over 18 points per game in 2013-14.",
+    ] },
+  { name: "Ryan Brooks", classYear: "'06", college: "Temple University (D-I)", pro: "Pro career in France & Germany", photo: "/players/ryan-brooks.jpg",
+    stats: "1,225 career points at Temple; led the Owls in scoring as a senior at 14.3 points per game.",
+    funFacts: [
+      "First-team All-State as a senior, helped win the 2006 PIAA state title, and finished third on Lower Merion's all-time scoring list.",
+      "Played professionally overseas, including with JDA Dijon in France and clubs in Germany.",
+    ] },
   { name: "Al Bonniwell", classYear: "'30", college: "Dartmouth (NCAA 1st Team All-American, All-Ivy)", pro: "Akron Firestone Non-Skids (NBL)" },
-  { name: "Alai Nuualiitia", classYear: "'98", college: "Brown University (D-I, 3× All-Ivy League)", pro: "Brown University Hall of Fame" },
+  { name: "Alai Nuualiitia", classYear: "'98", college: "Brown University (D-I)", pro: "Brown Athletic Hall of Fame",
+    stats: "Three-time All-Ivy (first team as a senior); started all 110 career games; 1,344 points rank 8th in Brown history.",
+    funFacts: [
+      "1998 Central League MVP at Lower Merion, averaging over 20 points and 10 rebounds per game.",
+      "Never missed a game at Brown, starting all 110 straight, and was inducted into the Brown Athletic Hall of Fame in 2018.",
+    ] },
   { name: "Kevin Lonesome", classYear: "'76", college: "Abilene Christian University (D-I)", pro: "HS coaching career — mentored Deron Williams" },
-  { name: "Dan Capkin", classYear: "'05", college: "Gettysburg College (All-American, all-time leading scorer)", pro: "" },
+  { name: "Dan Capkin", classYear: "'05", college: "Gettysburg College (D-III)", pro: "D-III & Academic All-American",
+    stats: "A four-year starter at Gettysburg who became a Division III All-American and an ESPN Academic All-American.",
+    funFacts: [
+      "Led Lower Merion to the 2005 PIAA state finals despite a foot injury and finished with 1,072 career points.",
+      "Earned both All-American and Academic All-American recognition at Gettysburg.",
+    ] },
   { name: "Brad Long", classYear: "'01", college: "Norfolk State University (D-I)", pro: "" },
   { name: "Sam Wright", classYear: "'23", college: "4-year varsity starter, 1,000+ career pts", pro: "2× District 1 Champ, Central League Champ. 'Top 5 shooter in the state' — Downer" },
   { name: "Gus Wright", classYear: "'25", college: "4-year varsity player", pro: "Central League Champion (2025), 101 career wins" },
-  { name: "Sarah Lowe", classYear: "'02", college: "University of Florida (D-I)", pro: "All-time leading girls scorer (1,676 pts)", gender: "women" },
+  { name: "Sarah Lowe", classYear: "'02", college: "University of Florida (D-I)", pro: "2020 SEC Legend", gender: "women", photo: "/players/sarah-lowe.jpg",
+    stats: "739 career points and 176 steals at Florida; three-time team captain, only the second Gator ever named captain three times.",
+    funFacts: [
+      "Lower Merion's all-time leading girls basketball scorer with 1,676 career points.",
+      "Earned an NCAA Postgraduate Scholarship and was honored as a 2020 SEC Legend.",
+    ] },
 ];
+
+// Look up a player's self-hosted photo by name (single source of truth = alumni).
+export const photoFor = (name) => (alumni.find(x => x.name === name)?.photo) || null;
+// Look up a player's full alumni profile by name (for cross-page detail modals).
+export const alumniByName = (name) => alumni.find(x => x.name === name) || null;
 
 export const centralLeagueTeams = [
   { name: "Lower Merion", mascot: "Aces", color: "#840036", initials: "LM", desc: "The flagship program of the Central League. 7 PIAA state titles (1933, '41, '42, '43, '96, '06, '13), 16 District 1 titles, 23 league championships and 1,600+ all-time wins. Home of Kobe Bryant and legendary coach Gregg Downer.", isSelf: true },
   { name: "Conestoga", mascot: "Pioneers", color: "#003366", initials: "CO", desc: "Founding Central League member (1967). Has emerged as a top contender in recent years, winning the Central League title in 2025-26 and earning the #1 seed in District 1 6A. A rising power in Chester County." },
-  { name: "Garnet Valley", mascot: "Jaguars", color: "#8B0000", initials: "GV", desc: "Joined the Central League in 2008. Quickly became competitive with multiple league titles, District 1 championships, and a trip to the 2019 PIAA 6A state finals. A rising power in Delaware County." },
+  { name: "Garnet Valley", mascot: "Jaguars", color: "#8B0000", initials: "GV", desc: "Joined the Central League in 2008. Quickly became competitive, capturing the 2021 Central League title along with District 1 success and a trip to the 2019 PIAA 6A state finals. A rising power in Delaware County." },
   { name: "Harriton", mascot: "Rams", color: "#1E4D2B", initials: "HN", desc: "A founding member that departed in 1969 and returned in 2008. Located in Lower Merion Township alongside LM, creating the crosstown rivalry. Competitive in league play with growing program success." },
   { name: "Haverford", mascot: "Fords", color: "#CC0000", initials: "HF", desc: "A founding Central League member and consistent competitor. The Fords have made multiple District 1 playoff runs and are a perennial factor in Central League standings with deep playoff pushes." },
-  { name: "Marple Newtown", mascot: "Tigers", color: "#FF6600", initials: "MN", desc: "Founding member known for competitive teams across multiple eras. The Tigers have earned Central League titles and District 1 playoff appearances, maintaining a proud basketball tradition." },
+  { name: "Marple Newtown", mascot: "Tigers", color: "#FF6600", initials: "MN", desc: "Founding member known for competitive teams across multiple eras. The Tigers have long been a factor in Central League play, with District 1 playoff appearances and a proud basketball tradition." },
   { name: "Penncrest", mascot: "Lions", color: "#003087", initials: "PC", desc: "Founding member from Media, PA. Strong recent seasons including a breakout 2025-26 campaign with District 1 playoff contention. The Lions compete fiercely in the Central League." },
   { name: "Radnor", mascot: "Raptors", color: "#006400", initials: "RD", desc: "Founding member and frequent contender. Won the Central League championship in 2022-23 behind All-Delco Player of the Year Jackson Hicke. Multiple District 1 playoff appearances." },
   { name: "Ridley", mascot: "Green Raiders", color: "#006633", initials: "RI", desc: "Joined the Central League in 1969, replacing Harriton. The Green Raiders bring a strong Delaware County basketball tradition with multiple league playoff appearances." },
@@ -126,8 +356,77 @@ export const centralLeagueTeams = [
   { name: "Upper Darby", mascot: "Royals", color: "#4B0082", initials: "UD", desc: "Founding member and the largest school in the league by enrollment. Strong recent years including standout players like Nadir Myers. State playoff appearances and a deep basketball tradition." },
 ];
 
+// ─── Central League Champions (source: Beyond the Arc) ───────
+// Year = season-ending year. Multiple teams = co-champions.
+export const centralLeagueChampions = [
+  { year: 2026, teams: ["Conestoga"] },
+  { year: 2025, teams: ["Lower Merion"] },
+  { year: 2024, teams: ["Lower Merion"] },
+  { year: 2023, teams: ["Radnor"] },
+  { year: 2022, teams: ["Lower Merion"] },
+  { year: 2021, teams: ["Garnet Valley"] },
+  { year: 2020, teams: ["Haverford"] },
+  { year: 2019, teams: ["Lower Merion"] },
+  { year: 2018, teams: ["Lower Merion"] },
+  { year: 2017, teams: ["Lower Merion"] },
+  { year: 2016, teams: ["Ridley"] },
+  { year: 2015, teams: ["Ridley"] },
+  { year: 2014, teams: ["Lower Merion"] },
+  { year: 2013, teams: ["Lower Merion"] },
+  { year: 2012, teams: ["Lower Merion"] },
+  { year: 2011, teams: ["Upper Darby"] },
+  { year: 2010, teams: ["Penncrest"] },
+  { year: 2009, teams: ["Lower Merion"] },
+  { year: 2008, teams: ["Ridley", "Conestoga"] },
+  { year: 2007, teams: ["Upper Darby"] },
+  { year: 2006, teams: ["Lower Merion", "Springfield"] },
+  { year: 2005, teams: ["Ridley"] },
+  { year: 2004, teams: ["Ridley"] },
+  { year: 2003, teams: ["Strath Haven"] },
+  { year: 2002, teams: ["Lower Merion"] },
+  { year: 2001, teams: ["Lower Merion"] },
+  { year: 2000, teams: ["Lower Merion"] },
+  { year: 1999, teams: ["Penncrest"] },
+  { year: 1998, teams: ["Lower Merion", "Conestoga"] },
+  { year: 1997, teams: ["Lower Merion", "Conestoga"] },
+  { year: 1996, teams: ["Lower Merion"] },
+  { year: 1995, teams: ["Lower Merion"] },
+  { year: 1994, teams: ["Ridley"] },
+  { year: 1993, teams: ["Ridley"] },
+  { year: 1992, teams: ["Ridley"] },
+  { year: 1991, teams: ["Ridley"] },
+  { year: 1990, teams: ["Ridley", "Strath Haven"] },
+  { year: 1989, teams: ["Ridley"] },
+  { year: 1988, teams: ["Conestoga", "Springfield"] },
+  { year: 1987, teams: ["Ridley"] },
+  { year: 1986, teams: ["Conestoga"] },
+  { year: 1985, teams: ["Strath Haven"] },
+  { year: 1984, teams: ["Lower Merion"] },
+  { year: 1983, teams: ["Penncrest"] },
+  { year: 1982, teams: ["Springfield"] },
+  { year: 1981, teams: ["Springfield"] },
+  { year: 1980, teams: ["Penncrest"] },
+  { year: 1979, teams: ["Upper Darby"] },
+  { year: 1978, teams: ["Lower Merion"] },
+  { year: 1977, teams: ["Conestoga"] },
+  { year: 1976, teams: ["Lower Merion"] },
+  { year: 1975, teams: ["Lower Merion"] },
+  { year: 1974, teams: ["Springfield"] },
+  { year: 1973, teams: ["Upper Darby"] },
+  { year: 1972, teams: ["Lower Merion"] },
+  { year: 1971, teams: ["Ridley"] },
+  { year: 1970, teams: ["Haverford"] },
+  { year: 1969, teams: ["Penncrest"] },
+  { year: 1968, teams: ["Penncrest"] },
+];
+
 export const coachingStaff = [
-  { name: "Gregg Downer", role: "Head Coach", since: "1990", bio: "3× PA Coach of the Year. 600+ career victories, 3 state championships, 17+ league titles, 70% winning percentage. Coached Kobe Bryant. Inductee in 3 PA sports halls of fame. Named 'Best Basketball Coach in Pennsylvania' by USA Today." },
+  { name: "Gregg Downer", role: "Head Coach", since: "1990", bio: "3× PA Coach of the Year. 700+ career victories, 3 state championships (1996, 2006, 2013), 17+ league titles, roughly a 70% winning percentage. Coached Kobe Bryant. Inductee in 3 PA sports halls of fame. Named 'Best Basketball Coach in Pennsylvania' by USA Today.",
+    funFacts: [
+      "Coached Kobe Bryant, who credited Downer with shaping his development as a player and a person.",
+      "More than 70 of his players have gone on to play basketball at the college or professional level.",
+      "Reached 700 career wins in a 2025 victory at Haverford, all at Lower Merion across 35-plus seasons.",
+    ] },
   { name: "Kevin Grugan", role: "Top Assistant Coach", since: "", bio: "Widely regarded as one of the best assistant coaches in the state of Pennsylvania. Grugan is Coach Downer's right hand and a critical architect of the Aces' sustained success." },
   { name: "John Gallman", role: "Assistant Coach", since: "", bio: "Veteran assistant coach helping guide the Aces alongside Coach Downer." },
   { name: "Mike Lachs", role: "Assistant Coach", since: "", bio: "Dedicated assistant contributing to player development and game preparation." },
