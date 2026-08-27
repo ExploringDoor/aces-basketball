@@ -16,12 +16,15 @@ const maxTitles = rankedTeams.length ? rankedTeams[0][1] : 1;
 const colorFor = (name) => (centralLeagueTeams.find(t => t.name === name)?.color) || "#840036";
 const lastTitle = (name) => (titleYears[name] ? Math.max(...titleYears[name]) : null);
 
-// Only the clean, high-quality marks. Others fall back to a colored monogram badge.
+// Clean, high-quality marks only. Radnor has no clean logo online (only a
+// watermarked brand sheet), so it falls back to a team-color monogram badge.
 const LOGOS = {
   "Conestoga": "/logos/conestoga.png", "Garnet Valley": "/logos/garnet-valley.png",
-  "Marple Newtown": "/logos/marple-newtown.png", "Ridley": "/logos/ridley.png",
-  "Springfield": "/logos/springfield.png", "Strath Haven": "/logos/strath-haven.png",
-  "Upper Darby": "/logos/upper-darby.png", "Lower Merion": "/Bulldog.png",
+  "Harriton": "/logos/harriton.png", "Haverford": "/logos/haverford.png",
+  "Marple Newtown": "/logos/marple-newtown.png", "Penncrest": "/logos/penncrest.png",
+  "Ridley": "/logos/ridley.png", "Springfield": "/logos/springfield.png",
+  "Strath Haven": "/logos/strath-haven.png", "Upper Darby": "/logos/upper-darby.png",
+  "Lower Merion": "/Bulldog.png",
 };
 
 const TeamBadge = ({ team, size = 44 }) => {
