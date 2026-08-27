@@ -234,6 +234,11 @@ export default function App() {
         @keyframes navscan {
           0% { left:-60%; } 100% { left:160%; }
         }
+        @keyframes heroFadeIn { from { opacity: 0; } to { opacity: 0.72; } }
+        @keyframes heroKen { from { transform: scale(1.0); } to { transform: scale(1.1); } }
+        @media (prefers-reduced-motion: reduce) {
+          .hero-photo { animation: heroFadeIn 1.2s ease both !important; }
+        }
         .desktop-nav { display: flex !important; align-items: center; }
         .hamburger { display: none !important; }
         @media (max-width: 768px) {

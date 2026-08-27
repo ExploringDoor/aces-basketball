@@ -21,7 +21,7 @@ const LOGOS = {
   "Conestoga": "/logos/conestoga.png", "Garnet Valley": "/logos/garnet-valley.png",
   "Marple Newtown": "/logos/marple-newtown.png", "Ridley": "/logos/ridley.png",
   "Springfield": "/logos/springfield.png", "Strath Haven": "/logos/strath-haven.png",
-  "Upper Darby": "/logos/upper-darby.png", "Lower Merion": "/LM_Logo.png",
+  "Upper Darby": "/logos/upper-darby.png", "Lower Merion": "/Bulldog.png",
 };
 
 const TeamBadge = ({ team, size = 44 }) => {

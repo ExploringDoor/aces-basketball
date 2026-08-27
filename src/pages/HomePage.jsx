@@ -40,9 +40,11 @@ export default function HomePage({ goTo }) {
   return (
     <>
       <section style={{ minHeight:"100vh", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", position:"relative", overflow:"hidden", background:"radial-gradient(ellipse at 50% 40%, #2a0018 0%, #0a0005 65%)", textAlign:"center", padding:"0 5%" }}>
-        {/* Real gym photo, held back so the wordmark stays crisp */}
-        <div style={{ position:"absolute", inset:0, backgroundImage:"url('/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg')", backgroundSize:"cover", backgroundPosition:"center 28%", opacity: heroIn ? 0.2 : 0, transform: heroIn ? "scale(1)" : "scale(1.08)", filter:"contrast(1.05)", transition:"opacity 1.4s ease, transform 6s ease-out", pointerEvents:"none" }} />
-        <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse at 50% 42%, rgba(42,0,24,0.5) 0%, rgba(10,0,5,0.86) 62%, #0a0005 100%)", pointerEvents:"none" }} />
+        {/* Real gym photo: slow fade-in + slow ken-burns zoom */}
+        <div className="hero-photo" style={{ position:"absolute", inset:0, backgroundImage:"url('/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg')", backgroundSize:"cover", backgroundPosition:"center 26%", opacity:0, filter:"contrast(1.06) saturate(1.05)", animation:"heroFadeIn 2.8s ease-out both, heroKen 22s ease-out both", pointerEvents:"none" }} />
+        {/* Soft scrim behind the wordmark; photo stays visible around the edges */}
+        <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 68% 52% at 50% 47%, rgba(8,0,4,0.74) 0%, rgba(8,0,4,0.34) 44%, transparent 72%)", pointerEvents:"none" }} />
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg, rgba(8,0,4,0.5) 0%, transparent 24%, transparent 74%, rgba(8,0,4,0.62) 100%)", pointerEvents:"none" }} />
         <div style={{ position:"absolute", inset:0, backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E\")", opacity:0.35, pointerEvents:"none" }} />
         <div style={{ position:"relative", zIndex:1 }}>
           {/* Bulldog */}
@@ -50,8 +52,8 @@ export default function HomePage({ goTo }) {
             <img src="/Bulldog.png" alt="Aces Bulldog" style={{ height:"clamp(120px,20vw,220px)", width:"auto", filter:"drop-shadow(0 0 30px rgba(132,0,54,0.5))", display:"block", margin:"0 auto" }} />
           </div>
           <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:16, overflow:"hidden" }}>
-            <span style={{ ...wordStyle(true), color:"#fff", textShadow:"0 0 100px rgba(132,0,54,0.3)" }}>LOWER</span>
-            <span style={{ ...wordStyle(false), color:"#840036", textShadow:"0 0 100px rgba(132,0,54,0.4)" }}>MERION</span>
+            <span style={{ ...wordStyle(true), color:"#fff", textShadow:"0 3px 26px rgba(0,0,0,0.75), 0 0 90px rgba(132,0,54,0.35)" }}>LOWER</span>
+            <span style={{ ...wordStyle(false), color:"#9e0040", textShadow:"0 3px 26px rgba(0,0,0,0.6), 0 0 90px rgba(132,0,54,0.5)" }}>MERION</span>
           </div>
           <div style={{ width:heroIn?"200px":"0px", height:"2px", background:"linear-gradient(90deg,transparent,#c9a44a,transparent)", margin:"20px auto 16px", transition:"width 0.7s ease 0.8s" }} />
           <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:"clamp(11px,1.6vw,15px)", letterSpacing:7, color:"var(--gold)", textTransform:"uppercase", opacity:heroIn?1:0, transform:heroIn?"translateY(0)":"translateY(16px)", transition:"opacity 0.6s ease 1s, transform 0.6s ease 1s" }}>
