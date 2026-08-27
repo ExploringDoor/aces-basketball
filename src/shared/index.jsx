@@ -108,6 +108,7 @@ export const Icon = ({ name, size = 22, color = "currentColor", stroke = 1.6 }) 
     book:       <><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v14H6.5A1.5 1.5 0 0 0 5 18.5z"/><path d="M5 18.5A1.5 1.5 0 0 0 6.5 20H19"/></>,
     users:      <><circle cx="9" cy="8.5" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M16 5.8a3 3 0 0 1 0 5.4M20.5 19a5.5 5.5 0 0 0-3.2-5"/></>,
     gift:       <><rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5V20h14v-7.5M12 8.5V20M12 8.5C12 8.5 11 4 8.5 4a2 2 0 0 0 0 4.5zM12 8.5C12 8.5 13 4 15.5 4a2 2 0 0 1 0 4.5z"/></>,
+    instagram:  <><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="1.1" fill={color} stroke="none"/></>,
   };
   return <svg {...common} aria-hidden="true" style={{ display:"block" }}>{paths[name] || paths.basketball}</svg>;
 };
@@ -340,6 +341,27 @@ export const alumni = [
 export const photoFor = (name) => (alumni.find(x => x.name === name)?.photo) || null;
 // Look up a player's full alumni profile by name (for cross-page detail modals).
 export const alumniByName = (name) => alumni.find(x => x.name === name) || null;
+
+// ─── Instagram ────────────────────────────────────────────────
+// The grid below is a visual highlight reel that links to the profile.
+// To make it a LIVE auto-updating post feed, see the note in SocialPage.
+export const instagram = {
+  handle: "acesbasketball",
+  url: "https://www.instagram.com/acesbasketball/",
+  name: "Lower Merion Aces Basketball",
+  posts: "894",
+  followers: "6.3K",
+};
+export const instagramPosts = [
+  "/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg",
+  "/coaches/gregg-downer.jpg",
+  "/players/kobe-action.jpg",
+  "/players/demetrius-lilley.jpg",
+  "/players/sam-brown.jpg",
+  "/players/carson-kasmer.jpg",
+  "/players/jaylen-shippen.jpg",
+  "/players/ryan-brooks.jpg",
+];
 
 export const centralLeagueTeams = [
   { name: "Lower Merion", mascot: "Aces", color: "#840036", initials: "LM", desc: "The flagship program of the Central League. 7 PIAA state titles (1933, '41, '42, '43, '96, '06, '13), 16 District 1 titles, 23 league championships and 1,600+ all-time wins. Home of Kobe Bryant and legendary coach Gregg Downer.", isSelf: true },
