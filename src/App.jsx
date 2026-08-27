@@ -163,7 +163,7 @@ export default function App() {
   const goTo = (id) => {
     setPage(id);
     setMobileOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo(0, 0);
   };
 
   const PageComponent = PAGES[page];
@@ -202,6 +202,8 @@ export default function App() {
   };
 
   useEffect(() => {
+    // Always land at the top of a freshly opened page (mobile menu included).
+    window.scrollTo(0, 0);
     setTimeout(() => {
       const key = getActiveKey(page);
       const activeBtn = btnRefs.current[key];

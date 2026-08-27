@@ -57,7 +57,7 @@ export default function ThousandClubPage() {
         {/* Leaderboard */}
         <FadeIn delay={0.2}>
           <div style={{ marginTop: 32, borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.06)" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "48px 1fr 100px 70px", gap: 0, padding: "12px 20px", background: "rgba(132,0,54,0.4)", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: "var(--gold)", textTransform: "uppercase" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "32px 1fr 66px 44px", gap: 0, padding: "12px 20px", background: "rgba(132,0,54,0.4)", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: "var(--gold)", textTransform: "uppercase" }}>
               <div>#</div><div>Player</div><div style={{ textAlign: "right" }}>Points</div><div style={{ textAlign: "right" }}>Class</div>
             </div>
             {thousandPointClub.map((player, idx) => {
@@ -67,7 +67,7 @@ export default function ThousandClubPage() {
                   key={idx}
                   onClick={() => setSelected(buildPerson(player))}
                   style={{
-                    display: "grid", gridTemplateColumns: "48px 1fr 100px 70px", gap: 0, alignItems: "center",
+                    display: "grid", gridTemplateColumns: "32px 1fr 66px 44px", gap: 0, alignItems: "center",
                     padding: "11px 20px",
                     background: player.highlight ? "rgba(132,0,54,0.15)" : idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
                     borderBottom: "1px solid rgba(255,255,255,0.04)",
@@ -77,9 +77,9 @@ export default function ThousandClubPage() {
                   onMouseLeave={e => e.currentTarget.style.background = player.highlight ? "rgba(132,0,54,0.15)" : idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent"}
                 >
                   <div style={{ color: medal || "rgba(255,255,255,0.3)", fontFamily: "'Oswald', sans-serif", fontWeight: player.rank <= 3 ? 700 : 400 }}>{player.rank}</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-                    <Avatar name={player.name} photo={photoFor(player.name)} size={34} highlight={player.highlight} />
-                    <span style={{ fontWeight: player.highlight ? 600 : 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{player.name}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                    <Avatar name={player.name} photo={photoFor(player.name)} size={30} highlight={player.highlight} />
+                    <span style={{ fontWeight: player.highlight ? 600 : 400, lineHeight: 1.15, minWidth: 0 }}>{player.name}</span>
                   </div>
                   <div style={{ textAlign: "right", color: "var(--gold)", fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>{player.points}</div>
                   <div style={{ textAlign: "right", color: "rgba(255,255,255,0.4)" }}>{player.year}</div>

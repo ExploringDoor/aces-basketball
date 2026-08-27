@@ -421,7 +421,7 @@ export const centralLeagueChampions = [
 ];
 
 export const coachingStaff = [
-  { name: "Gregg Downer", role: "Head Coach", since: "1990", bio: "3× PA Coach of the Year. 700+ career victories, 3 state championships (1996, 2006, 2013), 17+ league titles, roughly a 70% winning percentage. Coached Kobe Bryant. Inductee in 3 PA sports halls of fame. Named 'Best Basketball Coach in Pennsylvania' by USA Today.",
+  { name: "Gregg Downer", role: "Head Coach", since: "1990", photo: "/coaches/gregg-downer.jpg", bio: "3× PA Coach of the Year. 700+ career victories, 3 state championships (1996, 2006, 2013), 17+ league titles, roughly a 70% winning percentage. Coached Kobe Bryant. Inductee in 3 PA sports halls of fame. Named 'Best Basketball Coach in Pennsylvania' by USA Today.",
     funFacts: [
       "Coached Kobe Bryant, who credited Downer with shaping his development as a player and a person.",
       "More than 70 of his players have gone on to play basketball at the college or professional level.",

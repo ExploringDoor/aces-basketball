@@ -1,6 +1,6 @@
 // pages/AlumniPage.jsx
 import { useState } from "react";
-import { FadeIn, Spade, Icon, Avatar, alumni } from "../shared";
+import { FadeIn, Spade, Icon, Avatar, photoFor, alumniByName, alumni } from "../shared";
 
 const rosterData = {
   "2005-06": [
@@ -350,7 +350,7 @@ const rosterData = {
 
 const seasons = Object.keys(rosterData).sort((a, b) => b.localeCompare(a));
 
-function SeasonAccordion({ season, players }) {
+function SeasonAccordion({ season, players, onPlayerClick }) {
   const [open, setOpen] = useState(false);
   const collegePlayers = players.filter(p => p.college);
 
@@ -391,17 +391,20 @@ function SeasonAccordion({ season, players }) {
             ))}
           </div>
           {players.map((p, i) => (
-            <div key={i} style={{
+            <div key={i} onClick={() => p.college && onPlayerClick && onPlayerClick(p)} style={{
               display: "grid", gridTemplateColumns: "40px 1fr 70px 60px 50px",
               padding: "9px 20px",
               background: i % 2 === 0 ? "rgba(255,255,255,0.01)" : "transparent",
               borderBottom: "1px solid rgba(255,255,255,0.025)",
               borderLeft: p.college ? "2px solid rgba(201,164,74,0.45)" : "2px solid transparent",
-            }}>
+              cursor: p.college ? "pointer" : "default", transition: "background 0.15s",
+            }}
+              onMouseEnter={e => { if (p.college) e.currentTarget.style.background = "rgba(132,0,54,0.14)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = i % 2 === 0 ? "rgba(255,255,255,0.01)" : "transparent"; }}>
               <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.25)", alignSelf: "center" }}>{p.number || "—"}</div>
               <div>
                 <span style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 14, color: p.college ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0.65)", fontWeight: p.college ? 600 : 400 }}>
-                  {p.first} {p.last}
+                  {p.first} {p.last}{p.college && <span style={{ color: "rgba(201,164,74,0.6)", marginLeft: 6, fontSize: 12 }}>›</span>}
                 </span>
                 {p.college && (
                   <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 11, color: "rgba(201,164,74,0.85)", marginTop: 2, display:"flex", alignItems:"center", gap:5 }}>
@@ -424,6 +427,19 @@ export default function AlumniPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState(null);
+
+  // Open a profile for a roster player (rich if they're a notable alum, else basic).
+  const openPlayer = (p) => {
+    const name = `${p.first} ${p.last}`;
+    const known = alumniByName(name);
+    if (known) { setSelected(known); return; }
+    setSelected({
+      name,
+      classYear: p.grad ? `'${String(p.grad).slice(2)}` : "",
+      college: p.college || "",
+      photo: photoFor(name),
+    });
+  };
 
   // Unique player count
   const allPlayers = new Map();
@@ -550,13 +566,13 @@ export default function AlumniPage() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, marginTop: 10 }}>
             <div style={{ width: 3, height: 14, background: "rgba(201,164,74,0.5)", borderRadius: 2 }} />
-            <span style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 11, color: "rgba(255,255,255,0.25)" }}>Gold bar indicates player went on to play college ball</span>
+            <span style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 11, color: "rgba(255,255,255,0.25)" }}>Gold bar marks a college player &mdash; click any to view their profile</span>
           </div>
         </FadeIn>
 
         {/* Accordions */}
         {filteredSeasons.map(({ season, players }) => (
-          <SeasonAccordion key={season} season={season} players={players} />
+          <SeasonAccordion key={season} season={season} players={players} onPlayerClick={openPlayer} />
         ))}
 
         {filteredSeasons.length === 0 && (

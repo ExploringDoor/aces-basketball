@@ -1,4 +1,5 @@
 // pages/CentralLeaguePage.jsx
+import { useState } from "react";
 import { FadeIn, Spade, centralLeagueTeams, centralLeagueChampions } from "../shared";
 
 // ── Derive title counts + years per school from the champions list ──
@@ -15,9 +16,61 @@ const maxTitles = rankedTeams.length ? rankedTeams[0][1] : 1;
 const colorFor = (name) => (centralLeagueTeams.find(t => t.name === name)?.color) || "#840036";
 const lastTitle = (name) => (titleYears[name] ? Math.max(...titleYears[name]) : null);
 
+const LOGOS = {
+  "Conestoga": "/logos/conestoga.png", "Garnet Valley": "/logos/garnet-valley.png",
+  "Harriton": "/logos/harriton.png", "Haverford": "/logos/haverford.png",
+  "Marple Newtown": "/logos/marple-newtown.png", "Penncrest": "/logos/penncrest.png",
+  "Radnor": "/logos/radnor.png", "Ridley": "/logos/ridley.png",
+  "Springfield": "/logos/springfield.png", "Strath Haven": "/logos/strath-haven.png",
+  "Upper Darby": "/logos/upper-darby.png", "Lower Merion": "/LM_Logo.png",
+};
+
+const TeamBadge = ({ team, size = 44 }) => {
+  const logo = team.logo || LOGOS[team.name];
+  return logo
+    ? <div style={{ width: size, height: size, borderRadius: "50%", background: "#fff", border: `2px solid ${team.color}`, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}><img src={logo} alt={team.name} style={{ width: "78%", height: "78%", objectFit: "contain" }} /></div>
+    : <div style={{ width: size, height: size, borderRadius: "50%", background: `${team.color}33`, border: `2px solid ${team.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Oswald', sans-serif", fontSize: Math.round(size * 0.3), fontWeight: 700, color: "#fff", flexShrink: 0 }}>{team.initials}</div>;
+};
+
 export default function CentralLeaguePage() {
+  const [selected, setSelected] = useState(null);
+  const selYears = selected ? (titleYears[selected.name] || []).slice().sort((a, b) => b - a) : [];
+
   return (
     <section id="league" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" }}>
+
+      {/* Team detail modal */}
+      {selected && (
+        <div onClick={() => setSelected(null)} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.92)", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "40px 20px", overflowY: "auto", cursor: "zoom-out" }}>
+          <style>{`@keyframes clIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`}</style>
+          <div onClick={e => e.stopPropagation()} style={{ background: "linear-gradient(135deg,rgba(26,0,14,0.99),rgba(10,0,5,0.99))", border: `1px solid ${selected.isSelf ? "rgba(201,164,74,0.4)" : "rgba(132,0,54,0.4)"}`, borderRadius: 16, maxWidth: 560, width: "100%", padding: "34px", boxShadow: "0 40px 90px rgba(0,0,0,0.7)", cursor: "default", animation: "clIn 0.3s ease", position: "relative" }}>
+            <button onClick={() => setSelected(null)} style={{ position: "absolute", top: 14, right: 14, background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", borderRadius: "50%", width: 34, height: 34, fontSize: 16, cursor: "pointer" }}>✕</button>
+            <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 22, paddingRight: 30 }}>
+              <TeamBadge team={selected} size={72} />
+              <div>
+                <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 24, fontWeight: 700, color: selected.isSelf ? "var(--gold)" : "#fff", lineHeight: 1.1 }}>{selected.name}</div>
+                <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.45)", letterSpacing: 1, textTransform: "uppercase", marginTop: 3 }}>{selected.mascot}{selected.isSelf ? " · Our Program" : ""}</div>
+              </div>
+            </div>
+            <div style={{ background: "rgba(201,164,74,0.08)", border: "1px solid rgba(201,164,74,0.2)", borderRadius: 10, padding: "14px 16px", marginBottom: 18 }}>
+              <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, color: "var(--gold)", textTransform: "uppercase", marginBottom: 4 }}>Central League Championships</div>
+              <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 28, fontWeight: 700, color: "var(--gold)" }}>{selYears.length}<span style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", marginLeft: 8 }}>{selYears.length === 1 ? "title" : "titles"}</span></div>
+            </div>
+            {selYears.length > 0 ? (
+              <div style={{ marginBottom: 18 }}>
+                <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", marginBottom: 10 }}>Title Years (since 1968)</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+                  {selYears.map(y => <span key={y} style={{ padding: "4px 11px", borderRadius: 8, background: selected.isSelf ? "rgba(201,164,74,0.14)" : "rgba(132,0,54,0.2)", border: `1px solid ${selected.isSelf ? "rgba(201,164,74,0.3)" : "rgba(132,0,54,0.4)"}`, fontFamily: "'Oswald',sans-serif", fontSize: 13, color: selected.isSelf ? "var(--gold)" : "#fff" }}>{y}</span>)}
+                </div>
+              </div>
+            ) : (
+              <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 18 }}>No Central League basketball title on record since 1968.</div>
+            )}
+            <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.75, margin: 0 }}>{selected.desc}</p>
+          </div>
+        </div>
+      )}
+
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label"><Spade size={14} color="#840036" /> Our Conference</div>
@@ -35,23 +88,17 @@ export default function CentralLeaguePage() {
             const last = lastTitle(team.name);
             return (
             <FadeIn key={i} delay={i * 0.04}>
-              <div style={{
+              <div onClick={() => setSelected(team)} style={{
                 height: "100%",
                 background: team.isSelf ? "rgba(132,0,54,0.15)" : "rgba(255,255,255,0.02)",
                 border: team.isSelf ? "1px solid rgba(132,0,54,0.4)" : "1px solid rgba(255,255,255,0.06)",
-                borderRadius: 12, padding: "24px", transition: "all 0.2s ease",
+                borderRadius: 12, padding: "24px", transition: "all 0.2s ease", cursor: "pointer",
               }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = team.isSelf ? "rgba(201,164,74,0.5)" : "rgba(255,255,255,0.15)"; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 10px 30px ${team.isSelf ? "rgba(132,0,54,0.2)" : "rgba(0,0,0,0.35)"}`; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = team.isSelf ? "rgba(132,0,54,0.4)" : "rgba(255,255,255,0.06)"; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
-                  <div style={{
-                    width: 44, height: 44, borderRadius: "50%",
-                    background: `${team.color}33`, border: `2px solid ${team.color}`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, color: "#fff",
-                    flexShrink: 0,
-                  }}>{team.initials}</div>
+                  <TeamBadge team={team} />
                   <div>
                     <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 17, fontWeight: 500 }}>{team.name}</div>
                     <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 11, color: "rgba(255,255,255,0.4)", letterSpacing: 1, textTransform: "uppercase" }}>{team.mascot}</div>
