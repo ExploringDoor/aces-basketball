@@ -38,6 +38,7 @@ const NAV = [
   { id:"news", label:"News" },
   { id:"clinics", label:"Clinics" },
   { label:"Season", children:[
+    { id:"roster",   label:"Roster" },
     { id:"schedule", label:"Schedule" },
     { id:"records",  label:"Record Book" },
   ]},

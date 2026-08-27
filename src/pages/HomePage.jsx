@@ -1,8 +1,16 @@
 // pages/HomePage.jsx
 import { useState, useEffect } from "react";
-import { FadeIn, CountUp, Spade, Icon, news } from "../shared";
+import { FadeIn, CountUp, Spade, Icon, news, schedule, homeVenue, teamLogos } from "../shared";
 
 const latestNews = [...news].sort((a, b) => (b.sortKey || 0) - (a.sortKey || 0));
+const nextGame = schedule[0]?.games[0];
+
+const GameBadge = ({ team, size = 46 }) => {
+  const logo = teamLogos[team];
+  return logo
+    ? <div style={{ width: size, height: size, borderRadius: "50%", background: "#fff", border: "2px solid rgba(201,164,74,0.4)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}><img src={logo} alt={team} style={{ width: "82%", height: "82%", objectFit: "contain" }} /></div>
+    : <div style={{ width: size, height: size, borderRadius: "50%", background: "rgba(132,0,54,0.3)", border: "2px solid rgba(132,0,54,0.5)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Oswald',sans-serif", fontSize: Math.round(size * 0.4), fontWeight: 700, color: "#fff" }}>{team[0]}</div>;
+};
 
 const bannerTexts = [
   { title: "7× PIAA State Champions",      sub: "The Pride of the Main Line" },
@@ -72,6 +80,34 @@ export default function HomePage({ goTo }) {
           </div>
         </div>
       </section>
+
+      {/* Next game */}
+      {nextGame && (
+        <section style={{ background:"linear-gradient(180deg,#0a0005,#0d0008)", borderTop:"1px solid rgba(132,0,54,0.25)", padding:"26px 5%" }}>
+          <div style={{ maxWidth:1100, margin:"0 auto", display:"flex", flexWrap:"wrap", alignItems:"center", justifyContent:"space-between", gap:20 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:24, flexWrap:"wrap" }}>
+              <div style={{ minWidth:110 }}>
+                <div style={{ display:"inline-block", padding:"3px 11px", borderRadius:20, background:"var(--maroon)", fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, fontWeight:700, color:"#fff", textTransform:"uppercase", marginBottom:8 }}>Next Game</div>
+                <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:13, letterSpacing:1.5, color:"rgba(255,255,255,0.6)", textTransform:"uppercase" }}>{nextGame.date} · {nextGame.time}</div>
+              </div>
+              <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+                <GameBadge team="Lower Merion" />
+                <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:15, color:"rgba(255,255,255,0.4)" }}>{nextGame.home?"vs":"@"}</span>
+                <GameBadge team={nextGame.opp} />
+                <div>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:"clamp(18px,2.4vw,24px)", fontWeight:700, textTransform:"uppercase", lineHeight:1.1 }}>{nextGame.home?"vs ":"@ "}{nextGame.opp}</div>
+                  <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:12, color:"rgba(255,255,255,0.45)", marginTop:2 }}>{nextGame.home?homeVenue:"Away"}</div>
+                </div>
+              </div>
+            </div>
+            <button onClick={()=>goTo("schedule")} style={{ fontFamily:"'Oswald',sans-serif", fontSize:12, letterSpacing:2, textTransform:"uppercase", color:"var(--gold)", background:"transparent", border:"1px solid rgba(201,164,74,0.4)", borderRadius:8, padding:"11px 22px", cursor:"pointer", transition:"all 0.2s", whiteSpace:"nowrap" }}
+              onMouseEnter={e=>{e.currentTarget.style.background="rgba(201,164,74,0.1)"; e.currentTarget.style.transform="translateY(-2px)";}}
+              onMouseLeave={e=>{e.currentTarget.style.background="transparent"; e.currentTarget.style.transform="translateY(0)";}}>
+              Full Schedule →
+            </button>
+          </div>
+        </section>
+      )}
 
       <section style={{ background:"#0d0008", padding:"44px 5%", borderTop:"1px solid rgba(132,0,54,0.25)" }}>
         <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))", gap:36, textAlign:"center" }}>

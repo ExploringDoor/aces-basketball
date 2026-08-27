@@ -406,6 +406,27 @@ export const schedule = [
   ]},
 ];
 
+// ─── Roster ───────────────────────────────────────────────────
+// PLACEHOLDER roster. Replace `name` (and add `photo`/`hometown`/`bio`) with
+// the real 2026-27 varsity roster. Drop headshots in public/players and set
+// e.g. photo: "/players/firstname-lastname.jpg".
+export const rosterSeason = "2026-27";
+export const roster = [
+  { number: 3,  name: "Player One",      grade: "Senior",    pos: "Guard",   height: "6'2\"" },
+  { number: 5,  name: "Player Two",      grade: "Senior",    pos: "Guard",   height: "6'0\"" },
+  { number: 10, name: "Player Three",    grade: "Junior",    pos: "Guard",   height: "6'3\"" },
+  { number: 11, name: "Player Four",     grade: "Junior",    pos: "Forward", height: "6'5\"" },
+  { number: 12, name: "Player Five",     grade: "Sophomore", pos: "Guard",   height: "5'11\"" },
+  { number: 14, name: "Player Six",      grade: "Senior",    pos: "Forward", height: "6'6\"" },
+  { number: 15, name: "Player Seven",    grade: "Junior",    pos: "Wing",    height: "6'4\"" },
+  { number: 21, name: "Player Eight",    grade: "Sophomore", pos: "Guard",   height: "6'1\"" },
+  { number: 23, name: "Player Nine",     grade: "Senior",    pos: "Wing",    height: "6'4\"" },
+  { number: 24, name: "Player Ten",      grade: "Junior",    pos: "Forward", height: "6'7\"" },
+  { number: 32, name: "Player Eleven",   grade: "Sophomore", pos: "Center",  height: "6'8\"" },
+  { number: 33, name: "Player Twelve",   grade: "Freshman",  pos: "Guard",   height: "5'10\"" },
+  { number: 44, name: "Player Thirteen", grade: "Senior",    pos: "Center",  height: "6'9\"" },
+];
+
 export const centralLeagueTeams = [
   { name: "Lower Merion", mascot: "Aces", color: "#840036", initials: "LM", desc: "The flagship program of the Central League. 7 PIAA state titles (1933, '41, '42, '43, '96, '06, '13), 16 District 1 titles, 23 league championships and 1,600+ all-time wins. Home of Kobe Bryant and legendary coach Gregg Downer.", isSelf: true },
   { name: "Conestoga", mascot: "Pioneers", color: "#003366", initials: "CO", desc: "Founding Central League member (1967). Has emerged as a top contender in recent years, winning the Central League title in 2025-26 and earning the #1 seed in District 1 6A. A rising power in Chester County." },
