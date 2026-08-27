@@ -343,8 +343,6 @@ export const photoFor = (name) => (alumni.find(x => x.name === name)?.photo) || 
 export const alumniByName = (name) => alumni.find(x => x.name === name) || null;
 
 // ─── Instagram ────────────────────────────────────────────────
-// The grid below is a visual highlight reel that links to the profile.
-// To make it a LIVE auto-updating post feed, see the note in SocialPage.
 export const instagram = {
   handle: "acesbasketball",
   url: "https://www.instagram.com/acesbasketball/",
@@ -352,15 +350,17 @@ export const instagram = {
   posts: "894",
   followers: "6.3K",
 };
+// The 6 latest @acesbasketball posts, embedded live from Instagram.
+// TO REFRESH: open instagram.com/acesbasketball, and for each of the newest
+// posts use the ⋯ menu → "Copy link". Paste just the code after /p/ or /reel/
+// (e.g. a link .../p/ABC123/ becomes "p/ABC123"). Keep the newest at the top.
 export const instagramPosts = [
-  "/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg",
-  "/coaches/gregg-downer.jpg",
-  "/players/kobe-action.jpg",
-  "/players/demetrius-lilley.jpg",
-  "/players/sam-brown.jpg",
-  "/players/carson-kasmer.jpg",
-  "/players/jaylen-shippen.jpg",
-  "/players/ryan-brooks.jpg",
+  "p/DZniQLXx-w1",
+  "reel/DWFSzyzEbUe",
+  "p/DWAahcvjVUm",
+  "p/DV1q09_kXyt",
+  "p/DU9lNumDf0T",
+  "p/DUreE8djU5_",
 ];
 
 export const centralLeagueTeams = [

@@ -1,7 +1,6 @@
 // pages/SocialPage.jsx
-// To make the grid below a LIVE auto-updating Instagram feed, either:
-//  (a) drop recent post images into DROP_HERE/instagram and update instagramPosts, or
-//  (b) connect a free widget (snapwidget.com / behold.so) and paste its embed here.
+// The grid embeds the 6 latest @acesbasketball posts live from Instagram.
+// To refresh which posts show, edit `instagramPosts` in shared/index.jsx.
 import { FadeIn, Spade, Icon, instagram, instagramPosts } from "../shared";
 
 export default function SocialPage() {
@@ -43,17 +42,19 @@ export default function SocialPage() {
                 Follow
               </a>
             </div>
-            {/* Post grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 3 }}>
-              {instagramPosts.map((src, i) => (
-                <a key={i} href={instagram.url} target="_blank" rel="noopener noreferrer" style={{ position: "relative", aspectRatio: "1", overflow: "hidden", display: "block", background: "#15060d" }}
-                  onMouseEnter={e => { const o = e.currentTarget.querySelector('.ig-ov'); if (o) o.style.opacity = "1"; const im = e.currentTarget.querySelector('img'); if (im) im.style.transform = "scale(1.06)"; }}
-                  onMouseLeave={e => { const o = e.currentTarget.querySelector('.ig-ov'); if (o) o.style.opacity = "0"; const im = e.currentTarget.querySelector('img'); if (im) im.style.transform = "scale(1)"; }}>
-                  <img src={src} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 22%", display: "block", transition: "transform 0.4s ease" }} />
-                  <div className="ig-ov" style={{ position: "absolute", inset: 0, background: "rgba(132,0,54,0.45)", display: "flex", alignItems: "center", justifyContent: "center", opacity: 0, transition: "opacity 0.25s", color: "#fff" }}>
-                    <Icon name="instagram" size={26} color="#fff" />
-                  </div>
-                </a>
+            {/* Live post grid: the 6 latest posts embedded straight from Instagram */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 14, padding: 14 }}>
+              {instagramPosts.map((code, i) => (
+                <div key={i} style={{ borderRadius: 10, overflow: "hidden", background: "#fff" }}>
+                  <iframe
+                    src={`https://www.instagram.com/${code}/embed`}
+                    title={`Instagram post ${i + 1}`}
+                    loading="lazy"
+                    scrolling="no"
+                    allowTransparency="true"
+                    style={{ width: "100%", height: 540, border: "none", display: "block" }}
+                  />
+                </div>
               ))}
             </div>
           </div>
