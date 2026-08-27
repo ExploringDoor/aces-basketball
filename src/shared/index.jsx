@@ -363,6 +363,49 @@ export const instagramPosts = [
   "p/DUreE8djU5_",
 ];
 
+// ─── Schedule ─────────────────────────────────────────────────
+// Opponent logos (shared with the Central League page).
+export const teamLogos = {
+  "Conestoga": "/logos/conestoga.png", "Garnet Valley": "/logos/garnet-valley.png",
+  "Harriton": "/logos/harriton.png", "Haverford": "/logos/haverford.png",
+  "Marple Newtown": "/logos/marple-newtown.png", "Penncrest": "/logos/penncrest.png",
+  "Radnor": "/logos/radnor.jpg", "Ridley": "/logos/ridley.png",
+  "Springfield": "/logos/springfield.png", "Strath Haven": "/logos/strath-haven.png",
+  "Upper Darby": "/logos/upper-darby.png", "Lower Merion": "/Bulldog.png",
+};
+
+export const scheduleSeason = "2026-27";
+export const homeVenue = "Kobe Bryant Gymnasium";
+// `home`: true = home game. `conf`: Central League game. `tag`: special note.
+export const schedule = [
+  { month: "December 2026", games: [
+    { date: "Dec 4",  opp: "Chester",         home: true,  time: "7:00 PM" },
+    { date: "Dec 8",  opp: "Conestoga",       home: true,  time: "7:00 PM", conf: true },
+    { date: "Dec 10", opp: "Ridley",          home: true,  time: "7:00 PM", conf: true },
+    { date: "Dec 11", opp: "Coatesville",     home: false, time: "TBD",     tag: "Showcase · West Chester University" },
+    { date: "Dec 15", opp: "Haverford",       home: true,  time: "7:00 PM", conf: true },
+    { date: "Dec 17", opp: "Upper Darby",     home: false, time: "7:00 PM", conf: true },
+    { date: "Dec 22", opp: "Garnet Valley",   home: false, time: "7:00 PM", conf: true },
+    { date: "Dec 26–31", opp: "Cactus Jam",   home: false, time: "3 Games", tag: "Tournament · Phoenix, AZ" },
+  ]},
+  { month: "January 2027", games: [
+    { date: "Jan 5",  opp: "Strath Haven",    home: true,  time: "1:30 PM", conf: true },
+    { date: "Jan 7",  opp: "Penncrest",       home: false, time: "7:00 PM", conf: true },
+    { date: "Jan 9",  opp: "Radnor",          home: true,  time: "7:00 PM", conf: true },
+    { date: "Jan 12", opp: "Harriton",        home: false, time: "7:00 PM", conf: true },
+    { date: "Jan 14", opp: "Springfield",     home: true,  time: "7:00 PM", conf: true },
+    { date: "Jan 16", opp: "William Allen",   home: false, time: "2:30 PM" },
+    { date: "Jan 20", opp: "Marple Newtown",  home: false, time: "7:00 PM", conf: true },
+    { date: "Jan 22", opp: "Conestoga",       home: false, time: "7:00 PM", conf: true },
+    { date: "Jan 26", opp: "Ridley",          home: false, time: "1:30 PM", conf: true },
+    { date: "Jan 28", opp: "Haverford",       home: false, time: "7:00 PM", conf: true },
+    { date: "Jan 30", opp: "Upper Darby",     home: true,  time: "7:00 PM", conf: true },
+  ]},
+  { month: "February 2027", games: [
+    { date: "Feb 2",  opp: "Garnet Valley",   home: true,  time: "7:00 PM", conf: true },
+  ]},
+];
+
 export const centralLeagueTeams = [
   { name: "Lower Merion", mascot: "Aces", color: "#840036", initials: "LM", desc: "The flagship program of the Central League. 7 PIAA state titles (1933, '41, '42, '43, '96, '06, '13), 16 District 1 titles, 23 league championships and 1,600+ all-time wins. Home of Kobe Bryant and legendary coach Gregg Downer.", isSelf: true },
   { name: "Conestoga", mascot: "Pioneers", color: "#003366", initials: "CO", desc: "Founding Central League member (1967). Has emerged as a top contender in recent years, winning the Central League title in 2025-26 and earning the #1 seed in District 1 6A. A rising power in Chester County." },
