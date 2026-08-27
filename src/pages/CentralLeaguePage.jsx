@@ -16,11 +16,10 @@ const maxTitles = rankedTeams.length ? rankedTeams[0][1] : 1;
 const colorFor = (name) => (centralLeagueTeams.find(t => t.name === name)?.color) || "#840036";
 const lastTitle = (name) => (titleYears[name] ? Math.max(...titleYears[name]) : null);
 
+// Only the clean, high-quality marks. Others fall back to a colored monogram badge.
 const LOGOS = {
   "Conestoga": "/logos/conestoga.png", "Garnet Valley": "/logos/garnet-valley.png",
-  "Harriton": "/logos/harriton.png", "Haverford": "/logos/haverford.png",
-  "Marple Newtown": "/logos/marple-newtown.png", "Penncrest": "/logos/penncrest.png",
-  "Radnor": "/logos/radnor.png", "Ridley": "/logos/ridley.png",
+  "Marple Newtown": "/logos/marple-newtown.png", "Ridley": "/logos/ridley.png",
   "Springfield": "/logos/springfield.png", "Strath Haven": "/logos/strath-haven.png",
   "Upper Darby": "/logos/upper-darby.png", "Lower Merion": "/LM_Logo.png",
 };
@@ -29,7 +28,7 @@ const TeamBadge = ({ team, size = 44 }) => {
   const logo = team.logo || LOGOS[team.name];
   return logo
     ? <div style={{ width: size, height: size, borderRadius: "50%", background: "#fff", border: `2px solid ${team.color}`, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}><img src={logo} alt={team.name} style={{ width: "78%", height: "78%", objectFit: "contain" }} /></div>
-    : <div style={{ width: size, height: size, borderRadius: "50%", background: `${team.color}33`, border: `2px solid ${team.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Oswald', sans-serif", fontSize: Math.round(size * 0.3), fontWeight: 700, color: "#fff", flexShrink: 0 }}>{team.initials}</div>;
+    : <div style={{ width: size, height: size, borderRadius: "50%", background: "#fff", border: `2px solid ${team.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Oswald', sans-serif", fontSize: Math.round(size * 0.34), fontWeight: 800, color: team.color, flexShrink: 0 }}>{team.initials}</div>;
 };
 
 export default function CentralLeaguePage() {
