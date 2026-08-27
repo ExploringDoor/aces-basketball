@@ -3,6 +3,7 @@ import { Spade } from "./shared";
 
 import HomePage          from "./pages/HomePage";
 import NewsPage          from "./pages/NewsPage";
+import FallClinicsPage   from "./pages/FallClinicsPage";
 import HistoryPage       from "./pages/HistoryPage";
 import ThousandClubPage  from "./pages/ThousandClubPage";
 import SchedulePage      from "./pages/SchedulePage";
@@ -23,7 +24,7 @@ import AcademicsPage      from "./pages/AcademicsPage";
 import SponsorshipsPage   from "./pages/SponsorshipsPage";
 
 const PAGES = {
-  home: null, news: NewsPage, history: HistoryPage, thousand: ThousandClubPage,
+  home: null, news: NewsPage, clinics: FallClinicsPage, history: HistoryPage, thousand: ThousandClubPage,
   schedule: SchedulePage, championships: ChampionshipsPage,
   league: CentralLeaguePage, alumni: AlumniPage, coaching: CoachingPage,
   roster: RosterPage, records: RecordBookPage, photos: PhotosPage,
@@ -35,6 +36,7 @@ const PAGES = {
 const NAV = [
   { id:"home", label:"Home" },
   { id:"news", label:"News" },
+  { id:"clinics", label:"Clinics" },
   { label:"Season", children:[
     { id:"schedule", label:"Schedule" },
     { id:"records",  label:"Record Book" },
