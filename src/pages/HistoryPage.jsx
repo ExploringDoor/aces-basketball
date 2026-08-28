@@ -73,6 +73,7 @@ export default function HistoryPage() {
                 background: e.highlight ? "linear-gradient(135deg, rgba(132,0,54,0.28), rgba(201,164,74,0.06))" : "rgba(255,255,255,0.02)",
                 border: e.highlight ? "1px solid rgba(201,164,74,0.35)" : "1px solid rgba(255,255,255,0.07)",
                 borderRadius: 14, padding: "26px 24px",
+                marginTop: [18, 0, 30][i] || 0,
               }}>
                 <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 11, letterSpacing: 2, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>{e.years}</div>
                 <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: e.highlight ? "var(--gold)" : "#fff", marginTop: 6, lineHeight: 1.1 }}>{e.era}</div>

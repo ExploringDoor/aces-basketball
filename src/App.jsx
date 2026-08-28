@@ -165,10 +165,14 @@ export default function App() {
   // Store refs for each nav button
   const btnRefs = useRef({});
 
+  const [sweep, setSweep] = useState(0);
+
   const goTo = (id) => {
-    setPage(id);
     setMobileOpen(false);
-    window.scrollTo(0, 0);
+    if (id === page) { window.scrollTo(0, 0); return; }
+    // Maroon sweep covers the screen, page swaps underneath, sweep exits.
+    setSweep(s => s + 1);
+    setTimeout(() => { setPage(id); window.scrollTo(0, 0); }, 310);
   };
 
   const PageComponent = PAGES[page];
@@ -251,8 +255,40 @@ export default function App() {
           color: transparent; -webkit-text-stroke: 1.5px rgba(201,164,74,0.07);
           pointer-events: none; user-select: none; z-index: 0;
         }
+        @keyframes goldShimmer { 0% { background-position: 200% center; } 100% { background-position: -200% center; } }
+        .section-title span {
+          background: linear-gradient(100deg, #b3873a 15%, #c9a44a 35%, #f7e7b3 50%, #c9a44a 65%, #b3873a 85%);
+          background-size: 200% auto;
+          -webkit-background-clip: text; background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: goldShimmer 7s linear infinite;
+        }
+        @keyframes pageSweep {
+          0% { transform: translateX(-101%); }
+          42% { transform: translateX(0); }
+          58% { transform: translateX(0); }
+          100% { transform: translateX(101%); }
+        }
+        .page-sweep {
+          position: fixed; inset: 0; z-index: 3000; pointer-events: none;
+          background: linear-gradient(105deg, #4a001e, #840036 50%, #2a0011);
+          display: flex; align-items: center; justify-content: center;
+          animation: pageSweep 0.72s cubic-bezier(0.65,0,0.35,1) forwards;
+        }
+        .news-asym { display: grid; grid-template-columns: 1.55fr 1fr; gap: 16px; }
+        .news-asym > *:first-child { grid-row: span 2; }
+        .h100 { height: 100%; }
+        .mosaic { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 160px; gap: 10px; }
+        .mosaic > div:first-child { grid-column: span 2; grid-row: span 2; }
+        @media (max-width: 760px) {
+          .news-asym { grid-template-columns: 1fr; }
+          .news-asym > *:first-child { grid-row: auto; }
+          .mosaic { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 130px; }
+        }
         @media (prefers-reduced-motion: reduce) {
           .marquee-track { animation: none; }
+          .section-title span { animation: none; }
+          .page-sweep { display: none; }
         }
         @media (prefers-reduced-motion: reduce) {
           .hero-photo { animation: heroFadeIn 1.2s ease both !important; }
@@ -371,6 +407,13 @@ export default function App() {
                   {item.label}
                 </button>
           )}
+        </div>
+      )}
+
+      {/* Page transition sweep */}
+      {sweep > 0 && (
+        <div key={sweep} className="page-sweep" onAnimationEnd={() => setSweep(0)}>
+          <img src="/Bulldog.png" alt="" style={{ height: 110, width: "auto", filter: "drop-shadow(0 0 24px rgba(0,0,0,0.5))" }} />
         </div>
       )}
 

@@ -217,6 +217,7 @@ export const news = [
     category: "Program History",
     title: "The House That Kobe Built: Bryant Gymnasium Dedicated",
     excerpt: "Lower Merion dedicates its gymnasium to its most famous alumnus, his No. 33 hanging above the doors.",
+    image: "/ig/tunnel.jpg",
     featured: false,
     body: [
       "On December 16, 2010, Lower Merion dedicated the Kobe Bryant Gymnasium, honoring the alumnus who put Aces basketball on the national map.",
@@ -231,6 +232,7 @@ export const news = [
     category: "About the Program",
     title: "Welcome to Aces Nation",
     excerpt: "Seven state titles, 1,600-plus wins, and more than a century of Main Line basketball. This is Lower Merion.",
+    image: "/ig/crowd.jpg",
     featured: false,
     body: [
       "Lower Merion basketball is one of the most decorated programs in Pennsylvania history: seven PIAA state championships, seventeen District 1 titles, and more than 1,600 all-time victories.",

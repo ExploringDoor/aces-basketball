@@ -214,6 +214,33 @@ export default function HomePage({ goTo }) {
         </div>
       </section>
 
+      {/* Game Day photo mosaic (real @acesbasketball photography) */}
+      <section style={{ background:"#0a0005", padding:"60px 5%", borderTop:"1px solid rgba(132,0,54,0.18)", position:"relative", overflow:"hidden" }}>
+        <div className="ghost-word" style={{ top:90, transform:"none" }}>GAME DAY</div>
+        <div style={{ maxWidth:1100, margin:"0 auto", position:"relative", zIndex:1 }}>
+          <div className="section-label">Moments <span style={{ flex:1, minWidth:40, height:1, background:"linear-gradient(90deg,rgba(201,164,74,0.5),transparent)" }} /></div>
+          <h2 style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:"clamp(26px,3.6vw,40px)", textTransform:"uppercase", margin:"0 0 26px", lineHeight:1 }}>This Is Aces Basketball</h2>
+          <div className="mosaic">
+            {[
+              { src:"/ig/tunnel.jpg", cap:"The walkout" },
+              { src:"/ig/celebrate.jpg", cap:"Winning feels like this" },
+              { src:"/ig/crowd.jpg", cap:"Aces Nation" },
+              { src:"/ig/rise.jpg", cap:"Rise up" },
+              { src:"/ig/defense.jpg", cap:"Defense wins titles" },
+            ].map((m, i) => (
+              <div key={i} style={{ position:"relative", borderRadius:12, overflow:"hidden", border:"1px solid rgba(255,255,255,0.07)" }}
+                onMouseEnter={e => { const im=e.currentTarget.querySelector('img'); if(im) im.style.transform="scale(1.05)"; const ov=e.currentTarget.querySelector('.mz-ov'); if(ov) ov.style.opacity="0.1"; }}
+                onMouseLeave={e => { const im=e.currentTarget.querySelector('img'); if(im) im.style.transform="scale(1)"; const ov=e.currentTarget.querySelector('.mz-ov'); if(ov) ov.style.opacity="0.32"; }}>
+                <img src={m.src} alt={m.cap} loading="lazy" style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center 30%", display:"block", transition:"transform 0.5s ease" }} />
+                <div className="mz-ov" style={{ position:"absolute", inset:0, background:"linear-gradient(155deg, rgba(132,0,54,0.55), rgba(10,0,5,0.25))", mixBlendMode:"multiply", opacity:0.32, transition:"opacity 0.3s", pointerEvents:"none" }} />
+                <div style={{ position:"absolute", left:12, bottom:10, fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:"rgba(255,255,255,0.85)", textTransform:"uppercase", textShadow:"0 2px 8px rgba(0,0,0,0.8)" }}>{m.cap}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:12, color:"rgba(255,255,255,0.3)", marginTop:12 }}>Photos via @acesbasketball</div>
+        </div>
+      </section>
+
       {/* Latest from Aces Nation */}
       <section style={{ background:"#0d0008", padding:"60px 5%", borderTop:"1px solid rgba(132,0,54,0.18)", position:"relative", overflow:"hidden" }}>
         <div className="ghost-word" style={{ left:"auto", right:"-2%" }}>NEWS</div>
@@ -229,9 +256,9 @@ export default function HomePage({ goTo }) {
               View All News →
             </button>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:16 }}>
+          <div className="news-asym">
             {latestNews.slice(0,3).map((post, i) => (
-              <FadeIn key={post.id} delay={i*0.08}>
+              <FadeIn key={post.id} delay={i*0.08} className="h100">
                 <div onClick={() => goTo("news")} style={{
                   height:"100%", background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.07)",
                   borderRadius:14, overflow:"hidden", cursor:"pointer", display:"flex", flexDirection:"column",
@@ -239,7 +266,7 @@ export default function HomePage({ goTo }) {
                 }}
                   onMouseEnter={e => { e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.borderColor="rgba(132,0,54,0.5)"; e.currentTarget.style.boxShadow="0 14px 36px rgba(0,0,0,0.4)"; }}
                   onMouseLeave={e => { e.currentTarget.style.transform="none"; e.currentTarget.style.borderColor="rgba(255,255,255,0.07)"; e.currentTarget.style.boxShadow="none"; }}>
-                  <div style={{ height:140, backgroundImage:`linear-gradient(180deg,transparent,rgba(10,0,5,0.55)), url(${post.image || "/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg"})`, backgroundSize:"cover", backgroundPosition:"center 25%" }} />
+                  <div style={{ height: i === 0 ? 270 : 140, backgroundImage:`linear-gradient(180deg,transparent,rgba(10,0,5,0.55)), url(${post.image || "/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg"})`, backgroundSize:"cover", backgroundPosition:"center 25%" }} />
                   <div style={{ padding:"20px 22px", display:"flex", flexDirection:"column", flex:1 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
                       <span style={{ padding:"3px 10px", borderRadius:20, background:"rgba(132,0,54,0.25)", border:"1px solid rgba(132,0,54,0.4)", fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:1.5, color:"rgba(255,255,255,0.65)", textTransform:"uppercase" }}>{post.category}</span>
