@@ -16,7 +16,8 @@ export default function CoachingPage() {
   const [selected, setSelected] = useState(null);
 
   return (
-    <section id="coaching" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" }}>
+    <section id="coaching" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none", left: "auto", right: "-2%" }}>STAFF</div>
       <PlayerModal person={selected} onClose={() => setSelected(null)} />
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <FadeIn>

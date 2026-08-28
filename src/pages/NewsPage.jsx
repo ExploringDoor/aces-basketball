@@ -11,7 +11,8 @@ export default function NewsPage() {
   const rest = ordered.filter(p => p.id !== featured?.id);
 
   return (
-    <section id="news" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px", minHeight: "100vh" }}>
+    <section id="news" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px", minHeight: "100vh" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none", left: "auto", right: "-2%" }}>NEWS</div>
 
       {/* Article reader modal */}
       {selected && (

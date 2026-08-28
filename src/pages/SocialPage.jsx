@@ -5,7 +5,8 @@ import { FadeIn, Spade, Icon, instagram, instagramPosts } from "../shared";
 
 export default function SocialPage() {
   return (
-    <section id="social" style={{ background: "#0a0005", padding: "120px 5% 100px", minHeight: "100vh" }}>
+    <section id="social" style={{ background: "#0a0005", padding: "120px 5% 100px", minHeight: "100vh" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none", left: "auto", right: "-2%" }}>FOLLOW</div>
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label"><Spade size={14} color="#840036" /> Connect</div>

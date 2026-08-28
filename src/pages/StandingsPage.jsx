@@ -16,7 +16,8 @@ const preseason = standings.every(t => t.w + t.l + t.confW + t.confL === 0);
 
 export default function StandingsPage() {
   return (
-    <section id="standings" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px", minHeight: "100vh" }}>
+    <section id="standings" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px", minHeight: "100vh" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none" }}>THE RACE</div>
       <div style={{ maxWidth: 860, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label"><Spade size={14} color="#840036" /> {scheduleSeason} Central League</div>

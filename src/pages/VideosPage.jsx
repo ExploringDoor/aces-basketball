@@ -7,7 +7,8 @@ const videos = [
 
 export default function VideosPage() {
   return (
-    <section id="videos" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" }}>
+    <section id="videos" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none" }}>FILM</div>
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label"><Spade size={14} color="#840036" /> Film Room</div>

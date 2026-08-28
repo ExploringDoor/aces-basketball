@@ -9,7 +9,8 @@ export default function RecordBookPage() {
   const sorted = (key) => [...season.leaders].sort((a, b) => b[key] - a[key])[0];
 
   return (
-    <section id="records" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" }}>
+    <section id="records" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none" }}>RECORDS</div>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label"><Spade size={14} color="#840036" /> Stats &amp; Records</div>

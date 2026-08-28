@@ -3,7 +3,8 @@ import { FadeIn, Spade, Icon } from "../shared";
 
 export default function SupportPage() {
   return (
-    <section style={{ background: "#0a0005", padding: "120px 5% 100px", minHeight: "100vh" }}>
+    <section style={{ background: "#0a0005", padding: "120px 5% 100px", minHeight: "100vh" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none" }}>GIVE</div>
       <div style={{ maxWidth: 800, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label"><Spade size={14} color="#840036" /> Give Back</div>

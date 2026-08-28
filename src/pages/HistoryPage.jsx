@@ -14,7 +14,8 @@ const coaches = [
 
 export default function HistoryPage() {
   return (
-    <section id="history" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" }}>
+    <section id="history" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none", left: "auto", right: "-2%" }}>LEGACY</div>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label">

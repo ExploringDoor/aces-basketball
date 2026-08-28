@@ -14,7 +14,8 @@ const opener = schedule[0]?.games[0];
 
 export default function SchedulePage() {
   return (
-    <section id="schedule" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" }}>
+    <section id="schedule" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none", left: "auto", right: "-2%" }}>GAME DAY</div>
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label"><Spade size={14} color="#840036" /> {scheduleSeason} Season</div>

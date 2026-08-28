@@ -20,7 +20,8 @@ export default function ThousandClubPage() {
   const [selected, setSelected] = useState(null);
 
   return (
-    <section id="thousand" style={{ background: "#0a0005", padding: "120px 5% 100px" }}>
+    <section id="thousand" style={{ background: "#0a0005", padding: "120px 5% 100px" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none", left: "auto", right: "-2%" }}>1,000</div>
       <PlayerModal person={selected} onClose={() => setSelected(null)} />
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <FadeIn>

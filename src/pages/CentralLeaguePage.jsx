@@ -28,7 +28,8 @@ export default function CentralLeaguePage() {
   const selYears = selected ? (titleYears[selected.name] || []).slice().sort((a, b) => b - a) : [];
 
   return (
-    <section id="league" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" }}>
+    <section id="league" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none", left: "auto", right: "-2%" }}>LEAGUE</div>
 
       {/* Team detail modal */}
       {selected && (

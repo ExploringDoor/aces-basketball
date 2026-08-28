@@ -15,7 +15,8 @@ export default function HallOfFamePage() {
   const filtered = filter === "all" ? hallOfFame : hallOfFame.filter(p => p.type === filter);
 
   return (
-    <section style={{ background: "#0a0005", padding: "120px 5% 100px", minHeight: "100vh" }}>
+    <section style={{ background: "#0a0005", padding: "120px 5% 100px", minHeight: "100vh" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none" }}>LEGENDS</div>
 
       {/* Modal */}
       {selected && (

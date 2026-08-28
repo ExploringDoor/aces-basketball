@@ -36,7 +36,8 @@ export default function PhotosPage() {
   const [lightbox, setLightbox] = useState(null);
 
   return (
-    <section id="photos" style={{ background: "#0a0005", padding: "120px 5% 100px" }}>
+    <section id="photos" style={{ background: "#0a0005", padding: "120px 5% 100px" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none", left: "auto", right: "-2%" }}>GALLERY</div>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label"><Spade size={14} color="#840036" /> Game Day</div>

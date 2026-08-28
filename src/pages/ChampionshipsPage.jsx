@@ -22,7 +22,8 @@ export default function ChampionshipsPage() {
   };
 
   return (
-    <section id="championships" style={{ background: "#0a0005", padding: "120px 5% 100px" }}>
+    <section id="championships" style={{ background: "#0a0005", padding: "120px 5% 100px" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none" }}>BANNERS</div>
       <style>{lightboxStyle}</style>
 
       {/* Fullscreen lightbox on click */}

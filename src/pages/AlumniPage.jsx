@@ -466,7 +466,8 @@ export default function AlumniPage() {
   }).filter(({ players }) => players.length > 0);
 
   return (
-    <section style={{ background: "#0a0005", padding: "120px 5% 100px", minHeight: "100vh" }}>
+    <section style={{ background: "#0a0005", padding: "120px 5% 100px", minHeight: "100vh" , position: "relative", overflow: "hidden" }}>
+      <div className="ghost-word" style={{ top: 110, transform: "none" }}>ALUMNI</div>
 
       {/* Player profile modal */}
       {selected && (
