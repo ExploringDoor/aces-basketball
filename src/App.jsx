@@ -8,6 +8,7 @@ import HomePage          from "./pages/HomePage";
 import NewsPage          from "./pages/NewsPage";
 import FallClinicsPage   from "./pages/FallClinicsPage";
 import StandingsPage     from "./pages/StandingsPage";
+import StorePage         from "./pages/StorePage";
 import HistoryPage       from "./pages/HistoryPage";
 import ThousandClubPage  from "./pages/ThousandClubPage";
 import SchedulePage      from "./pages/SchedulePage";
@@ -28,7 +29,7 @@ import AcademicsPage      from "./pages/AcademicsPage";
 import SponsorshipsPage   from "./pages/SponsorshipsPage";
 
 const PAGES = {
-  home: null, news: NewsPage, clinics: FallClinicsPage, standings: StandingsPage, history: HistoryPage, thousand: ThousandClubPage,
+  home: null, news: NewsPage, clinics: FallClinicsPage, store: StorePage, standings: StandingsPage, history: HistoryPage, thousand: ThousandClubPage,
   schedule: SchedulePage, championships: ChampionshipsPage,
   league: CentralLeaguePage, alumni: AlumniPage, coaching: CoachingPage,
   roster: RosterPage, records: RecordBookPage, photos: PhotosPage,
@@ -41,6 +42,7 @@ const NAV = [
   { id:"home", label:"Home" },
   { id:"news", label:"News" },
   { id:"clinics", label:"Clinics" },
+  { id:"store", label:"Store" },
   { label:"Season", children:[
     { id:"roster",    label:"Roster" },
     { id:"schedule",  label:"Schedule" },
@@ -486,7 +488,7 @@ export default function App() {
               {[
                 { h:"Season", links:[["roster","Roster"],["schedule","Schedule"],["standings","Standings"],["records","Record Book"]] },
                 { h:"Program", links:[["history","History"],["championships","Championships"],["alumni","Alumni"],["hof","Hall of Fame"]] },
-                { h:"Aces Nation", links:[["news","News"],["clinics","Fall Clinics"],["social","Follow Us"],["support","Support the Aces"]] },
+                { h:"Aces Nation", links:[["news","News"],["clinics","Fall Clinics"],["store","Team Store"],["social","Follow Us"],["support","Support the Aces"]] },
               ].map(col => (
                 <div key={col.h}>
                   <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:11, letterSpacing:3, color:"var(--gold)", textTransform:"uppercase", marginBottom:14 }}>{col.h}</div>
