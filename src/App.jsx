@@ -241,6 +241,19 @@ export default function App() {
         }
         @keyframes heroFadeIn { from { opacity: 0; } to { opacity: 0.72; } }
         @keyframes heroKen { from { transform: scale(1.0); } to { transform: scale(1.1); } }
+        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .marquee-track { display: flex; width: max-content; animation: marquee 30s linear infinite; }
+        .marquee-track:hover { animation-play-state: paused; }
+        .ghost-word {
+          position: absolute; top: 50%; left: -2%; transform: translateY(-50%);
+          font-family: 'Anton', sans-serif; font-size: clamp(140px, 24vw, 300px);
+          line-height: 1; letter-spacing: 4px; white-space: nowrap;
+          color: transparent; -webkit-text-stroke: 1.5px rgba(201,164,74,0.07);
+          pointer-events: none; user-select: none; z-index: 0;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .marquee-track { animation: none; }
+        }
         @media (prefers-reduced-motion: reduce) {
           .hero-photo { animation: heroFadeIn 1.2s ease both !important; }
         }
@@ -361,16 +374,55 @@ export default function App() {
         </div>
       )}
 
+      {/* Film grain over the whole page (very subtle) */}
+      <div style={{ position:"fixed", inset:0, zIndex:900, pointerEvents:"none", opacity:0.5, backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.05'/%3E%3C/svg%3E\")" }} />
+
       {/* Page content */}
       <div style={{ paddingTop:82, minHeight:"100vh", background:"#0a0005" }}>
         {page === "home" ? <HomePage goTo={goTo} /> : PageComponent && <PageComponent />}
-        <footer style={{ background:"#050003", borderTop:"1px solid rgba(132,0,54,0.28)", padding:"44px 6%", textAlign:"center", marginTop:40 }}>
-          <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:15, letterSpacing:4 }}>LOWER MERION ACES BASKETBALL</div>
-          <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:12, color:"rgba(255,255,255,0.32)", marginTop:7 }}>245 E. Montgomery Avenue · Ardmore, PA 19003</div>
-          <div style={{ width:48, height:1, background:"rgba(132,0,54,0.38)", margin:"16px auto" }} />
-          <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:11, color:"rgba(255,255,255,0.24)" }}>7× PIAA State Champions · Est. 1911 · Home of the Kobe Bryant Gymnasium</div>
-          <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10, color:"rgba(255,255,255,0.16)", marginTop:9 }}>© {new Date().getFullYear()} Lower Merion Aces Basketball</div>
-          <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:"rgba(255,255,255,0.3)", marginTop:12, textTransform:"uppercase" }}>Designed by <a href="https://mainline-webdesign.com/" target="_blank" rel="noopener noreferrer" style={{ color:"var(--gold)", textDecoration:"none", transition:"opacity 0.2s" }} onMouseEnter={e => e.currentTarget.style.textDecoration="underline"} onMouseLeave={e => e.currentTarget.style.textDecoration="none"}>Main Line Web Design</a></div>
+        <footer style={{ background:"#050003", borderTop:"1px solid rgba(132,0,54,0.28)", marginTop:40, position:"relative", overflow:"hidden" }}>
+          {/* Giant ghost wordmark */}
+          <div style={{ position:"absolute", bottom:-30, left:"50%", transform:"translateX(-50%)", fontFamily:"'Anton',sans-serif", fontSize:"clamp(120px,20vw,260px)", lineHeight:1, letterSpacing:6, color:"transparent", WebkitTextStroke:"1px rgba(132,0,54,0.22)", pointerEvents:"none", userSelect:"none", whiteSpace:"nowrap" }}>ACES</div>
+
+          <div style={{ position:"relative", maxWidth:1100, margin:"0 auto", padding:"56px 6% 40px" }}>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(180px, 1fr))", gap:32, alignItems:"start" }}>
+              {/* Brand */}
+              <div style={{ gridColumn:"span 1", minWidth:220 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+                  <img src="/Bulldog.png" alt="" style={{ height:52, width:"auto" }} />
+                  <div>
+                    <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:700, letterSpacing:4 }}>ACES</div>
+                    <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10, letterSpacing:2.5, color:"rgba(255,255,255,0.4)", textTransform:"uppercase" }}>Lower Merion Basketball</div>
+                  </div>
+                </div>
+                <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:12.5, color:"rgba(255,255,255,0.4)", marginTop:14, lineHeight:1.7 }}>
+                  7× PIAA State Champions<br />Est. 1911 · Ardmore, PA<br />Home of the Kobe Bryant Gymnasium
+                </div>
+              </div>
+              {/* Link columns */}
+              {[
+                { h:"Season", links:[["roster","Roster"],["schedule","Schedule"],["standings","Standings"],["records","Record Book"]] },
+                { h:"Program", links:[["history","History"],["championships","Championships"],["alumni","Alumni"],["hof","Hall of Fame"]] },
+                { h:"Aces Nation", links:[["news","News"],["clinics","Fall Clinics"],["social","Follow Us"],["support","Support the Aces"]] },
+              ].map(col => (
+                <div key={col.h}>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:11, letterSpacing:3, color:"var(--gold)", textTransform:"uppercase", marginBottom:14 }}>{col.h}</div>
+                  {col.links.map(([id, label]) => (
+                    <button key={id} onClick={() => goTo(id)} style={{ display:"block", background:"none", border:"none", padding:"0 0 10px", fontFamily:"'Source Sans 3',sans-serif", fontSize:13.5, color:"rgba(255,255,255,0.55)", cursor:"pointer", textAlign:"left", transition:"color 0.15s" }}
+                      onMouseEnter={e => e.currentTarget.style.color = "var(--gold)"}
+                      onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.55)"}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", marginTop:36, paddingTop:20, display:"flex", flexWrap:"wrap", gap:12, alignItems:"center", justifyContent:"space-between" }}>
+              <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:11, color:"rgba(255,255,255,0.3)" }}>245 E. Montgomery Avenue · Ardmore, PA 19003 · © {new Date().getFullYear()} Lower Merion Aces Basketball</div>
+              <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:"rgba(255,255,255,0.3)", textTransform:"uppercase" }}>Designed by <a href="https://mainline-webdesign.com/" target="_blank" rel="noopener noreferrer" style={{ color:"var(--gold)", textDecoration:"none" }} onMouseEnter={e => e.currentTarget.style.textDecoration="underline"} onMouseLeave={e => e.currentTarget.style.textDecoration="none"}>Main Line Web Design</a></div>
+            </div>
+          </div>
         </footer>
       </div>
     </>

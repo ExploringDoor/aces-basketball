@@ -109,6 +109,22 @@ export default function HomePage({ goTo }) {
         </section>
       )}
 
+      {/* Jumbotron marquee ribbon */}
+      <section style={{ background:"linear-gradient(90deg, #4a001e, #840036 40%, #4a001e)", borderTop:"1px solid rgba(201,164,74,0.35)", borderBottom:"1px solid rgba(201,164,74,0.35)", overflow:"hidden", padding:"14px 0" }}>
+        <div className="marquee-track">
+          {[0,1].map(dup => (
+            <div key={dup} aria-hidden={dup === 1} style={{ display:"flex", alignItems:"center", flexShrink:0 }}>
+              {["ACES NATION","7× STATE CHAMPIONS","23 LEAGUE TITLES","KOBE'S ALMA MATER","EST. 1911","THE PRIDE OF THE MAIN LINE"].map((t, i) => (
+                <span key={i} style={{ display:"flex", alignItems:"center" }}>
+                  <span style={{ fontFamily:"'Anton',sans-serif", fontSize:"clamp(22px,3vw,34px)", letterSpacing:2, whiteSpace:"nowrap", padding:"0 28px", color: i % 2 === 0 ? "#fff" : "transparent", WebkitTextStroke: i % 2 === 0 ? "0" : "1.2px rgba(255,255,255,0.85)" }}>{t}</span>
+                  <Spade size={15} color="#c9a44a" />
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section style={{ background:"#0d0008", padding:"44px 5%", borderTop:"1px solid rgba(132,0,54,0.25)" }}>
         <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))", gap:36, textAlign:"center" }}>
           {[{end:7,suffix:"×",label:"State Championships"},{end:738,suffix:"+",label:"Downer Wins"},{end:23,suffix:"",label:"League Titles"},{end:70,suffix:"+",label:"College / Pro"},{end:1663,suffix:"+",label:"All-Time Wins"}].map((s,i) => (
@@ -125,7 +141,9 @@ export default function HomePage({ goTo }) {
         <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:48, alignItems:"center" }}>
           <FadeIn direction="right">
             <div style={{ position:"relative", borderRadius:14, overflow:"hidden", border:"1px solid rgba(201,164,74,0.22)", boxShadow:"0 30px 70px rgba(0,0,0,0.6), 0 0 0 1px rgba(132,0,54,0.25)" }}>
-              <img src="/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg" alt="Lower Merion Aces in action" style={{ width:"100%", display:"block", aspectRatio:"4/3", objectFit:"cover", objectPosition:"center 25%" }} />
+              <img src="/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg" alt="Lower Merion Aces in action" style={{ width:"100%", display:"block", aspectRatio:"4/3", objectFit:"cover", objectPosition:"center 25%", filter:"saturate(0.9) contrast(1.08)" }} />
+              {/* Maroon duotone wash */}
+              <div style={{ position:"absolute", inset:0, background:"linear-gradient(155deg, rgba(132,0,54,0.38), rgba(132,0,54,0.05) 55%)", mixBlendMode:"multiply" }} />
               <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg,transparent 55%,rgba(10,0,5,0.85))" }} />
               <div style={{ position:"absolute", left:18, bottom:16, fontFamily:"'Oswald',sans-serif", fontSize:11, letterSpacing:2.5, color:"var(--gold)", textTransform:"uppercase" }}>Aces vs. Penncrest · Ardmore, PA</div>
             </div>
@@ -161,8 +179,9 @@ export default function HomePage({ goTo }) {
       </section>
 
       {/* Chasing History — milestone tracker */}
-      <section style={{ background:"#0a0005", padding:"60px 5%", borderTop:"1px solid rgba(132,0,54,0.18)" }}>
-        <div style={{ maxWidth:1100, margin:"0 auto" }}>
+      <section style={{ background:"#0a0005", padding:"60px 5%", borderTop:"1px solid rgba(132,0,54,0.18)", position:"relative", overflow:"hidden" }}>
+        <div className="ghost-word">THE CHASE</div>
+        <div style={{ maxWidth:1100, margin:"0 auto", position:"relative", zIndex:1 }}>
           <div className="section-label">Chasing History <span style={{ flex:1, minWidth:40, height:1, background:"linear-gradient(90deg,rgba(201,164,74,0.5),transparent)" }} /></div>
           <h2 style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:"clamp(26px,3.6vw,40px)", textTransform:"uppercase", margin:"0 0 26px", lineHeight:1 }}>Milestones in Reach</h2>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))", gap:14 }}>
@@ -196,8 +215,9 @@ export default function HomePage({ goTo }) {
       </section>
 
       {/* Latest from Aces Nation */}
-      <section style={{ background:"#0d0008", padding:"60px 5%", borderTop:"1px solid rgba(132,0,54,0.18)" }}>
-        <div style={{ maxWidth:1100, margin:"0 auto" }}>
+      <section style={{ background:"#0d0008", padding:"60px 5%", borderTop:"1px solid rgba(132,0,54,0.18)", position:"relative", overflow:"hidden" }}>
+        <div className="ghost-word" style={{ left:"auto", right:"-2%" }}>NEWS</div>
+        <div style={{ maxWidth:1100, margin:"0 auto", position:"relative", zIndex:1 }}>
           <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", flexWrap:"wrap", gap:12, marginBottom:24 }}>
             <div>
               <div className="section-label">Latest <span style={{ flex:1, minWidth:40, height:1, background:"linear-gradient(90deg,rgba(201,164,74,0.5),transparent)" }} /></div>
