@@ -15,8 +15,10 @@ export default function HallOfFamePage() {
   const filtered = filter === "all" ? hallOfFame : hallOfFame.filter(p => p.type === filter);
 
   return (
-    <section style={{ background: "#0a0005", padding: "120px 5% 100px", minHeight: "100vh" , position: "relative", overflow: "hidden" }}>
+    <section style={{ background: "#0a0005", padding: "120px 5% 100px", minHeight: "100vh" , position: "relative", overflow: "hidden", isolation: "isolate" }}>
       <div className="ghost-word" style={{ top: 110, transform: "none" }}>LEGENDS</div>
+      {/* mini-hero photo band */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 380, zIndex: -1, backgroundImage: "linear-gradient(180deg, rgba(74,0,30,0.42) 0%, rgba(10,0,5,0.72) 52%, rgba(10,0,5,1) 96%), url('/ig/battle.jpg')", backgroundSize: "cover", backgroundPosition: "center 28%", pointerEvents: "none" }} />
 
       {/* Modal */}
       {selected && (

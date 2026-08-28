@@ -12,6 +12,38 @@ const GameBadge = ({ team, size = 46 }) => {
     : <div style={{ width: size, height: size, borderRadius: "50%", background: "rgba(132,0,54,0.3)", border: "2px solid rgba(132,0,54,0.5)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Oswald',sans-serif", fontSize: Math.round(size * 0.4), fontWeight: 700, color: "#fff" }}>{team[0]}</div>;
 };
 
+const TIP_OFF = new Date("2026-12-04T19:00:00-05:00").getTime();
+
+function Countdown() {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const diff = Math.max(0, TIP_OFF - now);
+  if (diff <= 0) return null;
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor(diff / 3600000) % 24;
+  const m = Math.floor(diff / 60000) % 60;
+  const s = Math.floor(diff / 1000) % 60;
+  const pad = (n) => String(n).padStart(2, "0");
+  return (
+    <div style={{ marginTop: 30 }}>
+      <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 4, color: "rgba(201,164,74,0.85)", textTransform: "uppercase", marginBottom: 12 }}>
+        Countdown to Tip-Off · Dec 4 vs Chester
+      </div>
+      <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+        {[[d, "Days"], [pad(h), "Hrs"], [pad(m), "Min"], [pad(s), "Sec"]].map(([v, l], i) => (
+          <div key={i} style={{ minWidth: 62, padding: "10px 8px 8px", borderRadius: 10, background: "rgba(8,0,4,0.55)", border: "1px solid rgba(201,164,74,0.25)", backdropFilter: "blur(4px)" }}>
+            <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 26, fontWeight: 700, color: "#fff", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{v}</div>
+            <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 9, letterSpacing: 2, color: "rgba(255,255,255,0.45)", textTransform: "uppercase", marginTop: 5 }}>{l}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const bannerTexts = [
   { title: "7× PIAA State Champions",      sub: "The Pride of the Main Line" },
   { title: "Kobe Bryant's Alma Mater",     sub: "Where Mamba Mentality Was Born" },
@@ -77,6 +109,7 @@ export default function HomePage({ goTo }) {
             <div style={{ display:"flex", gap:8, justifyContent:"center", marginTop:18 }}>
               {bannerTexts.map((_,i) => <div key={i} onClick={() => setActiveBanner(i)} style={{ width:6, height:6, borderRadius:"50%", background:i===activeBanner?"var(--gold)":"rgba(255,255,255,0.2)", cursor:"pointer", transition:"background 0.3s" }} />)}
             </div>
+            <Countdown />
           </div>
         </div>
       </section>

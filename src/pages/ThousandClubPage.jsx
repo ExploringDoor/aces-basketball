@@ -20,8 +20,10 @@ export default function ThousandClubPage() {
   const [selected, setSelected] = useState(null);
 
   return (
-    <section id="thousand" style={{ background: "#0a0005", padding: "120px 5% 100px" , position: "relative", overflow: "hidden" }}>
+    <section id="thousand" style={{ background: "#0a0005", padding: "120px 5% 100px" , position: "relative", overflow: "hidden", isolation: "isolate" }}>
       <div className="ghost-word" style={{ top: 110, transform: "none", left: "auto", right: "-2%" }}>1,000</div>
+      {/* mini-hero photo band */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 380, zIndex: -1, backgroundImage: "linear-gradient(180deg, rgba(74,0,30,0.42) 0%, rgba(10,0,5,0.72) 52%, rgba(10,0,5,1) 96%), url('/ig/rise.jpg')", backgroundSize: "cover", backgroundPosition: "center 28%", pointerEvents: "none" }} />
       <PlayerModal person={selected} onClose={() => setSelected(null)} />
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <FadeIn>
