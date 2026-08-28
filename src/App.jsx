@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { Spade } from "./shared";
+import { Spade, schedule, teamLogos } from "./shared";
+
+// First game on the schedule = the next game (preseason).
+const NEXT_GAME = schedule[0]?.games[0];
 
 import HomePage          from "./pages/HomePage";
 import NewsPage          from "./pages/NewsPage";
@@ -166,6 +169,14 @@ export default function App() {
   const btnRefs = useRef({});
 
   const [sweep, setSweep] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 130);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const goTo = (id) => {
     setMobileOpen(false);
@@ -295,13 +306,23 @@ export default function App() {
         }
         .desktop-nav { display: flex !important; align-items: center; }
         .hamburger { display: none !important; }
+        /* Compact nav on scroll */
+        nav.topnav { transition: height 0.28s ease, box-shadow 0.28s ease; }
+        nav.topnav.compact { height: 60px !important; box-shadow: 0 8px 32px rgba(0,0,0,0.65) !important; }
+        nav.topnav.compact .desktop-nav button, nav.topnav.compact .desktop-nav > div > button { height: 60px !important; }
+        .nav-logo-img { transition: height 0.28s ease; }
+        nav.topnav.compact .nav-logo-img { height: 44px !important; }
+        nav.topnav.compact .nav-sub { display: none; }
+        .next-chip { opacity: 0; pointer-events: none; transform: translateY(-8px); transition: opacity 0.3s ease, transform 0.3s ease; }
+        nav.topnav.compact .next-chip { opacity: 1; pointer-events: auto; transform: none; }
+        @media (max-width: 1080px) { .next-chip { display: none !important; } }
         @media (max-width: 768px) {
           .desktop-nav { display: none !important; }
           .hamburger { display: block !important; }
         }
       `}</style>
 
-      <nav style={{
+      <nav className={`topnav${scrolled ? " compact" : ""}`} style={{
         position:"fixed", top:0, left:0, right:0, zIndex:1000,
         display:"flex", alignItems:"center", height:82, padding:"0 40px",
         background:"rgba(8,0,4,0.99)",
@@ -313,12 +334,12 @@ export default function App() {
 
         {/* Logo */}
         <button onClick={() => goTo("home")} style={{ background:"none", border:"none", display:"flex", alignItems:"center", gap:10, marginRight:32, flexShrink:0 }}>
-          <img src="/LM_Logo.png" alt="LM" style={{ height:70, width:"auto", filter:"drop-shadow(0 0 6px rgba(132,0,54,0.6))", transition:"filter 0.3s" }}
+          <img src="/LM_Logo.png" alt="LM" className="nav-logo-img" style={{ height:70, width:"auto", filter:"drop-shadow(0 0 6px rgba(132,0,54,0.6))" }}
             onMouseEnter={e => e.currentTarget.style.filter="drop-shadow(0 0 12px rgba(132,0,54,0.9))"}
             onMouseLeave={e => e.currentTarget.style.filter="drop-shadow(0 0 6px rgba(132,0,54,0.6))"} />
           <div style={{ textAlign:"left" }}>
             <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:700, letterSpacing:5, color:"#fff", lineHeight:1 }}>ACES</div>
-            <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10, letterSpacing:3, color:"rgba(255,255,255,0.35)", textTransform:"uppercase" }}>Lower Merion</div>
+            <div className="nav-sub" style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10, letterSpacing:3, color:"rgba(255,255,255,0.35)", textTransform:"uppercase" }}>Lower Merion</div>
           </div>
         </button>
 
@@ -382,6 +403,25 @@ export default function App() {
             );
           })}
         </div>
+
+        {/* Next-game chip (appears in compact nav) */}
+        {NEXT_GAME && (
+          <button className="next-chip" onClick={() => goTo("schedule")} style={{
+            marginLeft:"auto", display:"flex", alignItems:"center", gap:10,
+            background:"rgba(132,0,54,0.3)", border:"1px solid rgba(201,164,74,0.35)",
+            borderRadius:24, padding:"6px 14px 6px 7px", cursor:"pointer",
+          }}>
+            <span style={{ width:30, height:30, borderRadius:"50%", background:"#fff", display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", flexShrink:0 }}>
+              <img src={teamLogos[NEXT_GAME.opp] || "/Bulldog.png"} alt="" style={{ width:"84%", height:"84%", objectFit:"contain" }} />
+            </span>
+            <span style={{ textAlign:"left" }}>
+              <span style={{ display:"block", fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:"rgba(201,164,74,0.9)", textTransform:"uppercase", lineHeight:1.2 }}>Next Game</span>
+              <span style={{ display:"block", fontFamily:"'Oswald',sans-serif", fontSize:12, letterSpacing:1, color:"#fff", textTransform:"uppercase", lineHeight:1.2, whiteSpace:"nowrap" }}>
+                {NEXT_GAME.date} · {NEXT_GAME.home ? "vs" : "@"} {NEXT_GAME.opp} · {NEXT_GAME.time}
+              </span>
+            </span>
+          </button>
+        )}
 
         {/* Hamburger */}
         <button className="hamburger" onClick={() => setMobileOpen(!mobileOpen)}
