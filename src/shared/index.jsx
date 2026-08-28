@@ -376,6 +376,24 @@ export const teamLogos = {
   "William Allen": "/logos/william-allen.png",
 };
 
+// ─── Standings (2026-27) ──────────────────────────────────────
+// UPDATE IN-SEASON: bump confW/confL (Central League games) and W/L (overall)
+// after each result; set streak like "W3" or "L1". Sorting is automatic.
+export const standings = [
+  { team: "Lower Merion",   confW: 0, confL: 0, w: 0, l: 0, streak: "—" },
+  { team: "Conestoga",      confW: 0, confL: 0, w: 0, l: 0, streak: "—" },
+  { team: "Garnet Valley",  confW: 0, confL: 0, w: 0, l: 0, streak: "—" },
+  { team: "Harriton",       confW: 0, confL: 0, w: 0, l: 0, streak: "—" },
+  { team: "Haverford",      confW: 0, confL: 0, w: 0, l: 0, streak: "—" },
+  { team: "Marple Newtown", confW: 0, confL: 0, w: 0, l: 0, streak: "—" },
+  { team: "Penncrest",      confW: 0, confL: 0, w: 0, l: 0, streak: "—" },
+  { team: "Radnor",         confW: 0, confL: 0, w: 0, l: 0, streak: "—" },
+  { team: "Ridley",         confW: 0, confL: 0, w: 0, l: 0, streak: "—" },
+  { team: "Springfield",    confW: 0, confL: 0, w: 0, l: 0, streak: "—" },
+  { team: "Strath Haven",   confW: 0, confL: 0, w: 0, l: 0, streak: "—" },
+  { team: "Upper Darby",    confW: 0, confL: 0, w: 0, l: 0, streak: "—" },
+];
+
 export const scheduleSeason = "2026-27";
 export const homeVenue = "Kobe Bryant Gymnasium";
 // `home`: true = home game. `conf`: Central League game. `tag`: special note.

@@ -160,6 +160,41 @@ export default function HomePage({ goTo }) {
         </div>
       </section>
 
+      {/* Chasing History — milestone tracker */}
+      <section style={{ background:"#0a0005", padding:"60px 5%", borderTop:"1px solid rgba(132,0,54,0.18)" }}>
+        <div style={{ maxWidth:1100, margin:"0 auto" }}>
+          <div className="section-label">Chasing History <span style={{ flex:1, minWidth:40, height:1, background:"linear-gradient(90deg,rgba(201,164,74,0.5),transparent)" }} /></div>
+          <h2 style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:"clamp(26px,3.6vw,40px)", textTransform:"uppercase", margin:"0 0 26px", lineHeight:1 }}>Milestones in Reach</h2>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))", gap:14 }}>
+            {[
+              { now:738, goal:750, label:"Coach Downer Career Wins", note:"12 wins from 750", featured:true },
+              { now:1663, goal:1700, label:"All-Time Program Wins", note:"37 wins from 1,700" },
+              { now:23, goal:24, label:"Central League Titles", note:"Chasing crown No. 24" },
+              { now:7, goal:8, label:"PIAA State Championships", note:"The hunt for No. 8" },
+            ].map((m, i) => (
+              <FadeIn key={i} delay={i*0.07}>
+                <div style={{
+                  height:"100%",
+                  background: m.featured ? "linear-gradient(135deg, rgba(132,0,54,0.24), rgba(0,0,0,0.5))" : "rgba(255,255,255,0.02)",
+                  border: m.featured ? "1px solid rgba(201,164,74,0.35)" : "1px solid rgba(255,255,255,0.07)",
+                  borderRadius:14, padding:"22px 22px 20px",
+                }}>
+                  <div style={{ display:"flex", alignItems:"baseline", gap:8 }}>
+                    <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:38, fontWeight:700, color:"var(--gold)", lineHeight:1 }}><CountUp end={m.now} /></span>
+                    <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:16, color:"rgba(255,255,255,0.35)" }}>/ {m.goal.toLocaleString()}</span>
+                  </div>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:12, letterSpacing:1.5, color:"rgba(255,255,255,0.7)", textTransform:"uppercase", margin:"10px 0 4px" }}>{m.label}</div>
+                  <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:12, color:"rgba(255,255,255,0.4)", marginBottom:14 }}>{m.note}</div>
+                  <div style={{ height:6, borderRadius:4, background:"rgba(255,255,255,0.06)", overflow:"hidden" }}>
+                    <div style={{ width:`${Math.min(100, (m.now/m.goal)*100)}%`, height:"100%", borderRadius:4, background:"linear-gradient(90deg, var(--maroon), var(--gold))" }} />
+                  </div>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Latest from Aces Nation */}
       <section style={{ background:"#0d0008", padding:"60px 5%", borderTop:"1px solid rgba(132,0,54,0.18)" }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
