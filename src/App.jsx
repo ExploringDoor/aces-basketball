@@ -382,7 +382,7 @@ export default function App() {
         {page === "home" ? <HomePage goTo={goTo} /> : PageComponent && <PageComponent />}
         <footer style={{ background:"#050003", borderTop:"1px solid rgba(132,0,54,0.28)", marginTop:40, position:"relative", overflow:"hidden" }}>
           {/* Giant ghost wordmark */}
-          <div style={{ position:"absolute", bottom:-30, left:"50%", transform:"translateX(-50%)", fontFamily:"'Anton',sans-serif", fontSize:"clamp(120px,20vw,260px)", lineHeight:1, letterSpacing:6, color:"transparent", WebkitTextStroke:"1px rgba(132,0,54,0.22)", pointerEvents:"none", userSelect:"none", whiteSpace:"nowrap" }}>ACES</div>
+          <div style={{ position:"absolute", bottom:10, left:"50%", transform:"translateX(-50%)", fontFamily:"'Anton',sans-serif", fontSize:"clamp(110px,17vw,220px)", lineHeight:1, letterSpacing:6, color:"transparent", WebkitTextStroke:"1px rgba(132,0,54,0.22)", pointerEvents:"none", userSelect:"none", whiteSpace:"nowrap" }}>ACES</div>
 
           <div style={{ position:"relative", maxWidth:1100, margin:"0 auto", padding:"56px 6% 40px" }}>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(180px, 1fr))", gap:32, alignItems:"start" }}>
