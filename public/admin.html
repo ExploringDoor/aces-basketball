@@ -381,7 +381,7 @@ function receiptCard(r){
   function rr(k,v,strong){ return '<div style="display:flex;justify-content:space-between;gap:16px;padding:8px 14px;border-top:1px solid #eee;font-size:13px'+(strong?';font-weight:700':'')+'"><span style="color:#777">'+k+'</span><span style="text-align:right;color:#111">'+v+'</span></div>'; }
   var paid=(r.status==='paid');
   return '<div style="background:#fff;color:#111;border:1px solid #e2e6ea;border-radius:10px;overflow:hidden;font-family:Arial,Helvetica,sans-serif">'+
-    '<div style="background:#840036;color:#fff;padding:14px 16px"><div style="font-weight:800;letter-spacing:2px;font-size:15px">DOWNER BASKETBALL ACADEMY</div><div style="font-size:11px;color:#f0d0d6;letter-spacing:1px">'+(paid?'REGISTRATION RECEIPT':'REGISTRATION SUMMARY')+'</div></div>'+
+    '<div style="background:#840036;color:#fff;padding:14px 16px"><div style="font-weight:800;letter-spacing:2px;font-size:15px">LOWER MERION ACES</div><div style="font-size:11px;color:#f0d0d6;letter-spacing:1px">'+(paid?'REGISTRATION RECEIPT':'REGISTRATION SUMMARY')+'</div></div>'+
     (paid?'':'<div style="background:#fbeaea;color:#840036;border-bottom:1px solid #f0c4c4;padding:10px 16px;font-weight:800;font-size:13px;letter-spacing:.5px;text-align:center">⚠ AMOUNT DUE — NOT YET PAID</div>')+
     '<div style="padding:4px 0">'+
       rr(paid?'Receipt #':'Reference #','<span style="font-family:monospace">'+esc(r.id||'')+'</span>')+

@@ -11,7 +11,7 @@
 //   Stripe:  STRIPE_SECRET_KEY
 //   Square:  SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID, SQUARE_ENVIRONMENT ("sandbox"|"production")
 //   Firestore: FIREBASE_PROJECT_ID, FIREBASE_API_KEY, FB_ADMIN_EMAIL, FB_ADMIN_PASSWORD
-//   Optional: SITE_URL (e.g. https://www.downerbasketballacademy.com) for redirect links
+//   Optional: SITE_URL (e.g. https://aces-basketball.vercel.app) for redirect links
 
 import { fbConfigured, fbAdminConfigured, fsCreate, fsPatch, fsPatchVerified, fsQuery } from './_firestore.js';
 import { normalizeRegistration, expectedCents, cleanSessions, priceBreakdown, pastSessionIds, CLINIC, aidCodeValid } from './_clinic.js';

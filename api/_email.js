@@ -86,7 +86,7 @@ export function buildConfirmationEmail(reg) {
   const html = `
     <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#222">
       <div style="background:#840036;color:#fff;padding:22px 24px;border-radius:12px 12px 0 0">
-        <div style="font-weight:800;letter-spacing:3px;font-size:20px">DOWNER BASKETBALL ACADEMY</div>
+        <div style="font-weight:800;letter-spacing:3px;font-size:20px">LOWER MERION ACES</div>
         <div style="color:#f0d0d6;font-size:12px;letter-spacing:1px;margin-top:2px">REGISTRATION RECEIPT</div>
       </div>
       <div style="border:1px solid #eee;border-top:none;padding:24px;border-radius:0 0 12px 12px">
@@ -141,7 +141,7 @@ export function buildRefundEmail(reg, refundedNowCents, fullyRefunded) {
   const html = `
     <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#222">
       <div style="background:#840036;color:#fff;padding:22px 24px;border-radius:12px 12px 0 0">
-        <div style="font-weight:800;letter-spacing:3px;font-size:20px">DOWNER BASKETBALL ACADEMY</div>
+        <div style="font-weight:800;letter-spacing:3px;font-size:20px">LOWER MERION ACES</div>
         <div style="color:#f0d0d6;font-size:12px;letter-spacing:1px;margin-top:2px">REFUND RECEIPT</div>
       </div>
       <div style="border:1px solid #eee;border-top:none;padding:24px;border-radius:0 0 12px 12px">
@@ -169,7 +169,7 @@ function donShell(kicker, inner) {
   return `
     <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#222">
       <div style="background:#840036;color:#fff;padding:22px 24px;border-radius:12px 12px 0 0">
-        <div style="font-weight:800;letter-spacing:3px;font-size:20px">DOWNER BASKETBALL ACADEMY</div>
+        <div style="font-weight:800;letter-spacing:3px;font-size:20px">LOWER MERION ACES</div>
         <div style="color:#f0d0d6;font-size:12px;letter-spacing:1px;margin-top:2px">${kicker}</div>
       </div>
       <div style="border:1px solid #eee;border-top:none;padding:24px;border-radius:0 0 12px 12px">${inner}</div>
@@ -254,7 +254,7 @@ export function buildReminderEmail(reg, session) {
   const html = `
     <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#222">
       <div style="background:#840036;color:#fff;padding:22px 24px;border-radius:12px 12px 0 0">
-        <div style="font-weight:800;letter-spacing:3px;font-size:20px">DOWNER BASKETBALL ACADEMY</div>
+        <div style="font-weight:800;letter-spacing:3px;font-size:20px">LOWER MERION ACES</div>
         <div style="color:#f0d0d6;font-size:12px;letter-spacing:1px;margin-top:2px">SESSION REMINDER</div>
       </div>
       <div style="border:1px solid #eee;border-top:none;padding:24px;border-radius:0 0 12px 12px">
@@ -286,7 +286,7 @@ export function buildNoticeEmail(session, opts) {
   const html = `
     <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#222">
       <div style="background:#840036;color:#fff;padding:22px 24px;border-radius:12px 12px 0 0">
-        <div style="font-weight:800;letter-spacing:3px;font-size:20px">DOWNER BASKETBALL ACADEMY</div>
+        <div style="font-weight:800;letter-spacing:3px;font-size:20px">LOWER MERION ACES</div>
         <div style="color:#f0d0d6;font-size:12px;letter-spacing:1px;margin-top:2px">${cancel ? 'SESSION CANCELLED' : 'CLINIC UPDATE'}</div>
       </div>
       <div style="border:1px solid #eee;border-top:none;padding:24px;border-radius:0 0 12px 12px">
