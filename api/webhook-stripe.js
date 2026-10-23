@@ -15,7 +15,7 @@
 
 import crypto from 'node:crypto';
 import { fsGet, fsPatchVerified } from './_firestore.js';
-import { verifyPayment, finalizePaid, finalizeDonationPaid } from './_finalize.js';
+import { verifyPayment, finalizePaid, finalizeDonationPaid, verifyStoreOrder, finalizeStoreOrderPaid } from './_finalize.js';
 
 export const config = { api: { bodyParser: false } }; // signature must be computed over the raw bytes
 
@@ -86,6 +86,26 @@ export default async function handler(req, res) {
       if (!v.paid) return res.status(200).json({ ok: true, pending: true });
       await finalizeDonationPaid(pid, pledge, Object.assign({ stripe_session_id: sid }, v.patch));
       return res.status(200).json({ ok: true, donation_finalized: true });
+    } catch (e) {
+      return res.status(500).json({ error: 'finalize_failed' }); // non-2xx → Stripe retries
+    }
+  }
+
+  // Team Store order? Orders live in their own collection and finalize via their own
+  // path (checkout metadata.kind === 'store_order').
+  if (session.metadata && session.metadata.kind === 'store_order') {
+    const oid = (session.metadata && session.metadata.oid) || session.client_reference_id || '';
+    if (!safeId(oid)) return res.status(200).json({ ok: true, ignored: 'no_oid' });
+    let order = await fsGet(`orders/${oid}`);
+    if (!order) return res.status(200).json({ ok: true, ignored: 'order_not_found' });
+    if (order.status === 'paid') return res.status(200).json({ ok: true, already: 'paid' });
+    try {
+      const sid = session.id || order.stripe_session_id;
+      if (sid && order.stripe_session_id !== sid) order = Object.assign({}, order, { stripe_session_id: sid });
+      const v = await verifyStoreOrder(order);
+      if (!v.paid) return res.status(200).json({ ok: true, pending: true });
+      await finalizeStoreOrderPaid(oid, order, Object.assign({ stripe_session_id: sid }, v.patch));
+      return res.status(200).json({ ok: true, store_finalized: true });
     } catch (e) {
       return res.status(500).json({ error: 'finalize_failed' }); // non-2xx → Stripe retries
     }

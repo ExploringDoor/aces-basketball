@@ -122,6 +122,48 @@ export function buildConfirmationEmail(reg) {
   return { subject, html };
 }
 
+// Branded Team Store order receipt — emailed to the customer (Stripe collected the email).
+export function buildStoreReceiptEmail(order) {
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]));
+  const money = (c) => '$' + ((c || 0) / 100).toFixed(2);
+  const oid = esc(order.id || '');
+  const dateStr = esc(fmtDate(order.paid_at || order.created));
+  const items = Array.isArray(order.items) ? order.items : [];
+  const rowsHtml = items.map((it) =>
+    `<tr><td style="padding:9px 14px;border-top:1px solid #eee">${esc(it.name)} <span style="color:#888">&mdash; ${esc(it.color)}, ${esc(it.size)}${(it.qty || 1) > 1 ? ' &times;' + (it.qty) : ''}</span></td><td style="padding:9px 14px;border-top:1px solid #eee;text-align:right;white-space:nowrap">${money(it.line_cents)}</td></tr>`
+  ).join('');
+  const last4 = esc(order.card_last4 || '');
+  const via = esc(order.paid_via || 'Card');
+
+  const subject = `Your Aces Team Store order — ${money(order.amount_cents)}`;
+  const html = `
+    <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#222">
+      <div style="background:#840036;color:#fff;padding:22px 24px;border-radius:12px 12px 0 0">
+        <div style="font-weight:800;letter-spacing:3px;font-size:20px">LOWER MERION ACES</div>
+        <div style="color:#f0d0d6;font-size:12px;letter-spacing:1px;margin-top:2px">TEAM STORE ORDER</div>
+      </div>
+      <div style="border:1px solid #eee;border-top:none;padding:24px;border-radius:0 0 12px 12px">
+        <h2 style="margin:0 0 6px">Order received! &#127936;</h2>
+        <p style="color:#555;line-height:1.6;margin:0 0 18px">Thanks for repping the Aces. We'll confirm the pickup details by email${order.customer_phone ? ' or text' : ''} shortly. Keep this receipt for your records.</p>
+
+        <table style="width:100%;border-collapse:collapse;border:1px solid #eee;border-radius:8px;overflow:hidden;font-size:14px">
+          <tr><td style="padding:9px 14px;color:#777;white-space:nowrap">Order #</td><td style="padding:9px 14px;text-align:right;font-family:monospace">${oid}</td></tr>
+          ${dateStr ? `<tr><td style="padding:9px 14px;color:#777;border-top:1px solid #eee">Date</td><td style="padding:9px 14px;border-top:1px solid #eee;text-align:right">${dateStr}</td></tr>` : ''}
+        </table>
+
+        <table style="width:100%;border-collapse:collapse;border:1px solid #eee;border-radius:8px;overflow:hidden;font-size:14px;margin-top:14px">
+          ${rowsHtml}
+          <tr><td style="padding:10px 14px;border-top:2px solid #840036;font-weight:700">Total paid</td><td style="padding:10px 14px;border-top:2px solid #840036;text-align:right;font-weight:700">${money(order.amount_cents)}</td></tr>
+          ${last4 ? `<tr><td style="padding:9px 14px;color:#777;border-top:1px solid #eee">Paid with</td><td style="padding:9px 14px;border-top:1px solid #eee;text-align:right">Card ending ${last4} (via ${via})</td></tr>` : ''}
+        </table>
+
+        <p style="color:#555;line-height:1.6;font-size:13px;margin:16px 0 0"><strong>Pickup:</strong> ${esc(order.fulfillment || 'We will confirm pickup by email.')}</p>
+        <p style="color:#999;font-size:12px;line-height:1.6;margin:14px 0 0">This email is your receipt. Payments are collected by Always Competing Sports LLC on behalf of the Lower Merion basketball booster club. Questions? Reply to this email or contact aceshoops@gmail.com.</p>
+      </div>
+    </div>`;
+  return { subject, html };
+}
+
 // Branded refund receipt — emailed to the parent when a refund is issued.
 // refundedNowCents = amount refunded in THIS action; fullyRefunded flags a full refund.
 export function buildRefundEmail(reg, refundedNowCents, fullyRefunded) {

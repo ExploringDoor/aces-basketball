@@ -10,7 +10,7 @@
 //   must NOT treat that as "unpaid" (never abandon a possibly-real payment on an outage).
 
 import { fsPatch, fsPatchVerified, fsGetMeta } from './_firestore.js';
-import { sendMail, buildConfirmationEmail, buildDonationReceiptEmail, emailConfigured, ADMIN_EMAIL } from './_email.js';
+import { sendMail, buildConfirmationEmail, buildDonationReceiptEmail, buildStoreReceiptEmail, emailConfigured, ADMIN_EMAIL } from './_email.js';
 
 // ── Verify with Stripe: was the Checkout Session actually paid? ──
 export async function verifyStripe(reg) {
@@ -153,5 +153,58 @@ export async function finalizeDonationPaid(id, pledge, verifyPatch) {
   if (!w.ok) return pledge; // couldn't record "paid" — don't send a receipt yet; sync retries
   const merged = Object.assign({}, pledge, patch);
   await maybeSendDonationReceipt(id, merged);
+  return merged;
+}
+
+// ── Team Store orders ───────────────────────────────────────────────────────
+// Orders live in the `orders` collection, paid through their own hosted checkout
+// (metadata.kind === 'store_order'). Mirrors the registration/donation finalize so the
+// webhook and the success-page confirm can never disagree, and the RECEIPT is sent
+// exactly once (claim-before-send on receipt_email_sent).
+
+// Verify a store order is paid, and capture who paid (Stripe collects the customer's
+// email/name/phone at checkout) so we can email them the receipt and reach them for pickup.
+export async function verifyStoreOrder(order) {
+  const v = await verifyStripe(order);
+  if (!v.paid || !order.stripe_session_id) return v;
+  try {
+    const r = await fetch(
+      `https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(order.stripe_session_id)}`,
+      { headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` } }
+    );
+    const d = await r.json();
+    const cd = (d && d.customer_details) || {};
+    v.patch = Object.assign({}, v.patch, {
+      customer_email: String(cd.email || '').toLowerCase().slice(0, 200),
+      customer_name: String(cd.name || '').slice(0, 200),
+      customer_phone: String(cd.phone || '').slice(0, 60),
+    });
+  } catch (e) { /* best-effort — a receipt still sends if we already have an email */ }
+  return v;
+}
+
+export async function maybeSendStoreReceipt(oid, order) {
+  if (order.receipt_email_sent || !emailConfigured() || !order.customer_email) return false;
+  const cur = await fsGetMeta(`orders/${oid}`);
+  if (!cur || !cur.doc || cur.doc.receipt_email_sent) return false;
+  const claim = await fsPatchVerified(`orders/${oid}`, { receipt_email_sent: true, receipt_email_at: new Date().toISOString() }, 2, { ifUpdateTime: cur.updateTime });
+  if (!claim.ok) return false; // another path already claimed it (or the write failed — confirm retries)
+  const { subject, html } = buildStoreReceiptEmail(Object.assign({}, cur.doc, order));
+  const ok = await sendMail({ to: order.customer_email, subject, html, bcc: ADMIN_EMAIL });
+  if (!ok) await fsPatch(`orders/${oid}`, { receipt_email_sent: false, receipt_email_error: 'send_failed' });
+  return ok;
+}
+
+export async function finalizeStoreOrderPaid(oid, order, verifyPatch) {
+  if (order.status === 'paid') { await maybeSendStoreReceipt(oid, order); return order; }
+  const vp = verifyPatch || {};
+  const patch = Object.assign({ status: 'paid', paid_at: new Date().toISOString() }, vp);
+  if (typeof vp.amount_captured_cents === 'number' && typeof order.amount_cents === 'number' && vp.amount_captured_cents !== order.amount_cents) {
+    patch.amount_mismatch = true;
+  }
+  const w = await fsPatchVerified(`orders/${oid}`, patch);
+  if (!w.ok) return order; // couldn't record "paid" — don't send a receipt yet; confirm retries
+  const merged = Object.assign({}, order, patch);
+  await maybeSendStoreReceipt(oid, merged);
   return merged;
 }

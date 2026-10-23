@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { FadeIn, Spade, Icon } from "../shared";
 
-// EDIT: products, prices, and colors. Orders email to aceshoops@gmail.com;
-// swap `submitOrder` for a real checkout (Stripe / print-on-demand) later.
+// EDIT products/prices/colors here AND in api/_store.js — the server recomputes
+// prices authoritatively, so the two catalogs must agree. Checkout is real Stripe
+// card payment via /api/store-checkout; the receipt emails to the customer.
 const COLORS = {
   Maroon: "#6e002d",
   Black: "#1c1c1f",
@@ -23,21 +24,38 @@ const textOn = (colorName) => (colorName === "Sport Gray" || colorName === "Whit
 
 export default function StorePage() {
   const [picks, setPicks] = useState({});   // productId -> {color, size}
-  const [cart, setCart] = useState([]);     // {name, color, size, price}
+  const [cart, setCart] = useState([]);     // {id, name, color, size, price}
   const [reviewing, setReviewing] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [err, setErr] = useState("");
 
   const pick = (id, key, val) => setPicks(p => ({ ...p, [id]: { ...p[id], [key]: val } }));
   const getPick = (prod) => ({ color: picks[prod.id]?.color || prod.colors[0], size: picks[prod.id]?.size || prod.sizes[0] });
   const addToCart = (prod) => {
     const { color, size } = getPick(prod);
-    setCart(c => [...c, { name: prod.name, color, size, price: prod.price }]);
+    setCart(c => [...c, { id: prod.id, name: prod.name, color, size, price: prod.price }]);
   };
   const total = cart.reduce((n, i) => n + i.price, 0);
 
-  const submitOrder = () => {
-    const lines = cart.map((i, n) => `${n + 1}. ${i.name} — ${i.color}, ${i.size} — $${i.price}`).join("%0D%0A");
-    const body = `Aces Team Store Order%0D%0A%0D%0A${lines}%0D%0A%0D%0ATotal: $${total}%0D%0A%0D%0AName:%0D%0APhone:%0D%0APickup or delivery notes:`;
-    window.location.href = `mailto:aceshoops@gmail.com?subject=${encodeURIComponent("Team Store Order ($" + total + ")")}&body=${body}`;
+  // Real card checkout: send the cart to the server (which recomputes prices
+  // authoritatively), then hand off to the hosted Stripe checkout it returns.
+  const submitOrder = async () => {
+    if (!cart.length || submitting) return;
+    setSubmitting(true); setErr("");
+    try {
+      const res = await fetch("/api/store-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: cart.map(i => ({ id: i.id, color: i.color, size: i.size })) }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (res.ok && d.url) { window.location.href = d.url; return; }
+      if (res.status === 503 || d.error === "not_configured") setErr("The store isn't open for checkout just yet. Email aceshoops@gmail.com and we'll help.");
+      else setErr("Something went wrong starting checkout. Please try again, or email aceshoops@gmail.com.");
+    } catch (e) {
+      setErr("Couldn't reach checkout. Check your connection and try again.");
+    }
+    setSubmitting(false);
   };
 
   return (
@@ -63,11 +81,12 @@ export default function StorePage() {
               <span style={{ textTransform: "uppercase", letterSpacing: 2 }}>Total</span>
               <span style={{ color: "var(--gold)", fontWeight: 700 }}>${total}</span>
             </div>
-            <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 12.5, color: "rgba(255,255,255,0.45)", lineHeight: 1.7, margin: "10px 0 20px" }}>
-              Submitting opens an email to the program with your order. We confirm sizing, payment, and pickup by reply. Every purchase supports the Aces booster fund.
+            <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 12.5, color: "rgba(255,255,255,0.45)", lineHeight: 1.7, margin: "10px 0 16px" }}>
+              You'll check out securely with a card on the next screen. We confirm sizing and pickup by email. Every purchase supports the Aces booster fund.
             </p>
-            <button onClick={submitOrder} disabled={cart.length === 0} style={{ width: "100%", fontFamily: "'Oswald',sans-serif", fontSize: 14, letterSpacing: 2, textTransform: "uppercase", padding: "15px", borderRadius: 10, cursor: "pointer", color: "#1a0010", background: "linear-gradient(135deg, #c9a44a, #b3873a)", border: "none", opacity: cart.length ? 1 : 0.4 }}>
-              Send Order
+            {err && <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 13, color: "#f87171", background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.35)", borderRadius: 8, padding: "10px 12px", margin: "0 0 14px" }}>{err}</p>}
+            <button onClick={submitOrder} disabled={cart.length === 0 || submitting} style={{ width: "100%", fontFamily: "'Oswald',sans-serif", fontSize: 14, letterSpacing: 2, textTransform: "uppercase", padding: "15px", borderRadius: 10, cursor: cart.length && !submitting ? "pointer" : "default", color: "#1a0010", background: "linear-gradient(135deg, #c9a44a, #b3873a)", border: "none", opacity: cart.length && !submitting ? 1 : 0.5 }}>
+              {submitting ? "Starting checkout…" : `Checkout Securely · $${total}`}
             </button>
           </div>
         </div>
@@ -79,7 +98,7 @@ export default function StorePage() {
           <h2 className="section-title">Team<br /><span style={{ color: "var(--gold)" }}>Store</span></h2>
           <div className="divider" />
           <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 15, color: "rgba(255,255,255,0.55)", marginTop: 20, lineHeight: 1.8, maxWidth: 640 }}>
-            Official Aces spirit wear for players, families, and fans. Pick your gear, send the order, and we handle the rest. Every purchase supports the program.
+            Official Aces spirit wear for players, families, and fans. Pick your gear, check out securely with a card, and we handle the rest. Every purchase supports the program.
           </p>
         </FadeIn>
 

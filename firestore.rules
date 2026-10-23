@@ -30,6 +30,13 @@ service cloud.firestore {
       allow read, write: if isSuper();
     }
 
+    // Team Store orders: admin-only, both read and write. Customers never touch
+    // Firestore directly — the public /api/store-checkout endpoint writes on their
+    // behalf with the server admin token, exactly like registrations and pledges.
+    match /orders/{id} {
+      allow read, write: if isSuper();
+    }
+
     // The admins collection: readable only by an admin (used by the rules themselves).
     match /admins/{uid} {
       allow read: if isSuper();
