@@ -23,7 +23,7 @@ function summary(reg) {
   return {
     reg_id: reg.id || '',
     date: reg.paid_at || reg.created || '',
-    title: reg.clinic_title || 'DBA Fall Clinics',
+    title: reg.clinic_title || 'Lower Merion Aces Fall Clinics',
     players: (reg.players || []).map((p) => `${p.first} ${p.last}`.trim()),
     all_six: !!reg.all_six,
     session_count: reg.session_count || b.session_count,

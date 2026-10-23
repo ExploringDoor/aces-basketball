@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────
-// Downer Basketball Academy — Shoot-a-Thon (free-throw fundraiser).
+// Lower Merion Aces Basketball — Shoot-a-Thon (free-throw fundraiser).
 // Config, validation, and the AUTHORITATIVE amount computation.
 //
 // Model (locked with Adam, GivingZone-style):

@@ -180,7 +180,7 @@ function sheetCard(){
     '</tr>';
   }).join('') || '<tr><td colspan="7" style="padding:16px;text-align:center;color:#888">No players registered for this session yet.</td></tr>';
   return '<div style="background:#fff;color:#111;border:1px solid #e2e6ea;border-radius:10px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;max-width:900px">'+
-    '<div style="background:#8B1A2B;color:#fff;padding:12px 16px"><div style="font-weight:800;font-size:15px">DBA Fall Clinic &mdash; '+esc(date?prettyDate(date):label)+'</div><div style="font-size:11px;color:#f0d0d6">Check-in sheet &middot; '+rows.length+' player'+(rows.length===1?'':'s')+(rows.length?' &middot; '+present+' checked in':'')+'</div></div>'+
+    '<div style="background:#840036;color:#fff;padding:12px 16px"><div style="font-weight:800;font-size:15px">Aces Fall Clinic &mdash; '+esc(date?prettyDate(date):label)+'</div><div style="font-size:11px;color:#f0d0d6">Check-in sheet &middot; '+rows.length+' player'+(rows.length===1?'':'s')+(rows.length?' &middot; '+present+' checked in':'')+'</div></div>'+
     '<table style="width:100%;border-collapse:collapse;font-size:13px">'+
       '<thead><tr style="background:#f3f4f6;color:#555;font-size:11px;text-transform:uppercase;letter-spacing:.5px">'+
         '<th style="padding:6px 8px;text-align:left">#</th><th style="padding:6px 8px;text-align:left">Player</th><th style="padding:6px 8px;text-align:center">Age</th><th style="padding:6px 8px;text-align:left">Parent</th><th style="padding:6px 8px;text-align:left">Emergency contact</th><th style="padding:6px 8px;text-align:left">Allergy / Med</th><th style="padding:6px 8px;text-align:center">In</th>'+
@@ -198,12 +198,12 @@ function nameTags(){
   var rows=state.players.slice().sort(function(a,b){ return (a.last+' '+a.first).localeCompare(b.last+' '+b.first); });
   var cards=rows.map(function(p){
     var sub=[p.last?esc(p.last):'', (p.age!==''&&p.age!=null?'Age '+esc(String(p.age)):''), (p.grade?'Gr '+esc(String(p.grade)):'')].filter(Boolean).join('  ·  ');
-    return '<div class="tag"><div class="thdr">🏀 DBA FALL CLINIC</div><div class="tname">'+esc(p.first||'')+'</div><div class="tsub">'+sub+'</div></div>';
+    return '<div class="tag"><div class="thdr">🏀 Aces FALL CLINIC</div><div class="tname">'+esc(p.first||'')+'</div><div class="tsub">'+sub+'</div></div>';
   }).join('') || '<div style="padding:24px;font-family:Arial,Helvetica,sans-serif">No players registered for this session yet.</div>';
   var css='<style>'
     +'*{box-sizing:border-box}'
     +'.tag{display:inline-block;width:47%;height:2in;margin:0 1% 0.18in;vertical-align:top;border:1px dashed #b7b7b7;border-radius:12px;padding:0.15in;text-align:center;page-break-inside:avoid;font-family:Arial,Helvetica,sans-serif;overflow:hidden}'
-    +'.thdr{font-size:10px;letter-spacing:1.5px;color:#8B1A2B;font-weight:800;margin-bottom:10px}'
+    +'.thdr{font-size:10px;letter-spacing:1.5px;color:#840036;font-weight:800;margin-bottom:10px}'
     +'.tname{font-size:38px;font-weight:800;color:#111;line-height:1.05;word-break:break-word}'
     +'.tsub{font-size:14px;color:#555;margin-top:12px}'
     +'</style>';

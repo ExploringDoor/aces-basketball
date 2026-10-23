@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────
-// Downer Basketball Academy — Fall Clinic config, pricing, and validation.
+// Lower Merion Aces Basketball — Fall Clinic config, pricing, and validation.
 // This is the AUTHORITATIVE source of prices and rules. The browser sends what
 // the parent picked; the server recomputes the real amount here so a tampered
 // request can never undercharge. Mirrors the STS "expectedCents" guard.
@@ -45,7 +45,7 @@ export const PRICE = {
 
 export const CLINIC = {
   id: 'fall-2026',
-  title: 'DBA Fall Clinics 2026',
+  title: 'Lower Merion Aces Fall Clinics 2026',
   location: 'Kobe Bryant Gymnasium, Lower Merion HS, Ardmore PA',
   ageRange: '6–14',
 };

@@ -135,7 +135,7 @@ function renderRecap(d){
 }
 document.getElementById('printBtn').addEventListener('click',function(){ window.print(); });
 
-var DEMO_RECEIPT={ ok:true, status:'paid', reg_id:'aB3x9Kp2Qr', date:'2026-09-20T14:03:00Z', title:'DBA Fall Clinics 2026', players:['Marcus Avery','Maya Avery'], all_six:true, session_count:6, sessions_labels:['Sun, Sep 27','Sun, Oct 4','Sun, Oct 11','Sun, Oct 18','Sun, Oct 25','Sun, Nov 1'], base:'300.00', processing:'28.00', amount:'328.00', card_last4:'4242', paid_via:'Stripe', waiver_agreed:true, waiver_name:'Jordan Avery' };
+var DEMO_RECEIPT={ ok:true, status:'paid', reg_id:'aB3x9Kp2Qr', date:'2026-09-20T14:03:00Z', title:'Lower Merion Aces Fall Clinics 2026', players:['Marcus Avery','Maya Avery'], all_six:true, session_count:6, sessions_labels:['Sun, Sep 27','Sun, Oct 4','Sun, Oct 11','Sun, Oct 18','Sun, Oct 25','Sun, Nov 1'], base:'300.00', processing:'28.00', amount:'328.00', card_last4:'4242', paid_via:'Stripe', waiver_agreed:true, waiver_name:'Jordan Avery' };
 var tries = 0; // auto-retry a couple of times before showing "Almost there" — the webhook/cron usually lands within seconds
 function check(){
   if(window.__DEMO__){ renderRecap(DEMO_RECEIPT); show('paid'); var dn=document.getElementById('demoNote'); if(dn) dn.style.display='block'; return; }
