@@ -1,22 +1,73 @@
 // ─────────────────────────────────────────────────────────────────────────
-// Lower Merion Aces Basketball — Fall Clinic config, pricing, and validation.
+// Lower Merion Aces Basketball — Clinic config, pricing, and validation.
 // This is the AUTHORITATIVE source of prices and rules. The browser sends what
 // the parent picked; the server recomputes the real amount here so a tampered
 // request can never undercharge. Mirrors the STS "expectedCents" guard.
+//
+// MULTI-EVENT: clinics run by season (Fall, then Spring, ...). Each season is an
+// entry in CLINIC_EVENTS below, keyed by a stable id. CLINIC_EVENT_ID (env) picks
+// the ACTIVE season the public form sells; it defaults to 'fall-2026'. Adding a
+// season = add an entry here (do NOT overwrite the old one — historical
+// registrations resolve their own season's dates/prices by clinic_id) and set
+// CLINIC_EVENT_ID. When you change the active season, also update the hardcoded
+// session dates in register.html (SESSIONS) and admin.html (SESSION_LABELS) to match.
 // ─────────────────────────────────────────────────────────────────────────
 
-// The six Sunday sessions for Fall 2026 (Sep 27 – Nov 1). The ids are what get
-// stored — keep them stable; only edit labels if dates change. Keep in sync with
-// register.html (SESSIONS) and admin.html (SESSION_LABELS).
-export const SESSIONS = [
-  { id: 's1', label: 'Session 1 — Sun, Sep 27', date: '2026-09-27' },
-  { id: 's2', label: 'Session 2 — Sun, Oct 4',  date: '2026-10-04' },
-  { id: 's3', label: 'Session 3 — Sun, Oct 11', date: '2026-10-11' },
-  { id: 's4', label: 'Session 4 — Sun, Oct 18', date: '2026-10-18' },
-  { id: 's5', label: 'Session 5 — Sun, Oct 25', date: '2026-10-25' },
-  { id: 's6', label: 'Session 6 — Sun, Nov 1',  date: '2026-11-01' },
-];
+// All-in prices (what the parent pays), in cents. Matches the RYZER model:
+// $30 base + $5 processing = $35/session; $150 + $14 = $164 for all six.
+// We charge the all-in amount; the base/fee split is stored only for reporting.
+const FALL_2026_PRICE = {
+  perSessionCents: 3500,
+  allSixCents: 16400,
+  baseSessionCents: 3000,
+  feeSessionCents: 500,
+  baseAllSixCents: 15000,
+  feeAllSixCents: 1400,
+  currency: 'USD',
+};
+
+// Every clinic season. Keep old seasons here so past registrations stay valid.
+export const CLINIC_EVENTS = {
+  'fall-2026': {
+    id: 'fall-2026',
+    title: 'Lower Merion Aces Fall Clinics 2026',
+    location: 'Kobe Bryant Gymnasium, Lower Merion HS, Ardmore PA',
+    ageRange: '6–14',
+    // The six Sunday sessions (Sep 27 – Nov 1). The ids are what get stored —
+    // keep them stable; only edit labels if dates change.
+    sessions: [
+      { id: 's1', label: 'Session 1 — Sun, Sep 27', date: '2026-09-27' },
+      { id: 's2', label: 'Session 2 — Sun, Oct 4',  date: '2026-10-04' },
+      { id: 's3', label: 'Session 3 — Sun, Oct 11', date: '2026-10-11' },
+      { id: 's4', label: 'Session 4 — Sun, Oct 18', date: '2026-10-18' },
+      { id: 's5', label: 'Session 5 — Sun, Oct 25', date: '2026-10-25' },
+      { id: 's6', label: 'Session 6 — Sun, Nov 1',  date: '2026-11-01' },
+    ],
+    price: FALL_2026_PRICE,
+  },
+  // Add the spring season here when dates are set, e.g.:
+  // 'spring-2027': {
+  //   id: 'spring-2027', title: 'Lower Merion Aces Spring Clinics 2027',
+  //   location: 'Kobe Bryant Gymnasium, Lower Merion HS, Ardmore PA', ageRange: '6–14',
+  //   sessions: [ { id:'s1', label:'Session 1 — Sun, Mar ?', date:'2027-03-??' }, ... ],
+  //   price: FALL_2026_PRICE,  // or a season-specific price object
+  // },
+};
+
+// The season the public form sells right now.
+const ACTIVE_ID = process.env.CLINIC_EVENT_ID || 'fall-2026';
+const ACTIVE = CLINIC_EVENTS[ACTIVE_ID] || CLINIC_EVENTS['fall-2026'];
+
+// Look up any season's config by id (for receipts/admin on historical records).
+export function clinicById(id) { return CLINIC_EVENTS[id] || null; }
+// The season a given registration belongs to (its own, else the active one).
+function eventFor(reg) { return (reg && clinicById(reg.clinic_id)) || ACTIVE; }
+
+// Active-season exports (back-compat: the rest of the app reads these).
+export const SESSIONS = ACTIVE.sessions;
 export const SESSION_IDS = SESSIONS.map((s) => s.id);
+export const PRICE = ACTIVE.price;
+export const CLINIC = { id: ACTIVE.id, title: ACTIVE.title, location: ACTIVE.location, ageRange: ACTIVE.ageRange };
 
 // Today's date in Eastern time — the clinic's own timezone, so a Sunday stops being
 // sellable when the day ends in Ardmore, not when it ends in UTC.
@@ -30,33 +81,13 @@ export function pastSessionIds(now = new Date()) {
   return SESSIONS.filter((sn) => sn.date < t).map((sn) => sn.id);
 }
 
-// All-in prices (what the parent pays), in cents. Matches the RYZER model:
-// $30 base + $5 processing = $35/session; $150 + $14 = $164 for all six.
-// We charge the all-in amount; the base/fee split is stored only for reporting.
-export const PRICE = {
-  perSessionCents: 3500,
-  allSixCents: 16400,
-  baseSessionCents: 3000,
-  feeSessionCents: 500,
-  baseAllSixCents: 15000,
-  feeAllSixCents: 1400,
-  currency: 'USD',
-};
-
-export const CLINIC = {
-  id: 'fall-2026',
-  title: 'Lower Merion Aces Fall Clinics 2026',
-  location: 'Kobe Bryant Gymnasium, Lower Merion HS, Ardmore PA',
-  ageRange: '6–14',
-};
-
 export function clip(v, n) { return String(v == null ? '' : v).slice(0, n); }
 export function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(e || '')); }
 // Strip HTML metacharacters from free-text fields at intake — defense in depth so a
 // stored value can never carry markup into any downstream renderer or email.
 export function stripTags(s) { return String(s == null ? '' : s).replace(/[<>]/g, ''); }
 
-// Which valid, de-duplicated sessions did they actually pick?
+// Which valid, de-duplicated sessions did they actually pick? (active season)
 export function cleanSessions(sessions) {
   const set = new Set();
   (Array.isArray(sessions) ? sessions : []).forEach((s) => { if (SESSION_IDS.includes(s)) set.add(s); });
@@ -90,21 +121,24 @@ export function aidCodeValid(code) {
 // Receipt helpers ─────────────────────────────────────────────────────────
 // Split the authoritative total into base + processing (for an itemized receipt).
 // Prefers the split RECORDED on the registration at checkout, so a receipt always reflects
-// what the family actually paid — even if prices changed afterwards. Falls back to today's
-// prices for older records, reconciling any difference into the fee (base is the advertised
-// number, so a price change of this kind is always a change to the fee).
+// what the family actually paid — even if prices changed afterwards. Falls back to the
+// registration's OWN season prices for older records, reconciling any difference into the
+// fee (base is the advertised number, so a price change of this kind is always a fee change).
 export function priceBreakdown(reg) {
-  const n = cleanSessions(reg && reg.sessions).length;
+  const ev = eventFor(reg);
+  const evIds = ev.sessions.map((s) => s.id);
+  const n = (Array.isArray(reg && reg.sessions) ? reg.sessions : []).filter((id) => evIds.includes(id)).length;
   const players = Array.isArray(reg && reg.players) ? reg.players.length : 0;
-  const allSix = n === SESSION_IDS.length;
+  const allSix = n === evIds.length;
+  const p = ev.price;
   const paid = reg && typeof reg.amount_cents === 'number' && reg.amount_cents > 0 ? reg.amount_cents : null;
 
   let base, fee;
   if (reg && typeof reg.base_cents === 'number' && typeof reg.fee_cents === 'number') {
     base = reg.base_cents; fee = reg.fee_cents;                       // recorded at checkout — authoritative
   } else {
-    base = (allSix ? PRICE.baseAllSixCents : n * PRICE.baseSessionCents) * players;
-    fee = (allSix ? PRICE.feeAllSixCents : n * PRICE.feeSessionCents) * players;
+    base = (allSix ? p.baseAllSixCents : n * p.baseSessionCents) * players;
+    fee = (allSix ? p.feeAllSixCents : n * p.feeSessionCents) * players;
     if (paid !== null && base + fee !== paid) fee = Math.max(0, paid - base); // older record, prices since changed
   }
   return {
@@ -117,9 +151,12 @@ export function priceBreakdown(reg) {
   };
 }
 // The chosen sessions as human date labels, e.g. ["Sun, Sep 27", "Sun, Oct 11"].
+// Resolves the registration's OWN season, so a past season's labels are always right.
 export function sessionLabels(reg) {
-  const chosen = cleanSessions(reg && reg.sessions);
-  return SESSIONS.filter((s) => chosen.includes(s.id)).map((s) => s.label.replace(/^Session \d+ — /, ''));
+  const ev = eventFor(reg);
+  const evIds = ev.sessions.map((s) => s.id);
+  const chosen = (Array.isArray(reg && reg.sessions) ? reg.sessions : []).filter((id) => evIds.includes(id));
+  return ev.sessions.filter((s) => chosen.includes(s.id)).map((s) => s.label.replace(/^Session \d+ — /, ''));
 }
 
 // Validate + sanitize an incoming registration body. Returns
