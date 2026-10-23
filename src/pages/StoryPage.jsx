@@ -19,6 +19,35 @@ const seasons = [
   {
     id: "2025-26",
     label: "2025-26",
+    // Real results via MaxPreps. Aces score listed first.
+    record: { overall: "15-9", league: "10-7", place: "5th", home: "6-4", away: "8-5" },
+    summary: "The Aces finished 15-9 (10-7 in the Central League, 5th), powered by a seven-game winning streak from mid-December into January and double-digit wins over Ridley, Harriton, Radnor, and Northampton.",
+    games: [
+      { d: "Dec 5",  o: "Coatesville",       h: false, w: false, s: "62-76" },
+      { d: "Dec 6",  o: "Downingtown West",  h: true,  w: true,  s: "75-55" },
+      { d: "Dec 9",  o: "Garnet Valley",     h: true,  w: false, s: "60-69" },
+      { d: "Dec 11", o: "Conestoga",         h: false, w: false, s: "45-50" },
+      { d: "Dec 16", o: "Ridley",            h: false, w: true,  s: "61-49" },
+      { d: "Dec 18", o: "Haverford",         h: false, w: true,  s: "61-48" },
+      { d: "Dec 23", o: "Upper Darby",       h: true,  w: true,  s: "60-52" },
+      { d: "Dec 29", o: "St. Joseph's CA",   h: true,  w: true,  s: "62-35" },
+      { d: "Dec 30", o: "State College",     h: false, w: true,  s: "59-53" },
+      { d: "Jan 3",  o: "Marple Newtown",    h: true,  w: true,  s: "55-47" },
+      { d: "Jan 6",  o: "Strath Haven",      h: false, w: true,  s: "65-36" },
+      { d: "Jan 8",  o: "Penncrest",         h: true,  w: false, s: "45-55" },
+      { d: "Jan 10", o: "Northampton",       h: false, w: true,  s: "71-45" },
+      { d: "Jan 13", o: "Radnor",            h: false, w: true,  s: "69-47" },
+      { d: "Jan 15", o: "Harriton",          h: true,  w: true,  s: "71-39" },
+      { d: "Jan 21", o: "Springfield",       h: false, w: false, s: "52-53" },
+      { d: "Jan 23", o: "Garnet Valley",     h: false, w: true,  s: "52-43" },
+      { d: "Jan 24", o: "Liberty",           h: false, w: true,  s: "55-41" },
+      { d: "Jan 28", o: "Conestoga",         h: true,  w: false, s: "55-61" },
+      { d: "Jan 29", o: "Ridley",            h: true,  w: true,  s: "75-45" },
+      { d: "Jan 31", o: "Haverford",         h: true,  w: true,  s: "60-47" },
+      { d: "Feb 3",  o: "Upper Darby",       h: false, w: false, s: "45-48" },
+      { d: "Feb 5",  o: "Garnet Valley",     h: false, w: false, s: "46-66" },
+      { d: "Feb 13", o: "Pennsbury",         h: true,  w: false, s: "45-51" },
+    ],
     chapters: [
       {
         ch: "1",
@@ -110,6 +139,38 @@ export default function StoryPage() {
                   }}>{s.label}</button>
                 );
               })}
+            </div>
+          </FadeIn>
+        )}
+
+        {/* Season recap: record + game-by-game (for a finished season) */}
+        {season.record && (
+          <FadeIn delay={0.12}>
+            <div style={{ marginTop: 34 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(128px,1fr))", gap: 12 }}>
+                {[["Overall", season.record.overall], ["Central League", `${season.record.league} · ${season.record.place}`], ["Home", season.record.home], ["Away", season.record.away]].map(([k, v], i) => (
+                  <div key={i} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "18px 14px", textAlign: "center" }}>
+                    <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 24, fontWeight: 700, color: "var(--gold)" }}>{v}</div>
+                    <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", marginTop: 4 }}>{k}</div>
+                  </div>
+                ))}
+              </div>
+              {season.summary && <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 15, color: "rgba(255,255,255,0.6)", lineHeight: 1.85, marginTop: 20, maxWidth: 720 }}>{season.summary}</p>}
+              {season.games && (
+                <div style={{ marginTop: 24, borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 11, letterSpacing: 2, color: "var(--gold)", textTransform: "uppercase", padding: "12px 16px", background: "rgba(132,0,54,0.35)" }}>Game by Game · {season.label}</div>
+                  {season.games.map((g, i) => (
+                    <div key={i} style={{ display: "grid", gridTemplateColumns: "60px 24px 1fr 30px 60px", gap: 8, alignItems: "center", padding: "9px 16px", borderTop: "1px solid rgba(255,255,255,0.04)", background: i % 2 ? "transparent" : "rgba(255,255,255,0.015)" }}>
+                      <span style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.5)" }}>{g.d}</span>
+                      <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{g.h ? "vs" : "@"}</span>
+                      <span style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 14, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{g.o}</span>
+                      <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 13, fontWeight: 700, color: g.w ? "#4ade80" : "#f87171" }}>{g.w ? "W" : "L"}</span>
+                      <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.8)", textAlign: "right" }}>{g.s}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="section-label" style={{ marginTop: 44 }}><Spade size={13} color="#840036" /> The Season in Photos</div>
             </div>
           </FadeIn>
         )}
