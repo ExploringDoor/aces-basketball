@@ -79,6 +79,29 @@ const projectedRecord = (g, us, them) => {
   return `${r.w + (win ? 1 : 0)}-${r.l + (loss ? 1 : 0)}`;
 };
 
+// ── My Photos: kept on the device in IndexedDB so a shot added once can be
+// reused all season. Nothing leaves the phone. Capped and downscaled.
+const MAX_PHOTOS = 40, MAX_EDGE = 2200;
+const openDB = () => new Promise((res, rej) => {
+  const r = indexedDB.open("aces-flyers", 1);
+  r.onupgradeneeded = () => r.result.createObjectStore("photos", { keyPath: "id" });
+  r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+});
+const dbAll = async () => { const db = await openDB(); return new Promise((res, rej) => { const q = db.transaction("photos").objectStore("photos").getAll(); q.onsuccess = () => res(q.result.sort((a, b) => b.id - a.id)); q.onerror = () => rej(q.error); }); };
+const dbPut = async (rec) => { const db = await openDB(); return new Promise((res, rej) => { const t = db.transaction("photos", "readwrite"); t.objectStore("photos").put(rec); t.oncomplete = res; t.onerror = () => rej(t.error); }); };
+const dbDel = async (id) => { const db = await openDB(); return new Promise((res, rej) => { const t = db.transaction("photos", "readwrite"); t.objectStore("photos").delete(id); t.oncomplete = res; t.onerror = () => rej(t.error); }); };
+// Downscale big camera files (and bake in EXIF rotation) before storing.
+async function shrink(file) {
+  try {
+    const bmp = await createImageBitmap(file, { imageOrientation: "from-image" });
+    const k = Math.min(1, MAX_EDGE / Math.max(bmp.width, bmp.height));
+    if (k === 1 && file.size < 2.5e6) return file;
+    const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+    return await new Promise((res) => c.toBlob((b) => res(b || file), "image/jpeg", 0.9));
+  } catch { return file; }
+}
+
 const readStored = (mode) => { try { return localStorage.getItem(STORE_KEY[mode]); } catch { return null; } };
 const pickDefault = (mode) => { const s = readStored(mode); return LAYOUTS[mode].some((l) => l.id === s) ? s : LAYOUTS[mode][0].id; };
 
@@ -104,6 +127,21 @@ export default function FlyerPage() {
   const [note, setNote] = useState("");
   const [scale, setScale] = useState(0.35);
   const [canShare, setCanShare] = useState(false);
+  const [myPhotos, setMyPhotos] = useState([]); // [{ id, url }]
+  const urlCache = useRef(new Map()); // id -> stable object URL, so a selected photo survives reloads of the list
+
+  const loadMyPhotos = async () => {
+    try {
+      const recs = await dbAll();
+      const list = recs.map((r) => {
+        if (!urlCache.current.has(r.id)) urlCache.current.set(r.id, URL.createObjectURL(r.blob));
+        return { id: r.id, url: urlCache.current.get(r.id) };
+      });
+      setMyPhotos(list);
+      return list;
+    } catch { return []; /* private mode or no IndexedDB: upload still works for the session */ }
+  };
+  useEffect(() => { loadMyPhotos(); }, []);
 
   const boardRef = useRef(null);
   const holderRef = useRef(null);
@@ -170,9 +208,28 @@ export default function FlyerPage() {
     try { await navigator.clipboard.writeText(caption); setNote("Caption copied."); } catch { setNote("Select the caption text and copy it."); }
   };
 
-  const onUpload = (e) => {
+  const onUpload = async (e) => {
     const file = e.target.files && e.target.files[0]; if (!file) return;
-    setPhoto(URL.createObjectURL(file)); setFocus({ x: 50, y: 30 }); setZoom(1);
+    e.target.value = "";
+    const blob = await shrink(file);
+    setFocus({ x: 50, y: 30 }); setZoom(1);
+    try {
+      const id = Date.now();
+      await dbPut({ id, blob, name: file.name });
+      const all = await dbAll();
+      for (const old of all.slice(MAX_PHOTOS)) { await dbDel(old.id); const u = urlCache.current.get(old.id); if (u) { URL.revokeObjectURL(u); urlCache.current.delete(old.id); } }
+      const list = await loadMyPhotos();
+      const mine = list.find((p) => p.id === id);
+      if (mine) { setPhoto(mine.url); return; }
+    } catch { /* storage unavailable: still usable for this session */ }
+    setPhoto(URL.createObjectURL(blob));
+  };
+
+  const removeMyPhoto = async (id, url) => {
+    try { await dbDel(id); } catch { /* ignore */ }
+    if (photo === url) { setPhoto(PHOTOS[0].src); setFocus({ x: 50, y: 30 }); setZoom(1); }
+    await loadMyPhotos();
+    URL.revokeObjectURL(url); urlCache.current.delete(id);
   };
 
   const Layout = layout.Comp;
@@ -259,9 +316,15 @@ export default function FlyerPage() {
 
             <Field l="Photo">
               <div className="flyer-thumbs">
-                <button className={!PHOTOS.some((p) => p.src === photo) ? "on" : ""} onClick={() => fileRef.current && fileRef.current.click()} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, color: "var(--gold)", fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 1, textTransform: "uppercase", background: "rgba(201,164,74,0.1)", border: "2px dashed rgba(201,164,74,0.45)" }}>
-                  <span style={{ fontSize: 22, lineHeight: 1 }}>+</span>Your photo
+                <button className={!PHOTOS.some((p) => p.src === photo) && !myPhotos.some((p) => p.url === photo) ? "on" : ""} onClick={() => fileRef.current && fileRef.current.click()} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, color: "var(--gold)", fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 1, textTransform: "uppercase", background: "rgba(201,164,74,0.1)", border: "2px dashed rgba(201,164,74,0.45)" }}>
+                  <span style={{ fontSize: 22, lineHeight: 1 }}>+</span>Add photo
                 </button>
+                {myPhotos.map((p) => (
+                  <button key={p.id} className={photo === p.url ? "on" : ""} onClick={() => { setPhoto(p.url); setFocus({ x: 50, y: 30 }); setZoom(1); }} style={{ position: "relative" }} title="My photo">
+                    <img src={p.url} alt="" />
+                    <span role="button" aria-label="Remove photo" onClick={(e) => { e.stopPropagation(); removeMyPhoto(p.id, p.url); }} style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.75)", color: "#fff", fontSize: 12, lineHeight: "20px", textAlign: "center", fontFamily: "'Source Sans 3',sans-serif" }}>×</span>
+                  </button>
+                ))}
                 {PHOTOS.map((p) => (
                   <button key={p.src} className={photo === p.src ? "on" : ""} onClick={() => { setPhoto(p.src); setFocus({ x: 50, y: 30 }); setZoom(1); }} title={p.label}>
                     <img src={p.src} alt={p.label} loading="lazy" />
@@ -269,7 +332,9 @@ export default function FlyerPage() {
                 ))}
               </div>
               <input ref={fileRef} type="file" accept="image/*" onChange={onUpload} style={{ display: "none" }} />
-              {layout.noPhoto && <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 6 }}>This layout doesn't use a photo.</div>}
+              <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 6 }}>
+                {layout.noPhoto ? "This layout doesn't use a photo." : myPhotos.length ? `${myPhotos.length} saved on this device. Tap × to remove.` : "Photos you add are saved on this device for the season."}
+              </div>
             </Field>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
