@@ -1,9 +1,8 @@
 // pages/HomePage.jsx
 import { useState, useEffect } from "react";
-import { FadeIn, CountUp, Spade, Icon, news, schedule, homeVenue, teamLogos } from "../shared";
+import { FadeIn, CountUp, Spade, Icon, news, nextGame, lastResult, computeRecord, gameTime, teamLogos } from "../shared";
 
 const latestNews = [...news].sort((a, b) => (b.sortKey || 0) - (a.sortKey || 0));
-const nextGame = schedule[0]?.games[0];
 
 const GameBadge = ({ team, size = 46 }) => {
   const logo = teamLogos[team];
@@ -12,15 +11,14 @@ const GameBadge = ({ team, size = 46 }) => {
     : <div style={{ width: size, height: size, borderRadius: "50%", background: "rgba(132,0,54,0.3)", border: "2px solid rgba(132,0,54,0.5)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Oswald',sans-serif", fontSize: Math.round(size * 0.4), fontWeight: 700, color: "#fff" }}>{team[0]}</div>;
 };
 
-const TIP_OFF = new Date("2026-12-04T19:00:00-05:00").getTime();
-
-function Countdown() {
+function Countdown({ target, label }) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
-  const diff = Math.max(0, TIP_OFF - now);
+  if (!target) return null;
+  const diff = Math.max(0, target - now);
   if (diff <= 0) return null;
   const d = Math.floor(diff / 86400000);
   const h = Math.floor(diff / 3600000) % 24;
@@ -30,7 +28,7 @@ function Countdown() {
   return (
     <div style={{ marginTop: 30 }}>
       <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 4, color: "rgba(201,164,74,0.85)", textTransform: "uppercase", marginBottom: 12 }}>
-        Countdown to Tip-Off · Dec 4 vs Chester
+        {label}
       </div>
       <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
         {[[d, "Days"], [pad(h), "Hrs"], [pad(m), "Min"], [pad(s), "Sec"]].map(([v, l], i) => (
@@ -64,6 +62,14 @@ export default function HomePage({ goTo }) {
     const timer = setInterval(() => setActiveBanner(p => (p + 1) % bannerTexts.length), 4500);
     return () => clearInterval(timer);
   }, []);
+
+  const ng = nextGame();
+  const rec = computeRecord();
+  const last = lastResult();
+  const isOpener = ng && ng.iso === "2026-12-04T19:00:00-05:00";
+  const cdLabel = ng
+    ? `${isOpener ? "Countdown to Tip-Off" : "Next Game"} · ${ng.date} ${ng.home ? "vs" : "@"} ${ng.opp}`
+    : "Season Complete · Thank You, Aces Nation";
 
   const wordStyle = (fromLeft) => ({
     fontFamily: "'Anton', sans-serif",
@@ -109,27 +115,49 @@ export default function HomePage({ goTo }) {
             <div style={{ display:"flex", gap:8, justifyContent:"center", marginTop:18 }}>
               {bannerTexts.map((_,i) => <div key={i} onClick={() => setActiveBanner(i)} style={{ width:6, height:6, borderRadius:"50%", background:i===activeBanner?"var(--gold)":"rgba(255,255,255,0.2)", cursor:"pointer", transition:"background 0.3s" }} />)}
             </div>
-            <Countdown />
+            <Countdown target={ng ? gameTime(ng) : null} label={cdLabel} />
           </div>
         </div>
       </section>
 
+      {/* Latest result (auto-appears once a game has a score) */}
+      {last && last.result && (() => {
+        const win = last.result.us > last.result.them;
+        return (
+          <section style={{ background:win?"linear-gradient(180deg,#0a0005,#0b1407)":"linear-gradient(180deg,#0a0005,#140707)", borderTop:"1px solid rgba(201,164,74,0.25)", padding:"18px 5%" }}>
+            <div style={{ maxWidth:1100, margin:"0 auto", display:"flex", flexWrap:"wrap", alignItems:"center", justifyContent:"center", gap:16 }}>
+              <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:3, color:"rgba(255,255,255,0.5)", textTransform:"uppercase" }}>Latest Result · {last.date}</span>
+              <span style={{ fontFamily:"'Anton',sans-serif", fontSize:18, letterSpacing:1, color:win?"#4ade80":"#f87171" }}>{win?"W":"L"}</span>
+              <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:"clamp(16px,2.2vw,22px)", fontWeight:700, textTransform:"uppercase", color:"#fff" }}>
+                Aces {last.result.us}<span style={{ color:"rgba(255,255,255,0.35)" }}>–</span>{last.result.them} {last.opp}
+              </span>
+              <button onClick={()=>goTo("schedule")} style={{ fontFamily:"'Oswald',sans-serif", fontSize:11, letterSpacing:2, textTransform:"uppercase", color:"var(--gold)", background:"transparent", border:"1px solid rgba(201,164,74,0.4)", borderRadius:8, padding:"8px 16px", cursor:"pointer" }}>Results →</button>
+            </div>
+          </section>
+        );
+      })()}
+
       {/* Next game */}
-      {nextGame && (
+      {ng && (
         <section style={{ background:"linear-gradient(180deg,#0a0005,#0d0008)", borderTop:"1px solid rgba(132,0,54,0.25)", padding:"26px 5%" }}>
           <div style={{ maxWidth:1100, margin:"0 auto", display:"flex", flexWrap:"wrap", alignItems:"center", justifyContent:"space-between", gap:20 }}>
             <div style={{ display:"flex", alignItems:"center", gap:24, flexWrap:"wrap" }}>
               <div style={{ minWidth:110 }}>
-                <div style={{ display:"inline-block", padding:"3px 11px", borderRadius:20, background:"var(--maroon)", fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, fontWeight:700, color:"#fff", textTransform:"uppercase", marginBottom:8 }}>Next Game</div>
-                <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:13, letterSpacing:1.5, color:"rgba(255,255,255,0.6)", textTransform:"uppercase" }}>{nextGame.date} · {nextGame.time}</div>
+                <div style={{ display:"flex", gap:7, alignItems:"center", marginBottom:8, flexWrap:"wrap" }}>
+                  <span style={{ display:"inline-block", padding:"3px 11px", borderRadius:20, background:"var(--maroon)", fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, fontWeight:700, color:"#fff", textTransform:"uppercase" }}>Next Game</span>
+                  {rec.played > 0 && (
+                    <span style={{ display:"inline-block", padding:"3px 11px", borderRadius:20, background:"rgba(201,164,74,0.14)", border:"1px solid rgba(201,164,74,0.3)", fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, fontWeight:700, color:"var(--gold)", textTransform:"uppercase" }}>{rec.w}–{rec.l}{rec.streak !== "—" ? ` · ${rec.streak}` : ""}</span>
+                  )}
+                </div>
+                <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:13, letterSpacing:1.5, color:"rgba(255,255,255,0.6)", textTransform:"uppercase" }}>{ng.date} · {ng.time}</div>
               </div>
               <div style={{ display:"flex", alignItems:"center", gap:14 }}>
                 <GameBadge team="Lower Merion" />
-                <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:15, color:"rgba(255,255,255,0.4)" }}>{nextGame.home?"vs":"@"}</span>
-                <GameBadge team={nextGame.opp} />
+                <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:15, color:"rgba(255,255,255,0.4)" }}>{ng.home?"vs":"@"}</span>
+                <GameBadge team={ng.opp} />
                 <div>
-                  <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:"clamp(18px,2.4vw,24px)", fontWeight:700, textTransform:"uppercase", lineHeight:1.1 }}>{nextGame.home?"vs ":"@ "}{nextGame.opp}</div>
-                  <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:12, color:"rgba(255,255,255,0.45)", marginTop:2 }}>{nextGame.home?homeVenue:"Away"}</div>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:"clamp(18px,2.4vw,24px)", fontWeight:700, textTransform:"uppercase", lineHeight:1.1 }}>{ng.home?"vs ":"@ "}{ng.opp}</div>
+                  <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:12, color:"rgba(255,255,255,0.45)", marginTop:2 }}>{ng.venue || (ng.home ? "Home" : "Away")}</div>
                 </div>
               </div>
             </div>

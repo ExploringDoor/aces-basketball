@@ -398,35 +398,89 @@ export const standings = [
 
 export const scheduleSeason = "2026-27";
 export const homeVenue = "Kobe Bryant Gymnasium";
-// `home`: true = home game. `conf`: Central League game. `tag`: special note.
+// Synced to the official DigitalSports varsity feed (lmaces.digitalsports.com).
+//   home: true = home game · conf: Central League game · tag: special note
+//   iso:  tip-off in US Eastern (EST all season) — drives the live countdown,
+//         next-game strip and auto-sorting. Keep it accurate when dates change.
+//   venue: where it's played · exhibition: scrimmage (excluded from the record)
+//   result: null until played, then { us, them } with the ACES score first.
+//           Fill result in after each game and the record recomputes itself.
 export const schedule = [
+  { month: "November 2026", games: [
+    { date: "Nov 30", opp: "Reading",         home: false, time: "1:00 PM", iso: "2026-11-30T13:00:00-05:00", venue: "Geigle Complex", exhibition: true, tag: "Scrimmage", result: null },
+  ]},
   { month: "December 2026", games: [
-    { date: "Dec 4",  opp: "Chester",         home: true,  time: "7:00 PM" },
-    { date: "Dec 8",  opp: "Conestoga",       home: true,  time: "7:00 PM", conf: true },
-    { date: "Dec 10", opp: "Ridley",          home: true,  time: "7:00 PM", conf: true },
-    { date: "Dec 11", opp: "Coatesville",     home: false, time: "TBD",     tag: "Showcase · West Chester University" },
-    { date: "Dec 15", opp: "Haverford",       home: true,  time: "7:00 PM", conf: true },
-    { date: "Dec 17", opp: "Upper Darby",     home: false, time: "7:00 PM", conf: true },
-    { date: "Dec 22", opp: "Garnet Valley",   home: false, time: "7:00 PM", conf: true },
-    { date: "Dec 26–31", opp: "Cactus Jam",   home: false, time: "3 Games", tag: "Tournament · Phoenix, AZ" },
+    { date: "Dec 1",  opp: "Liberty",         home: false, time: "4:00 PM", iso: "2026-12-01T16:00:00-05:00", venue: "Cumberland Valley HS", exhibition: true, tag: "Scrimmage", result: null },
+    { date: "Dec 4",  opp: "Chester",         home: true,  time: "7:00 PM", iso: "2026-12-04T19:00:00-05:00", venue: "Kobe Bryant Gymnasium", result: null },
+    { date: "Dec 8",  opp: "Conestoga",       home: true,  time: "7:00 PM", iso: "2026-12-08T19:00:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, result: null },
+    { date: "Dec 10", opp: "Ridley",          home: true,  time: "7:00 PM", iso: "2026-12-10T19:00:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, result: null },
+    { date: "Dec 15", opp: "Haverford",       home: false, time: "6:00 PM", iso: "2026-12-15T18:00:00-05:00", venue: "Haverford HS", conf: true, tag: "Rescheduled", result: null },
+    { date: "Dec 17", opp: "Upper Darby",     home: false, time: "5:15 PM", iso: "2026-12-17T17:15:00-05:00", venue: "Upper Darby HS", conf: true, tag: "Rescheduled", result: null },
+    { date: "Dec 22", opp: "Garnet Valley",   home: false, time: "7:00 PM", iso: "2026-12-22T19:00:00-05:00", venue: "Garnet Valley HS", conf: true, result: null },
+    { date: "Dec 26–31", opp: "Cactus Jam",   home: false, time: "3 Games", iso: "2026-12-26T12:00:00-05:00", venue: "Phoenix, AZ", multi: true, tag: "Tournament · Phoenix, AZ", result: null },
   ]},
   { month: "January 2027", games: [
-    { date: "Jan 5",  opp: "Strath Haven",    home: true,  time: "1:30 PM", conf: true },
-    { date: "Jan 7",  opp: "Penncrest",       home: false, time: "7:00 PM", conf: true },
-    { date: "Jan 9",  opp: "Radnor",          home: true,  time: "7:00 PM", conf: true },
-    { date: "Jan 12", opp: "Harriton",        home: false, time: "7:00 PM", conf: true },
-    { date: "Jan 14", opp: "Springfield",     home: true,  time: "7:00 PM", conf: true },
-    { date: "Jan 16", opp: "William Allen",   home: false, time: "2:30 PM" },
-    { date: "Jan 20", opp: "Marple Newtown",  home: false, time: "7:00 PM", conf: true },
-    { date: "Jan 22", opp: "Conestoga",       home: false, time: "7:00 PM", conf: true },
-    { date: "Jan 26", opp: "Ridley",          home: false, time: "1:30 PM", conf: true },
-    { date: "Jan 28", opp: "Haverford",       home: false, time: "7:00 PM", conf: true },
-    { date: "Jan 30", opp: "Upper Darby",     home: true,  time: "7:00 PM", conf: true },
+    { date: "Jan 5",  opp: "Strath Haven",    home: true,  time: "7:00 PM", iso: "2027-01-05T19:00:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, result: null },
+    { date: "Jan 7",  opp: "Penncrest",       home: false, time: "7:00 PM", iso: "2027-01-07T19:00:00-05:00", venue: "Penncrest HS · Kaufman Gym", conf: true, result: null },
+    { date: "Jan 9",  opp: "Radnor",          home: true,  time: "1:30 PM", iso: "2027-01-09T13:30:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, tag: "Rescheduled", result: null },
+    { date: "Jan 12", opp: "Harriton",        home: false, time: "7:00 PM", iso: "2027-01-12T19:00:00-05:00", venue: "Harriton HS", conf: true, result: null },
+    { date: "Jan 14", opp: "Springfield",     home: true,  time: "7:00 PM", iso: "2027-01-14T19:00:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, result: null },
+    { date: "Jan 16", opp: "William Allen",   home: false, time: "2:30 PM", iso: "2027-01-16T14:30:00-05:00", venue: "William Allen HS", result: null },
+    { date: "Jan 19", opp: "Marple Newtown",  home: false, time: "7:00 PM", iso: "2027-01-19T19:00:00-05:00", venue: "Marple Newtown HS", conf: true, tag: "Rescheduled", result: null },
+    { date: "Jan 22", opp: "Conestoga",       home: false, time: "7:00 PM", iso: "2027-01-22T19:00:00-05:00", venue: "Conestoga HS", conf: true, result: null },
+    { date: "Jan 26", opp: "Ridley",          home: false, time: "7:00 PM", iso: "2027-01-26T19:00:00-05:00", venue: "Ridley HS", conf: true, result: null },
+    { date: "Jan 28", opp: "Haverford",       home: true,  time: "7:30 PM", iso: "2027-01-28T19:30:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, tag: "Rescheduled", result: null },
+    { date: "Jan 30", opp: "Upper Darby",     home: true,  time: "1:30 PM", iso: "2027-01-30T13:30:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, result: null },
   ]},
   { month: "February 2027", games: [
-    { date: "Feb 2",  opp: "Garnet Valley",   home: true,  time: "7:00 PM", conf: true },
+    { date: "Feb 2",  opp: "Garnet Valley",   home: true,  time: "7:00 PM", iso: "2027-02-02T19:00:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, result: null },
   ]},
 ];
+
+// ─── Live season helpers (date-aware) ─────────────────────────
+// These recompute from `schedule` on every render, so the home-page
+// countdown, next-game strip, record and schedule splits all stay
+// correct as dates pass and as you fill in `result` on played games.
+export const allGames = schedule.flatMap(m => m.games.map(g => ({ ...g, month: m.month })));
+export const gameTime = (g) => (g && g.iso ? new Date(g.iso).getTime() : NaN);
+const isCountable = (g) => g && !g.exhibition && !g.multi && Number.isFinite(gameTime(g));
+
+// Next countable game still ahead (a game stays "current" until ~3h after tip).
+export function nextGame(now = Date.now()) {
+  return allGames
+    .filter((g) => isCountable(g) && gameTime(g) + 3 * 3600000 >= now)
+    .sort((a, b) => gameTime(a) - gameTime(b))[0] || null;
+}
+
+// Most recent played game that has a result.
+export function lastResult(now = Date.now()) {
+  return allGames
+    .filter((g) => g.result && Number.isFinite(gameTime(g)) && gameTime(g) <= now)
+    .sort((a, b) => gameTime(b) - gameTime(a))[0] || null;
+}
+
+// Win/loss record built from filled-in results (scrimmages & tournaments excluded).
+export function computeRecord() {
+  const played = allGames
+    .filter((g) => g.result && !g.exhibition && !g.multi)
+    .sort((a, b) => gameTime(a) - gameTime(b));
+  let w = 0, l = 0, cw = 0, cl = 0, hw = 0, hl = 0, aw = 0, al = 0;
+  for (const g of played) {
+    const win = g.result.us > g.result.them;
+    win ? w++ : l++;
+    if (g.conf) win ? cw++ : cl++;
+    if (g.home) (win ? hw++ : hl++); else (win ? aw++ : al++);
+  }
+  let streak = "—", sk = null, sc = 0;
+  for (let i = played.length - 1; i >= 0; i--) {
+    const win = played[i].result.us > played[i].result.them;
+    if (sk === null) { sk = win; sc = 1; }
+    else if (win === sk) sc++;
+    else break;
+  }
+  if (sk !== null) streak = (sk ? "W" : "L") + sc;
+  return { w, l, cw, cl, hw, hl, aw, al, streak, played: played.length };
+}
 
 // ─── Roster ───────────────────────────────────────────────────
 // PLACEHOLDER roster. Replace `name` (and add `photo`/`hometown`/`bio`) with
