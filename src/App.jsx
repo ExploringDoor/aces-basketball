@@ -9,6 +9,7 @@ import NewsPage          from "./pages/NewsPage";
 import FallClinicsPage   from "./pages/FallClinicsPage";
 import StandingsPage     from "./pages/StandingsPage";
 import StorePage         from "./pages/StorePage";
+import FlyerPage         from "./pages/FlyerPage";
 import HistoryPage       from "./pages/HistoryPage";
 import ThousandClubPage  from "./pages/ThousandClubPage";
 import SchedulePage      from "./pages/SchedulePage";
@@ -30,7 +31,7 @@ import AcademicsPage      from "./pages/AcademicsPage";
 import SponsorshipsPage   from "./pages/SponsorshipsPage";
 
 const PAGES = {
-  home: null, news: NewsPage, clinics: FallClinicsPage, store: StorePage, standings: StandingsPage, history: HistoryPage, thousand: ThousandClubPage,
+  home: null, news: NewsPage, clinics: FallClinicsPage, store: StorePage, flyers: FlyerPage, standings: StandingsPage, history: HistoryPage, thousand: ThousandClubPage,
   schedule: SchedulePage, story: StoryPage, championships: ChampionshipsPage,
   league: CentralLeaguePage, alumni: AlumniPage, coaching: CoachingPage,
   roster: RosterPage, records: RecordBookPage, photos: PhotosPage,
@@ -166,7 +167,11 @@ const Dropdown = ({ item, page, goTo, onTabHover, onTabLeave, btnRef }) => {
 
 // ── App ───────────────────────────────────────────────────
 export default function App() {
-  const [page, setPage] = useState("home");
+  // Deep links: /#schedule, /#flyers, etc. open that page directly.
+  const [page, setPage] = useState(() => {
+    const h = (window.location.hash || "").replace(/^#\/?/, "");
+    return h && h in PAGES ? h : "home";
+  });
   const [mobileOpen, setMobileOpen] = useState(false);
   const tabsRef = useRef(null);
   const gliderRef = useRef(null);
@@ -188,7 +193,10 @@ export default function App() {
     if (id === page) { window.scrollTo(0, 0); return; }
     // Maroon sweep covers the screen, page swaps underneath, sweep exits.
     setSweep(s => s + 1);
-    setTimeout(() => { setPage(id); window.scrollTo(0, 0); }, 310);
+    setTimeout(() => {
+      setPage(id); window.scrollTo(0, 0);
+      window.history.replaceState(null, "", id === "home" ? window.location.pathname : `#${id}`);
+    }, 310);
   };
 
   const PageComponent = PAGES[page];
