@@ -127,8 +127,16 @@ export default function FlyerPage() {
   const [note, setNote] = useState("");
   const [scale, setScale] = useState(0.35);
   const [canShare, setCanShare] = useState(false);
-  const [myPhotos, setMyPhotos] = useState([]); // [{ id, url }]
-  const urlCache = useRef(new Map()); // id -> stable object URL, so a selected photo survives reloads of the list
+  const [myPhotos, setMyPhotos] = useState([]); // [{ id, url }] thumbnails (object URLs)
+  const [selectedId, setSelectedId] = useState(null); // library photo in use, null = preset
+  const urlCache = useRef(new Map());  // id -> object URL for the thumbnail
+  const dataCache = useRef(new Map()); // id -> data: URL for the board (html-to-image cannot inline blob: URLs)
+  const blobToDataURL = (b) => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(b); });
+  const useLibraryPhoto = async (p) => {
+    let d = dataCache.current.get(p.id);
+    if (!d) { d = await blobToDataURL(await (await fetch(p.url)).blob()); dataCache.current.set(p.id, d); }
+    setPhoto(d); setSelectedId(p.id); setFocus({ x: 50, y: 30 }); setZoom(1);
+  };
 
   const loadMyPhotos = async () => {
     try {
@@ -178,7 +186,8 @@ export default function FlyerPage() {
   const render = async () => {
     await document.fonts.ready;
     await Promise.all(["'Sedgwick Ave Display'", "'Permanent Marker'", "'Bebas Neue'", "Bangers", "Anton", "Oswald", "'Playfair Display'"].map((fam) => document.fonts.load(`40px ${fam}`).catch(() => {})));
-    const opts = { pixelRatio: 1, cacheBust: true, width: W, height: H };
+    // No cacheBust: it appends ?cache= to every image URL, which breaks blob: photos from the device library.
+    const opts = { pixelRatio: 1, width: W, height: H };
     await toPng(boardRef.current, opts); // warm-up pass: Safari drops fonts/images on the first render
     return toPng(boardRef.current, opts);
   };
@@ -220,16 +229,16 @@ export default function FlyerPage() {
       for (const old of all.slice(MAX_PHOTOS)) { await dbDel(old.id); const u = urlCache.current.get(old.id); if (u) { URL.revokeObjectURL(u); urlCache.current.delete(old.id); } }
       const list = await loadMyPhotos();
       const mine = list.find((p) => p.id === id);
-      if (mine) { setPhoto(mine.url); return; }
+      if (mine) { await useLibraryPhoto(mine); return; }
     } catch { /* storage unavailable: still usable for this session */ }
-    setPhoto(URL.createObjectURL(blob));
+    setPhoto(await blobToDataURL(blob)); setSelectedId(null);
   };
 
   const removeMyPhoto = async (id, url) => {
     try { await dbDel(id); } catch { /* ignore */ }
-    if (photo === url) { setPhoto(PHOTOS[0].src); setFocus({ x: 50, y: 30 }); setZoom(1); }
+    if (selectedId === id) { setPhoto(PHOTOS[0].src); setSelectedId(null); setFocus({ x: 50, y: 30 }); setZoom(1); }
     await loadMyPhotos();
-    URL.revokeObjectURL(url); urlCache.current.delete(id);
+    URL.revokeObjectURL(url); urlCache.current.delete(id); dataCache.current.delete(id);
   };
 
   const Layout = layout.Comp;
@@ -316,17 +325,17 @@ export default function FlyerPage() {
 
             <Field l="Photo">
               <div className="flyer-thumbs">
-                <button className={!PHOTOS.some((p) => p.src === photo) && !myPhotos.some((p) => p.url === photo) ? "on" : ""} onClick={() => fileRef.current && fileRef.current.click()} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, color: "var(--gold)", fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 1, textTransform: "uppercase", background: "rgba(201,164,74,0.1)", border: "2px dashed rgba(201,164,74,0.45)" }}>
+                <button className={selectedId == null && !PHOTOS.some((p) => p.src === photo) ? "on" : ""} onClick={() => fileRef.current && fileRef.current.click()} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, color: "var(--gold)", fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 1, textTransform: "uppercase", background: "rgba(201,164,74,0.1)", border: "2px dashed rgba(201,164,74,0.45)" }}>
                   <span style={{ fontSize: 22, lineHeight: 1 }}>+</span>Add photo
                 </button>
                 {myPhotos.map((p) => (
-                  <button key={p.id} className={photo === p.url ? "on" : ""} onClick={() => { setPhoto(p.url); setFocus({ x: 50, y: 30 }); setZoom(1); }} style={{ position: "relative" }} title="My photo">
+                  <button key={p.id} className={selectedId === p.id ? "on" : ""} onClick={() => useLibraryPhoto(p)} style={{ position: "relative" }} title="My photo">
                     <img src={p.url} alt="" />
                     <span role="button" aria-label="Remove photo" onClick={(e) => { e.stopPropagation(); removeMyPhoto(p.id, p.url); }} style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.75)", color: "#fff", fontSize: 12, lineHeight: "20px", textAlign: "center", fontFamily: "'Source Sans 3',sans-serif" }}>×</span>
                   </button>
                 ))}
                 {PHOTOS.map((p) => (
-                  <button key={p.src} className={photo === p.src ? "on" : ""} onClick={() => { setPhoto(p.src); setFocus({ x: 50, y: 30 }); setZoom(1); }} title={p.label}>
+                  <button key={p.src} className={photo === p.src ? "on" : ""} onClick={() => { setPhoto(p.src); setSelectedId(null); setFocus({ x: 50, y: 30 }); setZoom(1); }} title={p.label}>
                     <img src={p.src} alt={p.label} loading="lazy" />
                   </button>
                 ))}
