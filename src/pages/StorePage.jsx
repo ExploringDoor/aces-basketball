@@ -2,6 +2,9 @@
 import { useState } from "react";
 import { FadeIn, Spade, Icon } from "../shared";
 
+// Flip to false when the store goes live — the full shop below is ready to ship.
+const COMING_SOON = true;
+
 // EDIT: products, prices, and colors. Orders email to aceshoops@gmail.com;
 // swap `submitOrder` for a real checkout (Stripe / print-on-demand) later.
 const COLORS = {
@@ -33,6 +36,32 @@ export default function StorePage() {
     setCart(c => [...c, { name: prod.name, color, size, price: prod.price }]);
   };
   const total = cart.reduce((n, i) => n + i.price, 0);
+
+  if (COMING_SOON) {
+    return (
+      <section id="store" style={{ background: "#0a0005", padding: "120px 5% 160px", minHeight: "100vh", position: "relative", overflow: "hidden", isolation: "isolate", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div className="ghost-word" style={{ top: 110, transform: "none", left: "auto", right: "-2%" }}>THE SHOP</div>
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 440, zIndex: -1, backgroundImage: "linear-gradient(180deg, rgba(74,0,30,0.45) 0%, rgba(10,0,5,0.78) 55%, rgba(10,0,5,1) 97%), url('/ig/seniors.jpg')", backgroundSize: "cover", backgroundPosition: "center 22%", pointerEvents: "none" }} />
+        <FadeIn>
+          <div style={{ maxWidth: 620, margin: "0 auto", textAlign: "center" }}>
+            <img src="/Bulldog.png" alt="" style={{ height: 120, width: "auto", filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.5))", marginBottom: 28 }} />
+            <div className="section-label" style={{ justifyContent: "center" }}><Spade size={14} color="#840036" /> Rep the Aces</div>
+            <h2 className="section-title" style={{ marginTop: 6 }}>Team<br /><span style={{ color: "var(--gold)" }}>Store</span></h2>
+            <div style={{ display: "inline-block", marginTop: 22, padding: "8px 22px", borderRadius: 30, background: "rgba(201,164,74,0.14)", border: "1px solid rgba(201,164,74,0.45)", fontFamily: "'Oswald',sans-serif", fontSize: 14, letterSpacing: 4, textTransform: "uppercase", color: "var(--gold)", fontWeight: 600 }}>
+              Coming Soon
+            </div>
+            <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 16, color: "rgba(255,255,255,0.6)", marginTop: 26, lineHeight: 1.8 }}>
+              Official Aces spirit wear for players, families, and fans is on the way — tees, hoodies, shooting shirts, and more. Every purchase will support the Lower Merion Basketball booster fund.
+            </p>
+            <div style={{ marginTop: 26, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "'Source Sans 3',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
+              <span style={{ color: "rgba(201,164,74,0.8)" }}><Icon name="heart" size={16} /></span>
+              Check back soon — we'll announce when the shop opens.
+            </div>
+          </div>
+        </FadeIn>
+      </section>
+    );
+  }
 
   const submitOrder = () => {
     const lines = cart.map((i, n) => `${n + 1}. ${i.name} — ${i.color}, ${i.size} — $${i.price}`).join("%0D%0A");

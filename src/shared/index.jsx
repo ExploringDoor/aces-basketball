@@ -406,11 +406,7 @@ export const homeVenue = "Kobe Bryant Gymnasium";
 //   result: null until played, then { us, them } with the ACES score first.
 //           Fill result in after each game and the record recomputes itself.
 export const schedule = [
-  { month: "November 2026", games: [
-    { date: "Nov 30", opp: "Reading",         home: false, time: "1:00 PM", iso: "2026-11-30T13:00:00-05:00", venue: "Geigle Complex", exhibition: true, tag: "Scrimmage", result: null },
-  ]},
   { month: "December 2026", games: [
-    { date: "Dec 1",  opp: "Liberty",         home: false, time: "4:00 PM", iso: "2026-12-01T16:00:00-05:00", venue: "Cumberland Valley HS", exhibition: true, tag: "Scrimmage", result: null },
     { date: "Dec 4",  opp: "Chester",         home: true,  time: "7:00 PM", iso: "2026-12-04T19:00:00-05:00", venue: "Kobe Bryant Gymnasium", result: null },
     { date: "Dec 8",  opp: "Conestoga",       home: true,  time: "7:00 PM", iso: "2026-12-08T19:00:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, result: null },
     { date: "Dec 10", opp: "Ridley",          home: true,  time: "7:00 PM", iso: "2026-12-10T19:00:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, result: null },

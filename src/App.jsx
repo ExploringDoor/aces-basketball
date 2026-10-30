@@ -43,7 +43,6 @@ const NAV = [
   { id:"home", label:"Home" },
   { id:"news", label:"News" },
   { id:"clinics", label:"Clinics" },
-  { id:"store", label:"Store" },
   { label:"Season", children:[
     { id:"roster",    label:"Roster" },
     { id:"schedule",  label:"Schedule" },
@@ -74,6 +73,7 @@ const NAV = [
     { id:"videos", label:"Videos" },
     { id:"social",   label:"Follow Us" },
     { id:"support",  label:"Support the Aces" },
+    { id:"store",    label:"Team Store", badge:"Soon" },
   ]},
 ];
 
@@ -145,7 +145,7 @@ const Dropdown = ({ item, page, goTo, onTabHover, onTabLeave, btnRef }) => {
           <div style={{ position:"absolute", top:1, left:"50%", width:10, height:10, background:"rgba(8,0,4,0.97)", borderLeft:"1px solid rgba(132,0,54,0.5)", borderTop:"1px solid rgba(132,0,54,0.5)", transform:"translateX(-50%) rotate(45deg)" }} />
           {item.children.map(child => (
             <button key={child.id} onClick={() => goTo(child.id)} style={{
-              display:"block", width:"100%", background:"none", border:"none",
+              display:"flex", alignItems:"center", gap:8, width:"100%", background:"none", border:"none",
               color: page===child.id ? "var(--gold)" : "rgba(255,255,255,0.6)",
               fontFamily:"'Oswald',sans-serif", fontSize:12, letterSpacing:"1.5px",
               padding:"10px 20px", textAlign:"left", textTransform:"uppercase",
@@ -154,6 +154,7 @@ const Dropdown = ({ item, page, goTo, onTabHover, onTabLeave, btnRef }) => {
               onMouseEnter={e => { e.currentTarget.style.color="var(--gold)"; e.currentTarget.style.paddingLeft="26px"; e.currentTarget.style.background="rgba(132,0,54,0.2)"; }}
               onMouseLeave={e => { e.currentTarget.style.color=page===child.id?"var(--gold)":"rgba(255,255,255,0.6)"; e.currentTarget.style.paddingLeft="20px"; e.currentTarget.style.background="none"; }}>
               {child.label}
+              {child.badge && <span style={{ fontSize:8, letterSpacing:1, padding:"2px 6px", borderRadius:10, background:"rgba(201,164,74,0.18)", border:"1px solid rgba(201,164,74,0.4)", color:"var(--gold)" }}>{child.badge}</span>}
             </button>
           ))}
           </div>
