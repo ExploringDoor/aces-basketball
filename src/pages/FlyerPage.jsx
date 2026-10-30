@@ -5,7 +5,8 @@
 import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { Spade, allGames, nextGame, gameTime, homeVenue, computeRecord } from "../shared";
-import { FINAL_LAYOUTS, Photo, oppLogoFor } from "./flyers/finalLayouts";
+import { FINAL_LAYOUTS, oppLogoFor } from "./flyers/finalLayouts";
+import { GAME_DAY_LAYOUTS } from "./flyers/gameDayLayouts";
 
 // Most /ig/*.jpg files are last season's finished flyers, not raw photos, so
 // only the two real photographs qualify as presets. Upload is the main path.
@@ -17,6 +18,8 @@ const PHOTOS = [
 const NY = "America/New_York";
 const GAMES = allGames.filter((g) => !g.exhibition);
 const OPENER = GAMES.find((g) => !g.multi);
+const LAYOUTS = { gameday: GAME_DAY_LAYOUTS, final: FINAL_LAYOUTS };
+const STORE_KEY = { gameday: "aces-gameday-layout", final: "aces-final-layout" };
 
 const weekdayOf = (g) => (g.iso ? new Date(g.iso).toLocaleDateString("en-US", { weekday: "long", timeZone: NY }).toUpperCase() : "");
 const shortDateOf = (g) => (g.iso ? new Intl.DateTimeFormat("en-US", { month: "numeric", day: "numeric", timeZone: NY }).format(new Date(g.iso)) : g.date || "");
@@ -76,39 +79,8 @@ const projectedRecord = (g, us, them) => {
   return `${r.w + (win ? 1 : 0)}-${r.l + (loss ? 1 : 0)}`;
 };
 
-// ── Game Day art board (1080×1350) ─────────────────────────────
-// Mirrors the program's existing Instagram template: full-bleed photo, bulldogs
-// in the top corners, neon "GAME DAY" tag, black marker strips for the details.
-const Tape = ({ style, lines, size, align = "left" }) => (
-  <div style={{ position: "absolute", ...style, background: "#0a0a0a", padding: "12px 28px 16px", boxShadow: "0 12px 30px rgba(0,0,0,0.5)", textAlign: align }}>
-    {lines.map((l, i) => <div key={i} style={{ fontSize: size, lineHeight: 1.05, color: "#fff", whiteSpace: "nowrap" }}>{l}</div>)}
-  </div>
-);
-
-const GD_W = 1080, GD_H = 1350;
-function GameDayBoard({ f, photo, focus, zoom }) {
-  const oppSize = f.opp.length > 12 ? 48 : f.opp.length > 9 ? 56 : 66;
-  const venueSize = f.venue.length > 26 ? 28 : f.venue.length > 18 ? 36 : 42;
-  const stripBottom = f.event ? 240 : 150;
-  const glow = "0 0 2px #35d0ff, 0 0 3px #35d0ff, 5px 5px 0 #e3142f, 0 0 36px rgba(227,20,47,0.9), 0 0 12px rgba(0,0,0,0.6)";
-  return (
-    <div style={{ position: "absolute", inset: 0, fontFamily: "'Permanent Marker', cursive", color: "#fff" }}>
-      <Photo src={photo} focus={focus} zoom={zoom} />
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 68%, rgba(0,0,0,0.45) 100%)" }} />
-      <img src="/Bulldog.png" alt="" style={{ position: "absolute", top: 18, left: 10, height: 215, width: "auto", filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.55))" }} />
-      <img src="/Bulldog.png" alt="" style={{ position: "absolute", top: 18, right: 10, height: 215, width: "auto", transform: "scaleX(-1)", filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.55))" }} />
-      <div style={{ position: "absolute", top: 34, left: 0, right: 0, textAlign: "center", transform: "rotate(-4deg)" }}>
-        <div style={{ fontFamily: "'Sedgwick Ave Display', cursive", fontSize: 168, lineHeight: 1, letterSpacing: 1, color: "#fff", whiteSpace: "nowrap", textShadow: glow }}>GAME DAY</div>
-        <div style={{ height: 12, margin: "0 250px 0 190px", background: "linear-gradient(90deg, #ff1e3c, #ff5d75)", transform: "skewX(-25deg)", borderRadius: 6, boxShadow: "0 0 22px rgba(255,30,60,0.9), 0 0 6px #fff" }} />
-      </div>
-      <Tape style={{ left: 40, bottom: stripBottom, transform: "rotate(-5deg)" }} lines={[f.weekday, f.dateLine]} size={70} />
-      <Tape style={{ right: 40, bottom: stripBottom + 10, transform: "rotate(4deg)" }} lines={["VS.", f.opp.toUpperCase()]} size={oppSize} align="right" />
-      {f.event && <Tape style={{ left: "50%", bottom: 118, transform: "translateX(-50%) rotate(-3deg)" }} lines={[f.event.toUpperCase()]} size={f.event.length > 18 ? 54 : 70} />}
-      <div style={{ position: "absolute", left: 24, bottom: 26, background: "#000", padding: "10px 26px 14px", fontSize: venueSize, letterSpacing: 3, whiteSpace: "nowrap", maxWidth: 780, overflow: "hidden", textOverflow: "ellipsis", boxSizing: "border-box" }}>@{f.venue.toUpperCase()}</div>
-      {f.time && <div style={{ position: "absolute", right: 24, bottom: 26, background: "#000", padding: "10px 26px 14px", fontSize: 42, letterSpacing: 4, whiteSpace: "nowrap" }}>{f.time}</div>}
-    </div>
-  );
-}
+const readStored = (mode) => { try { return localStorage.getItem(STORE_KEY[mode]); } catch { return null; } };
+const pickDefault = (mode) => { const s = readStored(mode); return LAYOUTS[mode].some((l) => l.id === s) ? s : LAYOUTS[mode][0].id; };
 
 // ── Control styles ────────────────────────────────────────────────
 const label = { fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,0.45)", marginBottom: 6, display: "block" };
@@ -122,7 +94,7 @@ export default function FlyerPage() {
   const [idx, setIdx] = useState(() => defaultIdx("gameday", now));
   const g = GAMES[idx] || GAMES[0];
   const [f, setF] = useState(() => prefill(GAMES[defaultIdx("gameday", now)] || GAMES[0], "gameday"));
-  const [layoutId, setLayoutId] = useState(() => { try { return localStorage.getItem("aces-final-layout") || FINAL_LAYOUTS[0].id; } catch { return FINAL_LAYOUTS[0].id; } });
+  const [layoutIds, setLayoutIds] = useState(() => ({ gameday: pickDefault("gameday"), final: pickDefault("final") }));
   const [photo, setPhoto] = useState(PHOTOS[0].src);
   const [focus, setFocus] = useState({ x: 50, y: 30 });
   const [zoom, setZoom] = useState(1);
@@ -137,14 +109,14 @@ export default function FlyerPage() {
   const holderRef = useRef(null);
   const fileRef = useRef(null);
 
-  const layout = FINAL_LAYOUTS.find((l) => l.id === layoutId) || FINAL_LAYOUTS[0];
-  const W = mode === "gameday" ? GD_W : layout.w;
-  const H = mode === "gameday" ? GD_H : layout.h;
+  const list = LAYOUTS[mode];
+  const layout = list.find((l) => l.id === layoutIds[mode]) || list[0];
+  const W = layout.w, H = layout.h;
 
   const set = (k) => (e) => setF((p) => ({ ...p, [k]: e.target.value }));
   const switchMode = (m) => { setMode(m); setIdx(defaultIdx(m, Date.now())); };
-  const pickLayout = (id) => { setLayoutId(id); try { localStorage.setItem("aces-final-layout", id); } catch { /* ignore */ } };
-  const shuffle = () => { const others = FINAL_LAYOUTS.filter((l) => l.id !== layoutId); pickLayout(others[Math.floor(Math.random() * others.length)].id); };
+  const pickLayout = (id) => { setLayoutIds((p) => ({ ...p, [mode]: id })); try { localStorage.setItem(STORE_KEY[mode], id); } catch { /* ignore */ } };
+  const shuffle = () => { const others = list.filter((l) => l.id !== layout.id); pickLayout(others[Math.floor(Math.random() * others.length)].id); };
 
   useEffect(() => { setF(prefill(g, mode)); setCaptionDirty(false); }, [idx, mode]); // eslint-disable-line
   useEffect(() => { if (!captionDirty) setCaption(buildCaption(mode, f, g)); }, [f, mode, g, captionDirty]);
@@ -161,9 +133,9 @@ export default function FlyerPage() {
 
   const us = f.us || "0", them = f.them || "0";
   const win = Number(us) > Number(them), tie = Number(us) === Number(them);
-  const art = { f, photo, focus, zoom, us, them, win, tie, recLine: projectedRecord(g, f.us, f.them), longDate: longDateOf(g), dateLine: f.dateLine, oppLogo: oppLogoFor(f.opp) };
+  const art = { f, photo, focus, zoom, us, them, win, tie, home: !!g.home, recLine: projectedRecord(g, f.us, f.them), longDate: longDateOf(g), dateLine: f.dateLine, oppLogo: oppLogoFor(f.opp) };
 
-  const fileName = () => `aces-${mode === "gameday" ? "gameday" : `final-${layout.id}`}-${f.dateLine.replace("/", "-")}-${f.opp.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`;
+  const fileName = () => `aces-${mode === "gameday" ? "gameday" : "final"}-${layout.id}-${f.dateLine.replace("/", "-")}-${f.opp.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`;
 
   const render = async () => {
     await document.fonts.ready;
@@ -228,7 +200,7 @@ export default function FlyerPage() {
         <h2 className="section-title" style={{ fontSize: "clamp(40px,6vw,64px)" }}>Flyer<br /><span style={{ color: "var(--gold)" }}>Studio</span></h2>
         <div className="divider" />
         <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 14.5, color: "rgba(255,255,255,0.55)", marginTop: 16, maxWidth: 640, lineHeight: 1.7 }}>
-          Pick the game, pick a photo, download. The next game is already filled in from the schedule. Photos you choose from your phone never leave it.
+          Pick the game, pick a layout, pick a photo, download. The next game is already filled in from the schedule. Photos you choose from your phone never leave it.
         </p>
 
         <div className="flyer-grid" style={{ marginTop: 30 }}>
@@ -237,12 +209,12 @@ export default function FlyerPage() {
             <div style={{ width: W * scale, height: H * scale, position: "relative", overflow: "hidden", borderRadius: 10, boxShadow: "0 30px 80px rgba(0,0,0,0.6)", margin: "0 auto" }}>
               <div style={{ transform: `scale(${scale})`, transformOrigin: "top left" }}>
                 <div ref={boardRef} style={{ width: W, height: H, position: "relative", overflow: "hidden", background: "#0a0005", color: "#fff" }}>
-                  {mode === "gameday" ? <GameDayBoard f={f} photo={photo} focus={focus} zoom={zoom} /> : <Layout {...art} />}
+                  <Layout {...art} />
                 </div>
               </div>
             </div>
             <div style={{ textAlign: "center", marginTop: 10, fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,0.3)" }}>
-              {mode === "final" ? `${layout.name} · ` : ""}{W} × {H} · Instagram {H > W ? "portrait" : "square"}
+              {layout.name} · {W} × {H} · Instagram {H > W ? "portrait" : "square"}
             </div>
           </div>
 
@@ -266,26 +238,24 @@ export default function FlyerPage() {
               </div>
             )}
 
-            {mode === "final" && (
-              <Field l={`Layout · ${FINAL_LAYOUTS.length} styles`}>
-                <div className="flyer-layouts">
-                  {FINAL_LAYOUTS.map((l) => {
-                    const s = 78 / l.w;
-                    return (
-                      <button key={l.id} className={l.id === layoutId ? "on" : ""} onClick={() => pickLayout(l.id)} title={l.name}>
-                        <div style={{ width: 78, height: Math.round(l.h * s), overflow: "hidden", margin: "0 auto", pointerEvents: "none" }}>
-                          <div style={{ transform: `scale(${s})`, transformOrigin: "top left", width: l.w, height: l.h, position: "relative", overflow: "hidden", background: "#0a0005", color: "#fff" }}>
-                            <l.Comp {...art} />
-                          </div>
+            <Field l={`Layout · ${list.length} styles`}>
+              <div className="flyer-layouts">
+                {list.map((l) => {
+                  const s = 78 / l.w;
+                  return (
+                    <button key={l.id} className={l.id === layout.id ? "on" : ""} onClick={() => pickLayout(l.id)} title={l.name}>
+                      <div style={{ width: 78, height: Math.round(l.h * s), overflow: "hidden", margin: "0 auto", pointerEvents: "none" }}>
+                        <div style={{ transform: `scale(${s})`, transformOrigin: "top left", width: l.w, height: l.h, position: "relative", overflow: "hidden", background: "#0a0005", color: "#fff" }}>
+                          <l.Comp {...art} />
                         </div>
-                        <span className="lname">{l.name}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <button style={{ ...btn(false), width: "100%", marginTop: 8, padding: "10px" }} onClick={shuffle}>Shuffle layout</button>
-              </Field>
-            )}
+                      </div>
+                      <span className="lname">{l.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <button style={{ ...btn(false), width: "100%", marginTop: 8, padding: "10px" }} onClick={shuffle}>Shuffle layout</button>
+            </Field>
 
             <Field l="Photo">
               <div className="flyer-thumbs">
@@ -299,7 +269,7 @@ export default function FlyerPage() {
                 ))}
               </div>
               <input ref={fileRef} type="file" accept="image/*" onChange={onUpload} style={{ display: "none" }} />
-              {mode === "final" && layout.noPhoto && <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 6 }}>This layout doesn't use a photo.</div>}
+              {layout.noPhoto && <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 6 }}>This layout doesn't use a photo.</div>}
             </Field>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
