@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Spade, schedule, teamLogos } from "./shared";
+import { pageview } from "@vercel/analytics";
 
 // First game on the schedule = the next game (preseason).
 const NEXT_GAME = schedule[0]?.games[0];
@@ -196,6 +197,8 @@ export default function App() {
     setTimeout(() => {
       setPage(id); window.scrollTo(0, 0);
       window.history.replaceState(null, "", id === "home" ? window.location.pathname : `#${id}`);
+      // replaceState is not auto-tracked, so log the in-app page change ourselves.
+      pageview({ route: id === "home" ? "/" : `/${id}`, path: id === "home" ? "/" : `/${id}` });
     }, 310);
   };
 
