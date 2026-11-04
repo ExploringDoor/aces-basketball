@@ -45,7 +45,7 @@ export default function SchedulePage() {
                 <div style={{ flex: 1, minWidth: 240 }}>
                   <div style={{ display: "inline-block", padding: "3px 12px", borderRadius: 20, background: "rgba(201,164,74,0.9)", color: "#1a0010", fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, fontWeight: 700, textTransform: "uppercase", marginBottom: 12 }}>{inSeason ? "Next Game" : "Season Opener"}</div>
                   <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: "clamp(24px,3.5vw,32px)", fontWeight: 700, textTransform: "uppercase", lineHeight: 1.1 }}>
-                    {ng.home ? "vs" : "@"} {ng.opp}
+                    {ng.home || ng.neutral ? "vs" : "@"} {ng.opp}
                   </div>
                   <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 14, color: "rgba(255,255,255,0.65)", marginTop: 6 }}>
                     {ng.date} · {ng.time} · {ng.venue || (ng.home ? homeVenue : "Away")}
@@ -53,7 +53,7 @@ export default function SchedulePage() {
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                   <OppBadge opp="Lower Merion" size={58} />
-                  <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 16, color: "rgba(255,255,255,0.4)" }}>{ng.home ? "vs" : "@"}</span>
+                  <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 16, color: "rgba(255,255,255,0.4)" }}>{ng.home || ng.neutral ? "vs" : "@"}</span>
                   <OppBadge opp={ng.opp} size={58} />
                 </div>
               </div>
@@ -99,11 +99,11 @@ export default function SchedulePage() {
                         color: g.home ? "var(--gold)" : "rgba(255,255,255,0.5)",
                         background: g.home ? "rgba(201,164,74,0.14)" : "rgba(255,255,255,0.05)",
                         border: `1px solid ${g.home ? "rgba(201,164,74,0.3)" : "rgba(255,255,255,0.1)"}`,
-                      }}>{g.home ? "Home" : "Away"}</span>
+                      }}>{g.home ? "Home" : g.neutral ? "Neutral" : "Away"}</span>
                       <OppBadge opp={g.opp} />
                       <div style={{ minWidth: 0 }}>
                         <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 14.5, color: "#fff", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                          {g.home ? "vs " : "@ "}{g.opp}
+                          {g.home || g.neutral ? "vs " : "@ "}{g.opp}
                           {g.conf && <span title="Central League" style={{ color: "var(--gold)", marginLeft: 7, fontSize: 11 }}>★</span>}
                         </div>
                         {g.tag && <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 1 }}>{g.tag}</div>}

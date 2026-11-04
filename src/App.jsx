@@ -433,7 +433,7 @@ export default function App() {
             <span style={{ textAlign:"left" }}>
               <span style={{ display:"block", fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:"rgba(201,164,74,0.9)", textTransform:"uppercase", lineHeight:1.2 }}>Next Game</span>
               <span style={{ display:"block", fontFamily:"'Oswald',sans-serif", fontSize:12, letterSpacing:1, color:"#fff", textTransform:"uppercase", lineHeight:1.2, whiteSpace:"nowrap" }}>
-                {NEXT_GAME.date} · {NEXT_GAME.home ? "vs" : "@"} {NEXT_GAME.opp} · {NEXT_GAME.time}
+                {NEXT_GAME.date} · {NEXT_GAME.home || NEXT_GAME.neutral ? "vs" : "@"} {NEXT_GAME.opp} · {NEXT_GAME.time}
               </span>
             </span>
           </button>

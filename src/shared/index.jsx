@@ -403,6 +403,7 @@ export const homeVenue = "Kobe Bryant Gymnasium";
 //   iso:  tip-off in US Eastern (EST all season) — drives the live countdown,
 //         next-game strip and auto-sorting. Keep it accurate when dates change.
 //   venue: where it's played · exhibition: scrimmage (excluded from the record)
+//   neutral: neutral-site game (shown as "vs", left out of the home/away splits)
 //   result: null until played, then { us, them } with the ACES score first.
 //           Fill result in after each game and the record recomputes itself.
 export const schedule = [
@@ -416,6 +417,7 @@ export const schedule = [
     { date: "Dec 26–31", opp: "Cactus Jam",   home: false, time: "3 Games", iso: "2026-12-26T12:00:00-05:00", venue: "Phoenix, AZ", multi: true, tag: "Tournament · Phoenix, AZ", result: null },
   ]},
   { month: "January 2027", games: [
+    { date: "Jan 2",  opp: "Coatesville",     home: false, neutral: true, time: "7:00 PM", iso: "2027-01-02T19:00:00-05:00", venue: "West Chester University", tag: "Neutral Site · West Chester University", result: null },
     { date: "Jan 5",  opp: "Strath Haven",    home: true,  time: "7:00 PM", iso: "2027-01-05T19:00:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, result: null },
     { date: "Jan 7",  opp: "Penncrest",       home: false, time: "7:00 PM", iso: "2027-01-07T19:00:00-05:00", venue: "Penncrest HS · Kaufman Gym", conf: true, result: null },
     { date: "Jan 9",  opp: "Radnor",          home: true,  time: "1:30 PM", iso: "2027-01-09T13:30:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, tag: "Rescheduled", result: null },
@@ -465,7 +467,7 @@ export function computeRecord() {
     const win = g.result.us > g.result.them;
     win ? w++ : l++;
     if (g.conf) win ? cw++ : cl++;
-    if (g.home) (win ? hw++ : hl++); else (win ? aw++ : al++);
+    if (g.home) (win ? hw++ : hl++); else if (!g.neutral) (win ? aw++ : al++);
   }
   let streak = "—", sk = null, sc = 0;
   for (let i = played.length - 1; i >= 0; i--) {

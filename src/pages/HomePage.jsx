@@ -68,7 +68,7 @@ export default function HomePage({ goTo }) {
   const last = lastResult();
   const isOpener = ng && ng.iso === "2026-12-04T19:00:00-05:00";
   const cdLabel = ng
-    ? `${isOpener ? "Countdown to Tip-Off" : "Next Game"} · ${ng.date} ${ng.home ? "vs" : "@"} ${ng.opp}`
+    ? `${isOpener ? "Countdown to Tip-Off" : "Next Game"} · ${ng.date} ${ng.home || ng.neutral ? "vs" : "@"} ${ng.opp}`
     : "Season Complete · Thank You, Aces Nation";
 
   const wordStyle = (fromLeft) => ({
@@ -153,10 +153,10 @@ export default function HomePage({ goTo }) {
               </div>
               <div style={{ display:"flex", alignItems:"center", gap:14 }}>
                 <GameBadge team="Lower Merion" />
-                <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:15, color:"rgba(255,255,255,0.4)" }}>{ng.home?"vs":"@"}</span>
+                <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:15, color:"rgba(255,255,255,0.4)" }}>{ng.home||ng.neutral?"vs":"@"}</span>
                 <GameBadge team={ng.opp} />
                 <div>
-                  <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:"clamp(18px,2.4vw,24px)", fontWeight:700, textTransform:"uppercase", lineHeight:1.1 }}>{ng.home?"vs ":"@ "}{ng.opp}</div>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:"clamp(18px,2.4vw,24px)", fontWeight:700, textTransform:"uppercase", lineHeight:1.1 }}>{ng.home||ng.neutral?"vs ":"@ "}{ng.opp}</div>
                   <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:12, color:"rgba(255,255,255,0.45)", marginTop:2 }}>{ng.venue || (ng.home ? "Home" : "Away")}</div>
                 </div>
               </div>

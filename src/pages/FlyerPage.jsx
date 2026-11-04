@@ -179,7 +179,7 @@ export default function FlyerPage() {
 
   const us = f.us || "0", them = f.them || "0";
   const win = Number(us) > Number(them), tie = Number(us) === Number(them);
-  const art = { f, photo, focus, zoom, us, them, win, tie, home: !!g.home, recLine: projectedRecord(g, f.us, f.them), longDate: longDateOf(g), dateLine: f.dateLine, oppLogo: oppLogoFor(f.opp) };
+  const art = { f, photo, focus, zoom, us, them, win, tie, home: !!(g.home || g.neutral), recLine: projectedRecord(g, f.us, f.them), longDate: longDateOf(g), dateLine: f.dateLine, oppLogo: oppLogoFor(f.opp) };
 
   const fileName = () => `aces-${mode === "gameday" ? "gameday" : "final"}-${layout.id}-${f.dateLine.replace("/", "-")}-${f.opp.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`;
 
@@ -293,7 +293,7 @@ export default function FlyerPage() {
 
             <Field l="Game">
               <select style={input} value={idx} onChange={(e) => setIdx(Number(e.target.value))}>
-                {GAMES.map((x, i) => <option key={x.iso || i} value={i} style={{ color: "#000" }}>{x.date} · {x.home ? "vs" : "@"} {x.opp}</option>)}
+                {GAMES.map((x, i) => <option key={x.iso || i} value={i} style={{ color: "#000" }}>{x.date} · {x.home || x.neutral ? "vs" : "@"} {x.opp}</option>)}
               </select>
             </Field>
 
