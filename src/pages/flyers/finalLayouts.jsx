@@ -1,5 +1,5 @@
 // pages/flyers/finalLayouts.jsx
-// 25 Final Score layouts for the Flyer Studio. Each renders inside a fixed
+// 54 Final Score layouts for the Flyer Studio. Each renders inside a fixed
 // W×H board (the page owns the root div + ref); layouts fill it with
 // absolutely positioned content. Props every layout receives:
 //   f        edited fields { opp, dateLine, venue, us, them }
@@ -602,6 +602,350 @@ const Stamp = ({ f, photo, focus, zoom, us, them, win, longDate }) => (
   </Fill>
 );
 
+// ── Batch 3 ─────────────────────────────────────────────────────────────
+// Shared helpers for these layouts.
+const initials = (n) => {
+  const w = String(n || "").replace(/[^A-Za-z .']/g, "").split(/\s+/).filter((x) => /^[A-Z]/.test(x));
+  const i = w.map((x) => x[0]).join("").slice(0, 3);
+  return (i.length > 1 ? i : String(n || "").replace(/[^A-Za-z]/g, "").slice(0, 3)).toUpperCase();
+};
+// "Ingram 22 pts · Beck 15 pts" -> [["Ingram","22 pts"], ["Beck","15 pts"]]
+const performers = (f) => String(f.top || "").split(/\s*[·,;|\n]\s*/).map((x) => x.trim()).filter(Boolean).slice(0, 4)
+  .map((x) => { const m = x.match(/^(.*?)\s+(\d.*)$/); return m ? [m[1], m[2]] : [x, ""]; });
+const seasonOf = (longDate) => {
+  const y = Number((String(longDate).match(/\d{4}/) || [])[0]); if (!y) return "";
+  const a = ["AUG", "SEP", "OCT", "NOV", "DEC"].includes(String(longDate).slice(0, 3)) ? y : y - 1;
+  return `${a}-${String(a + 1).slice(2)}`;
+};
+// Headline verb from the margin.
+const verbOf = (us, them, win, tie) => {
+  const d = Math.abs(Number(us) - Number(them));
+  if (tie) return "tie";
+  if (!win) return d <= 3 ? "fall just short against" : "fall to";
+  return d <= 3 ? "edge" : d >= 20 ? "roll past" : "beat";
+};
+const outcome = (win) => (win ? "Aces Win" : "Final");
+
+// 41. Classic gym scoreboard: HOME / GUEST, period 4, clock 0:00.
+const GymScoreboard = ({ f, us, them, home, win, longDate }) => {
+  const H = home ? ["Lower Merion", us] : [f.opp, them], V = home ? [f.opp, them] : ["Lower Merion", us];
+  const led = (c) => ({ fontFamily: B, color: c, textShadow: `0 0 18px ${c}, 0 0 4px ${c}`, lineHeight: 0.9 });
+  const Side = ({ tag, name, pts }) => (
+    <div style={{ flex: 1, textAlign: "center" }}>
+      <div style={{ fontFamily: O, fontSize: 40, letterSpacing: 10, color: "#fff" }}>{tag}</div>
+      <Fit max={360} size={34} style={{ fontFamily: O, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.6)", marginTop: 6 }}>{name}</Fit>
+      <div style={{ position: "relative", marginTop: 18, background: "#050505", border: "4px solid #222", borderRadius: 10, padding: "6px 0" }}>
+        <div style={{ ...led("#ff2d2d"), fontSize: 270, position: "absolute", inset: 0, opacity: 0.07, textShadow: "none" }}>888</div>
+        <div style={{ ...led("#ff2d2d"), fontSize: 270, position: "relative" }}>{pts}</div>
+      </div>
+    </div>
+  );
+  return (
+    <Fill style={{ background: "radial-gradient(ellipse at 50% 30%, #2a2a30 0%, #0c0c0e 70%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: 960, background: "#111114", border: "14px solid #2c2c31", borderRadius: 24, boxShadow: "0 40px 90px rgba(0,0,0,0.7), inset 0 0 0 3px #000", overflow: "hidden" }}>
+        <div style={{ background: MAROON, padding: "18px 0", textAlign: "center", fontFamily: A, fontSize: 46, letterSpacing: 8, color: "#fff" }}>LOWER MERION <span style={{ color: GOLD }}>ACES</span></div>
+        <div style={{ display: "flex", gap: 30, padding: "34px 40px 20px", alignItems: "flex-start" }}>
+          <Side tag="HOME" name={H[0]} pts={H[1]} />
+          <div style={{ width: 170, textAlign: "center", paddingTop: 70 }}>
+            <div style={{ ...led("#ffb300"), fontSize: 96 }}>0:00</div>
+            <div style={{ fontFamily: O, fontSize: 22, letterSpacing: 6, color: "rgba(255,255,255,0.6)", marginTop: 28 }}>PERIOD</div>
+            <div style={{ ...led("#ffb300"), fontSize: 110 }}>4</div>
+          </div>
+          <Side tag="GUEST" name={V[0]} pts={V[1]} />
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 46px 30px" }}>
+          <Meta style={{ fontSize: 20, opacity: 0.5 }}>{longDate}</Meta>
+          <div style={{ fontFamily: A, fontSize: 50, letterSpacing: 10, color: "#ffb300", border: "3px solid #ffb300", padding: "4px 26px", borderRadius: 8, textShadow: "0 0 14px rgba(255,179,0,0.6)" }}>{win ? "WIN" : "FINAL"}</div>
+          <Meta style={{ fontSize: 20, opacity: 0.5 }}>{initials(f.opp)} · LM</Meta>
+        </div>
+      </div>
+    </Fill>
+  );
+};
+
+// 42. Jumbotron: photo above an LED panel with real dot-matrix texture.
+const Jumbotron = ({ f, photo, focus, zoom, us, them, win, longDate }) => (
+  <Fill style={{ background: "#050505", display: "flex", flexDirection: "column" }}>
+    <div style={{ height: 760, position: "relative", overflow: "hidden" }}><Photo src={photo} focus={focus} zoom={zoom} /><Fill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 55%, #050505 100%)" }} /></div>
+    <div style={{ flex: 1, margin: "0 50px 50px", position: "relative", background: "#0a0a0a", border: "6px solid #1d1d1d", borderRadius: 14, padding: "30px 50px", overflow: "hidden" }}>
+      <div style={{ fontFamily: B, fontSize: 70, letterSpacing: 14, color: "#ffb300", textAlign: "center", textShadow: "0 0 20px rgba(255,179,0,0.8)" }}>{win ? "ACES WIN" : "FINAL"}</div>
+      {[["LM", "Lower Merion", us, win], [initials(f.opp), f.opp, them, !win && Number(them) > Number(us)]].map(([ab, n, pts, hi]) => (
+        <div key={ab} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 6 }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 24, minWidth: 0 }}>
+            <span style={{ fontFamily: B, fontSize: 150, lineHeight: 1, color: hi ? "#ff3030" : "#e8e8e8", textShadow: hi ? "0 0 26px rgba(255,48,48,0.9)" : "0 0 18px rgba(255,255,255,0.5)" }}>{ab}</span>
+            <Fit max={360} size={34} style={{ fontFamily: O, letterSpacing: 4, textTransform: "uppercase", color: "rgba(255,255,255,0.55)" }}>{n}</Fit>
+          </div>
+          <span style={{ fontFamily: B, fontSize: 170, lineHeight: 1, color: hi ? "#ff3030" : "#e8e8e8", textShadow: hi ? "0 0 26px rgba(255,48,48,0.9)" : "0 0 18px rgba(255,255,255,0.5)" }}>{pts}</span>
+        </div>
+      ))}
+      <Fill style={{ background: "radial-gradient(circle, rgba(0,0,0,0) 52%, rgba(0,0,0,0.78) 58%) 0 0 / 9px 9px", pointerEvents: "none" }} />
+    </div>
+    <Meta style={{ position: "absolute", left: 0, right: 0, bottom: 14, textAlign: "center", fontSize: 18, opacity: 0.45 }}>{longDate} · {f.venue}</Meta>
+  </Fill>
+);
+
+// 43. Magazine cover.
+const MagazineCover = ({ f, photo, focus, zoom, us, them, win, tie, longDate }) => {
+  const perf = performers(f);
+  return (
+    <Fill style={{ background: INK }}>
+      <Photo src={photo} focus={focus} zoom={zoom} />
+      <Fill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.82) 100%)" }} />
+      <div style={{ position: "absolute", top: 46, left: 60, right: 60, display: "flex", justifyContent: "space-between", fontFamily: O, fontSize: 22, letterSpacing: 6, textTransform: "uppercase" }}><span>Lower Merion Basketball</span><span>{seasonOf(longDate)} Season</span></div>
+      <div style={{ position: "absolute", top: 70, left: 44, fontFamily: P, fontWeight: 700, fontSize: 330, lineHeight: 1, letterSpacing: -10, color: "#fff", textShadow: "0 10px 40px rgba(0,0,0,0.35)" }}>Aces</div>
+      <div style={{ position: "absolute", left: 60, right: 60, bottom: 70 }}>
+        <div style={{ display: "inline-block", background: GOLD, color: INK, fontFamily: O, fontWeight: 700, fontSize: 24, letterSpacing: 6, padding: "6px 16px", textTransform: "uppercase" }}>{outcome(win)}</div>
+        <div style={{ fontFamily: A, fontSize: scoreSize(us, them, 200), lineHeight: 1, marginTop: 14 }}>{us}<span style={{ color: GOLD, margin: "0 12px" }}>-</span>{them}</div>
+        <Fit max={940} size={56} style={{ fontFamily: P, fontStyle: "italic", marginTop: 6 }}>The Aces {verbOf(us, them, win, tie)} {f.opp}</Fit>
+        {perf.length > 0 && <Fit max={940} size={28} style={{ fontFamily: O, letterSpacing: 3, textTransform: "uppercase", color: GOLD, marginTop: 16 }}>{perf.map(([n, st]) => `${n} ${st}`.trim()).join("  ·  ")}</Fit>}
+        <Meta style={{ marginTop: 16, fontSize: 18, opacity: 0.6 }}>{longDate} · {f.venue}</Meta>
+      </div>
+    </Fill>
+  );
+};
+
+// 44. Swiss grid poster.
+const SwissGrid = ({ f, photo, focus, zoom, us, them, win, longDate }) => (
+  <Fill style={{ background: "#f3f1ec", color: INK }}>
+    <Fill style={{ backgroundImage: "linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px)", backgroundSize: "90px 90px" }} />
+    <div style={{ position: "absolute", left: 90, top: 90, width: 18, height: 540, background: MAROON }} />
+    <div style={{ position: "absolute", left: 140, top: 80, fontFamily: O, fontWeight: 600, fontSize: 30, letterSpacing: 8, textTransform: "uppercase", color: MAROON }}>{outcome(win)}</div>
+    {[[us, "Lower Merion", 1], [them, f.opp, win ? 0.35 : 1]].map(([pts, n, op], i) => (
+      <div key={i} style={{ position: "absolute", left: 130, top: 120 + i * 260, display: "flex", alignItems: "flex-end", gap: 30, opacity: op }}>
+        <span style={{ fontFamily: O, fontWeight: 700, fontSize: 280, lineHeight: 0.85, letterSpacing: -10 }}>{pts}</span>
+        <Fit max={330} size={34} style={{ fontFamily: O, fontWeight: 600, letterSpacing: 3, textTransform: "uppercase", paddingBottom: 14 }}>{n}</Fit>
+      </div>
+    ))}
+    <div style={{ position: "absolute", right: 90, bottom: 90, width: 360, height: 360, overflow: "hidden" }}><Photo src={photo} focus={focus} zoom={zoom} /></div>
+    <img src={LM} alt="" style={{ position: "absolute", right: 90, top: 80, width: 110 }} />
+    <div style={{ position: "absolute", left: 90, bottom: 90, fontFamily: O, fontSize: 22, letterSpacing: 4, textTransform: "uppercase", lineHeight: 1.7 }}>{longDate}<br /><span style={{ opacity: 0.55 }}>{f.venue}</span></div>
+  </Fill>
+);
+
+// 45. Ticket stub final.
+const TicketFinal = ({ f, us, them, win, longDate, oppLogo }) => (
+  <Fill style={{ background: `${DEEP} repeating-linear-gradient(-45deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 22px)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ width: 940, height: 470, display: "flex", transform: "rotate(-4deg)", filter: "drop-shadow(0 40px 60px rgba(0,0,0,0.55))" }}>
+      <div style={{ flex: 1, background: CREAM, color: MAROON, borderRadius: "22px 0 0 22px", padding: "40px 46px", display: "flex", flexDirection: "column", position: "relative" }}>
+        <div style={{ fontFamily: O, fontSize: 20, letterSpacing: 8, textTransform: "uppercase", opacity: 0.7 }}>Admit one · Aces Basketball</div>
+        <div style={{ fontFamily: A, fontSize: 64, lineHeight: 1, marginTop: 10, color: INK }}>FINAL SCORE</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 26, marginTop: 26 }}>
+          <Logo src={LM} size={110} ring="rgba(0,0,0,0.12)" /><span style={{ fontFamily: A, fontSize: 130, lineHeight: 1 }}>{us}</span>
+          <span style={{ fontFamily: A, fontSize: 60, opacity: 0.35 }}>-</span>
+          <span style={{ fontFamily: A, fontSize: 130, lineHeight: 1, opacity: win ? 0.45 : 1 }}>{them}</span><Logo src={oppLogo} size={110} ring="rgba(0,0,0,0.12)" fallback={f.opp[0]} />
+        </div>
+        <Fit max={560} size={30} style={{ fontFamily: O, textTransform: "uppercase", letterSpacing: 3, marginTop: "auto", color: INK }}>Lower Merion vs {f.opp}</Fit>
+        <div style={{ fontFamily: O, fontSize: 18, letterSpacing: 5, textTransform: "uppercase", opacity: 0.6, marginTop: 4 }}>{longDate}</div>
+      </div>
+      <div style={{ width: 0, borderLeft: `5px dashed ${DEEP}`, background: CREAM }} />
+      <div style={{ width: 210, background: GOLD, color: DEEP, borderRadius: "0 22px 22px 0", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ transform: "rotate(-90deg)", fontFamily: A, fontSize: 96, letterSpacing: 10, whiteSpace: "nowrap" }}>{win ? "WIN" : "FINAL"}</div>
+      </div>
+    </div>
+  </Fill>
+);
+
+// 46. Film strip: three frames from the photo.
+const FilmStrip = ({ f, photo, focus, zoom, us, them, win, longDate }) => {
+  const holes = "repeating-linear-gradient(180deg, transparent 0 18px, #e9e4d8 18px 46px, transparent 46px 64px)";
+  return (
+    <Fill style={{ background: "#0d0d0f" }}>
+      <div style={{ position: "absolute", top: 50, left: 0, right: 0, textAlign: "center", fontFamily: O, fontSize: 26, letterSpacing: 12, textTransform: "uppercase", color: GOLD }}>{outcome(win)} · {longDate}</div>
+      <div style={{ position: "absolute", top: 110, left: 140, width: 800, height: 840, background: "#000", padding: "20px 70px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 20, transform: "rotate(-2deg)", boxShadow: "0 30px 70px rgba(0,0,0,0.6)" }}>
+        <div style={{ position: "absolute", left: 22, top: 0, bottom: 0, width: 26, background: holes }} />
+        <div style={{ position: "absolute", right: 22, top: 0, bottom: 0, width: 26, background: holes }} />
+        {[18, 50, 82].map((y, i) => (
+          <div key={i} style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+            <Photo src={photo} focus={{ x: focus.x, y }} zoom={zoom * (i === 1 ? 1 : 1.5)} />
+          </div>
+        ))}
+      </div>
+      <div style={{ position: "absolute", left: 60, right: 60, bottom: 70, textAlign: "center" }}>
+        <div style={{ fontFamily: A, fontSize: scoreSize(us, them, 190), lineHeight: 1 }}>{us}<span style={{ color: MAROON, margin: "0 16px" }}>-</span>{them}</div>
+        <Fit max={960} size={40} style={{ fontFamily: O, textTransform: "uppercase", letterSpacing: 4, marginTop: 8 }}>Lower Merion <span style={{ opacity: 0.55 }}>vs</span> {f.opp}</Fit>
+      </div>
+    </Fill>
+  );
+};
+
+// 47. Top performers card.
+const TopPerformers = ({ f, photo, focus, zoom, us, them, win, recLine, oppLogo, longDate }) => {
+  const perf = performers(f);
+  return (
+    <Fill style={{ background: INK, display: "flex", flexDirection: "column" }}>
+      <div style={{ height: perf.length ? 640 : 760, position: "relative", overflow: "hidden" }}><Photo src={photo} focus={focus} zoom={zoom} /><Fill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(77,0,32,0.95) 100%)" }} /></div>
+      <div style={{ flex: 1, background: `linear-gradient(180deg, ${DEEP}, ${INK})`, padding: "0 60px 50px", display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Logo src={LM} size={120} ring={GOLD} />
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontFamily: O, fontSize: 22, letterSpacing: 8, color: GOLD, textTransform: "uppercase" }}>{outcome(win)}</div>
+            <div style={{ fontFamily: A, fontSize: scoreSize(us, them, 150), lineHeight: 1 }}>{us}<span style={{ opacity: 0.4, margin: "0 12px" }}>-</span>{them}</div>
+          </div>
+          <Logo src={oppLogo} size={120} fallback={f.opp[0]} />
+        </div>
+        <Fit max={960} size={30} style={{ fontFamily: O, letterSpacing: 4, textTransform: "uppercase", textAlign: "center", marginTop: 8, opacity: 0.75 }}>Lower Merion vs {f.opp}</Fit>
+        {perf.length ? (
+          <div style={{ marginTop: 26 }}>
+            <div style={{ fontFamily: O, fontSize: 22, letterSpacing: 8, color: GOLD, textTransform: "uppercase", borderBottom: "1px solid rgba(201,164,74,0.4)", paddingBottom: 10 }}>Top Performers</div>
+            {perf.map(([n, st], i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "12px 0", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                <Fit max={620} size={44} style={{ fontFamily: A, letterSpacing: 1, textTransform: "uppercase" }}>{n}</Fit>
+                <span style={{ fontFamily: O, fontSize: 34, letterSpacing: 2, textTransform: "uppercase", color: GOLD, whiteSpace: "nowrap" }}>{st}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ marginTop: "auto", textAlign: "center", fontFamily: A, fontSize: 64, letterSpacing: 4 }}>{recLine} <span style={{ color: GOLD }}>ON THE SEASON</span></div>
+        )}
+        <Meta style={{ marginTop: "auto", paddingTop: 16, textAlign: "center", fontSize: 18, opacity: 0.5 }}>{longDate} · {f.venue}</Meta>
+      </div>
+    </Fill>
+  );
+};
+
+// 48. Breaking-news TV graphic.
+const BreakingNews = ({ f, photo, focus, zoom, us, them, win, tie, recLine, longDate }) => (
+  <Fill style={{ background: INK }}>
+    <Photo src={photo} focus={focus} zoom={zoom} />
+    <Fill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%)" }} />
+    <div style={{ position: "absolute", top: 50, left: 50, display: "flex", alignItems: "center", gap: 14, background: "#d6001c", padding: "10px 22px", fontFamily: O, fontWeight: 700, fontSize: 30, letterSpacing: 5 }}><span style={{ width: 16, height: 16, borderRadius: "50%", background: "#fff" }} />FINAL</div>
+    <div style={{ position: "absolute", top: 40, right: 50 }}><Logo src={LM} size={110} /></div>
+    <div style={{ position: "absolute", left: 50, right: 50, bottom: 60, boxShadow: "0 24px 60px rgba(0,0,0,0.6)" }}>
+      <div style={{ display: "flex", alignItems: "stretch" }}>
+        <div style={{ background: MAROON, padding: "0 26px", display: "flex", alignItems: "center", fontFamily: A, fontSize: 40, letterSpacing: 3 }}>ACES</div>
+        <div style={{ flex: 1, background: "#fff", color: INK, padding: "16px 26px", minWidth: 0 }}>
+          <Fit max={790} size={58} style={{ fontFamily: A, lineHeight: 1.05, textTransform: "uppercase" }}>Aces {verbOf(us, them, win, tie)} {f.opp}</Fit>
+          <div style={{ fontFamily: A, fontSize: 92, lineHeight: 1, color: MAROON, marginTop: 4 }}>{us}-{them}</div>
+        </div>
+      </div>
+      <div style={{ background: "#14141a", padding: "12px 26px" }}>
+        <Fit max={920} size={24} style={{ fontFamily: O, letterSpacing: 4, textTransform: "uppercase", color: "rgba(255,255,255,0.8)" }}>Aces Basketball  ·  {longDate}  ·  {f.venue}  ·  {recLine} on the season</Fit>
+      </div>
+    </div>
+  </Fill>
+);
+
+// 49. Center court line art.
+const CenterCourt = ({ f, us, them, win, longDate }) => (
+  <Fill style={{ background: `radial-gradient(circle at 50% 50%, #a1063f 0%, ${MAROON} 45%, ${DEEP} 100%)` }}>
+    <svg viewBox="0 0 1080 1080" style={{ position: "absolute", inset: 0 }} fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="6">
+      <rect x="40" y="140" width="1000" height="800" />
+      <line x1="540" y1="140" x2="540" y2="940" />
+      <circle cx="540" cy="540" r="150" />
+      <circle cx="540" cy="540" r="50" />
+      <rect x="40" y="380" width="230" height="320" /><circle cx="270" cy="540" r="110" />
+      <rect x="810" y="380" width="230" height="320" /><circle cx="810" cy="540" r="110" />
+      <path d="M40 200 L120 200 A380 380 0 0 1 120 880 L40 880" />
+      <path d="M1040 200 L960 200 A380 380 0 0 0 960 880 L1040 880" />
+    </svg>
+    <img src={LM} alt="" style={{ position: "absolute", left: 440, top: 440, width: 200, height: 200, objectFit: "contain", filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.5))" }} />
+    <div style={{ position: "absolute", top: 40, left: 0, right: 0, textAlign: "center", fontFamily: A, fontSize: 70, letterSpacing: 12, color: GOLD }}>{win ? "ACES WIN" : "FINAL"}</div>
+    {[[us, "Lower Merion", 110, 1], [them, f.opp, 590, win ? 0.6 : 1]].map(([pts, n, x, op]) => (
+      <div key={x} style={{ position: "absolute", left: x, top: 330, width: 380, textAlign: "center", opacity: op }}>
+        <div style={{ fontFamily: A, fontSize: 230, lineHeight: 1, textShadow: "0 12px 40px rgba(0,0,0,0.45)" }}>{pts}</div>
+        <Fit max={360} size={36} style={{ fontFamily: O, letterSpacing: 4, textTransform: "uppercase", marginTop: 170 }}>{n}</Fit>
+      </div>
+    ))}
+    <Meta style={{ position: "absolute", bottom: 50, left: 0, right: 0, textAlign: "center", fontSize: 22 }}>{longDate} · {f.venue}</Meta>
+  </Fill>
+);
+
+// 50. Editorial headline with an auto-written verb.
+const EditorialHeadline = ({ f, photo, focus, zoom, us, them, win, tie, longDate, recLine }) => {
+  const perf = performers(f);
+  return (
+    <Fill style={{ background: CREAM, color: INK, display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 740, position: "relative", overflow: "hidden" }}><Photo src={photo} focus={focus} zoom={zoom} /></div>
+      <div style={{ flex: 1, padding: "40px 64px 50px", display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontFamily: O, fontSize: 22, letterSpacing: 6, textTransform: "uppercase", color: MAROON }}><span>{outcome(win)}</span><span>{longDate}</span></div>
+        <div style={{ fontFamily: P, fontWeight: 700, fontSize: 74, lineHeight: 1.08, marginTop: 16, letterSpacing: -1 }}>Aces {verbOf(us, them, win, tie)} {f.opp}, <span style={{ color: MAROON }}>{us}-{them}</span></div>
+        <div style={{ fontFamily: SS, fontSize: 30, lineHeight: 1.45, marginTop: 18, color: "rgba(11,11,13,0.72)" }}>
+          {perf.length ? `${perf.map(([n, st]) => `${n} ${st}`.trim()).join(", ")}. ` : ""}Lower Merion moves to {recLine} on the season.
+        </div>
+        <div style={{ marginTop: "auto", borderTop: `2px solid ${INK}`, paddingTop: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontFamily: O, fontSize: 20, letterSpacing: 5, textTransform: "uppercase" }}>Lower Merion Aces Basketball</span>
+          <img src={LM} alt="" style={{ height: 54 }} />
+        </div>
+      </div>
+    </Fill>
+  );
+};
+
+// 51. Black and gold, typographic.
+const BlackGold = ({ f, us, them, win, longDate }) => (
+  <Fill style={{ background: "#08080a", color: "#fff", textAlign: "center" }}>
+    <div style={{ position: "absolute", inset: 40, border: `2px solid ${GOLD}` }} />
+    <div style={{ position: "absolute", inset: 54, border: `1px solid rgba(201,164,74,0.5)` }} />
+    <img src={LM} alt="" style={{ position: "absolute", top: 96, left: 450, width: 180 }} />
+    <div style={{ position: "absolute", top: 290, left: 0, right: 0, fontFamily: P, fontStyle: "italic", fontSize: 84, color: GOLD }}>{win ? "Victory" : "Final"}</div>
+    <div style={{ position: "absolute", top: 400, left: 0, right: 0, fontFamily: P, fontWeight: 700, fontSize: scoreSize(us, them, 280), lineHeight: 1 }}>{us}<span style={{ color: GOLD, fontSize: 120, margin: "0 30px", verticalAlign: "middle" }}>·</span>{them}</div>
+    <div style={{ position: "absolute", top: 720, left: 120, right: 120 }}><Fit max={840} size={36} style={{ fontFamily: O, letterSpacing: 10, textTransform: "uppercase" }}>Lower Merion <span style={{ color: GOLD }}>vs</span> {f.opp}</Fit></div>
+    <div style={{ position: "absolute", top: 790, left: 460, width: 160, height: 2, background: GOLD }} />
+    <div style={{ position: "absolute", top: 830, left: 120, right: 120 }}><Fit max={840} size={22} style={{ fontFamily: O, letterSpacing: 7, textTransform: "uppercase", opacity: 0.6 }}>{longDate} · {f.venue}</Fit></div>
+  </Fill>
+);
+
+// 52. Tile grid: score tile, logos tile, wide photo.
+const TileGrid = ({ f, photo, focus, zoom, us, them, win, oppLogo, longDate }) => (
+  <Fill style={{ background: "#0b0b0d", padding: 30, display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "440px 1fr", gap: 20, boxSizing: "border-box" }}>
+    <div style={{ background: MAROON, padding: "34px 36px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+      <div style={{ fontFamily: O, fontSize: 22, letterSpacing: 8, color: GOLD, textTransform: "uppercase" }}>{outcome(win)}</div>
+      <div style={{ fontFamily: A, fontSize: scoreSize(us, them, 160), lineHeight: 1, whiteSpace: "nowrap" }}>{us}<span style={{ color: GOLD, margin: "0 10px" }}>-</span>{them}</div>
+      <div style={{ fontFamily: O, fontSize: 18, letterSpacing: 5, textTransform: "uppercase", opacity: 0.7 }}>{longDate}</div>
+    </div>
+    <div style={{ background: "#16161a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 18 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 22 }}><Logo src={LM} size={140} ring={GOLD} /><span style={{ fontFamily: A, fontSize: 44, opacity: 0.5 }}>VS</span><Logo src={oppLogo} size={140} fallback={f.opp[0]} /></div>
+      <Fit max={420} size={30} style={{ fontFamily: O, letterSpacing: 3, textTransform: "uppercase", opacity: 0.8 }}>{f.opp}</Fit>
+    </div>
+    <div style={{ gridColumn: "1 / span 2", position: "relative", overflow: "hidden" }}><Photo src={photo} focus={focus} zoom={zoom} /><div style={{ position: "absolute", left: 30, bottom: 24 }}><Fit max={900} size={22} style={{ fontFamily: O, letterSpacing: 5, textTransform: "uppercase", textShadow: "0 2px 10px rgba(0,0,0,0.8)" }}>{f.venue}</Fit></div></div>
+  </Fill>
+);
+
+// 53. Victory seal medallion with ring text.
+const VictorySeal = ({ f, photo, focus, zoom, us, them, win, longDate }) => {
+  const ring = `LOWER MERION ACES  •  ${seasonOf(longDate)}  •  ${win ? "VICTORY" : "FINAL SCORE"}  •  `;
+  return (
+    <Fill style={{ background: INK }}>
+      <Photo src={photo} focus={focus} zoom={zoom} style={{ filter: "brightness(0.5)" }} />
+      <div style={{ position: "absolute", left: 200, top: 150, width: 680, height: 680, borderRadius: "50%", background: `conic-gradient(from 200deg, #f3dc94, ${GOLD}, #8a6a22, ${GOLD}, #f3dc94)`, boxShadow: "0 40px 100px rgba(0,0,0,0.7)" }}>
+        <svg viewBox="0 0 680 680" style={{ position: "absolute", inset: 0 }}>
+          <defs><path id="sealRing" d="M340,340 m-282,0 a282,282 0 1,1 564,0 a282,282 0 1,1 -564,0" /></defs>
+          <text style={{ fontFamily: O, fontSize: 38, fontWeight: 700 }} fill={DEEP}><textPath href="#sealRing" textLength={1760} lengthAdjust="spacing">{ring}</textPath></text>
+        </svg>
+        <div style={{ position: "absolute", inset: 84, borderRadius: "50%", background: `radial-gradient(circle at 50% 35%, #a1063f, ${DEEP})`, border: `6px solid ${DEEP}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+          <img src={LM} alt="" style={{ width: 150, marginBottom: 4 }} />
+          <div style={{ fontFamily: A, fontSize: scoreSize(us, them, 150), lineHeight: 1 }}>{us}<span style={{ color: GOLD, margin: "0 10px" }}>-</span>{them}</div>
+          <Fit max={380} size={30} style={{ fontFamily: O, letterSpacing: 4, textTransform: "uppercase", marginTop: 8 }}>vs {f.opp}</Fit>
+        </div>
+      </div>
+      <Meta style={{ position: "absolute", bottom: 70, left: 0, right: 0, textAlign: "center", fontSize: 24 }}>{longDate} · {f.venue}</Meta>
+    </Fill>
+  );
+};
+
+// 54. Points bar chart.
+const StatBars = ({ f, photo, focus, zoom, us, them, win, recLine, longDate }) => {
+  const a = Number(us) || 0, b = Number(them) || 0, top = Math.max(a, b, 1), perf = performers(f);
+  const Bar = ({ n, pts, w, c }) => (
+    <div style={{ marginTop: 26 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}><Fit max={700} size={32} style={{ fontFamily: O, letterSpacing: 4, textTransform: "uppercase" }}>{n}</Fit><span style={{ fontFamily: A, fontSize: 70, lineHeight: 1 }}>{pts}</span></div>
+      <div style={{ height: 34, background: "rgba(255,255,255,0.08)", marginTop: 8 }}><div style={{ width: `${Math.max(4, (w / top) * 100)}%`, height: "100%", background: c }} /></div>
+    </div>
+  );
+  return (
+    <Fill style={{ background: INK, display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 460, position: "relative", overflow: "hidden" }}><Photo src={photo} focus={focus} zoom={zoom} /><Fill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 50%, #0b0b0d 100%)" }} /></div>
+      <div style={{ flex: 1, padding: "10px 70px 50px", display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}><span style={{ fontFamily: A, fontSize: 64, letterSpacing: 4, color: GOLD }}>{win ? "ACES WIN" : "FINAL"}</span><span style={{ fontFamily: O, fontSize: 26, letterSpacing: 5, opacity: 0.7 }}>{a > b ? `+${a - b}` : a < b ? `-${b - a}` : "EVEN"} · {recLine}</span></div>
+        <Bar n="Lower Merion" pts={us} w={a} c={`linear-gradient(90deg, ${MAROON}, #c4104f)`} />
+        <Bar n={f.opp} pts={them} w={b} c="rgba(255,255,255,0.45)" />
+        {perf.length > 0 && <Fit max={940} size={26} style={{ fontFamily: O, letterSpacing: 3, textTransform: "uppercase", color: GOLD, marginTop: 28 }}>{perf.map(([n, st]) => `${n} ${st}`.trim()).join("  ·  ")}</Fit>}
+        <Meta style={{ marginTop: "auto", fontSize: 20, opacity: 0.5 }}>{longDate} · {f.venue}</Meta>
+      </div>
+    </Fill>
+  );
+};
+
 export const FINAL_LAYOUTS = [
   { id: "panel-maroon", name: "Maroon Panel", w: S, h: S, Comp: PanelMaroon },
   { id: "panel-black", name: "Black Panel", w: S, h: S, Comp: PanelBlack },
@@ -644,6 +988,21 @@ export const FINAL_LAYOUTS = [
   { id: "vscore", name: "Vertical Score", w: PW, h: PH, Comp: VerticalScore },
   { id: "framed", name: "Framed Caption", w: S, h: S, Comp: FramedCaption },
   { id: "stamp", name: "Rubber Stamp", w: S, h: S, Comp: Stamp },
+  // batch 3
+  { id: "gym-board", name: "Gym Scoreboard", w: S, h: S, Comp: GymScoreboard, noPhoto: true },
+  { id: "jumbotron", name: "Jumbotron", w: PW, h: PH, Comp: Jumbotron },
+  { id: "magazine", name: "Magazine Cover", w: PW, h: PH, Comp: MagazineCover },
+  { id: "swiss", name: "Swiss Grid", w: S, h: S, Comp: SwissGrid },
+  { id: "ticket-final", name: "Ticket Stub", w: S, h: S, Comp: TicketFinal, noPhoto: true },
+  { id: "film", name: "Film Strip", w: PW, h: PH, Comp: FilmStrip },
+  { id: "top-perf", name: "Top Performers", w: PW, h: PH, Comp: TopPerformers },
+  { id: "breaking", name: "Breaking News", w: S, h: S, Comp: BreakingNews },
+  { id: "center-court", name: "Center Court", w: S, h: S, Comp: CenterCourt, noPhoto: true },
+  { id: "editorial", name: "Editorial Headline", w: PW, h: PH, Comp: EditorialHeadline },
+  { id: "black-gold", name: "Black & Gold", w: S, h: S, Comp: BlackGold, noPhoto: true },
+  { id: "tiles", name: "Tile Grid", w: S, h: S, Comp: TileGrid },
+  { id: "seal", name: "Victory Seal", w: S, h: S, Comp: VictorySeal },
+  { id: "bars", name: "Points Bars", w: S, h: S, Comp: StatBars },
 ];
 
 export const oppLogoFor = (opp) => teamLogos[opp] || null;
