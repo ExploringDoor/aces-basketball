@@ -4,10 +4,11 @@
 // uploaded anywhere: photos stay on the device and the PNG renders in-browser.
 import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
-import { Spade, allGames, nextGame, gameTime, homeVenue, computeRecord, roster } from "../shared";
+import { Spade, allGames, nextGame, gameTime, homeVenue, computeRecord, roster, schedule, scheduleSeason } from "../shared";
 import { FINAL_LAYOUTS, oppLogoFor, Fit, LM, GOLD, A, O } from "./flyers/finalLayouts";
 import { GAME_DAY_LAYOUTS } from "./flyers/gameDayLayouts";
 import { SPOTLIGHT_LAYOUTS, parseStats } from "./flyers/spotlightLayouts";
+import { WEEK_LAYOUTS, SEASON_LAYOUTS } from "./flyers/scheduleLayouts";
 
 // Most /ig/*.jpg files are last season's finished flyers, not raw photos, so
 // only the two real photographs qualify as presets. Upload is the main path.
@@ -19,8 +20,9 @@ const PHOTOS = [
 const NY = "America/New_York";
 const GAMES = allGames.filter((g) => !g.exhibition);
 const OPENER = GAMES.find((g) => !g.multi);
-const LAYOUTS = { gameday: GAME_DAY_LAYOUTS, final: FINAL_LAYOUTS, spotlight: SPOTLIGHT_LAYOUTS };
-const STORE_KEY = { gameday: "aces-gameday-layout", final: "aces-final-layout", spotlight: "aces-spotlight-layout" };
+const LAYOUTS = { gameday: GAME_DAY_LAYOUTS, final: FINAL_LAYOUTS, spotlight: SPOTLIGHT_LAYOUTS, week: WEEK_LAYOUTS, season: SEASON_LAYOUTS };
+const STORE_KEY = { gameday: "aces-gameday-layout", final: "aces-final-layout", spotlight: "aces-spotlight-layout", week: "aces-week-layout", season: "aces-season-layout" };
+const MODES = [["gameday", "Game Day"], ["final", "Final"], ["spotlight", "Player"], ["week", "Week"], ["season", "Season"]];
 
 // Player Spotlight card. The roster in shared/index.jsx is still placeholder
 // names ("Player One"), so picking a player fills number/position/grade and
@@ -36,6 +38,35 @@ const shortDateOf = (g) => (g.iso ? new Intl.DateTimeFormat("en-US", { month: "n
 const longDateOf = (g) => (g.iso ? new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: NY }).format(new Date(g.iso)).toUpperCase() : g.date || "");
 const hourOf = (g) => (g.iso ? Number(new Intl.DateTimeFormat("en-US", { hour: "numeric", hour12: false, timeZone: NY }).format(new Date(g.iso))) : 19);
 const titleCase = (s) => s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+
+// ── This Week + Season Schedule data (built fresh each render so posted scores show) ──
+const wd3 = (g) => (g.iso ? new Date(g.iso).toLocaleDateString("en-US", { weekday: "short", timeZone: NY }).toUpperCase() : "");
+const toRow = (g) => ({ iso: g.iso, md: g.multi ? g.date : shortDateOf(g), wd: g.multi ? "" : wd3(g), opp: g.opp, home: !!g.home, neutral: !!g.neutral, time: g.time, venue: g.venue, conf: !!g.conf, multi: !!g.multi, tag: g.tag, result: g.result, logo: oppLogoFor(g.opp) });
+const nyYMD = (t) => new Intl.DateTimeFormat("en-CA", { timeZone: NY, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(t));
+const mondayOf = (t) => { const [y, m, d] = nyYMD(t).split("-").map(Number); const dt = new Date(Date.UTC(y, m - 1, d)); dt.setUTCDate(dt.getUTCDate() - ((dt.getUTCDay() + 6) % 7)); return dt.toISOString().slice(0, 10); };
+const WEEK_KEYS = [...new Set(GAMES.filter((g) => g.iso).map((g) => mondayOf(g.iso)))].sort();
+const weekLabel = (k) => { const [y, m, d] = k.split("-").map(Number); return "Week of " + new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }); };
+const defaultWeek = (now) => {
+  const cur = mondayOf(now); if (WEEK_KEYS.includes(cur)) return cur;
+  const ng = nextGame(now); return ng ? mondayOf(ng.iso) : WEEK_KEYS[0];
+};
+function buildWeek(key) {
+  const games = GAMES.filter((g) => g.iso && mondayOf(g.iso) === key).sort((a, b) => gameTime(a) - gameTime(b));
+  const rows = games.map(toRow);
+  const countable = rows.filter((r) => !r.multi), played = countable.filter((r) => r.result);
+  const [y, m, d] = key.split("-").map(Number);
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const dt = new Date(Date.UTC(y, m - 1, d + i)), ymd = dt.toISOString().slice(0, 10);
+    const gi = games.findIndex((g) => nyYMD(g.iso) === ymd);
+    return { wd: dt.toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" }).toUpperCase(), day: dt.getUTCDate(), game: gi >= 0 ? rows[gi] : null };
+  });
+  const review = countable.length > 0 && played.length === countable.length;
+  return { key, label: weekLabel(key), title: review ? "Week in Review" : "This Week", games: rows, days, total: rows.length, played: played.length, wins: played.filter((r) => r.result.us > r.result.them).length };
+}
+function buildSeason() {
+  const months = schedule.map((m) => ({ month: m.month, games: m.games.filter((g) => !g.exhibition).map(toRow) }));
+  return { label: scheduleSeason, months, rows: months.flatMap((m) => m.games), record: computeRecord() };
+}
 
 const defaultEvent = (g, mode) => {
   if (!g) return "";
@@ -57,7 +88,17 @@ const prefill = (g, mode) => ({
   them: g.result ? String(g.result.them) : "",
 });
 
-function buildCaption(mode, f, g, sp) {
+function buildCaption(mode, f, g, sp, wk, ss) {
+  if (mode === "week") {
+    const line = (r) => `${r.multi ? r.md.replace(/\s*[–-]\s*/, " to ") : `${titleCase(r.wd)} ${r.md}`}: ${r.multi ? r.opp : `${r.home || r.neutral ? "vs" : "at"} ${r.opp}`}${r.result ? `, ${r.result.us > r.result.them ? "W" : "L"} ${r.result.us}-${r.result.them}` : r.multi ? "" : `, ${r.time}`}`;
+    const head = wk.title === "Week in Review" ? `Week in review: the Aces went ${wk.wins}-${wk.played - wk.wins}.` : "This week for the Aces:";
+    return `${head}\n${wk.games.map(line).join("\n")}\n\nLet's Go Aces!`;
+  }
+  if (mode === "season") {
+    const games = ss.rows.filter((r) => !r.multi), home = games.filter((r) => r.home).length;
+    const head = ss.record.played ? `The Aces are ${ss.record.w}-${ss.record.l}. Here's the full ${ss.label} schedule with results so far.` : `The ${ss.label} Lower Merion Aces varsity schedule is here: ${games.length} games plus the Cactus Jam in Phoenix, with ${home} at the Kobe Bryant Gymnasium. Save the dates!`;
+    return `${head}\n\nLet's Go Aces!`;
+  }
   if (mode === "spotlight") {
     const who = [sp.num !== "" ? `#${sp.num}` : "", sp.name || "our player"].filter(Boolean).join(" ");
     const st = parseStats(sp.stats).map((x) => `${x.v} ${(x.long || x.l).toLowerCase()}`.trim()).join(", ");
@@ -158,6 +199,7 @@ export default function FlyerPage() {
   const now = Date.now();
   const [mode, setMode] = useState("gameday");
   const [sp, setSp] = useState(loadSp);
+  const [weekKey, setWeekKey] = useState(() => defaultWeek(Date.now()));
   const setS = (k) => (e) => setSp((p) => ({ ...p, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value }));
   useEffect(() => { try { localStorage.setItem(SP_KEY, JSON.stringify(sp)); } catch { /* ignore */ } }, [sp]);
   const pickRoster = (e) => {
@@ -226,7 +268,8 @@ export default function FlyerPage() {
   const shuffle = () => { const others = list.filter((l) => l.id !== layout.id); pickLayout(others[Math.floor(Math.random() * others.length)].id); };
 
   useEffect(() => { setF(prefill(g, mode)); setCaptionDirty(false); }, [idx, mode]); // eslint-disable-line
-  useEffect(() => { if (!captionDirty) setCaption(buildCaption(mode, f, g, sp)); }, [f, mode, g, sp, captionDirty]);
+  const wk = buildWeek(weekKey), ss = buildSeason();
+  useEffect(() => { if (!captionDirty) setCaption(buildCaption(mode, f, g, sp, wk, ss)); }, [f, mode, g, sp, weekKey, captionDirty, ss.record.played, wk.played]); // eslint-disable-line
   useEffect(() => {
     try { setCanShare(!!(navigator.canShare && navigator.canShare({ files: [new File([""], "t.png", { type: "image/png" })] }))); } catch { setCanShare(false); }
   }, []);
@@ -240,18 +283,24 @@ export default function FlyerPage() {
 
   const us = f.us || "0", them = f.them || "0";
   const win = Number(us) > Number(them), tie = Number(us) === Number(them);
-  const art = { f, photo, focus, zoom, us, them, win, tie, home: !!(g.home || g.neutral), recLine: projectedRecord(g, f.us, f.them), longDate: longDateOf(g), dateLine: f.dateLine, oppLogo: oppLogoFor(f.opp), sp };
+  const art = { f, photo, focus, zoom, us, them, win, tie, home: !!(g.home || g.neutral), recLine: projectedRecord(g, f.us, f.them), longDate: longDateOf(g), dateLine: f.dateLine, oppLogo: oppLogoFor(f.opp), sp, week: wk, season: ss };
 
-  const storyKicker = mode === "gameday"
+  const storyKicker = mode === "week" ? wk.title
+    : mode === "season" ? `${ss.label} Schedule`
+    : mode === "gameday"
     ? (f.time ? `Tip-off ${f.time}` : "Game Day")
     : mode === "spotlight" ? (sp.kicker || "Player Spotlight")
     : tie ? "Final" : win ? "Aces Win" : "Final";
-  const storySub = mode === "gameday"
+  const storySub = mode === "week" ? wk.label
+    : mode === "season" ? (ss.record.played ? `Record ${ss.record.w}-${ss.record.l}` : "Lower Merion Aces Varsity")
+    : mode === "gameday"
     ? [f.weekday && f.dateLine ? `${f.weekday} ${f.dateLine}` : "", f.venue].filter(Boolean).join(" · ")
     : mode === "spotlight" ? (parseStats(sp.stats).map((x) => `${x.v} ${x.l}`.trim()).join(" · ") || [sp.num !== "" ? `#${sp.num}` : "", sp.pos, sp.grade].filter(Boolean).join(" · "))
     : (f.top ? f.top : `${art.recLine} on the season`);
 
-  const fileName = () => mode === "spotlight"
+  const fileName = () => mode === "week" ? `aces-week${story ? "-story" : ""}-${layout.id}-${weekKey}.png`
+    : mode === "season" ? `aces-schedule${story ? "-story" : ""}-${layout.id}-${ss.label}.png`
+    : mode === "spotlight"
     ? `aces-spotlight${story ? "-story" : ""}-${layout.id}-${(sp.name || "player").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`
     : `aces-${mode === "gameday" ? "gameday" : "final"}${story ? "-story" : ""}-${layout.id}-${f.dateLine.replace("/", "-")}-${f.opp.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`;
 
@@ -328,6 +377,8 @@ export default function FlyerPage() {
         .flyer-seg { display: flex; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; overflow: hidden; }
         .flyer-seg button { flex: 1; padding: 12px; background: none; border: none; color: rgba(255,255,255,0.55); font-family: 'Oswald', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
         .flyer-seg button.on { background: rgba(132,0,54,0.55); color: #fff; }
+        .flyer-modes { display: grid; grid-template-columns: repeat(5, 1fr); }
+        .flyer-modes button { padding: 12px 2px; font-size: 11px; letter-spacing: 1px; }
         .flyer-layouts { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; max-height: 420px; overflow-y: auto; padding: 2px; }
         .flyer-layouts button { background: #000; border: 2px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0; cursor: pointer; overflow: hidden; text-align: left; }
         .flyer-layouts button.on { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(201,164,74,0.25); }
@@ -360,10 +411,8 @@ export default function FlyerPage() {
 
           {/* Controls */}
           <div style={{ display: "grid", gap: 18 }}>
-            <div className="flyer-seg">
-              <button className={mode === "gameday" ? "on" : ""} onClick={() => switchMode("gameday")}>Game Day</button>
-              <button className={mode === "final" ? "on" : ""} onClick={() => switchMode("final")}>Final Score</button>
-              <button className={mode === "spotlight" ? "on" : ""} onClick={() => switchMode("spotlight")}>Player</button>
+            <div className="flyer-seg flyer-modes">
+              {MODES.map(([id, l]) => <button key={id} className={mode === id ? "on" : ""} onClick={() => switchMode(id)}>{l}</button>)}
             </div>
 
             <div className="flyer-seg">
@@ -371,11 +420,19 @@ export default function FlyerPage() {
               <button className={story ? "on" : ""} onClick={() => pickFormat("story")}>Story 9:16</button>
             </div>
 
-            <Field l="Game">
+            {mode === "week" && (
+              <Field l="Week">
+                <select style={input} value={weekKey} onChange={(e) => setWeekKey(e.target.value)}>
+                  {WEEK_KEYS.map((k) => { const n = GAMES.filter((x) => x.iso && mondayOf(x.iso) === k).length; return <option key={k} value={k} style={{ color: "#000" }}>{weekLabel(k)} · {n} {n === 1 ? "game" : "games"}</option>; })}
+                </select>
+              </Field>
+            )}
+            {mode === "season" && <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>The whole {scheduleSeason} schedule, straight from the site. Scores posted from a phone show up as W or L automatically.</div>}
+            {mode !== "week" && mode !== "season" &&             <Field l="Game">
               <select style={input} value={idx} onChange={(e) => setIdx(Number(e.target.value))}>
                 {GAMES.map((x, i) => <option key={x.iso || i} value={i} style={{ color: "#000" }}>{x.date} · {x.home || x.neutral ? "vs" : "@"} {x.opp}</option>)}
               </select>
-            </Field>
+            </Field>}
 
             {mode === "spotlight" && (
               <div style={{ display: "grid", gap: 10 }}>
@@ -458,7 +515,7 @@ export default function FlyerPage() {
               <Field l={`Zoom ${zoom.toFixed(2)}×`}><input className="flyer-range" type="range" min={1} max={2.2} step={0.02} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} /></Field>
             </div>
 
-            {(mode !== "spotlight" || sp.showGame) && <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            {mode !== "week" && mode !== "season" && (mode !== "spotlight" || sp.showGame) && <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               <Field l="Opponent"><input style={input} value={f.opp} onChange={set("opp")} /></Field>
               <Field l="Date"><input style={input} value={f.dateLine} onChange={set("dateLine")} /></Field>
               {mode === "gameday" && <Field l="Day"><input style={input} value={f.weekday} onChange={set("weekday")} /></Field>}
