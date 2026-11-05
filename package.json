@@ -13,6 +13,8 @@
     "test": "node tests/clinic.test.mjs && node tests/shootathon.test.mjs && node tests/site.test.mjs && node tests/flows.test.mjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
+    "html-to-image": "^1.11.13",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

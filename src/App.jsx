@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Spade, schedule, teamLogos } from "./shared";
+import { pageview } from "@vercel/analytics";
 
 // First game on the schedule = the next game (preseason).
 const NEXT_GAME = schedule[0]?.games[0];
@@ -9,9 +10,11 @@ import NewsPage          from "./pages/NewsPage";
 import FallClinicsPage   from "./pages/FallClinicsPage";
 import StandingsPage     from "./pages/StandingsPage";
 import StorePage         from "./pages/StorePage";
+import FlyerPage         from "./pages/FlyerPage";
 import HistoryPage       from "./pages/HistoryPage";
 import ThousandClubPage  from "./pages/ThousandClubPage";
 import SchedulePage      from "./pages/SchedulePage";
+import StoryPage         from "./pages/StoryPage";
 import ChampionshipsPage from "./pages/ChampionshipsPage";
 import CentralLeaguePage from "./pages/CentralLeaguePage";
 import AlumniPage        from "./pages/AlumniPage";
@@ -29,8 +32,8 @@ import AcademicsPage      from "./pages/AcademicsPage";
 import SponsorshipsPage   from "./pages/SponsorshipsPage";
 
 const PAGES = {
-  home: null, news: NewsPage, clinics: FallClinicsPage, store: StorePage, standings: StandingsPage, history: HistoryPage, thousand: ThousandClubPage,
-  schedule: SchedulePage, championships: ChampionshipsPage,
+  home: null, news: NewsPage, clinics: FallClinicsPage, store: StorePage, flyers: FlyerPage, standings: StandingsPage, history: HistoryPage, thousand: ThousandClubPage,
+  schedule: SchedulePage, story: StoryPage, championships: ChampionshipsPage,
   league: CentralLeaguePage, alumni: AlumniPage, coaching: CoachingPage,
   roster: RosterPage, records: RecordBookPage, photos: PhotosPage,
   videos: VideosPage, kobe: KobePage, social: SocialPage,
@@ -42,12 +45,12 @@ const NAV = [
   { id:"home", label:"Home" },
   { id:"news", label:"News" },
   { id:"clinics", label:"Clinics" },
-  { id:"store", label:"Store" },
   { label:"Season", children:[
     { id:"roster",    label:"Roster" },
     { id:"schedule",  label:"Schedule" },
     { id:"standings", label:"Standings" },
     { id:"records",   label:"Record Book" },
+    { id:"story",     label:"Story of the Season" },
   ]},
   { label:"History", children:[
     { id:"history",       label:"Program History" },
@@ -72,6 +75,7 @@ const NAV = [
     { id:"videos", label:"Videos" },
     { id:"social",   label:"Follow Us" },
     { id:"support",  label:"Support the Aces" },
+    { id:"store",    label:"Team Store", badge:"Soon" },
   ]},
 ];
 
@@ -143,7 +147,7 @@ const Dropdown = ({ item, page, goTo, onTabHover, onTabLeave, btnRef }) => {
           <div style={{ position:"absolute", top:1, left:"50%", width:10, height:10, background:"rgba(8,0,4,0.97)", borderLeft:"1px solid rgba(132,0,54,0.5)", borderTop:"1px solid rgba(132,0,54,0.5)", transform:"translateX(-50%) rotate(45deg)" }} />
           {item.children.map(child => (
             <button key={child.id} onClick={() => goTo(child.id)} style={{
-              display:"block", width:"100%", background:"none", border:"none",
+              display:"flex", alignItems:"center", gap:8, width:"100%", background:"none", border:"none",
               color: page===child.id ? "var(--gold)" : "rgba(255,255,255,0.6)",
               fontFamily:"'Oswald',sans-serif", fontSize:12, letterSpacing:"1.5px",
               padding:"10px 20px", textAlign:"left", textTransform:"uppercase",
@@ -152,6 +156,7 @@ const Dropdown = ({ item, page, goTo, onTabHover, onTabLeave, btnRef }) => {
               onMouseEnter={e => { e.currentTarget.style.color="var(--gold)"; e.currentTarget.style.paddingLeft="26px"; e.currentTarget.style.background="rgba(132,0,54,0.2)"; }}
               onMouseLeave={e => { e.currentTarget.style.color=page===child.id?"var(--gold)":"rgba(255,255,255,0.6)"; e.currentTarget.style.paddingLeft="20px"; e.currentTarget.style.background="none"; }}>
               {child.label}
+              {child.badge && <span style={{ fontSize:8, letterSpacing:1, padding:"2px 6px", borderRadius:10, background:"rgba(201,164,74,0.18)", border:"1px solid rgba(201,164,74,0.4)", color:"var(--gold)" }}>{child.badge}</span>}
             </button>
           ))}
           </div>
@@ -163,7 +168,11 @@ const Dropdown = ({ item, page, goTo, onTabHover, onTabLeave, btnRef }) => {
 
 // ── App ───────────────────────────────────────────────────
 export default function App() {
-  const [page, setPage] = useState("home");
+  // Deep links: /#schedule, /#flyers, etc. open that page directly.
+  const [page, setPage] = useState(() => {
+    const h = (window.location.hash || "").replace(/^#\/?/, "");
+    return h && h in PAGES ? h : "home";
+  });
   const [mobileOpen, setMobileOpen] = useState(false);
   const tabsRef = useRef(null);
   const gliderRef = useRef(null);
@@ -185,7 +194,12 @@ export default function App() {
     if (id === page) { window.scrollTo(0, 0); return; }
     // Maroon sweep covers the screen, page swaps underneath, sweep exits.
     setSweep(s => s + 1);
-    setTimeout(() => { setPage(id); window.scrollTo(0, 0); }, 310);
+    setTimeout(() => {
+      setPage(id); window.scrollTo(0, 0);
+      window.history.replaceState(null, "", id === "home" ? window.location.pathname : `#${id}`);
+      // replaceState is not auto-tracked, so log the in-app page change ourselves.
+      pageview({ route: id === "home" ? "/" : `/${id}`, path: id === "home" ? "/" : `/${id}` });
+    }, 310);
   };
 
   const PageComponent = PAGES[page];
@@ -419,7 +433,7 @@ export default function App() {
             <span style={{ textAlign:"left" }}>
               <span style={{ display:"block", fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:"rgba(201,164,74,0.9)", textTransform:"uppercase", lineHeight:1.2 }}>Next Game</span>
               <span style={{ display:"block", fontFamily:"'Oswald',sans-serif", fontSize:12, letterSpacing:1, color:"#fff", textTransform:"uppercase", lineHeight:1.2, whiteSpace:"nowrap" }}>
-                {NEXT_GAME.date} · {NEXT_GAME.home ? "vs" : "@"} {NEXT_GAME.opp} · {NEXT_GAME.time}
+                {NEXT_GAME.date} · {NEXT_GAME.home || NEXT_GAME.neutral ? "vs" : "@"} {NEXT_GAME.opp} · {NEXT_GAME.time}
               </span>
             </span>
           </button>
