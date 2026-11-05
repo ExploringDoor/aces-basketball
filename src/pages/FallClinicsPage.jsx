@@ -10,7 +10,13 @@ const DETAILS = [
   ["whistle", "Lower Merion coaches & players", "Fundamentals, skills, and real competition"],
 ];
 
+// The last Fall Sunday (keep in sync with api/_clinic.js). After it ends the page stops
+// selling and says spring dates are coming; add the spring season to _clinic.js and
+// register.html, then point this at its last date.
+const SERIES_ENDS = new Date("2026-11-01T12:15:00-05:00");
+
 export default function FallClinicsPage() {
+  const open = new Date() < SERIES_ENDS;
   const cta = {
     display: "inline-flex", alignItems: "center", gap: 10,
     fontFamily: "'Oswald',sans-serif", fontSize: 14, letterSpacing: 2, textTransform: "uppercase",
@@ -69,15 +75,17 @@ export default function FallClinicsPage() {
         {/* Register CTA -> real registration + payment page */}
         <FadeIn delay={0.22}>
           <div style={{ marginTop: 40, textAlign: "center", background: "rgba(132,0,54,0.12)", border: "1px solid rgba(201,164,74,0.25)", borderRadius: 16, padding: "clamp(32px, 6vw, 52px)" }}>
-            <h3 style={{ fontFamily: "'Anton',sans-serif", fontSize: "clamp(28px,4.5vw,44px)", textTransform: "uppercase", margin: "0 0 10px", letterSpacing: 0.5 }}>Ready to Hoop?</h3>
+            <h3 style={{ fontFamily: "'Anton',sans-serif", fontSize: "clamp(28px,4.5vw,44px)", textTransform: "uppercase", margin: "0 0 10px", letterSpacing: 0.5 }}>{open ? "Ready to Hoop?" : "Fall Series Complete"}</h3>
             <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 15, color: "rgba(255,255,255,0.6)", margin: "0 auto 28px", maxWidth: 520, lineHeight: 1.7 }}>
-              Sign up in a couple of minutes. Pick your Sundays, add your player, and check out securely. A receipt is emailed right away.
+              {open
+                ? "Sign up in a couple of minutes. Pick your Sundays, add your player, and check out securely. A receipt is emailed right away."
+                : "Thanks to every family who joined us this fall. Spring clinic dates are coming soon, and registration will open right here."}
             </p>
-            <a href="/register.html" style={cta}
+            {open && <a href="/register.html" style={cta}
               onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 10px 30px rgba(132,0,54,0.55)"; }}
               onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}>
               Register &amp; Pay <span aria-hidden>→</span>
-            </a>
+            </a>}
             <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 12.5, color: "rgba(255,255,255,0.4)", marginTop: 18 }}>
               Questions? <a href="mailto:aceshoops@gmail.com" style={{ color: "var(--gold)" }}>aceshoops@gmail.com</a>
             </div>

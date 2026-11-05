@@ -41,6 +41,9 @@ const PAGES = {
   youth: YouthProgramsPage, academics: AcademicsPage, sponsors: SponsorshipsPage,
 };
 
+// Menu ids that open a standalone page instead of an in-app page.
+const EXTERNAL = { shootathon: "/donate.html" };
+
 const NAV = [
   { id:"home", label:"Home" },
   { id:"news", label:"News" },
@@ -74,6 +77,7 @@ const NAV = [
     { id:"photos", label:"Photos" },
     { id:"videos", label:"Videos" },
     { id:"social",   label:"Follow Us" },
+    { id:"shootathon", label:"Shoot-a-Thon" },
     { id:"support",  label:"Support the Aces" },
     { id:"store",    label:"Team Store", badge:"Soon" },
   ]},
@@ -191,6 +195,8 @@ export default function App() {
 
   const goTo = (id) => {
     setMobileOpen(false);
+    // Menu items that are their own pages outside the app (the payment pages).
+    if (EXTERNAL[id]) { window.location.href = EXTERNAL[id]; return; }
     if (id === page) { window.scrollTo(0, 0); return; }
     // Maroon sweep covers the screen, page swaps underneath, sweep exits.
     setSweep(s => s + 1);

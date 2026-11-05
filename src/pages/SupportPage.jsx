@@ -84,8 +84,20 @@ export default function SupportPage() {
             <p style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:14, color:"rgba(255,255,255,0.45)", lineHeight:1.8, maxWidth:500, margin:"0 auto 28px" }}>
               Interested in supporting the program through a financial contribution or volunteering your time? Reach out and connect with the Aces.
             </p>
-            <a href="mailto:aceshoops@gmail.com?subject=Supporting%20Lower%20Merion%20Aces%20Basketball" style={{
+            <a href="/donate.html" style={{
               display:"inline-block",
+              padding:"12px 32px", margin:"0 8px 12px",
+              background:"linear-gradient(135deg, #c9a44a, #b3873a)",
+              border:"1px solid #c9a44a",
+              borderRadius:6,
+              fontFamily:"'Oswald',sans-serif", fontSize:13, letterSpacing:2,
+              color:"#1a0010", textDecoration:"none", fontWeight:600,
+              textTransform:"uppercase",
+            }}>
+              Donate to the Shoot-a-Thon
+            </a>
+            <a href="mailto:aceshoops@gmail.com?subject=Supporting%20Lower%20Merion%20Aces%20Basketball" style={{
+              display:"inline-block", margin:"0 8px 12px",
               padding:"12px 32px",
               background:"rgba(132,0,54,0.4)",
               border:"1px solid rgba(201,164,74,0.4)",
