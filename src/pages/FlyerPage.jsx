@@ -4,9 +4,10 @@
 // uploaded anywhere: photos stay on the device and the PNG renders in-browser.
 import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
-import { Spade, allGames, nextGame, gameTime, homeVenue, computeRecord } from "../shared";
+import { Spade, allGames, nextGame, gameTime, homeVenue, computeRecord, roster } from "../shared";
 import { FINAL_LAYOUTS, oppLogoFor, Fit, LM, GOLD, A, O } from "./flyers/finalLayouts";
 import { GAME_DAY_LAYOUTS } from "./flyers/gameDayLayouts";
+import { SPOTLIGHT_LAYOUTS, parseStats } from "./flyers/spotlightLayouts";
 
 // Most /ig/*.jpg files are last season's finished flyers, not raw photos, so
 // only the two real photographs qualify as presets. Upload is the main path.
@@ -18,8 +19,17 @@ const PHOTOS = [
 const NY = "America/New_York";
 const GAMES = allGames.filter((g) => !g.exhibition);
 const OPENER = GAMES.find((g) => !g.multi);
-const LAYOUTS = { gameday: GAME_DAY_LAYOUTS, final: FINAL_LAYOUTS };
-const STORE_KEY = { gameday: "aces-gameday-layout", final: "aces-final-layout" };
+const LAYOUTS = { gameday: GAME_DAY_LAYOUTS, final: FINAL_LAYOUTS, spotlight: SPOTLIGHT_LAYOUTS };
+const STORE_KEY = { gameday: "aces-gameday-layout", final: "aces-final-layout", spotlight: "aces-spotlight-layout" };
+
+// Player Spotlight card. The roster in shared/index.jsx is still placeholder
+// names ("Player One"), so picking a player fills number/position/grade and
+// only fills the name once real names are in.
+const SP_KEY = "aces-spotlight-card";
+const SP_DEFAULT = { name: "", num: "", pos: "", grade: "", kicker: "Player of the Game", stats: "", note: "", showGame: true };
+const KICKERS = ["Player of the Game", "Player Spotlight", "Senior Spotlight", "Senior Night", "Athlete of the Week", "Career High", "1,000 Point Club", "Milestone Night", "Birthday Shoutout", "Welcome to the Aces"];
+const placeholderName = (n) => /^Player [A-Z][a-z]+$/.test(n || "");
+const loadSp = () => { try { return { ...SP_DEFAULT, ...JSON.parse(localStorage.getItem(SP_KEY) || "{}") }; } catch { return { ...SP_DEFAULT }; } };
 
 const weekdayOf = (g) => (g.iso ? new Date(g.iso).toLocaleDateString("en-US", { weekday: "long", timeZone: NY }).toUpperCase() : "");
 const shortDateOf = (g) => (g.iso ? new Intl.DateTimeFormat("en-US", { month: "numeric", day: "numeric", timeZone: NY }).format(new Date(g.iso)) : g.date || "");
@@ -47,7 +57,15 @@ const prefill = (g, mode) => ({
   them: g.result ? String(g.result.them) : "",
 });
 
-function buildCaption(mode, f, g) {
+function buildCaption(mode, f, g, sp) {
+  if (mode === "spotlight") {
+    const who = [sp.num !== "" ? `#${sp.num}` : "", sp.name || "our player"].filter(Boolean).join(" ");
+    const st = parseStats(sp.stats).map((x) => `${x.v} ${(x.long || x.l).toLowerCase()}`.trim()).join(", ");
+    const game = sp.showGame && f.opp ? ` ${g.home || g.neutral ? "against" : "at"} ${f.opp}` : "";
+    const lead = `${sp.kicker || "Player Spotlight"}: ${who}`;
+    const body = st ? `${lead} with ${st}${game}.` : `${lead}${game}.`;
+    return `${body}${sp.note ? ` ${sp.note.trim()}${/[.!?]$/.test(sp.note.trim()) ? "" : "."}` : ""}\n\nLet's Go Aces!`;
+  }
   if (mode === "gameday") {
     const slot = hourOf(g) >= 17 ? "night" : "afternoon";
     const where = g.home ? "at the Bryant Gymnasium" : `at ${f.venue}`;
@@ -62,7 +80,7 @@ function buildCaption(mode, f, g) {
 }
 
 const defaultIdx = (mode, now) => {
-  if (mode === "final") {
+  if (mode === "final" || mode === "spotlight") {
     let last = -1;
     GAMES.forEach((g, i) => { if (gameTime(g) <= now) last = i; });
     return last >= 0 ? last : 0;
@@ -139,6 +157,13 @@ const Field = ({ l, children }) => <div><span style={label}>{l}</span>{children}
 export default function FlyerPage() {
   const now = Date.now();
   const [mode, setMode] = useState("gameday");
+  const [sp, setSp] = useState(loadSp);
+  const setS = (k) => (e) => setSp((p) => ({ ...p, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value }));
+  useEffect(() => { try { localStorage.setItem(SP_KEY, JSON.stringify(sp)); } catch { /* ignore */ } }, [sp]);
+  const pickRoster = (e) => {
+    const r = roster[Number(e.target.value)]; if (!r) return;
+    setSp((p) => ({ ...p, num: String(r.number), pos: r.pos || "", grade: r.grade || "", name: placeholderName(r.name) ? p.name : r.name }));
+  };
   const [format, setFormat] = useState(() => { try { return localStorage.getItem("aces-flyer-format") || "post"; } catch { return "post"; } });
   const pickFormat = (v) => { setFormat(v); try { localStorage.setItem("aces-flyer-format", v); } catch { /* ignore */ } };
   const [idx, setIdx] = useState(() => defaultIdx("gameday", now));
@@ -193,7 +218,7 @@ export default function FlyerPage() {
   const shuffle = () => { const others = list.filter((l) => l.id !== layout.id); pickLayout(others[Math.floor(Math.random() * others.length)].id); };
 
   useEffect(() => { setF(prefill(g, mode)); setCaptionDirty(false); }, [idx, mode]); // eslint-disable-line
-  useEffect(() => { if (!captionDirty) setCaption(buildCaption(mode, f, g)); }, [f, mode, g, captionDirty]);
+  useEffect(() => { if (!captionDirty) setCaption(buildCaption(mode, f, g, sp)); }, [f, mode, g, sp, captionDirty]);
   useEffect(() => {
     try { setCanShare(!!(navigator.canShare && navigator.canShare({ files: [new File([""], "t.png", { type: "image/png" })] }))); } catch { setCanShare(false); }
   }, []);
@@ -207,16 +232,20 @@ export default function FlyerPage() {
 
   const us = f.us || "0", them = f.them || "0";
   const win = Number(us) > Number(them), tie = Number(us) === Number(them);
-  const art = { f, photo, focus, zoom, us, them, win, tie, home: !!(g.home || g.neutral), recLine: projectedRecord(g, f.us, f.them), longDate: longDateOf(g), dateLine: f.dateLine, oppLogo: oppLogoFor(f.opp) };
+  const art = { f, photo, focus, zoom, us, them, win, tie, home: !!(g.home || g.neutral), recLine: projectedRecord(g, f.us, f.them), longDate: longDateOf(g), dateLine: f.dateLine, oppLogo: oppLogoFor(f.opp), sp };
 
   const storyKicker = mode === "gameday"
     ? (f.time ? `Tip-off ${f.time}` : "Game Day")
+    : mode === "spotlight" ? (sp.kicker || "Player Spotlight")
     : tie ? "Final" : win ? "Aces Win" : "Final";
   const storySub = mode === "gameday"
     ? [f.weekday && f.dateLine ? `${f.weekday} ${f.dateLine}` : "", f.venue].filter(Boolean).join(" · ")
+    : mode === "spotlight" ? (parseStats(sp.stats).map((x) => `${x.v} ${x.l}`.trim()).join(" · ") || [sp.num !== "" ? `#${sp.num}` : "", sp.pos, sp.grade].filter(Boolean).join(" · "))
     : (f.top ? f.top : `${art.recLine} on the season`);
 
-  const fileName = () => `aces-${mode === "gameday" ? "gameday" : "final"}${story ? "-story" : ""}-${layout.id}-${f.dateLine.replace("/", "-")}-${f.opp.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`;
+  const fileName = () => mode === "spotlight"
+    ? `aces-spotlight${story ? "-story" : ""}-${layout.id}-${(sp.name || "player").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`
+    : `aces-${mode === "gameday" ? "gameday" : "final"}${story ? "-story" : ""}-${layout.id}-${f.dateLine.replace("/", "-")}-${f.opp.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`;
 
   const render = async () => {
     await document.fonts.ready;
@@ -326,6 +355,7 @@ export default function FlyerPage() {
             <div className="flyer-seg">
               <button className={mode === "gameday" ? "on" : ""} onClick={() => switchMode("gameday")}>Game Day</button>
               <button className={mode === "final" ? "on" : ""} onClick={() => switchMode("final")}>Final Score</button>
+              <button className={mode === "spotlight" ? "on" : ""} onClick={() => switchMode("spotlight")}>Player</button>
             </div>
 
             <div className="flyer-seg">
@@ -338,6 +368,32 @@ export default function FlyerPage() {
                 {GAMES.map((x, i) => <option key={x.iso || i} value={i} style={{ color: "#000" }}>{x.date} · {x.home || x.neutral ? "vs" : "@"} {x.opp}</option>)}
               </select>
             </Field>
+
+            {mode === "spotlight" && (
+              <div style={{ display: "grid", gap: 10 }}>
+                <Field l="Player (fills # / position / grade)">
+                  <select style={input} value="" onChange={pickRoster}>
+                    <option value="" style={{ color: "#000" }}>Pick from the roster…</option>
+                    {roster.map((r, i) => <option key={i} value={i} style={{ color: "#000" }}>#{r.number}{placeholderName(r.name) ? "" : ` ${r.name}`} · {r.pos} · {r.grade}</option>)}
+                  </select>
+                </Field>
+                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 10 }}>
+                  <Field l="Name"><input style={input} value={sp.name} onChange={setS("name")} placeholder="First Last" /></Field>
+                  <Field l="Number"><input style={input} inputMode="numeric" value={sp.num} onChange={setS("num")} placeholder="23" /></Field>
+                  <Field l="Position"><input style={input} value={sp.pos} onChange={setS("pos")} placeholder="Guard" /></Field>
+                  <Field l="Grade"><select style={input} value={sp.grade} onChange={setS("grade")}>{["", "Senior", "Junior", "Sophomore", "Freshman"].map((x) => <option key={x} value={x} style={{ color: "#000" }}>{x || "None"}</option>)}</select></Field>
+                </div>
+                <Field l="Headline">
+                  <input style={input} list="aces-kickers" value={sp.kicker} onChange={setS("kicker")} placeholder="Player of the Game" />
+                  <datalist id="aces-kickers">{KICKERS.map((k) => <option key={k} value={k} />)}</datalist>
+                </Field>
+                <Field l="Stat line (optional)"><input style={input} value={sp.stats} onChange={setS("stats")} placeholder="31 PTS · 8 REB · 4 AST" /></Field>
+                <Field l="Note or quote (optional)"><input style={input} value={sp.note} onChange={setS("note")} placeholder="Hit the game-winner with 4 seconds left" /></Field>
+                <label style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: "'Source Sans 3',sans-serif", fontSize: 14, color: "rgba(255,255,255,0.75)", cursor: "pointer" }}>
+                  <input type="checkbox" checked={!!sp.showGame} onChange={setS("showGame")} style={{ width: 18, height: 18, accentColor: "#c9a44a" }} /> Show the game (opponent and date) on the graphic
+                </label>
+              </div>
+            )}
 
             {mode === "final" && (
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -394,15 +450,15 @@ export default function FlyerPage() {
               <Field l={`Zoom ${zoom.toFixed(2)}×`}><input className="flyer-range" type="range" min={1} max={2.2} step={0.02} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} /></Field>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            {(mode !== "spotlight" || sp.showGame) && <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               <Field l="Opponent"><input style={input} value={f.opp} onChange={set("opp")} /></Field>
               <Field l="Date"><input style={input} value={f.dateLine} onChange={set("dateLine")} /></Field>
               {mode === "gameday" && <Field l="Day"><input style={input} value={f.weekday} onChange={set("weekday")} /></Field>}
               {mode === "gameday" && <Field l="Tip-off"><input style={input} value={f.time} onChange={set("time")} /></Field>}
-              <Field l="Venue"><input style={input} value={f.venue} onChange={set("venue")} /></Field>
+              {mode !== "spotlight" && <Field l="Venue"><input style={input} value={f.venue} onChange={set("venue")} /></Field>}
               {mode === "final" && <Field l="Top performers (optional)"><input style={input} value={f.top || ""} onChange={set("top")} placeholder="Ingram 22 pts · Beck 15 pts" /></Field>}
               {mode === "gameday" && <Field l="Event line (optional)"><input style={input} value={f.event} onChange={set("event")} placeholder="Central League, Playoffs…" /></Field>}
-            </div>
+            </div>}
 
             <div style={{ display: "grid", gridTemplateColumns: canShare ? "1fr 1fr" : "1fr", gap: 10 }}>
               <button style={btn(true)} onClick={download} disabled={!!busy}>{busy === "download" ? "Rendering…" : "Download PNG"}</button>
