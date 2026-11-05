@@ -3,18 +3,18 @@ import { FadeIn, Spade, standings, scheduleSeason, teamLogos } from "../shared";
 
 const pct = (w, l) => (w + l === 0 ? 0 : w / (w + l));
 
-// Sort by league win pct, then league wins, then name. GB vs first place.
-const sorted = [...standings].sort((a, b) =>
-  pct(b.confW, b.confL) - pct(a.confW, a.confL) || b.confW - a.confW || a.team.localeCompare(b.team)
-);
-const leader = sorted[0];
-const gamesBack = (t) => {
-  const gb = ((leader.confW - t.confW) + (t.confL - leader.confL)) / 2;
-  return gb <= 0 ? "—" : gb % 1 === 0 ? String(gb) : gb.toFixed(1);
-};
-const preseason = standings.every(t => t.w + t.l + t.confW + t.confL === 0);
-
 export default function StandingsPage() {
+  // Computed every render: live scores and the league table can change while the page is open.
+  // Sort by league win pct, then league wins, then name. GB vs first place.
+  const sorted = [...standings].sort((a, b) =>
+    pct(b.confW, b.confL) - pct(a.confW, a.confL) || b.confW - a.confW || a.team.localeCompare(b.team)
+  );
+  const leader = sorted[0];
+  const gamesBack = (t) => {
+    const gb = ((leader.confW - t.confW) + (t.confL - leader.confL)) / 2;
+    return gb <= 0 ? "—" : gb % 1 === 0 ? String(gb) : gb.toFixed(1);
+  };
+  const preseason = standings.every(t => t.w + t.l + t.confW + t.confL === 0);
   return (
     <section id="standings" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px", minHeight: "100vh" , position: "relative", overflow: "hidden", isolation: "isolate" }}>
       <div className="ghost-word" style={{ top: 110, transform: "none" }}>THE RACE</div>

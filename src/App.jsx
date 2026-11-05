@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { Spade, schedule, teamLogos } from "./shared";
+import { Spade, schedule, teamLogos, loadLive, nextGame } from "./shared";
 import { pageview } from "@vercel/analytics";
 
-// First game on the schedule = the next game (preseason).
-const NEXT_GAME = schedule[0]?.games[0];
 
 import HomePage          from "./pages/HomePage";
 import NewsPage          from "./pages/NewsPage";
@@ -30,6 +28,7 @@ import SupportPage       from "./pages/SupportPage";
 import YouthProgramsPage  from "./pages/YouthProgramsPage";
 import AcademicsPage      from "./pages/AcademicsPage";
 import SponsorshipsPage   from "./pages/SponsorshipsPage";
+import ScoresPage         from "./pages/ScoresPage";
 
 const PAGES = {
   home: null, news: NewsPage, clinics: FallClinicsPage, store: StorePage, flyers: FlyerPage, standings: StandingsPage, history: HistoryPage, thousand: ThousandClubPage,
@@ -39,6 +38,7 @@ const PAGES = {
   videos: VideosPage, kobe: KobePage, social: SocialPage,
   hof: HallOfFamePage, support: SupportPage,
   youth: YouthProgramsPage, academics: AcademicsPage, sponsors: SponsorshipsPage,
+  scores: ScoresPage, // coach tool, not in the menu: post scores from a phone
 };
 
 // Menu ids that open a standalone page instead of an in-app page.
@@ -186,6 +186,24 @@ export default function App() {
   const [sweep, setSweep] = useState(0);
   const [scrolled, setScrolled] = useState(false);
 
+  // Live scores posted from a phone: load them, refresh when the tab comes
+  // back into view, and re-render every page when they change.
+  const [, setLiveTick] = useState(0);
+  useEffect(() => {
+    const bump = () => setLiveTick((t) => t + 1);
+    const refresh = () => { if (document.visibilityState === "visible") loadLive(); };
+    window.addEventListener("aces-live", bump);
+    document.addEventListener("visibilitychange", refresh);
+    loadLive(true);
+    return () => { window.removeEventListener("aces-live", bump); document.removeEventListener("visibilitychange", refresh); };
+  }, []);
+  // In-page links like href="#flyers" switch pages too.
+  useEffect(() => {
+    const onHash = () => { const h = (window.location.hash || "").replace(/^#\/?/, ""); if (h && h in PAGES) { setPage(h); window.scrollTo(0, 0); } };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 130);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -209,6 +227,8 @@ export default function App() {
   };
 
   const PageComponent = PAGES[page];
+  // Nav chip: the next game still ahead (falls back to the opener).
+  const NEXT_GAME = nextGame() || schedule[0]?.games[0];
 
   const moveGlider = (el, instant) => {
     if (!el || !gliderRef.current || !tabsRef.current) return;

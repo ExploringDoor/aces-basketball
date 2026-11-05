@@ -202,6 +202,14 @@ export default function FlyerPage() {
     } catch { return []; /* private mode or no IndexedDB: upload still works for the session */ }
   };
   useEffect(() => { loadMyPhotos(); }, []);
+  // Coming from Post Scores ("Make the graphic"): open that game in Final Score.
+  useEffect(() => {
+    let h = null;
+    try { h = JSON.parse(sessionStorage.getItem("aces-flyer-handoff") || "null"); sessionStorage.removeItem("aces-flyer-handoff"); } catch { /* ignore */ }
+    if (!h) return;
+    const i = GAMES.findIndex((x) => x.iso === h.iso);
+    if (i >= 0) { setMode(h.mode || "final"); setIdx(i); }
+  }, []);
 
   const boardRef = useRef(null);
   const holderRef = useRef(null);

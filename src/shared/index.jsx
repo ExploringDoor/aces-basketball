@@ -480,6 +480,41 @@ export function computeRecord() {
   return { w, l, cw, cl, hw, hl, aw, al, streak, played: played.length };
 }
 
+// ─── Live scores (posted by coaches from a phone at /#scores) ─────────
+// /api/scores holds the scores and league table. They are applied ON TOP of
+// the results written in this file, by mutating the same game objects, so
+// every page and helper above (record, next game, last result, standings)
+// picks them up on the next render. Clearing a live score falls back to the
+// result in this file. The app re-renders on the "aces-live" event.
+const codeResults = new Map(allGames.map((g) => [g.iso, g.result]));
+const codeStandings = standings.map((t) => ({ ...t }));
+export const live = { updated: null, loaded: false };
+export function applyLive(data) {
+  const games = (data && data.games) || {};
+  const setResult = (g) => { const v = games[g.iso]; g.result = v ? { us: v.us, them: v.them } : (codeResults.get(g.iso) ?? null); };
+  schedule.forEach((m) => m.games.forEach(setResult));
+  allGames.forEach(setResult);
+  const st = (data && data.standings) || {};
+  standings.forEach((t, i) => {
+    const v = st[t.team] || codeStandings[i];
+    Object.assign(t, { confW: v.confW, confL: v.confL, w: v.w, l: v.l, streak: codeStandings[i].streak });
+  });
+  // Lower Merion's row always follows its real results once games are played.
+  const lm = standings.find((t) => t.team === "Lower Merion"), r = computeRecord();
+  if (lm && r.played) Object.assign(lm, { confW: r.cw, confL: r.cl, w: r.w, l: r.l, streak: r.streak });
+  live.updated = (data && data.updated) || null; live.loaded = true;
+  if (typeof window !== "undefined") window.dispatchEvent(new Event("aces-live"));
+}
+let lastLoad = 0;
+export async function loadLive(force = false) {
+  if (!force && Date.now() - lastLoad < 30000) return;
+  lastLoad = Date.now();
+  try {
+    const r = await fetch("/api/scores", { cache: "no-store" });
+    if (r.ok) applyLive(await r.json());
+  } catch { /* offline or dev server: keep the results in this file */ }
+}
+
 // ─── Roster ───────────────────────────────────────────────────
 // PLACEHOLDER roster. Replace `name` (and add `photo`/`hometown`/`bio`) with
 // the real 2026-27 varsity roster. Drop headshots in public/players and set
