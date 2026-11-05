@@ -8,6 +8,7 @@
 //   recLine                 projected season record, e.g. "5-2"
 //   longDate                "DEC 4, 2026"
 //   oppLogo                 opponent logo src or null
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { teamLogos } from "../../shared";
 
 export const S = 1080, PW = 1080, PH = 1350;
@@ -21,10 +22,36 @@ export const Photo =({ src, focus, zoom, style }) => (
 );
 export const Fill = ({ style, children }) => <div style={{ position: "absolute", inset: 0, ...style }}>{children}</div>;
 export const Logo = ({ src, size, bg = "#fff", ring = "rgba(255,255,255,0.25)", fallback = "?", style }) => (
-  <div style={{ width: size, height: size, borderRadius: "50%", background: src ? bg : "rgba(255,255,255,0.12)", border: `${Math.max(3, size * 0.015)}px solid ${ring}`, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0, boxShadow: "0 14px 40px rgba(0,0,0,0.45)", ...style }}>
+  <div style={{ width: size, height: size, borderRadius: "50%", background: src ? bg : `linear-gradient(135deg, ${MAROON}, ${DEEP})`, border: `${Math.max(3, size * 0.015)}px solid ${ring}`, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0, boxShadow: "0 14px 40px rgba(0,0,0,0.45)", ...style }}>
     {src ? <img src={src} alt="" style={{ width: "82%", height: "82%", objectFit: "contain" }} /> : <span style={{ fontFamily: O, fontSize: size * 0.42, fontWeight: 700, color: "#fff" }}>{fallback}</span>}
   </div>
 );
+// One line of text that shrinks to fit `max` px wide (never grows past `size`).
+// Long opponents ("Downingtown West") and venues stay on the board instead of
+// wrapping, overlapping or being cut off. Re-measures once web fonts load.
+export const Fit = ({ max, size, style, children }) => {
+  const ref = useRef(null);
+  const [fs, setFs] = useState(size);
+  const measure = () => {
+    const span = ref.current; if (!span) return;
+    const box = span.parentElement;
+    box.style.fontSize = size + "px";
+    const w = span.offsetWidth;
+    const next = w > max ? Math.max(10, Math.floor((size * max) / w)) : size;
+    box.style.fontSize = next + "px";
+    if (next !== fs) setFs(next);
+  };
+  useLayoutEffect(measure);
+  useEffect(() => {
+    if (!document.fonts) return undefined;
+    let live = true;
+    const again = () => { if (live) measure(); };
+    document.fonts.ready.then(again);
+    document.fonts.addEventListener("loadingdone", again);
+    return () => { live = false; document.fonts.removeEventListener("loadingdone", again); };
+  }, [size, max]); // eslint-disable-line
+  return <div style={{ whiteSpace: "nowrap", ...style, fontSize: fs }}><span ref={ref}>{children}</span></div>;
+};
 export const Meta = ({ children, style }) => <div style={{ fontFamily: O, fontSize: 22, letterSpacing: 5, textTransform: "uppercase", opacity: 0.75, whiteSpace: "nowrap", ...style }}>{children}</div>;
 export const scoreSize = (us, them, base) => ((us + them).length > 4 ? base * 0.84 : base);
 
@@ -70,7 +97,7 @@ const PanelCream = ({ f, photo, focus, zoom, us, them, longDate }) => (
       <div style={{ fontFamily: P, fontStyle: "italic", fontWeight: 700, fontSize: 78, lineHeight: 1, marginTop: 40 }}>Final<br />Score</div>
       <div style={{ fontFamily: A, fontSize: scoreSize(us, them, 190), lineHeight: 1, marginTop: 40, whiteSpace: "nowrap" }}>{us}<span style={{ fontSize: 100, margin: "0 10px", opacity: 0.5 }}>–</span>{them}</div>
       <div style={{ fontFamily: O, fontSize: 30, textTransform: "uppercase", letterSpacing: 3, marginTop: 14, lineHeight: 1.3 }}>Lower Merion<br /><span style={{ opacity: 0.55 }}>{f.opp}</span></div>
-      <Meta style={{ marginTop: "auto", color: MAROON, opacity: 0.6, fontSize: 20 }}>{longDate} · {f.venue}</Meta>
+      <Fit max={460} size={20} style={{ marginTop: "auto", fontFamily: O, letterSpacing: 5, textTransform: "uppercase", color: MAROON, opacity: 0.6 }}>{longDate} · {f.venue}</Fit>
     </div>
     <div style={{ flex: 1, position: "relative", overflow: "hidden", borderLeft: `12px solid ${MAROON}` }}><Photo src={photo} focus={focus} zoom={zoom} /></div>
   </Fill>
@@ -112,19 +139,19 @@ const Matchup = ({ f, photo, focus, zoom, us, them, oppLogo, longDate, win }) =>
   </Fill>
 );
 
-const Headline = ({ f, photo, focus, zoom, us, them, win, longDate }) => (
+const Headline = ({ f, photo, focus, zoom, us, them, win, longDate, home }) => (
   <Fill style={{ background: CREAM, color: INK, padding: "56px 64px" }}>
     <div style={{ display: "flex", justifyContent: "space-between", borderTop: `3px solid ${INK}`, borderBottom: `1px solid ${INK}`, padding: "12px 0", fontFamily: O, fontSize: 20, letterSpacing: 4, textTransform: "uppercase" }}><span>Lower Merion Aces Basketball</span><span>{longDate}</span></div>
-    <div style={{ fontFamily: P, fontWeight: 700, fontSize: win ? 200 : 170, lineHeight: 0.95, marginTop: 30, letterSpacing: -4, color: MAROON }}>{win ? "ACES WIN." : "FINAL."}</div>
+    <div style={{ fontFamily: P, fontWeight: 700, fontSize: win ? 184 : 164, lineHeight: 0.95, marginTop: 26, letterSpacing: -4, color: MAROON }}>{win ? "ACES WIN." : "FINAL."}</div>
     <div style={{ display: "flex", gap: 36, marginTop: 36, alignItems: "stretch" }}>
-      <div style={{ width: 520, height: 520, position: "relative", overflow: "hidden", border: `6px solid ${INK}`, flexShrink: 0 }}><Photo src={photo} focus={focus} zoom={zoom} /></div>
+      <div style={{ width: 480, height: 480, position: "relative", overflow: "hidden", border: `6px solid ${INK}`, flexShrink: 0 }}><Photo src={photo} focus={focus} zoom={zoom} /></div>
       <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
         <div style={{ fontFamily: A, fontSize: scoreSize(us, them, 150), lineHeight: 1, color: INK }}>{us}</div><div style={{ fontFamily: P, fontStyle: "italic", fontSize: 34 }}>Lower Merion</div>
         <div style={{ height: 2, background: INK, margin: "26px 0", width: 160 }} />
-        <div style={{ fontFamily: A, fontSize: scoreSize(us, them, 150), lineHeight: 1, color: "rgba(11,11,13,0.45)" }}>{them}</div><div style={{ fontFamily: P, fontStyle: "italic", fontSize: 34 }}>{f.opp}</div>
+        <div style={{ fontFamily: A, fontSize: scoreSize(us, them, 150), lineHeight: 1, color: "rgba(11,11,13,0.45)" }}>{them}</div><Fit max={400} size={34} style={{ fontFamily: P, fontStyle: "italic" }}>{f.opp}</Fit>
       </div>
     </div>
-    <div style={{ position: "absolute", left: 64, right: 64, bottom: 44, borderTop: `1px solid ${INK}`, paddingTop: 12, fontFamily: SS, fontSize: 22, display: "flex", justifyContent: "space-between" }}><span>{f.venue}</span><span>Ardmore, Pennsylvania</span></div>
+    <div style={{ position: "absolute", left: 64, right: 64, bottom: 44, borderTop: `1px solid ${INK}`, paddingTop: 12, fontFamily: SS, fontSize: 22, display: "flex", justifyContent: "space-between" }}><span>{f.venue}</span><span>{home ? "Ardmore, Pennsylvania" : "Lower Merion Aces"}</span></div>
   </Fill>
 );
 
@@ -179,9 +206,9 @@ const Ticker = ({ f, photo, focus, zoom, us, them, oppLogo, longDate }) => (
     <div style={{ position: "absolute", left: 48, right: 48, bottom: 56, display: "flex", height: 150, boxShadow: "0 24px 60px rgba(0,0,0,0.6)" }}>
       <div style={{ width: 190, background: MAROON, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: A, fontSize: 48, letterSpacing: 4 }}>FINAL</div>
       <div style={{ flex: 1, background: "#fff", color: INK, display: "flex", alignItems: "center", padding: "0 30px", gap: 24 }}>
-        <Logo src={LM} size={92} ring="rgba(0,0,0,0.1)" /><span style={{ fontFamily: O, fontSize: 42, fontWeight: 700, textTransform: "uppercase" }}>LM</span><span style={{ fontFamily: A, fontSize: 92, lineHeight: 1 }}>{us}</span>
+        <Logo src={LM} size={92} ring="rgba(0,0,0,0.1)" /><span style={{ fontFamily: A, fontSize: 92, lineHeight: 1 }}>{us}</span>
         <span style={{ width: 2, height: 90, background: "rgba(0,0,0,0.15)", margin: "0 10px" }} />
-        <Logo src={oppLogo} size={92} ring="rgba(0,0,0,0.1)" fallback={f.opp[0]} /><span style={{ fontFamily: O, fontSize: 42, fontWeight: 700, textTransform: "uppercase", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 230 }}>{f.opp}</span><span style={{ fontFamily: A, fontSize: 92, lineHeight: 1, marginLeft: "auto" }}>{them}</span>
+        <Logo src={oppLogo} size={92} ring="rgba(0,0,0,0.1)" fallback={f.opp[0]} /><Fit max={250} size={42} style={{ fontFamily: O, fontWeight: 700, textTransform: "uppercase" }}>{f.opp}</Fit><span style={{ fontFamily: A, fontSize: 92, lineHeight: 1, marginLeft: "auto" }}>{them}</span>
       </div>
     </div>
   </Fill>
@@ -192,7 +219,7 @@ const Polaroid = ({ f, photo, focus, zoom, us, them, win, dateLine }) => (
     <div style={{ width: 760, background: "#fdfcf8", padding: "34px 34px 150px", transform: "rotate(-4deg)", boxShadow: "0 40px 90px rgba(0,0,0,0.55)", position: "relative" }}>
       <div style={{ width: "100%", height: 680, position: "relative", overflow: "hidden", background: "#222" }}><Photo src={photo} focus={focus} zoom={zoom} /></div>
       <div style={{ position: "absolute", left: 34, right: 34, bottom: 34, display: "flex", justifyContent: "space-between", alignItems: "baseline", color: INK, fontFamily: M }}>
-        <span style={{ fontSize: 44 }}>Aces {us}, {f.opp} {them}</span><span style={{ fontSize: 30, opacity: 0.6 }}>{dateLine}</span>
+        <Fit max={540} size={44}>Aces {us}, {f.opp} {them}</Fit><span style={{ fontSize: 30, opacity: 0.6, whiteSpace: "nowrap" }}>{dateLine}</span>
       </div>
     </div>
     <div style={{ position: "absolute", top: 90, right: 100, width: 220, height: 220, borderRadius: "50%", background: GOLD, color: DEEP, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", fontFamily: A, fontSize: win ? 64 : 54, lineHeight: 1, transform: "rotate(12deg)", boxShadow: "0 20px 50px rgba(0,0,0,0.4)", whiteSpace: "pre-line" }}>{win ? "ACES\nWIN" : "FINAL"}</div>
@@ -244,7 +271,7 @@ const StoryTape = ({ f, photo, focus, zoom, us, them, win, dateLine }) => (
     <div style={{ position: "absolute", top: 40, left: 0, right: 0, textAlign: "center", fontFamily: G, fontSize: 150, lineHeight: 1, transform: "rotate(-4deg)", textShadow: "0 0 3px #35d0ff, 5px 5px 0 #e3142f, 0 0 36px rgba(227,20,47,0.9)" }}>{win ? "ACES WIN" : "FINAL"}</div>
     <Tape style={{ left: 40, bottom: 330, transform: "rotate(-5deg)" }}>{dateLine}</Tape>
     <div style={{ position: "absolute", left: 40, right: 40, bottom: 110, fontFamily: A, fontSize: scoreSize(us, them, 300), lineHeight: 1, textAlign: "center", textShadow: "0 10px 40px rgba(0,0,0,0.6)" }}>{us}<span style={{ opacity: 0.6 }}>-</span>{them}</div>
-    <Tape style={{ left: 40, bottom: 30 }} size={46}>LOWER MERION</Tape><Tape style={{ right: 40, bottom: 30 }} size={46}>VS. {f.opp.toUpperCase()}</Tape>
+    <Tape style={{ left: "50%", bottom: 30, transform: "translateX(-50%)" }} size={46}><Fit max={940} size={46}>LOWER MERION VS. {f.opp.toUpperCase()}</Fit></Tape>
   </Fill>
 );
 
@@ -269,7 +296,7 @@ const Stacked = ({ f, photo, focus, zoom, us, them, win, longDate }) => (
       <div style={{ fontFamily: O, fontSize: 24, letterSpacing: 8, textTransform: "uppercase", color: GOLD }}>{win ? "Aces Win" : "Final"}</div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 16 }}><span style={{ fontFamily: A, fontSize: 92, textTransform: "uppercase", letterSpacing: 2 }}>Lower Merion</span><span style={{ fontFamily: A, fontSize: 170, lineHeight: 1, color: win ? GOLD : "#fff" }}>{us}</span></div>
       <div style={{ height: 2, background: "rgba(255,255,255,0.15)" }} />
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 6 }}><span style={{ fontFamily: A, fontSize: 92, textTransform: "uppercase", letterSpacing: 2, opacity: 0.6 }}>{f.opp}</span><span style={{ fontFamily: A, fontSize: 170, lineHeight: 1, color: !win && Number(them) > Number(us) ? GOLD : "rgba(255,255,255,0.6)" }}>{them}</span></div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 6 }}><Fit max={600} size={92} style={{ fontFamily: A, textTransform: "uppercase", letterSpacing: 2, opacity: 0.6 }}>{f.opp}</Fit><span style={{ fontFamily: A, fontSize: 170, lineHeight: 1, color: !win && Number(them) > Number(us) ? GOLD : "rgba(255,255,255,0.6)" }}>{them}</span></div>
       <Meta style={{ marginTop: "auto" }}>{longDate} · {f.venue}</Meta>
     </div>
   </Fill>

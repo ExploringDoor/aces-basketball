@@ -3,12 +3,12 @@
 // each renders inside a fixed W×H board owned by the page. Props:
 //   f { opp, weekday, dateLine, time, venue, event }, photo, focus, zoom,
 //   oppLogo, longDate, home (true = Aces host)
-import { S, PW, PH, MAROON, DEEP, GOLD, CREAM, INK, A, O, P, M, G, B, BG, SS, LM, BULL, Photo, Fill, Logo, Meta, Tape } from "./finalLayouts";
+import { S, PW, PH, MAROON, DEEP, GOLD, CREAM, INK, A, O, P, M, G, B, BG, SS, LM, BULL, Photo, Fill, Logo, Meta, Tape, Fit } from "./finalLayouts";
 
 const vs = (home) => (home ? "VS" : "@");
-const Strip = ({ style, lines, size, align = "left" }) => (
+const Strip = ({ style, lines, size, align = "left", max = 9999 }) => (
   <div style={{ position: "absolute", ...style, background: "#0a0a0a", padding: "12px 28px 16px", boxShadow: "0 12px 30px rgba(0,0,0,0.5)", textAlign: align, fontFamily: M }}>
-    {lines.map((l, i) => <div key={i} style={{ fontSize: size, lineHeight: 1.05, color: "#fff", whiteSpace: "nowrap" }}>{l}</div>)}
+    {lines.map((l, i) => <Fit key={i} max={max} size={size} style={{ lineHeight: 1.05, color: "#fff" }}>{l}</Fit>)}
   </div>
 );
 const Details = ({ f, style, color = "#fff", size = 26 }) => (
@@ -33,9 +33,9 @@ const TapeClassic = ({ f, photo, focus, zoom }) => {
         <div style={{ fontFamily: G, fontSize: 168, lineHeight: 1, letterSpacing: 1, whiteSpace: "nowrap", textShadow: glow }}>GAME DAY</div>
         <div style={{ height: 12, margin: "0 250px 0 190px", background: "linear-gradient(90deg, #ff1e3c, #ff5d75)", transform: "skewX(-25deg)", borderRadius: 6, boxShadow: "0 0 22px rgba(255,30,60,0.9), 0 0 6px #fff" }} />
       </div>
-      <Strip style={{ left: 40, bottom: stripBottom, transform: "rotate(-5deg)" }} lines={[f.weekday, f.dateLine]} size={70} />
-      <Strip style={{ right: 40, bottom: stripBottom + 10, transform: "rotate(4deg)" }} lines={["VS.", f.opp.toUpperCase()]} size={oppSize} align="right" />
-      {f.event && <Strip style={{ left: "50%", bottom: 118, transform: "translateX(-50%) rotate(-3deg)" }} lines={[f.event.toUpperCase()]} size={f.event.length > 18 ? 54 : 70} />}
+      <Strip style={{ left: 40, bottom: stripBottom, transform: "rotate(-5deg)" }} lines={[f.weekday, f.dateLine]} size={70} max={340} />
+      <Strip style={{ right: 40, bottom: stripBottom + 10, transform: "rotate(4deg)" }} lines={["VS.", f.opp.toUpperCase()]} size={oppSize} align="right" max={500} />
+      {f.event && <Strip style={{ left: "50%", bottom: 118, transform: "translateX(-50%) rotate(-3deg)" }} lines={[f.event.toUpperCase()]} size={f.event.length > 18 ? 54 : 70} max={860} />}
       <div style={{ position: "absolute", left: 24, bottom: 26, background: "#000", padding: "10px 26px 14px", fontSize: venueSize, letterSpacing: 3, whiteSpace: "nowrap", maxWidth: 780, overflow: "hidden", textOverflow: "ellipsis", boxSizing: "border-box" }}>@{f.venue.toUpperCase()}</div>
       {f.time && <div style={{ position: "absolute", right: 24, bottom: 26, background: "#000", padding: "10px 26px 14px", fontSize: 42, letterSpacing: 4, whiteSpace: "nowrap" }}>{f.time}</div>}
     </Fill>
@@ -50,7 +50,7 @@ const BulldogBanner = ({ f, photo, focus, zoom, home, oppLogo }) => (
     </div>
     <div style={{ flex: 1, position: "relative", overflow: "hidden" }}><Photo src={photo} focus={focus} zoom={zoom} /></div>
     <div style={{ height: 280, padding: "34px 50px", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: `8px solid ${GOLD}` }}>
-      <div><div style={{ fontFamily: A, fontSize: 96, lineHeight: 1 }}>{vs(home)} {f.opp.toUpperCase()}</div><Details f={f} style={{ marginTop: 12 }} /></div>
+      <div style={{ minWidth: 0 }}><Fit max={540} size={96} style={{ fontFamily: A, lineHeight: 1 }}>{vs(home)} {f.opp.toUpperCase()}</Fit><Details f={f} style={{ marginTop: 12, whiteSpace: "nowrap" }} size={f.venue.length > 22 ? 22 : 26} /></div>
       <div style={{ display: "flex", alignItems: "center", gap: 18 }}><Logo src={LM} size={150} ring={GOLD} /><span style={{ fontFamily: A, fontSize: 44, opacity: 0.5 }}>{vs(home)}</span><Logo src={oppLogo} size={150} fallback={f.opp[0]} /></div>
     </div>
   </Fill>
@@ -144,11 +144,11 @@ const VerticalSplit = ({ f, photo, focus, zoom, home }) => (
 const Diagonal = ({ f, photo, focus, zoom, home, oppLogo }) => (
   <Fill style={{ background: INK }}>
     <Photo src={photo} focus={focus} zoom={zoom} />
-    <Fill style={{ background: MAROON, clipPath: "polygon(0 100%, 100% 42%, 100% 100%)" }} />
-    <Fill style={{ background: GOLD, clipPath: "polygon(0 100%, 100% 42%, 100% 45%, 0 103%)" }} />
+    <Fill style={{ background: MAROON, clipPath: "polygon(0 70%, 100% 34%, 100% 100%, 0 100%)" }} />
+    <Fill style={{ background: GOLD, clipPath: "polygon(0 67%, 100% 31%, 100% 34%, 0 70%)" }} />
     <div style={{ position: "absolute", right: 60, bottom: 56, textAlign: "right" }}>
       <div style={{ fontFamily: A, fontSize: 130, lineHeight: 1, color: GOLD }}>GAME DAY</div>
-      <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 20, marginTop: 16, fontFamily: A, fontSize: 70 }}><Logo src={LM} size={90} />{vs(home)}<Logo src={oppLogo} size={90} fallback={f.opp[0]} />{f.opp.toUpperCase()}</div>
+      <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 20, marginTop: 16, fontFamily: A, fontSize: 70 }}><Logo src={LM} size={90} />{vs(home)}<Logo src={oppLogo} size={90} fallback={f.opp[0]} /><Fit max={560} size={70}>{f.opp.toUpperCase()}</Fit></div>
       <Details f={f} style={{ marginTop: 14 }} size={24} />
     </div>
   </Fill>
@@ -169,14 +169,13 @@ const Broadcast = ({ f, photo, focus, zoom, home, oppLogo }) => (
   <Fill style={{ background: INK }}>
     <Photo src={photo} focus={focus} zoom={zoom} />
     <Fill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 65%, rgba(0,0,0,0.55) 100%)" }} />
-    <div style={{ position: "absolute", top: 44, left: 48, fontFamily: A, fontSize: 64, letterSpacing: 4, color: GOLD }}>GAME DAY</div>
+    <div style={{ position: "absolute", top: 40, left: 48, display: "flex", alignItems: "center", gap: 18 }}><Logo src={LM} size={84} ring={GOLD} /><span style={{ fontFamily: A, fontSize: 64, letterSpacing: 4, color: GOLD }}>GAME DAY</span></div>
     <div style={{ position: "absolute", left: 48, right: 48, bottom: 56, display: "flex", height: 150, boxShadow: "0 24px 60px rgba(0,0,0,0.6)" }}>
       <div style={{ width: 220, background: MAROON, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: A, fontSize: 40, letterSpacing: 3, lineHeight: 1.1 }}>{f.weekday.slice(0, 3)}<span style={{ fontSize: 28, color: GOLD }}>{f.dateLine}</span></div>
       <div style={{ flex: 1, background: "#fff", color: INK, display: "flex", alignItems: "center", padding: "0 30px", gap: 22 }}>
-        <Logo src={LM} size={92} ring="rgba(0,0,0,0.1)" /><span style={{ fontFamily: O, fontSize: 44, fontWeight: 700, textTransform: "uppercase" }}>LM</span>
         <span style={{ fontFamily: A, fontSize: 40, opacity: 0.5 }}>{vs(home)}</span>
-        <Logo src={oppLogo} size={92} ring="rgba(0,0,0,0.1)" fallback={f.opp[0]} /><span style={{ fontFamily: O, fontSize: 44, fontWeight: 700, textTransform: "uppercase", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{f.opp}</span>
-        <span style={{ marginLeft: "auto", fontFamily: A, fontSize: 60, color: MAROON, whiteSpace: "nowrap" }}>{f.time}</span>
+        <Logo src={oppLogo} size={92} ring="rgba(0,0,0,0.1)" fallback={f.opp[0]} /><Fit max={330} size={46} style={{ fontFamily: O, fontWeight: 700, textTransform: "uppercase" }}>{f.opp}</Fit>
+        <span style={{ marginLeft: "auto", fontFamily: A, fontSize: 56, color: MAROON, whiteSpace: "nowrap" }}>{f.time}</span>
       </div>
     </div>
   </Fill>
@@ -187,10 +186,10 @@ const ScoreboardPreview = ({ f, home, oppLogo, longDate }) => (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><div style={{ fontFamily: B, fontSize: 110, color: "#ff3b3b", textShadow: "0 0 26px rgba(255,59,59,0.8)", letterSpacing: 8, lineHeight: 1 }}>TIP-OFF</div><div style={{ fontFamily: B, fontSize: 40, letterSpacing: 6, color: "rgba(255,255,255,0.5)" }}>{longDate}</div></div>
     {[[home ? oppLogo : LM, home ? f.opp : "Lower Merion", "AWAY"], [home ? LM : oppLogo, home ? "Lower Merion" : f.opp, "HOME"]].map(([lg, n, tag]) => (
       <div key={tag} style={{ display: "flex", alignItems: "center", gap: 36, padding: "30px 44px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16 }}>
-        <Logo src={lg} size={120} fallback={n[0]} /><div style={{ fontFamily: B, fontSize: 84, letterSpacing: 4, flex: 1 }}>{n.toUpperCase()}</div><div style={{ fontFamily: B, fontSize: 40, letterSpacing: 6, color: "rgba(255,255,255,0.4)" }}>{tag}</div>
+        <Logo src={lg} size={120} fallback={n[0]} /><div style={{ flex: 1, minWidth: 0 }}><Fit max={560} size={84} style={{ fontFamily: B, letterSpacing: 4 }}>{n.toUpperCase()}</Fit></div><div style={{ fontFamily: B, fontSize: 40, letterSpacing: 6, color: "rgba(255,255,255,0.4)" }}>{tag}</div>
       </div>
     ))}
-    <div style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}><div style={{ fontFamily: A, fontSize: 150, lineHeight: 1, color: "#ffb13b", textShadow: "0 0 30px rgba(255,177,59,0.6)" }}>{f.time}</div><div style={{ fontFamily: O, fontSize: 24, letterSpacing: 5, textTransform: "uppercase", color: "rgba(255,255,255,0.45)" }}>@{f.venue}</div></div>
+    <div style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}><Fit max={520} size={150} style={{ fontFamily: A, lineHeight: 1, color: "#ffb13b", textShadow: "0 0 30px rgba(255,177,59,0.6)" }}>{f.time}</Fit><Fit max={400} size={24} style={{ fontFamily: O, letterSpacing: 5, textTransform: "uppercase", color: "rgba(255,255,255,0.45)" }}>@{f.venue}</Fit></div>
   </Fill>
 );
 
@@ -198,7 +197,7 @@ const Polaroid = ({ f, photo, focus, zoom, home }) => (
   <Fill style={{ background: `${MAROON} repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0 2px, transparent 2px 18px)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
     <div style={{ width: 760, background: "#fdfcf8", padding: "34px 34px 150px", transform: "rotate(-4deg)", boxShadow: "0 40px 90px rgba(0,0,0,0.55)", position: "relative" }}>
       <div style={{ width: "100%", height: 680, position: "relative", overflow: "hidden", background: "#222" }}><Photo src={photo} focus={focus} zoom={zoom} /></div>
-      <div style={{ position: "absolute", left: 34, right: 34, bottom: 34, display: "flex", justifyContent: "space-between", alignItems: "baseline", color: INK, fontFamily: M }}><span style={{ fontSize: 42 }}>{vs(home)} {f.opp} · {f.time}</span><span style={{ fontSize: 30, opacity: 0.6 }}>{f.dateLine}</span></div>
+      <div style={{ position: "absolute", left: 34, right: 34, bottom: 34, display: "flex", justifyContent: "space-between", alignItems: "baseline", color: INK, fontFamily: M }}><Fit max={540} size={42}>{vs(home)} {f.opp} · {f.time}</Fit><span style={{ fontSize: 30, opacity: 0.6, whiteSpace: "nowrap" }}>{f.dateLine}</span></div>
     </div>
     <div style={{ position: "absolute", top: 80, right: 90, width: 240, height: 240, borderRadius: "50%", background: GOLD, color: DEEP, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", fontFamily: A, fontSize: 60, lineHeight: 1, transform: "rotate(12deg)", boxShadow: "0 20px 50px rgba(0,0,0,0.4)", whiteSpace: "pre-line" }}>{"GAME\nDAY"}</div>
   </Fill>

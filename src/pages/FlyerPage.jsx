@@ -5,7 +5,7 @@
 import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { Spade, allGames, nextGame, gameTime, homeVenue, computeRecord } from "../shared";
-import { FINAL_LAYOUTS, oppLogoFor } from "./flyers/finalLayouts";
+import { FINAL_LAYOUTS, oppLogoFor, Fit, LM, GOLD, A, O } from "./flyers/finalLayouts";
 import { GAME_DAY_LAYOUTS } from "./flyers/gameDayLayouts";
 
 // Most /ig/*.jpg files are last season's finished flyers, not raw photos, so
@@ -57,7 +57,8 @@ function buildCaption(mode, f, g) {
   }
   const win = Number(f.us) > Number(f.them);
   const where = g.home ? "at the Bryant Gymnasium" : `at ${f.venue}`;
-  return `Final: Lower Merion ${win ? "defeats" : "falls to"} ${f.opp} ${f.us}-${f.them} ${where}.\n\nLet's Go Aces!`;
+  const top = f.top ? `\n\nTop performers: ${f.top}` : "";
+  return `Final: Lower Merion ${win ? "defeats" : "falls to"} ${f.opp} ${f.us}-${f.them} ${where}.${top}\n\nLet's Go Aces!`;
 }
 
 const defaultIdx = (mode, now) => {
@@ -105,6 +106,30 @@ async function shrink(file) {
 const readStored = (mode) => { try { return localStorage.getItem(STORE_KEY[mode]); } catch { return null; } };
 const pickDefault = (mode) => { const s = readStored(mode); return LAYOUTS[mode].some((l) => l.id === s) ? s : LAYOUTS[mode][0].id; };
 
+// ── Instagram Story (1080 x 1920): any post layout, framed. The photo fills the
+// background (blurred and darkened), the post sits in the middle at full width,
+// with the program name above and a one-line kicker below.
+const STORY_W = 1080, STORY_H = 1920;
+function StoryFrame({ W, H, photo, focus, kicker, sub, children }) {
+  const k = STORY_W / W, tall = H * k > 1200;
+  const top = tall ? 290 : Math.round((STORY_H - H * k) / 2) + 40;
+  return (
+    <div style={{ position: "absolute", inset: 0, background: "#0a0005", overflow: "hidden" }}>
+      <img src={photo} alt="" style={{ position: "absolute", inset: -60, width: "calc(100% + 120px)", height: "calc(100% + 120px)", objectFit: "cover", objectPosition: `${focus.x}% ${focus.y}%`, filter: "blur(38px) brightness(0.42) saturate(1.15)" }} />
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(74,0,30,0.55) 0%, rgba(10,0,5,0.15) 30%, rgba(10,0,5,0.15) 70%, rgba(74,0,30,0.6) 100%)" }} />
+      <div style={{ position: "absolute", top: top - 210, left: 0, right: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 26 }}>
+        <img src={LM} alt="" style={{ height: 150, filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.5))" }} />
+        <div style={{ fontFamily: O, fontSize: 36, letterSpacing: 9, textTransform: "uppercase", color: "#fff", lineHeight: 1.25 }}>Lower Merion<br /><span style={{ color: GOLD }}>Aces Basketball</span></div>
+      </div>
+      <div style={{ position: "absolute", top, left: 0, width: W, height: H, transform: `scale(${k})`, transformOrigin: "top left", overflow: "hidden", boxShadow: "0 40px 120px rgba(0,0,0,0.65)" }}>{children}</div>
+      <div style={{ position: "absolute", top: top + H * k + (tall ? 50 : 70), left: 60, right: 60, textAlign: "center", color: "#fff" }}>
+        <Fit max={960} size={tall ? 72 : 92} style={{ fontFamily: A, letterSpacing: 3, lineHeight: 1, textTransform: "uppercase" }}>{kicker}</Fit>
+        {sub && <Fit max={960} size={30} style={{ fontFamily: O, letterSpacing: 7, textTransform: "uppercase", color: GOLD, marginTop: 18 }}>{sub}</Fit>}
+      </div>
+    </div>
+  );
+}
+
 // ── Control styles ────────────────────────────────────────────────
 const label = { fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,0.45)", marginBottom: 6, display: "block" };
 const input = { width: "100%", boxSizing: "border-box", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, color: "#fff", padding: "10px 12px", fontFamily: "'Source Sans 3',sans-serif", fontSize: 14, outline: "none" };
@@ -114,6 +139,8 @@ const Field = ({ l, children }) => <div><span style={label}>{l}</span>{children}
 export default function FlyerPage() {
   const now = Date.now();
   const [mode, setMode] = useState("gameday");
+  const [format, setFormat] = useState(() => { try { return localStorage.getItem("aces-flyer-format") || "post"; } catch { return "post"; } });
+  const pickFormat = (v) => { setFormat(v); try { localStorage.setItem("aces-flyer-format", v); } catch { /* ignore */ } };
   const [idx, setIdx] = useState(() => defaultIdx("gameday", now));
   const g = GAMES[idx] || GAMES[0];
   const [f, setF] = useState(() => prefill(GAMES[defaultIdx("gameday", now)] || GAMES[0], "gameday"));
@@ -157,7 +184,8 @@ export default function FlyerPage() {
 
   const list = LAYOUTS[mode];
   const layout = list.find((l) => l.id === layoutIds[mode]) || list[0];
-  const W = layout.w, H = layout.h;
+  const story = format === "story";
+  const W = story ? STORY_W : layout.w, H = story ? STORY_H : layout.h;
 
   const set = (k) => (e) => setF((p) => ({ ...p, [k]: e.target.value }));
   const switchMode = (m) => { setMode(m); setIdx(defaultIdx(m, Date.now())); };
@@ -181,7 +209,14 @@ export default function FlyerPage() {
   const win = Number(us) > Number(them), tie = Number(us) === Number(them);
   const art = { f, photo, focus, zoom, us, them, win, tie, home: !!(g.home || g.neutral), recLine: projectedRecord(g, f.us, f.them), longDate: longDateOf(g), dateLine: f.dateLine, oppLogo: oppLogoFor(f.opp) };
 
-  const fileName = () => `aces-${mode === "gameday" ? "gameday" : "final"}-${layout.id}-${f.dateLine.replace("/", "-")}-${f.opp.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`;
+  const storyKicker = mode === "gameday"
+    ? (f.time ? `Tip-off ${f.time}` : "Game Day")
+    : tie ? "Final" : win ? "Aces Win" : "Final";
+  const storySub = mode === "gameday"
+    ? [f.weekday && f.dateLine ? `${f.weekday} ${f.dateLine}` : "", f.venue].filter(Boolean).join(" · ")
+    : (f.top ? f.top : `${art.recLine} on the season`);
+
+  const fileName = () => `aces-${mode === "gameday" ? "gameday" : "final"}${story ? "-story" : ""}-${layout.id}-${f.dateLine.replace("/", "-")}-${f.opp.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`;
 
   const render = async () => {
     await document.fonts.ready;
@@ -275,12 +310,14 @@ export default function FlyerPage() {
             <div style={{ width: W * scale, height: H * scale, position: "relative", overflow: "hidden", borderRadius: 10, boxShadow: "0 30px 80px rgba(0,0,0,0.6)", margin: "0 auto" }}>
               <div style={{ transform: `scale(${scale})`, transformOrigin: "top left" }}>
                 <div ref={boardRef} style={{ width: W, height: H, position: "relative", overflow: "hidden", background: "#0a0005", color: "#fff" }}>
-                  <Layout {...art} />
+                  {story
+                    ? <StoryFrame W={layout.w} H={layout.h} photo={photo} focus={focus} kicker={storyKicker} sub={storySub}><div style={{ width: layout.w, height: layout.h, position: "relative", overflow: "hidden", background: "#0a0005", color: "#fff" }}><Layout {...art} /></div></StoryFrame>
+                    : <Layout {...art} />}
                 </div>
               </div>
             </div>
             <div style={{ textAlign: "center", marginTop: 10, fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,0.3)" }}>
-              {layout.name} · {W} × {H} · Instagram {H > W ? "portrait" : "square"}
+              {layout.name} · {W} × {H} · Instagram {story ? "story" : H > W ? "portrait" : "square"}
             </div>
           </div>
 
@@ -289,6 +326,11 @@ export default function FlyerPage() {
             <div className="flyer-seg">
               <button className={mode === "gameday" ? "on" : ""} onClick={() => switchMode("gameday")}>Game Day</button>
               <button className={mode === "final" ? "on" : ""} onClick={() => switchMode("final")}>Final Score</button>
+            </div>
+
+            <div className="flyer-seg">
+              <button className={!story ? "on" : ""} onClick={() => pickFormat("post")}>Feed post</button>
+              <button className={story ? "on" : ""} onClick={() => pickFormat("story")}>Story 9:16</button>
             </div>
 
             <Field l="Game">
@@ -358,6 +400,7 @@ export default function FlyerPage() {
               {mode === "gameday" && <Field l="Day"><input style={input} value={f.weekday} onChange={set("weekday")} /></Field>}
               {mode === "gameday" && <Field l="Tip-off"><input style={input} value={f.time} onChange={set("time")} /></Field>}
               <Field l="Venue"><input style={input} value={f.venue} onChange={set("venue")} /></Field>
+              {mode === "final" && <Field l="Top performers (optional)"><input style={input} value={f.top || ""} onChange={set("top")} placeholder="Ingram 22 pts · Beck 15 pts" /></Field>}
               {mode === "gameday" && <Field l="Event line (optional)"><input style={input} value={f.event} onChange={set("event")} placeholder="Central League, Playoffs…" /></Field>}
             </div>
 
