@@ -146,6 +146,12 @@ function buildSnapshot(event, pledges) {
 // ── GET ────────────────────────────────────────────────────────────────────
 async function handleGet(req, res) {
   const q = req.query || {};
+  // Database login not set up on this deployment yet: say "coming soon" instead of crashing.
+  if (!(fbConfigured() && fbAdminConfigured())) {
+    res.setHeader('Cache-Control', 'no-store');
+    if (q.pay) return redirect(res, `${baseUrl(req)}/donate.html?e=unavailable`);
+    return res.status(200).json({ open: false, ready: false, title: SHOOTATHON.title });
+  }
 
   if (q.pay) {
     const id = String(q.pay);
