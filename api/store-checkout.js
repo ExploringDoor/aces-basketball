@@ -11,6 +11,7 @@
 //   Firestore: FIREBASE_PROJECT_ID, FIREBASE_API_KEY, FB_ADMIN_EMAIL, FB_ADMIN_PASSWORD
 //   Optional: SITE_URL for redirect links
 
+import { SITE_TAG } from './_site.js';
 import { fbConfigured, fbAdminConfigured, fsCreate, fsPatch, fsPatchVerified } from './_firestore.js';
 import { normalizeOrder, STORE } from './_store.js';
 
@@ -35,6 +36,8 @@ async function createStripeCheckout({ oid, order, base }) {
   params.set('client_reference_id', oid);
   params.set('metadata[kind]', 'store_order');
   params.set('metadata[oid]', oid);
+  params.set('metadata[site]', SITE_TAG);
+  params.set('payment_intent_data[metadata][site]', SITE_TAG);
   params.set('payment_intent_data[metadata][kind]', 'store_order');
   params.set('payment_intent_data[metadata][oid]', oid);
   params.set('phone_number_collection[enabled]', 'true');
@@ -72,6 +75,7 @@ export default async function handler(req, res) {
 
   // 1) Persist a PENDING order so we have a record even if the customer abandons checkout.
   const created = await fsCreate('orders', {
+    site: SITE_TAG,
     kind: 'store_order',
     status: 'pending',
     payment_provider: PROVIDER,
