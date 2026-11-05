@@ -604,7 +604,7 @@ const Stamp = ({ f, photo, focus, zoom, us, them, win, longDate }) => (
 
 // ── Batch 3 ─────────────────────────────────────────────────────────────
 // Shared helpers for these layouts.
-const initials = (n) => {
+export const initials = (n) => {
   const w = String(n || "").replace(/[^A-Za-z .']/g, "").split(/\s+/).filter((x) => /^[A-Z]/.test(x));
   const i = w.map((x) => x[0]).join("").slice(0, 3);
   return (i.length > 1 ? i : String(n || "").replace(/[^A-Za-z]/g, "").slice(0, 3)).toUpperCase();
@@ -612,7 +612,7 @@ const initials = (n) => {
 // "Ingram 22 pts · Beck 15 pts" -> [["Ingram","22 pts"], ["Beck","15 pts"]]
 const performers = (f) => String(f.top || "").split(/\s*[·,;|\n]\s*/).map((x) => x.trim()).filter(Boolean).slice(0, 4)
   .map((x) => { const m = x.match(/^(.*?)\s+(\d.*)$/); return m ? [m[1], m[2]] : [x, ""]; });
-const seasonOf = (longDate) => {
+export const seasonOf = (longDate) => {
   const y = Number((String(longDate).match(/\d{4}/) || [])[0]); if (!y) return "";
   const a = ["AUG", "SEP", "OCT", "NOV", "DEC"].includes(String(longDate).slice(0, 3)) ? y : y - 1;
   return `${a}-${String(a + 1).slice(2)}`;

@@ -1,9 +1,9 @@
 // pages/flyers/gameDayLayouts.jsx
-// 25 Game Day layouts for the Flyer Studio. Same contract as finalLayouts:
+// 38 Game Day layouts for the Flyer Studio. Same contract as finalLayouts:
 // each renders inside a fixed W×H board owned by the page. Props:
 //   f { opp, weekday, dateLine, time, venue, event }, photo, focus, zoom,
 //   oppLogo, longDate, home (true = Aces host)
-import { S, PW, PH, MAROON, DEEP, GOLD, CREAM, INK, A, O, P, M, G, B, BG, SS, LM, BULL, Photo, Fill, Logo, Meta, Tape, Fit } from "./finalLayouts";
+import { S, PW, PH, MAROON, DEEP, GOLD, CREAM, INK, A, O, P, M, G, B, BG, SS, LM, BULL, Photo, Fill, Logo, Meta, Tape, Fit, initials, seasonOf } from "./finalLayouts";
 
 const vs = (home) => (home ? "VS" : "@");
 const Strip = ({ style, lines, size, align = "left", max = 9999 }) => (
@@ -344,6 +344,285 @@ const PackTheGym = ({ f, photo, focus, zoom, home }) => (
   </Fill>
 );
 
+// ── Batch 2 ─────────────────────────────────────────────────────────────
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const monthOf = (f, longDate) => { const m = Number(String(f.dateLine).split("/")[0]); return MONTHS[m - 1] || String(longDate).slice(0, 3); };
+const dayOf = (f) => String(f.dateLine).split("/")[1] || f.dateLine;
+const cap = (w) => (w ? w.charAt(0) + w.slice(1).toLowerCase() : "");
+// "night" for 5 PM and later, else "afternoon"/"morning".
+const slotOf = (t) => { const m = String(t).match(/(\d+)(?::\d+)?\s*(AM|PM)/i); if (!m) return "night"; let h = Number(m[1]) % 12; if (/pm/i.test(m[2])) h += 12; return h >= 17 ? "night" : h >= 12 ? "afternoon" : "morning"; };
+const clock = (t) => String(t).replace(/\s*(AM|PM)/i, "");
+const ampm = (t) => ((String(t).match(/AM|PM/i) || [""])[0]).toUpperCase();
+
+// 25. Gym scoreboard before tip: 00-00, clock shows tip-off time.
+const GymBoard = ({ f, home, longDate }) => {
+  const H = home ? "Lower Merion" : f.opp, V = home ? f.opp : "Lower Merion";
+  const led = (c) => ({ fontFamily: B, color: c, textShadow: `0 0 18px ${c}, 0 0 4px ${c}`, lineHeight: 0.9 });
+  const Side = ({ tag, name }) => (
+    <div style={{ flex: 1, textAlign: "center" }}>
+      <div style={{ fontFamily: O, fontSize: 40, letterSpacing: 10 }}>{tag}</div>
+      <Fit max={340} size={34} style={{ fontFamily: O, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.6)", marginTop: 6 }}>{name}</Fit>
+      <div style={{ marginTop: 18, background: "#050505", border: "4px solid #222", borderRadius: 10, padding: "6px 0", ...led("#ff2d2d"), fontSize: 250 }}>00</div>
+    </div>
+  );
+  return (
+    <Fill style={{ background: "radial-gradient(ellipse at 50% 30%, #2a2a30 0%, #0c0c0e 70%)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ fontFamily: A, fontSize: 96, letterSpacing: 12, color: GOLD, marginBottom: 30 }}>GAME DAY</div>
+      <div style={{ width: 960, background: "#111114", border: "14px solid #2c2c31", borderRadius: 24, boxShadow: "0 40px 90px rgba(0,0,0,0.7)", overflow: "hidden" }}>
+        <div style={{ background: MAROON, padding: "16px 0", textAlign: "center", fontFamily: A, fontSize: 42, letterSpacing: 8 }}>LOWER MERION <span style={{ color: GOLD }}>ACES</span></div>
+        <div style={{ display: "flex", gap: 26, padding: "30px 40px 20px" }}>
+          <Side tag="HOME" name={H} />
+          <div style={{ width: 200, textAlign: "center", paddingTop: 60 }}>
+            <div style={{ fontFamily: O, fontSize: 20, letterSpacing: 6, color: "rgba(255,255,255,0.6)" }}>TIP-OFF</div>
+            <Fit max={200} size={96} style={{ ...led("#ffb300"), marginTop: 6 }}>{clock(f.time) || "--"}</Fit>
+            <div style={{ ...led("#ffb300"), fontSize: 44, marginTop: 6 }}>{ampm(f.time)}</div>
+          </div>
+          <Side tag="GUEST" name={V} />
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 46px 28px" }}><Meta style={{ fontSize: 20, opacity: 0.55 }}>{f.weekday} {f.dateLine}</Meta><Fit max={460} size={20} style={{ fontFamily: O, letterSpacing: 5, textTransform: "uppercase", opacity: 0.55 }}>{f.venue}</Fit></div>
+      </div>
+    </Fill>
+  );
+};
+
+// 26. Jumbotron LED panel.
+const JumbotronGD = ({ f, photo, focus, zoom, home }) => (
+  <Fill style={{ background: "#050505", display: "flex", flexDirection: "column" }}>
+    <div style={{ height: 740, position: "relative", overflow: "hidden" }}><Photo src={photo} focus={focus} zoom={zoom} /><Fill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 55%, #050505 100%)" }} /></div>
+    <div style={{ flex: 1, margin: "0 50px 60px", position: "relative", background: "#0a0a0a", border: "6px solid #1d1d1d", borderRadius: 14, padding: "30px 50px", overflow: "hidden", textAlign: "center" }}>
+      <div style={{ fontFamily: B, fontSize: 64, letterSpacing: 16, color: "#ffb300", textShadow: "0 0 20px rgba(255,179,0,0.8)" }}>{slotOf(f.time) === "night" ? "TONIGHT" : f.weekday}</div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 30, fontFamily: B, fontSize: 150, lineHeight: 1, color: "#e8e8e8", textShadow: "0 0 18px rgba(255,255,255,0.5)", marginTop: 4 }}>
+        <span style={{ color: "#ff3030", textShadow: "0 0 26px rgba(255,48,48,0.9)" }}>LM</span><span style={{ fontSize: 70, opacity: 0.6 }}>{home ? "VS" : "@"}</span><span>{initials(f.opp)}</span>
+      </div>
+      <Fit max={820} size={40} style={{ fontFamily: B, letterSpacing: 8, color: "#e8e8e8", marginTop: 6 }}>{f.opp.toUpperCase()}</Fit>
+      <div style={{ fontFamily: B, fontSize: 80, letterSpacing: 6, color: "#ffb300", textShadow: "0 0 22px rgba(255,179,0,0.8)", marginTop: 10 }}>{f.time}</div>
+      <Fill style={{ background: "radial-gradient(circle, rgba(0,0,0,0) 52%, rgba(0,0,0,0.78) 58%) 0 0 / 9px 9px", pointerEvents: "none" }} />
+    </div>
+    <Meta style={{ position: "absolute", left: 0, right: 0, bottom: 20, textAlign: "center", fontSize: 18, opacity: 0.45 }}>{f.weekday} {f.dateLine} · {f.venue}</Meta>
+  </Fill>
+);
+
+// 27. Magazine cover.
+const MagazineGD = ({ f, photo, focus, zoom, home, longDate }) => (
+  <Fill style={{ background: INK }}>
+    <Photo src={photo} focus={focus} zoom={zoom} />
+    <Fill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.85) 100%)" }} />
+    <div style={{ position: "absolute", top: 46, left: 60, right: 60, display: "flex", justifyContent: "space-between", fontFamily: O, fontSize: 22, letterSpacing: 6, textTransform: "uppercase" }}><span>Lower Merion Basketball</span><span>{seasonOf(longDate)} Season</span></div>
+    <div style={{ position: "absolute", top: 70, left: 44, fontFamily: P, fontWeight: 700, fontSize: 330, lineHeight: 1, letterSpacing: -10, textShadow: "0 10px 40px rgba(0,0,0,0.35)" }}>Aces</div>
+    <div style={{ position: "absolute", left: 60, right: 60, bottom: 70 }}>
+      <div style={{ display: "inline-block", background: GOLD, color: INK, fontFamily: O, fontWeight: 700, fontSize: 24, letterSpacing: 6, padding: "6px 16px", textTransform: "uppercase" }}>Game Day</div>
+      <Fit max={960} size={120} style={{ fontFamily: A, lineHeight: 1, marginTop: 14, textTransform: "uppercase" }}>{vs(home)} {f.opp}</Fit>
+      <Fit max={960} size={50} style={{ fontFamily: P, fontStyle: "italic", marginTop: 10 }}>{cap(f.weekday)} {slotOf(f.time)} · tip-off {f.time}</Fit>
+      {f.event && <Fit max={960} size={28} style={{ fontFamily: O, letterSpacing: 4, textTransform: "uppercase", color: GOLD, marginTop: 14 }}>{f.event}</Fit>}
+      <Meta style={{ marginTop: 14, fontSize: 18, opacity: 0.6 }}>{f.dateLine} · {f.venue}</Meta>
+    </div>
+  </Fill>
+);
+
+// 28. Swiss grid: the date as the hero.
+const SwissGD = ({ f, photo, focus, zoom, home }) => (
+  <Fill style={{ background: "#f3f1ec", color: INK }}>
+    <Fill style={{ backgroundImage: "linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px)", backgroundSize: "90px 90px" }} />
+    <div style={{ position: "absolute", left: 90, top: 90, width: 18, height: 900, background: MAROON }} />
+    <div style={{ position: "absolute", left: 140, top: 80, fontFamily: O, fontWeight: 600, fontSize: 30, letterSpacing: 8, textTransform: "uppercase", color: MAROON }}>Game Day</div>
+    <div style={{ position: "absolute", left: 130, top: 120 }}><Fit max={820} size={330} style={{ fontFamily: O, fontWeight: 700, lineHeight: 0.85, letterSpacing: -12 }}>{f.dateLine}</Fit></div>
+    <div style={{ position: "absolute", left: 140, top: 430, fontFamily: O, fontWeight: 600, fontSize: 44, letterSpacing: 6, textTransform: "uppercase" }}>{f.weekday} · {f.time}</div>
+    <div style={{ position: "absolute", left: 140, top: 520 }}><Fit max={560} size={90} style={{ fontFamily: O, fontWeight: 700, lineHeight: 1, textTransform: "uppercase", color: MAROON }}>{vs(home)} {f.opp}</Fit></div>
+    <div style={{ position: "absolute", right: 90, bottom: 90, width: 380, height: 380, overflow: "hidden" }}><Photo src={photo} focus={focus} zoom={zoom} /></div>
+    <img src={LM} alt="" style={{ position: "absolute", right: 90, top: 80, width: 120 }} />
+    <div style={{ position: "absolute", left: 140, bottom: 90, width: 420, fontFamily: O, fontSize: 22, letterSpacing: 4, textTransform: "uppercase", lineHeight: 1.7 }}>{f.event || "Lower Merion Aces"}<br /><span style={{ opacity: 0.55 }}>{f.venue}</span></div>
+  </Fill>
+);
+
+// 29. Tear-off calendar page.
+const CalendarPage = ({ f, photo, focus, zoom, home, longDate, oppLogo }) => (
+  <Fill style={{ background: INK }}>
+    <Photo src={photo} focus={focus} zoom={zoom} style={{ filter: "brightness(0.45) blur(2px)" }} />
+    <div style={{ position: "absolute", left: 150, top: 110, width: 780, height: 860, background: "#fdfcf8", color: INK, borderRadius: 18, boxShadow: "0 50px 100px rgba(0,0,0,0.6)", transform: "rotate(-3deg)", display: "flex", flexDirection: "column" }}>
+      <div style={{ background: MAROON, color: "#fff", padding: "36px 0 28px", textAlign: "center", position: "relative", borderRadius: "18px 18px 0 0" }}>
+        {[200, 560].map((x) => <div key={x} style={{ position: "absolute", top: -14, left: x, width: 24, height: 50, borderRadius: 12, background: "#2b2b30", boxShadow: "inset 0 -4px 0 rgba(0,0,0,0.4)" }} />)}
+        <div style={{ fontFamily: A, fontSize: 70, letterSpacing: 10, textTransform: "uppercase" }}>{monthOf(f, longDate)}</div>
+      </div>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ fontFamily: O, fontSize: 40, letterSpacing: 12, textTransform: "uppercase", color: MAROON }}>{f.weekday}</div>
+        <div style={{ fontFamily: A, fontSize: 340, lineHeight: 0.95 }}>{dayOf(f)}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 10 }}><Logo src={LM} size={80} ring="rgba(0,0,0,0.12)" /><Fit max={460} size={50} style={{ fontFamily: A, textTransform: "uppercase" }}>{vs(home)} {f.opp}</Fit><Logo src={oppLogo} size={80} ring="rgba(0,0,0,0.12)" fallback={f.opp[0]} /></div>
+        <Fit max={680} size={30} style={{ fontFamily: O, letterSpacing: 4, textTransform: "uppercase", marginTop: 18, opacity: 0.65 }}>{f.time} · {f.venue}</Fit>
+      </div>
+      <div style={{ background: GOLD, color: DEEP, textAlign: "center", padding: "14px 0", fontFamily: A, fontSize: 40, letterSpacing: 12, borderRadius: "0 0 18px 18px" }}>GAME DAY</div>
+    </div>
+  </Fill>
+);
+
+// 30. Boarding pass (road trips read best, works for home too).
+const BoardingPass = ({ f, home, longDate }) => (
+  <Fill style={{ background: `linear-gradient(160deg, ${MAROON}, ${DEEP})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ width: 960, display: "flex", filter: "drop-shadow(0 40px 60px rgba(0,0,0,0.5))", transform: "rotate(-3deg)" }}>
+      <div style={{ flex: 1, background: "#fff", color: INK, borderRadius: "22px 0 0 22px", overflow: "hidden" }}>
+        <div style={{ background: INK, color: "#fff", padding: "20px 34px", display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ fontFamily: A, fontSize: 40, letterSpacing: 4 }}>ACES <span style={{ color: GOLD }}>AIR</span></span><span style={{ fontFamily: O, fontSize: 20, letterSpacing: 6 }}>{home ? "HOME GAME" : "ROAD TRIP"} · GAME DAY</span></div>
+        <div style={{ padding: "30px 34px", display: "flex", alignItems: "center", gap: 26 }}>
+          <div><div style={{ fontFamily: O, fontSize: 18, letterSpacing: 5, opacity: 0.5 }}>FROM</div><div style={{ fontFamily: A, fontSize: 110, lineHeight: 1 }}>LM</div><div style={{ fontFamily: O, fontSize: 20, letterSpacing: 3, textTransform: "uppercase" }}>Lower Merion</div></div>
+          <div style={{ flex: 1, height: 3, background: `repeating-linear-gradient(90deg, ${MAROON} 0 14px, transparent 14px 26px)`, position: "relative" }}><div style={{ position: "absolute", left: "50%", top: -26, transform: "translateX(-50%)", fontFamily: A, fontSize: 40, color: MAROON }}>{vs(home)}</div></div>
+          <div style={{ textAlign: "right" }}><div style={{ fontFamily: O, fontSize: 18, letterSpacing: 5, opacity: 0.5 }}>TO</div><div style={{ fontFamily: A, fontSize: 110, lineHeight: 1 }}>{initials(f.opp)}</div><Fit max={260} size={20} style={{ fontFamily: O, letterSpacing: 3, textTransform: "uppercase" }}>{f.opp}</Fit></div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr 1.6fr", gap: 20, padding: "0 34px 30px" }}>
+          {[["Date", `${f.weekday.slice(0, 3)} ${f.dateLine}`], ["Tip-off", f.time], ["Gate", f.venue]].map(([k, v]) => (
+            <div key={k}><div style={{ fontFamily: O, fontSize: 16, letterSpacing: 5, opacity: 0.5, textTransform: "uppercase" }}>{k}</div><Fit max={k === "Gate" ? 300 : 190} size={34} style={{ fontFamily: A, textTransform: "uppercase", marginTop: 2 }}>{v}</Fit></div>
+          ))}
+        </div>
+      </div>
+      <div style={{ width: 0, borderLeft: `5px dashed ${DEEP}`, background: "#fff" }} />
+      <div style={{ width: 200, background: "#f4ecdc", color: INK, borderRadius: "0 22px 22px 0", padding: "24px 20px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between" }}>
+        <img src={LM} alt="" style={{ width: 110 }} />
+        <div style={{ fontFamily: A, fontSize: 30, letterSpacing: 4, textAlign: "center", lineHeight: 1.1 }}>SEAT<br /><span style={{ fontSize: 64, color: MAROON }}>FAN</span></div>
+        <div style={{ width: "100%", height: 70, background: "repeating-linear-gradient(90deg, #111 0 3px, transparent 3px 6px, #111 6px 7px, transparent 7px 11px)" }} />
+      </div>
+    </div>
+    <Meta style={{ position: "absolute", bottom: 60, left: 0, right: 0, textAlign: "center", fontSize: 20 }}>{f.event || `${seasonOf(longDate)} Lower Merion Aces Basketball`}</Meta>
+  </Fill>
+);
+
+// 31. Film strip.
+const FilmStripGD = ({ f, photo, focus, zoom, home }) => {
+  const holes = "repeating-linear-gradient(180deg, transparent 0 18px, #e9e4d8 18px 46px, transparent 46px 64px)";
+  return (
+    <Fill style={{ background: "#0d0d0f" }}>
+      <div style={{ position: "absolute", top: 50, left: 0, right: 0, textAlign: "center", fontFamily: O, fontSize: 26, letterSpacing: 12, textTransform: "uppercase", color: GOLD }}>Game Day · {f.weekday} {f.dateLine}</div>
+      <div style={{ position: "absolute", top: 110, left: 140, width: 800, height: 820, background: "#000", padding: "20px 70px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 20, transform: "rotate(2deg)", boxShadow: "0 30px 70px rgba(0,0,0,0.6)" }}>
+        <div style={{ position: "absolute", left: 22, top: 0, bottom: 0, width: 26, background: holes }} />
+        <div style={{ position: "absolute", right: 22, top: 0, bottom: 0, width: 26, background: holes }} />
+        {[18, 50, 82].map((y, i) => <div key={i} style={{ flex: 1, position: "relative", overflow: "hidden" }}><Photo src={photo} focus={{ x: focus.x, y }} zoom={zoom * (i === 1 ? 1 : 1.5)} /></div>)}
+      </div>
+      <div style={{ position: "absolute", left: 60, right: 60, bottom: 70, textAlign: "center" }}>
+        <Fit max={960} size={130} style={{ fontFamily: A, lineHeight: 1, textTransform: "uppercase" }}>{vs(home)} {f.opp}</Fit>
+        <Fit max={960} size={34} style={{ fontFamily: O, textTransform: "uppercase", letterSpacing: 5, marginTop: 10, opacity: 0.8 }}>{f.time} · {f.venue}</Fit>
+      </div>
+    </Fill>
+  );
+};
+
+// 32. TV "Up Next" lower third.
+const UpNext = ({ f, photo, focus, zoom, home, recLine }) => (
+  <Fill style={{ background: INK }}>
+    <Photo src={photo} focus={focus} zoom={zoom} />
+    <Fill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%)" }} />
+    <div style={{ position: "absolute", top: 50, left: 50, display: "flex", alignItems: "center", gap: 14, background: "#d6001c", padding: "10px 22px", fontFamily: O, fontWeight: 700, fontSize: 30, letterSpacing: 5 }}><span style={{ width: 16, height: 16, borderRadius: "50%", background: "#fff" }} />UP NEXT</div>
+    <div style={{ position: "absolute", top: 40, right: 50 }}><Logo src={LM} size={110} /></div>
+    <div style={{ position: "absolute", left: 50, right: 50, bottom: 60, boxShadow: "0 24px 60px rgba(0,0,0,0.6)" }}>
+      <div style={{ display: "flex", alignItems: "stretch" }}>
+        <div style={{ background: MAROON, padding: "0 26px", display: "flex", alignItems: "center", fontFamily: A, fontSize: 40, letterSpacing: 3 }}>ACES</div>
+        <div style={{ flex: 1, background: "#fff", color: INK, padding: "16px 26px", minWidth: 0 }}>
+          <Fit max={790} size={64} style={{ fontFamily: A, lineHeight: 1.05, textTransform: "uppercase" }}>Lower Merion {vs(home).toLowerCase() === "vs" ? "vs" : "at"} {f.opp}</Fit>
+          <div style={{ fontFamily: A, fontSize: 70, lineHeight: 1, color: MAROON, marginTop: 6 }}>{f.weekday.slice(0, 3)} {f.dateLine} · {f.time}</div>
+        </div>
+      </div>
+      <div style={{ background: "#14141a", padding: "12px 26px" }}><Fit max={920} size={24} style={{ fontFamily: O, letterSpacing: 4, textTransform: "uppercase", color: "rgba(255,255,255,0.8)" }}>{[f.event, f.venue, `Aces ${recLine} on the season`].filter(Boolean).join("  ·  ")}</Fit></div>
+    </div>
+  </Fill>
+);
+
+// 33. Center court matchup.
+const CenterCourtGD = ({ f, home, oppLogo }) => (
+  <Fill style={{ background: `radial-gradient(circle at 50% 50%, #a1063f 0%, ${MAROON} 45%, ${DEEP} 100%)` }}>
+    <svg viewBox="0 0 1080 1080" style={{ position: "absolute", inset: 0 }} fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="6">
+      <rect x="40" y="140" width="1000" height="800" /><line x1="540" y1="140" x2="540" y2="940" /><circle cx="540" cy="540" r="150" />
+      <rect x="40" y="380" width="230" height="320" /><circle cx="270" cy="540" r="110" /><rect x="810" y="380" width="230" height="320" /><circle cx="810" cy="540" r="110" />
+      <path d="M40 200 L120 200 A380 380 0 0 1 120 880 L40 880" /><path d="M1040 200 L960 200 A380 380 0 0 0 960 880 L1040 880" />
+    </svg>
+    <div style={{ position: "absolute", top: 36, left: 0, right: 0, textAlign: "center", fontFamily: A, fontSize: 80, letterSpacing: 14, color: GOLD }}>GAME DAY</div>
+    <div style={{ position: "absolute", left: 140, top: 330 }}><Logo src={LM} size={250} ring={GOLD} /></div>
+    <div style={{ position: "absolute", left: 690, top: 330 }}><Logo src={oppLogo} size={250} fallback={f.opp[0]} /></div>
+    <div style={{ position: "absolute", left: 480, top: 420, width: 120, textAlign: "center", fontFamily: A, fontSize: 64 }}>{vs(home)}</div>
+    <div style={{ position: "absolute", left: 80, right: 80, top: 720, textAlign: "center" }}><Fit max={920} size={60} style={{ fontFamily: A, letterSpacing: 2, textTransform: "uppercase" }}>Lower Merion {vs(home)} {f.opp}</Fit></div>
+    <div style={{ position: "absolute", left: 60, right: 60, bottom: 40, textAlign: "center" }}><Fit max={960} size={28} style={{ fontFamily: O, letterSpacing: 6, textTransform: "uppercase" }}>{f.weekday} {f.dateLine} · {f.time} · {f.venue}</Fit></div>
+  </Fill>
+);
+
+// 34. Black and gold.
+const BlackGoldGD = ({ f, home, longDate }) => (
+  <Fill style={{ background: "#08080a", textAlign: "center" }}>
+    <div style={{ position: "absolute", inset: 40, border: `2px solid ${GOLD}` }} />
+    <div style={{ position: "absolute", inset: 54, border: "1px solid rgba(201,164,74,0.5)" }} />
+    <img src={LM} alt="" style={{ position: "absolute", top: 96, left: 450, width: 180 }} />
+    <div style={{ position: "absolute", top: 300, left: 0, right: 0, fontFamily: P, fontStyle: "italic", fontSize: 110, color: GOLD }}>Game Day</div>
+    <div style={{ position: "absolute", top: 450, left: 110, right: 110 }}><Fit max={860} size={120} style={{ fontFamily: P, fontWeight: 700, lineHeight: 1 }}>{home ? "vs." : "at"} {f.opp}</Fit></div>
+    <div style={{ position: "absolute", top: 640, left: 460, width: 160, height: 2, background: GOLD }} />
+    <div style={{ position: "absolute", top: 680, left: 0, right: 0, fontFamily: O, fontSize: 40, letterSpacing: 10, textTransform: "uppercase" }}>{f.weekday} {f.dateLine}</div>
+    <div style={{ position: "absolute", top: 750, left: 0, right: 0, fontFamily: P, fontSize: 64, color: GOLD }}>{f.time}</div>
+    <div style={{ position: "absolute", top: 860, left: 120, right: 120 }}><Fit max={840} size={22} style={{ fontFamily: O, letterSpacing: 7, textTransform: "uppercase", opacity: 0.6 }}>{f.venue}{f.event ? ` · ${f.event}` : ""}</Fit></div>
+  </Fill>
+);
+
+// 35. Tile grid.
+const TileGridGD = ({ f, photo, focus, zoom, home, oppLogo }) => (
+  <Fill style={{ background: "#0b0b0d", padding: 30, display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "440px 1fr", gap: 20, boxSizing: "border-box" }}>
+    <div style={{ background: MAROON, padding: "34px 36px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+      <div style={{ fontFamily: O, fontSize: 22, letterSpacing: 8, color: GOLD, textTransform: "uppercase" }}>Game Day</div>
+      <div><div style={{ fontFamily: O, fontSize: 34, letterSpacing: 6, textTransform: "uppercase" }}>{f.weekday}</div><div style={{ fontFamily: A, fontSize: 150, lineHeight: 1 }}>{f.dateLine}</div></div>
+      <div style={{ fontFamily: A, fontSize: 56, color: GOLD }}>{f.time}</div>
+    </div>
+    <div style={{ background: "#16161a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 18 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 22 }}><Logo src={LM} size={140} ring={GOLD} /><span style={{ fontFamily: A, fontSize: 44, opacity: 0.5 }}>{vs(home)}</span><Logo src={oppLogo} size={140} fallback={f.opp[0]} /></div>
+      <Fit max={420} size={34} style={{ fontFamily: A, letterSpacing: 2, textTransform: "uppercase" }}>{f.opp}</Fit>
+    </div>
+    <div style={{ gridColumn: "1 / span 2", position: "relative", overflow: "hidden" }}><Photo src={photo} focus={focus} zoom={zoom} /><div style={{ position: "absolute", left: 30, bottom: 24 }}><Fit max={900} size={24} style={{ fontFamily: O, letterSpacing: 5, textTransform: "uppercase", textShadow: "0 2px 10px rgba(0,0,0,0.8)" }}>@ {f.venue}{f.event ? ` · ${f.event}` : ""}</Fit></div></div>
+  </Fill>
+);
+
+// 36. Gold seal medallion.
+const SealGD = ({ f, photo, focus, zoom, home, longDate }) => {
+  const ring = `LOWER MERION ACES  •  ${seasonOf(longDate)}  •  GAME DAY  •  `;
+  return (
+    <Fill style={{ background: INK }}>
+      <Photo src={photo} focus={focus} zoom={zoom} style={{ filter: "brightness(0.5)" }} />
+      <div style={{ position: "absolute", left: 200, top: 130, width: 680, height: 680, borderRadius: "50%", background: `conic-gradient(from 200deg, #f3dc94, ${GOLD}, #8a6a22, ${GOLD}, #f3dc94)`, boxShadow: "0 40px 100px rgba(0,0,0,0.7)" }}>
+        <svg viewBox="0 0 680 680" style={{ position: "absolute", inset: 0 }}>
+          <defs><path id="gdSealRing" d="M340,340 m-282,0 a282,282 0 1,1 564,0 a282,282 0 1,1 -564,0" /></defs>
+          <text style={{ fontFamily: O, fontSize: 38, fontWeight: 700 }} fill={DEEP}><textPath href="#gdSealRing" textLength={1760} lengthAdjust="spacing">{ring}</textPath></text>
+        </svg>
+        <div style={{ position: "absolute", inset: 84, borderRadius: "50%", background: `radial-gradient(circle at 50% 35%, #a1063f, ${DEEP})`, border: `6px solid ${DEEP}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+          <img src={LM} alt="" style={{ width: 150 }} />
+          <div style={{ fontFamily: A, fontSize: 60, letterSpacing: 4, color: GOLD, marginTop: 6 }}>{vs(home)}</div>
+          <Fit max={400} size={64} style={{ fontFamily: A, textTransform: "uppercase", lineHeight: 1 }}>{f.opp}</Fit>
+          <div style={{ fontFamily: O, fontSize: 30, letterSpacing: 5, marginTop: 12 }}>{f.time}</div>
+        </div>
+      </div>
+      <div style={{ position: "absolute", bottom: 60, left: 60, right: 60, textAlign: "center" }}><Fit max={960} size={26} style={{ fontFamily: O, letterSpacing: 6, textTransform: "uppercase" }}>{f.weekday} {f.dateLine} · {f.venue}</Fit></div>
+    </Fill>
+  );
+};
+
+// 37. Big outline date over the photo.
+const BigDate = ({ f, photo, focus, zoom, home }) => (
+  <Fill style={{ background: INK }}>
+    <Photo src={photo} focus={focus} zoom={zoom} />
+    <Fill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.75) 100%)" }} />
+    <div style={{ position: "absolute", top: 50, left: 60, fontFamily: A, fontSize: 60, letterSpacing: 6, color: GOLD }}>GAME DAY</div>
+    <img src={LM} alt="" style={{ position: "absolute", top: 40, right: 60, width: 120 }} />
+    <div style={{ position: "absolute", left: 40, right: 40, top: 300, textAlign: "center" }}><Fit max={1000} size={420} style={{ fontFamily: A, lineHeight: 1, color: "transparent", WebkitTextStroke: "6px #fff" }}>{f.dateLine}</Fit></div>
+    <div style={{ position: "absolute", left: 60, right: 60, bottom: 60 }}>
+      <div style={{ fontFamily: O, fontSize: 34, letterSpacing: 10, textTransform: "uppercase" }}>{f.weekday} · {f.time}</div>
+      <Fit max={960} size={96} style={{ fontFamily: A, lineHeight: 1, textTransform: "uppercase", marginTop: 6 }}>{vs(home)} {f.opp}</Fit>
+      <Fit max={960} size={22} style={{ fontFamily: O, letterSpacing: 5, textTransform: "uppercase", opacity: 0.7, marginTop: 8 }}>{f.venue}{f.event ? ` · ${f.event}` : ""}</Fit>
+    </div>
+  </Fill>
+);
+
+// 38. Editorial preview with an auto-written sentence.
+const EditorialGD = ({ f, photo, focus, zoom, home, recLine }) => (
+  <Fill style={{ background: CREAM, color: INK, display: "flex", flexDirection: "column" }}>
+    <div style={{ height: 760, position: "relative", overflow: "hidden" }}><Photo src={photo} focus={focus} zoom={zoom} /></div>
+    <div style={{ flex: 1, padding: "40px 64px 50px", display: "flex", flexDirection: "column" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", fontFamily: O, fontSize: 22, letterSpacing: 6, textTransform: "uppercase", color: MAROON }}><span>Game Day</span><span>{f.weekday} {f.dateLine}</span></div>
+      <div style={{ fontFamily: P, fontWeight: 700, fontSize: 74, lineHeight: 1.08, marginTop: 16, letterSpacing: -1 }}>Aces {home ? "host" : "visit"} {f.opp} {cap(f.weekday)} {slotOf(f.time)}</div>
+      <div style={{ fontFamily: SS, fontSize: 30, lineHeight: 1.45, marginTop: 18, color: "rgba(11,11,13,0.72)" }}>Tip-off is {f.time} at {f.venue}.{f.event ? ` ${f.event}.` : ""} Lower Merion is {recLine} on the season.</div>
+      <div style={{ marginTop: "auto", borderTop: `2px solid ${INK}`, paddingTop: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ fontFamily: O, fontSize: 20, letterSpacing: 5, textTransform: "uppercase" }}>Lower Merion Aces Basketball</span><img src={LM} alt="" style={{ height: 54 }} />
+      </div>
+    </div>
+  </Fill>
+);
+
 export const GAME_DAY_LAYOUTS = [
   { id: "tape-classic", name: "Tape Classic (IG)", w: PW, h: PH, Comp: TapeClassic },
   { id: "bulldog-banner", name: "Bulldog Banner", w: PW, h: PH, Comp: BulldogBanner },
@@ -369,4 +648,19 @@ export const GAME_DAY_LAYOUTS = [
   { id: "gd-stripes", name: "Gold Band", w: S, h: S, Comp: StripesBand },
   { id: "gd-homeaway", name: "Home / Road", w: S, h: S, Comp: HomeAway, noPhoto: true },
   { id: "gd-pack", name: "Pack the Gym", w: PW, h: PH, Comp: PackTheGym },
+  // batch 2
+  { id: "gd-gymboard", name: "Gym Scoreboard", w: S, h: S, Comp: GymBoard, noPhoto: true },
+  { id: "gd-jumbotron", name: "Jumbotron", w: PW, h: PH, Comp: JumbotronGD },
+  { id: "gd-magazine", name: "Magazine Cover", w: PW, h: PH, Comp: MagazineGD },
+  { id: "gd-swiss", name: "Swiss Grid", w: S, h: S, Comp: SwissGD },
+  { id: "gd-calendar", name: "Calendar Page", w: S, h: S, Comp: CalendarPage },
+  { id: "gd-boarding", name: "Boarding Pass", w: S, h: S, Comp: BoardingPass, noPhoto: true },
+  { id: "gd-film", name: "Film Strip", w: PW, h: PH, Comp: FilmStripGD },
+  { id: "gd-upnext", name: "Up Next (TV)", w: S, h: S, Comp: UpNext },
+  { id: "gd-court", name: "Center Court", w: S, h: S, Comp: CenterCourtGD, noPhoto: true },
+  { id: "gd-blackgold", name: "Black & Gold", w: S, h: S, Comp: BlackGoldGD, noPhoto: true },
+  { id: "gd-tiles", name: "Tile Grid", w: S, h: S, Comp: TileGridGD },
+  { id: "gd-seal", name: "Gold Seal", w: S, h: S, Comp: SealGD },
+  { id: "gd-bigdate", name: "Big Date", w: PW, h: PH, Comp: BigDate },
+  { id: "gd-editorial", name: "Editorial Preview", w: PW, h: PH, Comp: EditorialGD },
 ];
