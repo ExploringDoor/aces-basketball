@@ -180,6 +180,13 @@ export async function fsCreate(collection, fields, docId) {
 }
 // List an entire collection (admin-token, so it also works for the PII-gated ones the robot
 // can read). Callers must strip anything sensitive before returning it publicly.
+// Delete one document. Returns true when Firestore answered 2xx (deleting a
+// document that is already gone also answers 200).
+export async function fsDelete(path) {
+  if (!pathSafe(path)) return false;
+  const r = await fetch(`${FB_BASE}/${path}?key=${FB_KEY}`, { method: 'DELETE', headers: await authHeader() });
+  return r.ok;
+}
 export async function fsList(collection) {
   const auth = await authHeader();
   const out = [];

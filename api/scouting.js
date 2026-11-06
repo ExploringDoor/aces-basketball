@@ -9,8 +9,8 @@
 //   scouting_meta/aces_assignments    { site, map: { [slug]: { scout, helper, status } } }
 //   scouting_reports/aces_<slug>      { site, opp, <sections>, personnel, keys, matchups, links, updated_at, updated_by }
 //
-// Auth: header x-scouting-key = a coach's OWN code (from the staff list) or
-// ADMIN_PASSWORD. Every save is stamped with the coach the code belongs to;
+// Auth (api/_staffauth.js): header x-scouting-key = a coach's OWN code (from
+// the staff list) or ADMIN_PASSWORD. Every save is stamped with the coach the code belongs to;
 // the admin password is "Admin" and is the only one that manages the staff
 // list and hands out codes. Adam, 11/6: "each coach to have their own
 // password", replacing the shared scores passcode here.
@@ -24,56 +24,19 @@
 //      { action: "assign", slug, scout, helper, status }
 //      { action: "save", slug, opp, expect, report }   expect = updated_at the editor loaded;
 //                                                       a newer save answers 409 stale
-import { randomInt } from 'node:crypto';
 import { fbAdminConfigured, fsGet, fsPatch, fsList } from './_firestore.js';
 import { SITE_TAG } from './_site.js';
-import { DEFAULT_STAFF, LIMITS, cleanStaffList, normCode, codeKey, codeFor, validCode, cleanAssignment, cleanReport, completeness, clip, slugOf, SECTIONS } from './_scouting.js';
+import { LIMITS, normCode, codeKey, validCode, cleanAssignment, cleanReport, completeness, clip, slugOf, SECTIONS, cleanStaffList } from './_scouting.js';
+// The staff list and the per-coach sign-in live in _staffauth.js, shared with
+// /api/practice so one password opens both coach tools.
+import { resolveAuth, newCode, saveStaff, staffFor } from './_staffauth.js';
 
-const STAFF = `scouting_meta/${SITE_TAG}_staff`;
 const ASSIGN = `scouting_meta/${SITE_TAG}_assignments`;
 const reportPath = (slug) => `scouting_reports/${SITE_TAG}_${slug}`;
 const SLUG_RE = /^[a-z0-9-]{1,60}$/;
 
-function ctEq(a, b) {
-  a = String(a || ''); b = String(b || '');
-  if (!a || a.length !== b.length) return false;
-  let r = 0;
-  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return r === 0;
-}
-/** Grugan47!: the coach's first name, two or three digits, a bang. */
-const newCode = (name) => codeFor(name, String(randomInt(10, 999)));
-const isAdminKey = (k) => ctEq(k, process.env.ADMIN_PASSWORD);
-
-/** Who is calling: the admin, a coach by their own code, or nobody. The
- *  staff list is read on every call so a removed code stops working at once. */
-async function resolveAuth(req) {
-  const k = String(req.headers['x-scouting-key'] || '');
-  if (isAdminKey(k)) return { role: 'admin', name: 'Admin', staff: await loadStaff() };
-  const code = normCode(k);
-  if (!code) return null;
-  const staff = await loadStaff();
-  const hit = staff.find((c) => c.code && ctEq(codeKey(c.code), codeKey(code)));
-  return hit ? { role: 'coach', name: hit.name, staff } : null;
-}
 const json = (res, code, body) => { res.statusCode = code; res.setHeader('Content-Type', 'application/json'); res.setHeader('Cache-Control', 'no-store'); res.end(JSON.stringify(body)); };
 
-/** The staff list, bootstrapped from DEFAULT_STAFF with fresh codes the first
- *  time anyone asks, so Adam's first admin visit already has codes to hand out. */
-async function loadStaff() {
-  const d = await fsGet(STAFF);
-  const list = d && Array.isArray(d.staff) ? cleanStaffList(d.staff) : [];
-  if (list.length) return list;
-  const fresh = cleanStaffList(DEFAULT_STAFF.map((name) => ({ name, code: newCode(name) })));
-  await fsPatch(STAFF, { site: SITE_TAG, staff: fresh, updated_at: new Date().toISOString(), updated_by: 'setup' });
-  return fresh;
-}
-async function saveStaff(list, by) {
-  const r = await fsPatch(STAFF, { site: SITE_TAG, staff: list, updated_at: new Date().toISOString(), updated_by: by });
-  return !(r && r.error);
-}
-/** What a caller may see of the staff list: names always, codes only for the admin. */
-const staffFor = (auth) => auth.staff.map((c) => (auth.role === 'admin' ? { name: c.name, code: c.code } : { name: c.name }));
 async function loadAssignments() {
   const d = await fsGet(ASSIGN);
   const map = d && d.map && typeof d.map === 'object' ? d.map : {};
