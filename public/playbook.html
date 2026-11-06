@@ -111,6 +111,37 @@ h1,h2,h3{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2px}
 .pcard .new{position:absolute;top:10px;left:10px;background:var(--gold);color:#241a00;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;padding:3px 9px;border-radius:999px;text-transform:uppercase}
 .pcard .playic{position:absolute;right:10px;bottom:10px;width:40px;height:40px;border-radius:50%;background:var(--mrn);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 .pcard .playic svg{width:18px;height:18px;margin-left:2px}
+.plan-card{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;background:linear-gradient(135deg,#840036 0%,#5c0026 100%);color:#fff;border-radius:18px;padding:18px 22px;margin-bottom:18px;cursor:pointer;border:0;text-align:left;width:100%;font:inherit;position:relative;overflow:hidden}
+.plan-card:after{content:"";position:absolute;right:-40px;top:-50px;width:200px;height:200px;border-radius:50%;border:26px solid rgba(201,164,74,.16)}
+.plan-card .k{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:#f0d0d8}
+.plan-card .vs{font-family:'Anton',sans-serif;font-size:30px;line-height:1.05;letter-spacing:.5px}
+.plan-card .d{color:#f6dfe5;font-size:14.5px;margin-top:3px}
+.plan-card .go{background:var(--gold);color:#241a00;font-family:'Oswald',sans-serif;letter-spacing:1.5px;text-transform:uppercase;font-size:13px;padding:9px 16px;border-radius:999px;position:relative;z-index:1;white-space:nowrap}
+.plan-card .ic{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;position:relative;z-index:1}
+.plan-card .ic svg{width:26px;height:26px;color:var(--gold)}
+.prac{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 18px;margin-bottom:18px;box-shadow:var(--sh)}
+.prac .t{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mrn)}
+.prac b{font-size:17px;display:block}
+.prac .blocks{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.prac .blocks span{background:var(--bg);border-radius:999px;padding:4px 11px;font-size:13.5px;color:var(--ink-2)}
+.prac .blocks span i{font-style:normal;color:var(--ink-3);margin-left:4px}
+.must{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:18px;box-shadow:var(--sh)}
+.must h3{font-size:16px;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.must h3 .pct{margin-left:auto;font-family:'Oswald',sans-serif;font-weight:500;color:var(--ink-3);font-size:14px}
+.must ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px}
+.must li button{width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:#fafafb;cursor:pointer;font:inherit;text-align:left;color:var(--ink)}
+.must li button:hover{border-color:var(--line-2);background:#fff}
+.must .st{width:26px;height:26px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.must .st.no{background:var(--bad-50,#fdecea);color:var(--bad)}
+.must .st.seen{background:var(--warn-50,#fdf3e1);color:#a86a00}
+.must .st.ok{background:#e8f6ee;color:#1f8a4c}
+.must .st svg{width:14px;height:14px}
+.must .nm{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.must .due{font-size:12.5px;color:var(--ink-3);white-space:nowrap}
+.must .due.late{color:var(--bad);font-weight:600}
+.pcard .dueb{position:absolute;top:10px;right:10px;background:#fff;color:var(--ink-2);font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.3px;padding:3px 9px;border-radius:999px;text-transform:uppercase}
+.pcard .dueb.ok{background:#e8f6ee;color:#1f8a4c}
+.pcard .dueb.late{background:var(--bad-50,#fdecea);color:var(--bad)}
 .empty{background:#fff;border:1px dashed var(--line-2);border-radius:16px;padding:48px 20px;text-align:center;color:var(--ink-3)}
 .empty h3{color:var(--ink);font-size:20px;margin-bottom:4px}
 /* play view */
@@ -166,6 +197,52 @@ h1,h2,h3{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2px}
 .legend div{display:flex;align-items:center;gap:8px}
 .legend svg{width:44px;height:16px;flex:none}
 .kb{font-size:12.5px;color:var(--ink-3);margin-top:10px}
+/* quiz */
+.quizbtn{height:44px;padding:0 16px;border-radius:12px;border:1px solid var(--gold);background:var(--gold-50);color:#241a00;font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;display:inline-flex;align-items:center;gap:8px;flex:none}
+.quizbtn:hover{background:#f3e7c4}
+.quizbtn svg{width:18px;height:18px}
+.qz{border-top:1px solid var(--line);padding:14px 16px;background:var(--gold-50)}
+.qz .qq{display:flex;gap:12px;align-items:flex-start}
+.qz .qn{font-family:'Anton',sans-serif;font-size:28px;line-height:1;color:var(--gold-d,#9c7a2a);min-width:34px}
+.qz .lab{font-family:'Oswald',sans-serif;font-size:11.5px;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold-d,#9c7a2a)}
+.qz .tx{font-size:18px;font-weight:700;line-height:1.3}
+.qz .sub{font-size:14px;color:var(--ink-2);margin-top:2px}
+.qz .row{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.qz .score{margin-left:auto;font-family:'Oswald',sans-serif;font-size:15px;color:var(--ink-2)}
+.qz.right{background:#e8f6ee}.qz.right .qn,.qz.right .lab{color:#1f8a4c}
+.qz.wrong{background:var(--bad-50,#fdecea)}.qz.wrong .qn,.qz.wrong .lab{color:var(--bad)}
+.qz .result{text-align:center;padding:8px 0 4px}
+.qz .result .big{font-family:'Anton',sans-serif;font-size:54px;line-height:1;color:var(--mrn)}
+.qz .result .big.ok{color:#1f8a4c}
+.qz .result p{color:var(--ink-2);margin:6px 0 12px;font-size:16px}
+.court svg.quizzing{cursor:crosshair}
+/* game plan view */
+.gp-head{background:linear-gradient(135deg,#840036 0%,#5c0026 100%);color:#fff;border-radius:18px;padding:24px 26px;margin-bottom:18px}
+.gp-head .k{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:#f0d0d8}
+.gp-head h2{font-family:'Anton',sans-serif;font-weight:400;font-size:42px;line-height:1.05;letter-spacing:1px;margin:4px 0 2px}
+.gp-head .d{color:#f6dfe5;font-size:16px}
+.gp{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px;align-items:start}
+.gp .box h4,.gp h3.sec{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:1.8px;text-transform:uppercase;color:var(--ink-3);font-weight:500;margin-bottom:10px}
+.gp h3.sec{margin:22px 0 10px;color:var(--mrn);font-size:14px}
+.gp h3.sec:first-child{margin-top:0}
+.keys{list-style:none;display:flex;flex-direction:column;gap:9px;counter-reset:k}
+.keys li{display:flex;gap:12px;align-items:flex-start;font-size:17px;font-weight:600;line-height:1.35}
+.keys li .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--gold);color:#241a00;font-family:'Oswald',sans-serif;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px}
+.mu{list-style:none;display:flex;flex-direction:column;gap:6px}
+.mu li{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:8px 10px;border-radius:10px;background:#fafafb;border:1px solid var(--line);font-size:14.5px}
+.mu li.me{background:var(--gold-50);border-color:#efe2bd;font-weight:700}
+.mu li .vs{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;color:var(--ink-3)}
+.mu li .note{grid-column:1/-1;font-size:13px;color:var(--ink-2);font-weight:400}
+.pers{width:100%;border-collapse:collapse;font-size:14px}
+.pers th{text-align:left;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-3);padding:6px 8px;border-bottom:1px solid var(--line)}
+.pers td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.4}
+.pers td.n{font-family:'Oswald',sans-serif;font-weight:700;color:var(--mrn);white-space:nowrap}
+.pers tr:last-child td{border-bottom:0}
+/* film moments */
+.moments{display:flex;flex-direction:column;gap:4px;padding:10px 12px 12px}
+.moments button{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;border:1px solid transparent;background:none;border-radius:10px;padding:8px 10px;cursor:pointer;font:inherit;color:var(--ink)}
+.moments button:hover{background:var(--bg)}
+.moments .t{font-family:'IBM Plex Mono','Oswald',monospace;font-weight:600;color:var(--mrn);background:var(--mrn-50);border-radius:6px;padding:1px 7px;font-size:13px;flex:none;margin-top:1px}
 /* privacy */
 .wmpage{position:fixed;inset:0;pointer-events:none;z-index:25;opacity:.55}
 .shield{position:fixed;inset:0;z-index:90;background:rgba(244,244,246,.72);-webkit-backdrop-filter:blur(26px);backdrop-filter:blur(26px);display:none;align-items:center;justify-content:center;padding:20px;cursor:pointer}
@@ -178,7 +255,7 @@ body.shielded #app{filter:blur(22px)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#16161a;color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;font-size:14.5px;box-shadow:var(--sh-2);z-index:120;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100% - 32px)}
 .toast.on{opacity:1;transform:translateX(-50%)}
 @media print{ body *{display:none!important} body:before{content:"Printing is turned off for the team playbook.";display:block;padding:40px;font:20px sans-serif} }
-@media (max-width:980px){ .pv{grid-template-columns:1fr} .court svg,.court.full svg{max-height:none} }
+@media (max-width:980px){ .pv,.gp{grid-template-columns:1fr} .court svg,.court.full svg{max-height:none} }
 @media (max-width:640px){
   .top-in{padding:8px 16px}
   .brand img{height:46px}.brand .t1{font-size:19px}.brand .t2{display:none}
@@ -191,6 +268,9 @@ body.shielded #app{filter:blur(22px)}
   .pcard .playic{width:32px;height:32px}
   .ctrl{gap:8px;padding:10px}
   .bigplay{order:-1;width:100%;justify-content:center}
+  .quizbtn{order:-1;width:100%;justify-content:center}
+  .plan-card{grid-template-columns:1fr auto;padding:16px}.plan-card .ic{display:none}.plan-card .vs{font-size:24px}
+  .gp-head h2{font-size:32px}
   .prog{order:-1;flex-basis:100%}
   .speed{margin-left:auto}
   .gbox h1{font-size:38px}
@@ -237,6 +317,9 @@ body.shielded #app{filter:blur(22px)}
 
   <main class="wrap" id="listView">
     <div class="hello"><div><h2 id="hiTitle">Playbook</h2><p id="hiSub"></p></div></div>
+    <button class="plan-card hide" type="button" id="planCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v13H4zM8 21h8M12 17v4M8 8l3 3 5-5"/></svg></span><span><span class="k" id="planK">This week</span><span class="vs" id="planVs"></span><span class="d" id="planD"></span></span><span class="go">Game plan</span></button>
+    <div class="prac hide" id="pracCard"><div style="flex:1;min-width:0"><div class="t" id="pracT">Practice</div><b id="pracB"></b><div class="blocks" id="pracBlocks"></div></div></div>
+    <div class="must hide" id="mustBox"><h3><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#840036" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Must know<span class="pct" id="mustPct"></span></h3><ul id="mustList"></ul></div>
     <div class="seg" id="seg" role="tablist"><button type="button" data-kind="ours" aria-pressed="true">Our plays</button><button type="button" data-kind="scout">Scouting</button></div>
     <div class="filters"><div class="chips" id="cats"></div><input class="search" id="q" type="search" placeholder="Search plays" aria-label="Search plays"></div>
     <div class="grid" id="grid"></div>
@@ -254,10 +337,12 @@ body.shielded #app{filter:blur(22px)}
           <button class="ib" type="button" id="nextBtn" aria-label="Next step"><svg><use href="#i-next"/></svg></button>
           <div class="prog" id="prog"></div>
           <div class="speed" role="group" aria-label="Speed"><button type="button" data-sp=".5">Slow</button><button type="button" data-sp="1" aria-pressed="true">Normal</button><button type="button" data-sp="1.7">Fast</button></div>
+          <button class="quizbtn" type="button" id="quizBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/><circle cx="12" cy="12" r="9.5"/></svg>Quiz me</button>
         </div>
+        <div class="qz hide" id="qz"></div>
         <div class="now"><div class="n" id="nowN"></div><div><div class="lab" id="nowLab"></div><div class="tx" id="nowTx"></div></div></div>
       </section>
-      <section class="vid hide" id="vidBox"><div class="vh"><h4>Watch it run</h4><b id="vidT"></b></div><div id="vidBody"></div></section></div>
+      <section class="vid hide" id="vidBox"><div class="vh"><h4>Watch it run</h4><b id="vidT"></b></div><div id="vidBody"></div><div class="moments hide" id="moments"></div></section></div>
       <aside class="side">
         <div class="box"><div class="scoutbar hide" id="pvScout"></div><div class="cat" id="pvCat"></div><h2 id="pvName"></h2><div class="notes" id="pvNotes"></div></div>
         <div class="tips hide" id="pvTips"><h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.6 1 1.2 1 2.5h6c0-1.3.3-1.9 1-2.5A6 6 0 0 0 12 3z"/></svg>Coach's tips</h4><ol id="pvTipsList"></ol></div>
@@ -281,6 +366,22 @@ body.shielded #app{filter:blur(22px)}
       </aside>
     </div>
   </main>
+  <main class="wrap hide" id="planView">
+    <button class="crumb" type="button" id="planBack"><svg><use href="#i-back"/></svg>All plays</button>
+    <div class="gp-head"><div class="k" id="gpK">Game plan</div><h2 id="gpVs"></h2><div class="d" id="gpD"></div></div>
+    <div class="gp">
+      <div>
+        <div class="box" id="gpKeysBox"><h4>Keys to the game</h4><ol class="keys" id="gpKeys"></ol></div>
+        <h3 class="sec" id="gpOursH">Our plays for this game</h3><div class="grid" id="gpOurs"></div>
+        <h3 class="sec" id="gpTheirsH">What they run</h3><div class="grid" id="gpTheirs"></div>
+        <div class="box" id="gpNotesBox" style="margin-top:18px"><h4>From coach</h4><div class="notes" id="gpNotes" style="white-space:pre-wrap"></div></div>
+      </div>
+      <aside class="side">
+        <div class="box" id="gpMuBox"><h4>Matchups</h4><ul class="mu" id="gpMu"></ul></div>
+        <div class="box" id="gpPersBox"><h4>Know their guys</h4><div style="overflow-x:auto"><table class="pers" id="gpPers"></table></div></div>
+      </aside>
+    </div>
+  </main>
   <div class="wmpage" id="wmPage" aria-hidden="true"></div>
 </div>
 
@@ -291,7 +392,7 @@ body.shielded #app{filter:blur(22px)}
 <script>
 (function(){
 var STORE='aces_playbook', DEMO=/[?&]demo=1/.test(location.search);
-var S={ token:'', me:null, plays:[], kind:'ours', cat:'All', q:'', open:null, player:null, speed:1 };
+var S={ token:'', me:null, plays:[], plan:null, practice:null, done:{viewed:[],quiz:{}}, kind:'ours', cat:'All', q:'', open:null, player:null, speed:1, quiz:null };
 function $(id){ return document.getElementById(id); }
 var esc=PBCourt.esc;
 function svg(id){ return '<svg><use href="#'+id+'"/></svg>'; }
@@ -328,10 +429,14 @@ $('gateForm').addEventListener('submit',function(e){
 });
 function showGate(msg){ $('app').classList.add('hide'); $('gate').classList.remove('hide'); $('gateErr').textContent=msg||''; document.body.classList.remove('shielded'); if(S.player) S.player.pause(); }
 function fetchPlays(){
-  if(DEMO){ S.me={id:'demo_me',name:'Demo Player',group:''}; S.plays=PBCourt.samples(); return start(); }
+  if(DEMO){ S.me={id:'demo_me',name:'Demo Player',group:''}; S.plays=PBCourt.samples(); S.plays[0].due=new Date(Date.now()+3*864e5).toISOString().slice(0,10); S.plays[1].due=new Date(Date.now()-864e5).toISOString().slice(0,10); S.plays[0].marks=[{t:12,text:'Watch 5 set the screen on the top shoulder'},{t:31,text:'1 gets his feet set before the catch'}];
+    S.done={viewed:['demo1','demo2'],quiz:{demo1:100}};
+    S.plan={id:'plan1',opponent:'Radnor',date:new Date(Date.now()+3*864e5).toISOString().slice(0,10),where:'away',keys:['Box out. They crash three guys every shot.','Make them play in the half court. No run outs.','Deny #23 the ball on the wing.','Free throws win this one.'],our_plays:['demo1','demo2'],their_plays:['demo5'],matchups:[{us:{id:'demo_me',name:'Demo Player'},them:'#23 Smith',note:'Deny the wing, go under on screens'},{us:{id:'d2',name:'Chris Lee'},them:'#4 Rivera',note:'Lefty, force right'}],personnel:[{num:'23',name:'Smith',pos:'G',notes:'Best player. Shoots off the dribble going left.',guard:'Deny the catch, go under ball screens'},{num:'4',name:'Rivera',pos:'G',notes:'Lefty, drives left every time.',guard:'Force right'},{num:'32',name:'Okafor',pos:'C',notes:'Crashes the glass. No range.',guard:'Box out first, sag off'}],notes:'Bus leaves 4:15. Bring both jerseys.'};
+    S.practice={date:new Date().toISOString().slice(0,10),title:'',start:'15:30',blocks:[{name:'Warmup',minutes:10},{name:'Shell drill',minutes:15},{name:'Horns Flare live',minutes:20,play_ids:['demo1']},{name:'Free throws',minutes:10}]};
+    return start(); }
   return api({action:'plays',token:S.token}).then(function(d){
     if(!d.plays){ if(d._status===401||d._status===403){ save(null); S.token=''; } showGate(ERR[d.error]||ERR.server); return; }
-    S.me=d.player; S.plays=d.plays; save({token:S.token,me:S.me}); start();
+    S.me=d.player; S.plays=d.plays; S.plan=d.plan||null; S.practice=d.practice||null; S.done=d.done||{viewed:[],quiz:{}}; save({token:S.token,me:S.me}); start();
   }).catch(function(){ showGate('No connection. Try again.'); });
 }
 $('outBtn').addEventListener('click',function(){ save(null); S.token=''; S.me=null; S.plays=[]; history.replaceState(null,'',location.pathname+location.search); showGate(''); });
@@ -344,8 +449,48 @@ function start(){
   var first=String(S.me.name).split(' ')[0];
   $('hiTitle').textContent='Hi '+first+'.';
   $('hiSub').textContent=S.plays.length? (S.plays.length+(S.plays.length===1?' play':' plays')+' to learn. Tap one to watch it run.') : '';
-  renderSeg(); renderCats(); renderGrid(); route();
+  renderSeg(); renderCats(); renderGrid(); renderTop(); route();
 }
+/* ── top of the list: game plan, practice, must know ── */
+function fmtDay(d){ if(!d) return ''; var x=new Date(d+'T12:00:00'); if(isNaN(x)) return d; return x.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}); }
+function dayDiff(d){ var x=new Date(d+'T12:00:00'), t=new Date(); t.setHours(12,0,0,0); return Math.round((x-t)/864e5); }
+function renderTop(){
+  var P=S.plan;
+  $('planCard').classList.toggle('hide',!P);
+  if(P){ var dd=P.date?dayDiff(P.date):null; $('planK').textContent=dd==null?'Game plan':dd===0?'Today':dd===1?'Tomorrow':dd<0?'Last game':'This week'; $('planVs').textContent='vs '+P.opponent; $('planD').textContent=[P.date?fmtDay(P.date):'',P.where==='home'?'Kobe Bryant Gym':P.where==='away'?'Away':P.where==='neutral'?'Neutral site':''].filter(Boolean).join(' · ')||(P.title||'Keys, matchups and the plays to know'); }
+  var R=S.practice;
+  $('pracCard').classList.toggle('hide',!R);
+  if(R){ var d2=dayDiff(R.date); $('pracT').textContent=d2===0?'Practice today':d2===1?'Practice tomorrow':'Practice '+fmtDay(R.date); var tot=(R.blocks||[]).reduce(function(a,b){return a+(b.minutes||0);},0); $('pracB').textContent=(R.start?fmtTime(R.start)+' · ':'')+(R.title||(tot?tot+' minutes':'')); $('pracBlocks').innerHTML=(R.blocks||[]).map(function(b){ return '<span>'+esc(b.name)+(b.minutes?'<i>'+b.minutes+'m</i>':'')+'</span>'; }).join(''); }
+  var must=S.plays.filter(function(p){ return p.due&&dayDiff(p.due)>=-7; }).sort(function(a,b){ return a.due.localeCompare(b.due); });
+  $('mustBox').classList.toggle('hide',!must.length);
+  if(must.length){ var okN=must.filter(function(p){ return status(p)==='ok'; }).length; $('mustPct').textContent=okN+' of '+must.length+' passed';
+    $('mustList').innerHTML=must.map(function(p){ var st=status(p), dd=dayDiff(p.due); return '<li><button type="button" data-open="'+esc(p.id)+'"><span class="st '+st+'">'+(st==='ok'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg>':st==='seen'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>':'!')+'</span><span class="nm">'+esc(p.name)+'</span><span class="due'+(dd<0&&st!=='ok'?' late':'')+'">'+(st==='ok'?'Passed':dd<0?'Was due '+fmtDay(p.due):dd===0?'Due today':dd===1?'Due tomorrow':'Due '+fmtDay(p.due))+'</span></button></li>'; }).join(''); }
+}
+function fmtTime(hm){ var p=hm.split(':'), h=+p[0], m=p[1]; return (h%12||12)+':'+m+(h>=12?' pm':' am'); }
+// not opened / watched / passed the quiz
+function status(p){ if((S.done.quiz||{})[p.id]>=80) return 'ok'; if((S.done.viewed||[]).indexOf(p.id)>=0) return 'seen'; return 'no'; }
+$('mustList').addEventListener('click',function(e){ var b=e.target.closest('[data-open]'); if(b) openPlay(b.getAttribute('data-open')); });
+$('planCard').addEventListener('click',function(){ history.pushState({plan:1},'','#plan'); showPlan(); });
+$('planBack').addEventListener('click',function(){ if(history.state&&history.state.plan) history.back(); else { history.replaceState(null,'',location.pathname+location.search); closePlan(); } });
+function closePlan(){ $('planView').classList.add('hide'); $('listView').classList.remove('hide'); }
+function showPlan(){
+  var P=S.plan; if(!P){ closePlan(); return; }
+  $('listView').classList.add('hide'); $('playView').classList.add('hide'); $('planView').classList.remove('hide'); window.scrollTo(0,0);
+  $('gpK').textContent=(P.date?fmtDay(P.date):'Game plan')+(P.where==='home'?' · Kobe Bryant Gym':P.where==='away'?' · Away':P.where==='neutral'?' · Neutral site':'');
+  $('gpVs').textContent='Aces vs '+P.opponent; $('gpD').textContent=P.title||'';
+  $('gpKeysBox').classList.toggle('hide',!P.keys.length); $('gpKeys').innerHTML=P.keys.map(function(k,i){ return '<li><span class="n">'+(i+1)+'</span><span>'+esc(k)+'</span></li>'; }).join('');
+  var byId={}; S.plays.forEach(function(p){ byId[p.id]=p; });
+  var wm=wmLines();
+  var cards=function(ids){ return ids.map(function(id){ return byId[id]; }).filter(Boolean).map(function(p){ var st=status(p); return '<button class="pcard" type="button" data-open="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{watermark:wm,meId:S.me.id,noNames:true})+'<span class="playic">'+svg('i-play')+'</span>'+(st==='ok'?'<span class="dueb ok">Passed</span>':'')+'</div><div class="meta"><div class="cat">'+esc(catOf(p))+'</div><h3>'+esc(p.name)+'</h3></div></button>'; }).join(''); };
+  var ours=cards(P.our_plays||[]), theirs=cards(P.their_plays||[]);
+  $('gpOursH').classList.toggle('hide',!ours); $('gpOurs').innerHTML=ours; $('gpTheirsH').classList.toggle('hide',!theirs); $('gpTheirs').innerHTML=theirs;
+  $('gpNotesBox').classList.toggle('hide',!P.notes); $('gpNotes').textContent=P.notes||'';
+  var mu=P.matchups||[]; $('gpMuBox').classList.toggle('hide',!mu.length);
+  $('gpMu').innerHTML=mu.map(function(m){ var me=m.us&&m.us.id===S.me.id; return '<li'+(me?' class="me"':'')+'><span>'+(m.us?esc(m.us.name)+(me?' (you)':''):'')+'</span><span class="vs">vs</span><span>'+esc(m.them)+'</span>'+(m.note?'<span class="note">'+esc(m.note)+'</span>':'')+'</li>'; }).join('');
+  var pers=P.personnel||[]; $('gpPersBox').classList.toggle('hide',!pers.length);
+  $('gpPers').innerHTML='<tr><th>#</th><th>Player</th><th>What he does</th><th>How we guard him</th></tr>'+pers.map(function(x){ return '<tr><td class="n">'+esc(x.num)+'</td><td><b>'+esc(x.name)+'</b>'+(x.pos?' <span class="muted">'+esc(x.pos)+'</span>':'')+'</td><td>'+esc(x.notes)+'</td><td>'+esc(x.guard)+'</td></tr>'; }).join('');
+}
+$('planView').addEventListener('click',function(e){ var b=e.target.closest('[data-open]'); if(b){ history.pushState({play:b.getAttribute('data-open')},'','#play='+encodeURIComponent(b.getAttribute('data-open'))); openPlay(b.getAttribute('data-open'),true); } });
 function kindOf(p){ return p.kind==='scout'?'scout':'ours'; }
 function catOf(p){ return kindOf(p)==='scout'?(p.opponent||'Opponent'):p.category; }
 function inKind(p){ return kindOf(p)===S.kind; }
@@ -370,8 +515,9 @@ function renderGrid(){
   var wm=wmLines();
   $('grid').innerHTML=list.map(function(p){
     var steps=Math.max(0,(p.frames||[]).length-1);
-    var mine=myTok(p);
-    return '<button class="pcard" type="button" data-open="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{watermark:wm,meId:S.me.id,noNames:true})+(isNew(p)?'<span class="new">New</span>':'')+'<span class="playic">'+svg('i-play')+'</span></div>'+
+    var mine=myTok(p), st=status(p), dd=p.due?dayDiff(p.due):null;
+    var badge=st==='ok'?'<span class="dueb ok">Passed</span>':(p.due&&dd>=-7?'<span class="dueb'+(dd<0?' late':'')+'">'+(dd<0?'Overdue':dd===0?'Due today':'Due '+fmtDay(p.due).split(',')[0])+'</span>':'');
+    return '<button class="pcard" type="button" data-open="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{watermark:wm,meId:S.me.id,noNames:true})+(isNew(p)?'<span class="new">New</span>':'')+badge+'<span class="playic">'+svg('i-play')+'</span></div>'+
       '<div class="meta"><div class="cat">'+esc(catOf(p))+(kindOf(p)==='scout'?' · '+esc(p.category):'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+steps+(steps===1?' step':' steps')+(p.court==='full'?', full court':'')+(mine?', you are the '+mine.charAt(1):'')+'</div></div></button>';
   }).join('');
 }
@@ -380,9 +526,11 @@ $('grid').addEventListener('click',function(e){ var b=e.target.closest('[data-op
 /* ── play view ── */
 function openPlay(id,fromRoute){
   var p=S.plays.find(function(x){ return x.id===id; }); if(!p){ closePlay(); return; }
-  S.open=p;
+  S.open=p; endQuiz(true);
   if(!fromRoute) history.pushState({play:id},'','#play='+encodeURIComponent(id));
-  $('listView').classList.add('hide'); $('playView').classList.remove('hide'); window.scrollTo(0,0);
+  if((S.done.viewed||[]).indexOf(p.id)<0){ S.done.viewed=(S.done.viewed||[]).concat([p.id]); renderTop(); }
+  $('listView').classList.add('hide'); $('planView').classList.add('hide'); $('playView').classList.remove('hide'); window.scrollTo(0,0);
+  $('quizBtn').classList.toggle('hide',p.frames.length<2);
   $('pvCat').textContent=(kindOf(p)==='scout'?p.opponent+' · ':'')+p.category; $('pvName').textContent=p.name; $('pvNotes').textContent=p.notes||''; $('pvNotes').classList.toggle('hide',!p.notes);
   $('pvScout').classList.toggle('hide',kindOf(p)!=='scout'); $('pvScout').innerHTML='<b>Scouting</b><span>This is <strong>'+esc(p.opponent)+'</strong>\'s play. The grey numbers are them, the X\'s are us.</span>';
   var tips=p.tips||[]; $('pvTips').classList.toggle('hide',!tips.length); $('pvTipsList').innerHTML=tips.map(function(t,i){ return '<li><span class="n">'+(i+1)+'</span><span>'+esc(t)+'</span></li>'; }).join('');
@@ -418,9 +566,19 @@ function videoWatermark(){
   var sv='<svg xmlns="http://www.w3.org/2000/svg" width="420" height="180"><text x="20" y="100" transform="rotate(-20 210 90)" font-family="Arial" font-size="16" font-weight="700" fill="#fff" fill-opacity=".16">'+t+'</text></svg>';
   return 'url("data:image/svg+xml,'+encodeURIComponent(sv)+'")';
 }
+function fmtT(sec){ sec=Math.round(sec); return Math.floor(sec/60)+':'+('0'+sec%60).slice(-2); }
+function renderMoments(p){
+  var m=p.marks||[], el=$('moments'); el.classList.toggle('hide',!m.length);
+  el.innerHTML=m.map(function(x){ return '<button type="button" data-seek="'+x.t+'"><span class="t">'+fmtT(x.t)+'</span><span>'+esc(x.text)+'</span></button>'; }).join('');
+}
+$('moments').addEventListener('click',function(e){
+  var b=e.target.closest('[data-seek]'); if(!b) return; var t=+b.getAttribute('data-seek'), body=$('vidBody'), v=body.querySelector('video'), f=body.querySelector('iframe');
+  if(v){ v.currentTime=t; v.play().catch(function(){}); return; }
+  if(f){ var src=f.getAttribute('src').replace(/([?&])(start|t)=[^&#]*/,'$1').replace(/#t=.*$/,''); if(/youtube/.test(src)) f.setAttribute('src',src+(src.indexOf('?')>=0?'&':'?')+'start='+t+'&autoplay=1'); else if(/vimeo/.test(src)) f.setAttribute('src',src+'#t='+t+'s'); }
+});
 function renderVideo(p){
   var box=$('vidBox'), body=$('vidBody'), clip=p.clip&&p.clip.url?p.clip:null, link=p.clip_link||'';
-  body.innerHTML=''; if(!clip&&!link){ box.classList.add('hide'); return; }
+  body.innerHTML=''; renderMoments(p); if(!clip&&!link){ box.classList.add('hide'); return; }
   box.classList.remove('hide'); $('vidT').textContent=p.name;
   var wm='<div class="vwm" style="background-image:'+videoWatermark()+'"></div><div class="vwm2">'+esc(S.me?S.me.name:'')+' · Aces playbook</div>';
   if(clip){ body.innerHTML='<div class="vwrap"><video controls playsinline preload="metadata" controlslist="nodownload noremoteplayback noplaybackrate" disablepictureinpicture x-webkit-airplay="deny" src="'+esc(clip.url)+'"></video>'+wm+'</div>'; var v=body.querySelector('video'); v.addEventListener('contextmenu',function(e){ e.preventDefault(); }); return; }
@@ -454,14 +612,14 @@ $('qSend').addEventListener('click',function(){
     toast('Sent to coach'); loadQuestions(p);
   }).catch(function(){ done(); toast('No connection. Try again.'); });
 });
-function closePlay(){ if(S.player) S.player.pause(); $('vidBody').innerHTML=''; S.open=null; $('playView').classList.add('hide'); $('listView').classList.remove('hide'); }
+function closePlay(){ endQuiz(true); if(S.player) S.player.pause(); $('vidBody').innerHTML=''; S.open=null; $('playView').classList.add('hide'); $('listView').classList.remove('hide'); }
 $('backBtn').addEventListener('click',function(){ if(history.state&&history.state.play) history.back(); else { history.replaceState(null,'',location.pathname+location.search); closePlay(); } });
 $('homeBtn').addEventListener('click',function(){ if(S.open) $('backBtn').click(); });
-function route(){ var m=/#play=([^&]+)/.exec(location.hash); if(m) openPlay(decodeURIComponent(m[1]),true); else closePlay(); }
+function route(){ var m=/#play=([^&]+)/.exec(location.hash); if(m){ closePlan(); openPlay(decodeURIComponent(m[1]),true); } else if(location.hash==='#plan'){ closePlay(); showPlan(); } else { closePlay(); closePlan(); } }
 window.addEventListener('popstate',route);
 
 function sync(){
-  var P=S.player, p=S.open; if(!P||!p) return;
+  var P=S.player, p=S.open; if(!P||!p||S.quiz) return;
   var at=P.at, n=p.frames.length, playing=P.isPlaying();
   $('playBtn').innerHTML=svg(playing?'i-pause':'i-play')+'<span>'+(playing?'Pause':(at>=n-1&&n>1?'Replay':'Play'))+'</span>';
   $('prevBtn').disabled=at<=0&&!P.raf; $('nextBtn').disabled=at>=n-1;
@@ -482,12 +640,74 @@ $('prog').addEventListener('click',function(e){ var b=e.target.closest('[data-go
 $('steps').addEventListener('click',function(e){ var b=e.target.closest('[data-step]'); if(!b) return; var k=+b.getAttribute('data-step'); S.player.pause(); if(k===0) S.player.go(0); else { S.player.go(k-1); S.player.step(); } });
 Array.prototype.forEach.call(document.querySelectorAll('[data-sp]'),function(b){ b.addEventListener('click',function(){ S.speed=+b.getAttribute('data-sp'); if(S.player) S.player.speed=S.speed; document.querySelectorAll('[data-sp]').forEach(function(x){ x.setAttribute('aria-pressed',String(x===b)); }); }); });
 document.addEventListener('keydown',function(e){
-  if(!S.open||document.body.classList.contains('shielded')||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  if(!S.open||S.quiz||document.body.classList.contains('shielded')||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
   if(e.key===' '){ e.preventDefault(); $('playBtn').click(); }
   else if(e.key==='ArrowRight'){ e.preventDefault(); $('nextBtn').click(); }
   else if(e.key==='ArrowLeft'){ e.preventDefault(); $('prevBtn').click(); }
   else if(e.key==='Escape') $('backBtn').click();
 });
+
+/* ── quiz ── */
+function makeQuiz(p){
+  var qs=[], me=myTok(p);
+  for(var i=1;i<p.frames.length;i++){
+    var act=PBCourt.action(p,i);
+    if(act.ball&&act.ball.kind==='pass') qs.push({i:i,type:'ball',answer:act.ball.to,text:'Who does the ball go to?',sub:(nameOf(p,act.ball.from)||tokLabel(p,act.ball.from))+' has it. Tap the player who catches it.'});
+    else if(act.ball&&act.ball.kind==='shot'&&!act.moves.length) qs.push({i:i,type:'shot',text:'Who takes the shot?',answer:act.ball.from,sub:'Tap the shooter.'});
+    else if(act.moves.length){ var m=act.moves.find(function(x){return x.id===me;})||act.moves[Math.floor(Math.random()*act.moves.length)]; qs.push({i:i,type:'spot',id:m.id,answer:m.b,text:'Where does '+(m.id===me?'YOUR guy ('+tokLabel(p,m.id)+')':nameOf(p,m.id)||tokLabel(p,m.id))+' go?',sub:'Tap the spot on the court.'}); }
+  }
+  return qs;
+}
+function tokLabel(p,id){ var scout=kindOf(p)==='scout', x=id.charAt(0)==='X'; return (x?(scout?'our X':'X'):(scout?'their ':''))+id.charAt(1); }
+function nameOf(p,id){ var L=p.lineup||{}; return L[id]&&L[id].name?PBCourt.shortName(L[id].name):''; }
+function startQuiz(){
+  var p=S.open; if(!p||p.frames.length<2) return;
+  var qs=makeQuiz(p); if(!qs.length){ toast('Nothing to quiz on this one.'); return; }
+  S.player.pause(); S.quiz={p:p,qs:qs,k:0,score:0,busy:false};
+  $('quizBtn').classList.add('hide'); $('court').classList.add('quizzing');
+  askQ();
+}
+function askQ(){
+  var Q=S.quiz, q=Q.qs[Q.k], P=S.player;
+  P.go(q.i-1); P.gA.innerHTML='';   // the setup for this step, no arrows: that's the question
+  var el=$('qz'); el.className='qz';
+  el.innerHTML='<div class="qq"><div class="qn">'+(Q.k+1)+'</div><div style="flex:1"><div class="lab">Question '+(Q.k+1)+' of '+Q.qs.length+'</div><div class="tx">'+esc(q.text)+'</div><div class="sub">'+esc(q.sub)+'</div></div></div><div class="row"><button class="btn ghost" type="button" id="qzQuit">Quit quiz</button><span class="score">'+Q.score+' right so far</span></div>';
+  $('qzQuit').addEventListener('click',function(){ endQuiz(); });
+  $('nowLab').textContent='Quiz'; $('nowN').textContent=''; $('nowTx').textContent=q.text;
+}
+function courtPt(e){ var svg=$('court'), pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; var m=svg.getScreenCTM(); if(!m) return null; var r=pt.matrixTransform(m.inverse()); return [r.x,r.y]; }
+$('court').addEventListener('click',function(e){
+  var Q=S.quiz; if(!Q||Q.busy) return; var q=Q.qs[Q.k], P=S.player, ok=false, tapped='';
+  var tk=e.target.closest('.tk'); var pt=courtPt(e); if(!pt) return;
+  if(q.type==='spot'){ ok=PBCourt.dist(pt,q.answer)<=70; }
+  else { tapped=tk?tk.getAttribute('data-id'):''; if(!tapped) return; ok=tapped===q.answer; }
+  Q.busy=true; if(ok) Q.score++;
+  // mark the tap, then show what really happens
+  var ns='http://www.w3.org/2000/svg', g=document.createElementNS(ns,'g');
+  if(q.type==='spot'){ g.innerHTML='<circle cx="'+pt[0]+'" cy="'+pt[1]+'" r="20" fill="'+(ok?'#1f8a4c':'#b42318')+'" fill-opacity=".25" stroke="'+(ok?'#1f8a4c':'#b42318')+'" stroke-width="3"/>'; P.gA.appendChild(g); }
+  var el=$('qz'); el.className='qz '+(ok?'right':'wrong');
+  el.innerHTML='<div class="qq"><div class="qn">'+(ok?'✓':'✗')+'</div><div style="flex:1"><div class="lab">'+(ok?'Right':'Not quite')+'</div><div class="tx">'+esc(ok?'That\'s it.':(q.type==='spot'?'Watch where he really goes.':'It goes to '+(nameOf(Q.p,q.answer)||tokLabel(Q.p,q.answer))+'.'))+'</div><div class="sub">'+esc(Q.p.frames[q.i].note||'')+'</div></div></div><div class="row"><button class="btn primary" type="button" id="qzNext">'+(Q.k+1<Q.qs.length?'Next question':'See my score')+'</button><span class="score">'+Q.score+' of '+(Q.k+1)+' right</span></div>';
+  P.gA.innerHTML=PBCourt.arrowsSVG(Q.p,q.i); if(q.type==='spot') P.gA.appendChild(g);
+  P.step(function(){ });
+  $('qzNext').addEventListener('click',function(){ Q.busy=false; Q.k++; if(Q.k<Q.qs.length) askQ(); else finishQuiz(); });
+});
+function finishQuiz(){
+  var Q=S.quiz, pct=Math.round(Q.score/Q.qs.length*100), passed=pct>=80;
+  $('court').classList.remove('quizzing'); S.player.go(0);
+  var el=$('qz'); el.className='qz'+(passed?' right':'');
+  el.innerHTML='<div class="result"><div class="big'+(passed?' ok':'')+'">'+pct+'%</div><p>'+Q.score+' of '+Q.qs.length+' right. '+(passed?'You know this one.':pct>=50?'Close. Run it once more and try again.':'Watch it again, then take another shot.')+'</p><div class="row" style="justify-content:center"><button class="btn primary" type="button" id="qzAgain">Try again</button><button class="btn" type="button" id="qzDone">Done</button></div></div>';
+  $('qzAgain').addEventListener('click',function(){ startQuiz(); });
+  $('qzDone').addEventListener('click',function(){ endQuiz(); });
+  var cur=(S.done.quiz||{})[Q.p.id]||0; if(pct>cur){ S.done.quiz=S.done.quiz||{}; S.done.quiz[Q.p.id]=pct; renderTop(); }
+  if(!DEMO) api({action:'quiz_result',token:S.token,id:Q.p.id,score:Q.score,total:Q.qs.length}).catch(function(){});
+  S.quiz=null; $('quizBtn').classList.remove('hide'); $('nowLab').textContent='Quiz done'; $('nowTx').textContent=pct+'%';
+}
+function endQuiz(silent){
+  if(!S.quiz&&$('qz').classList.contains('hide')) return;
+  S.quiz=null; $('qz').className='qz hide'; $('qz').innerHTML=''; $('court').classList.remove('quizzing'); $('quizBtn').classList.remove('hide');
+  if(!silent&&S.player){ S.player.go(0); }
+}
+$('quizBtn').addEventListener('click',startQuiz);
 
 /* ── keep it on the screen ── */
 function shield(){ if($('app').classList.contains('hide')||(DEMO&&/noshield/.test(location.search))) return; document.body.classList.add('shielded'); var vv=$('vidBody').querySelector('video'); if(vv) vv.pause(); if(S.player&&S.player.isPlaying()){ S.player.pause(); sync(); } }

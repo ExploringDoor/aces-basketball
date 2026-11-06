@@ -178,6 +178,13 @@ export async function fsCreate(collection, fields, docId) {
   });
   return r.json();
 }
+// Hard delete. Used only for things that hold nothing irreversible (a game plan, a practice
+// plan, a coach's note); money records are never deleted.
+export async function fsDelete(path) {
+  if (!pathSafe(path)) return { ok: false, status: 400 };
+  const r = await fetch(`${FB_BASE}/${path}?key=${FB_KEY}`, { method: 'DELETE', headers: await authHeader() });
+  return { ok: r.ok || r.status === 404, status: r.status };
+}
 // List an entire collection (admin-token, so it also works for the PII-gated ones the robot
 // can read). Callers must strip anything sensitive before returning it publicly.
 export async function fsList(collection) {

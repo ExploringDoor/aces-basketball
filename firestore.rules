@@ -63,6 +63,18 @@ service cloud.firestore {
     match /playbook_questions/{id} {
       allow read, write: if isSuper();
     }
+    match /playbook_quiz/{id} {
+      allow read, write: if isSuper();
+    }
+    match /playbook_plans/{id} {
+      allow read, write: if isSuper();
+    }
+    match /playbook_practices/{id} {
+      allow read, write: if isSuper();
+    }
+    match /playbook_notes/{id} {
+      allow read, write: if isSuper();
+    }
 
     // The admins collection: readable only by an admin (used by the rules themselves).
     match /admins/{uid} {

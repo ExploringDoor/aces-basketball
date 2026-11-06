@@ -7,19 +7,25 @@
 // POST { action, ... }
 //   Player:  login { code } · plays { token } · view { token, id }
 //            ask { token, id, text } · questions { token, id }   (their own questions + the
-//            team's answered ones on that play)
+//            team's answered ones on that play) · quiz_result { token, id, score, total }
+//            `plays` also returns the current game plan, today's practice (if shared) and what
+//            this player has already watched / passed.
 //   Coach:   admin_list · save_play { play, id? } · set_visible { id, visible }
 //            archive { id } · restore { id } · add_players { players:[{name,group}] }
 //            update_player { id, name?, group?, active? } · new_code { id } · remove_player { id }
 //            set_open { open } · remove_clip { id } · drop_clip { url }   (delete an uploaded video)
 //            answer { id, answer } · hide_question { id } · unhide_question { id }
+//            save_plan { id?, plan } · delete_plan { id } · save_practice { id?, practice }
+//            delete_practice { id } · add_note { player_id, note } · delete_note { id }
+//            scout_report { opponent }   (reads the coaches' scouting report for the handoff)
 
-import { fbAdminConfigured, fsGet, fsCreate, fsPatch, fsPatchVerified, fsList, fsQuery } from './_firestore.js';
-import { cleanPlay, cleanClip, canSee, newCode, normCode, cleanName, cleanGroup, signSession, readSession, sessionMatches, LIMITS } from './_playbook.js';
+import { fbAdminConfigured, fsGet, fsCreate, fsPatch, fsPatchVerified, fsList, fsQuery, fsDelete } from './_firestore.js';
+import { cleanPlay, cleanClip, cleanPlan, cleanPractice, cleanNote, canSee, newCode, normCode, cleanName, cleanGroup, signSession, readSession, sessionMatches, LIMITS } from './_playbook.js';
 import { SITE_TAG } from './_site.js';
 import { del as blobDel } from '@vercel/blob';
 import { sendMail, emailConfigured, ADMIN_EMAIL } from './_email.js';
 import { clip, stripTags } from './_clinic.js';
+import { slugOf as scoutSlug } from './_scouting.js';
 
 function ctEq(a, b) {
   a = String(a || ''); b = String(b || '');
@@ -32,12 +38,32 @@ function authed(req) { const want = process.env.ADMIN_PASSWORD || ''; return !!w
 function safeId(id) { return /^[A-Za-z0-9_-]{1,128}$/.test(String(id || '')); }
 function rid(prefix) { return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 const SETTINGS = 'playbook_meta/settings';
-const PLAYER_ACTIONS = new Set(['login', 'plays', 'view', 'ask', 'questions']);
+const PLAYER_ACTIONS = new Set(['login', 'plays', 'view', 'ask', 'questions', 'quiz_result']);
 const QUESTION_MAX = 500;
 
 async function loadSettings() { const s = await fsGet(SETTINGS); return { open: !s || s.open !== false }; }
 async function loadPlays() { return (await fsList('playbook_plays')).filter((p) => p.site === SITE_TAG); }
 async function loadPlayers() { return (await fsList('playbook_players')).filter((p) => p.site === SITE_TAG && !p.removed); }
+async function loadSite(coll) { return (await fsList(coll)).filter((x) => x.site === SITE_TAG); }
+const today = () => new Date(Date.now() - 5 * 36e5).toISOString().slice(0, 10);   // Eastern-ish day boundary
+// The game plan players should see now: the soonest dated one on or after today, else the latest.
+function currentPlan(plans) {
+  const vis = plans.filter((p) => p.visible);
+  const t = today();
+  const up = vis.filter((p) => p.date && p.date >= t).sort((a, b) => a.date.localeCompare(b.date));
+  if (up.length) return up[0];
+  return vis.sort((a, b) => String(b.date || b.updated).localeCompare(String(a.date || a.updated)))[0] || null;
+}
+function currentPractice(list) {
+  const t = today();
+  return list.filter((p) => p.show_players && p.date >= t).sort((a, b) => a.date.localeCompare(b.date))[0] || null;
+}
+function publicPlan(p, byId) {
+  return { id: p.id, opponent: p.opponent, date: p.date || '', title: p.title || '', where: p.where || '', keys: p.keys || [], our_plays: p.our_plays || [], their_plays: p.their_plays || [],
+    matchups: (p.matchups || []).map((m) => ({ us: m.us && byId[m.us] ? { id: m.us, name: byId[m.us].name } : null, them: m.them, note: m.note })),
+    personnel: p.personnel || [], notes: p.notes || '' };
+}
+function publicPractice(p) { return { id: p.id, date: p.date, title: p.title || '', start: p.start || '', blocks: p.blocks || [], notes: p.notes || '' }; }
 async function loadQuestions() { return (await fsList('playbook_questions')).filter((q) => q.site === SITE_TAG); }
 // What a player may see of a question: their own, or a teammate's once the coach answered it.
 function questionFor(q, player) {
@@ -59,7 +85,7 @@ async function notifyCoach(player, play, text, base) {
 function publicPlay(p, byId) {
   const lineup = {};
   for (const [tok, pid] of Object.entries(p.lineup || {})) { const pl = byId[pid]; if (pl) lineup[tok] = { id: pl.id, name: pl.name }; }
-  return { id: p.id, name: p.name, kind: p.kind || 'ours', opponent: p.opponent || '', category: p.category, court: p.court, notes: p.notes || '', tips: p.tips || [], lineup, clip: p.clip || null, clip_link: p.clip_link || '', frames: p.frames || [], updated: p.updated || p.created || '' };
+  return { id: p.id, name: p.name, kind: p.kind || 'ours', opponent: p.opponent || '', category: p.category, court: p.court, notes: p.notes || '', tips: p.tips || [], due: p.due || '', marks: p.marks || [], lineup, clip: p.clip || null, clip_link: p.clip_link || '', frames: p.frames || [], updated: p.updated || p.created || '' };
 }
 function sortPlays(a, b) { return String(a.kind || 'ours').localeCompare(String(b.kind || 'ours')) || String(a.opponent || '').localeCompare(String(b.opponent || '')) || String(a.category).localeCompare(String(b.category)) || String(a.name).localeCompare(String(b.name)); }
 
@@ -113,7 +139,17 @@ async function playerAction(action, body, req) {
     const roster = await loadPlayers();
     const byId = {}; roster.forEach((r) => { byId[r.id] = r; });
     const plays = (await loadPlays()).filter((p) => canSee(p, player)).sort(sortPlays).map((p) => publicPlay(p, byId));
-    return { status: 200, body: { player: who(player), plays } };
+    const ids = new Set(plays.map((p) => p.id));
+    const [plans, practices, views, quiz] = await Promise.all([
+      loadSite('playbook_plans'), loadSite('playbook_practices'),
+      fsQuery('playbook_views', 'player_id', 'EQUAL', player.id), fsQuery('playbook_quiz', 'player_id', 'EQUAL', player.id),
+    ]);
+    const plan = currentPlan(plans);
+    const practice = currentPractice(practices);
+    const best = {};
+    quiz.forEach((q) => { if (ids.has(q.play_id) && (best[q.play_id] == null || q.pct > best[q.play_id])) best[q.play_id] = q.pct; });
+    const done = { viewed: [...new Set(views.map((v) => v.play_id).filter((id) => ids.has(id)))], quiz: best };
+    return { status: 200, body: { player: who(player), plays, plan: plan ? publicPlan(plan, byId) : null, practice: practice ? publicPractice(practice) : null, done } };
   }
   if (action === 'view') {
     if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
@@ -129,6 +165,18 @@ async function playerAction(action, body, req) {
     }, docId);
     await fsPatch(`playbook_players/${player.id}`, { last_seen: new Date(now).toISOString() });
     return { status: 200, body: { ok: true } };
+  }
+  if (action === 'quiz_result') {
+    if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
+    const play = await fsGet(`playbook_plays/${body.id}`);
+    if (!play || play.site !== SITE_TAG || !canSee(play, player)) return { status: 404, body: { error: 'not_found' } };
+    const total = Math.max(1, Math.min(60, Math.round(Number(body.total) || 0)));
+    const score = Math.max(0, Math.min(total, Math.round(Number(body.score) || 0)));
+    const pct = Math.round(score / total * 100);
+    const now = new Date().toISOString();
+    const w = await fsCreate('playbook_quiz', { site: SITE_TAG, player_id: player.id, player_name: player.name, group: player.group || '', play_id: play.id, play_name: play.name, score, total, pct, at: now }, rid('qz'));
+    if (w.error) return { status: 502, body: { error: 'save_failed' } };
+    return { status: 200, body: { ok: true, pct } };
   }
   if (action === 'questions' || action === 'ask') {
     if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
@@ -158,14 +206,17 @@ async function playerAction(action, body, req) {
 
 // ── Coach side ───────────────────────────────────────────────────────────
 async function adminList() {
-  const [plays, players, views, settings, questions] = await Promise.all([
-    loadPlays(), loadPlayers(),
-    fsList('playbook_views').then((v) => v.filter((x) => x.site === SITE_TAG)),
-    loadSettings(), loadQuestions(),
+  const [plays, players, views, settings, questions, quiz, plans, practices, notes] = await Promise.all([
+    loadPlays(), loadPlayers(), loadSite('playbook_views'), loadSettings(), loadQuestions(),
+    loadSite('playbook_quiz'), loadSite('playbook_plans'), loadSite('playbook_practices'), loadSite('playbook_notes'),
   ]);
   views.sort((a, b) => String(b.at).localeCompare(String(a.at)));
   questions.sort((a, b) => String(b.created).localeCompare(String(a.created)));
-  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views: views.slice(0, 2000), questions } };
+  quiz.sort((a, b) => String(b.at).localeCompare(String(a.at)));
+  plans.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+  practices.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  notes.sort((a, b) => String(b.date + b.created).localeCompare(String(a.date + a.created)));
+  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views: views.slice(0, 2000), questions, quiz: quiz.slice(0, 2000), plans, practices, notes } };
 }
 
 async function adminAction(action, body) {
@@ -256,6 +307,49 @@ async function adminAction(action, body) {
       } else patch = { hidden: action === 'hide_question' };
       const w = await fsPatchVerified(`playbook_questions/${body.id}`, patch);
       return w.ok ? { status: 200, body: { ok: true } } : { status: 502, body: { error: 'save_failed' } };
+    }
+    case 'save_plan': case 'save_practice': {
+      const r = action === 'save_plan' ? cleanPlan(body.plan) : cleanPractice(body.practice);
+      if (r.error) return { status: 400, body: { error: r.error } };
+      const coll = action === 'save_plan' ? 'playbook_plans' : 'playbook_practices';
+      const doc = r.plan || r.practice;
+      if (body.id) {
+        if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
+        const cur = await fsGet(`${coll}/${body.id}`);
+        if (!cur || cur.site !== SITE_TAG) return { status: 404, body: { error: 'not_found' } };
+        const w = await fsPatchVerified(`${coll}/${body.id}`, Object.assign({}, doc, { updated: now }));
+        return w.ok ? { status: 200, body: { ok: true, id: body.id } } : { status: 502, body: { error: 'save_failed' } };
+      }
+      const id = rid(action === 'save_plan' ? 'plan' : 'prac');
+      const w = await fsCreate(coll, Object.assign({}, doc, { site: SITE_TAG, created: now, updated: now }), id);
+      return w.error ? { status: 502, body: { error: 'save_failed' } } : { status: 200, body: { ok: true, id } };
+    }
+    case 'delete_plan': case 'delete_practice': case 'delete_note': {
+      if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
+      const coll = action === 'delete_plan' ? 'playbook_plans' : action === 'delete_practice' ? 'playbook_practices' : 'playbook_notes';
+      const cur = await fsGet(`${coll}/${body.id}`);
+      if (!cur || cur.site !== SITE_TAG) return { status: 404, body: { error: 'not_found' } };
+      const w = await fsDelete(`${coll}/${body.id}`);
+      return w.ok ? { status: 200, body: { ok: true } } : { status: 502, body: { error: 'save_failed' } };
+    }
+    case 'add_note': {
+      if (!safeId(body.player_id)) return { status: 400, body: { error: 'bad_id' } };
+      const pl = await fsGet(`playbook_players/${body.player_id}`);
+      if (!pl || pl.site !== SITE_TAG) return { status: 404, body: { error: 'not_found' } };
+      const r = cleanNote(body.note);
+      if (r.error) return { status: 400, body: { error: r.error } };
+      const id = rid('note');
+      const w = await fsCreate('playbook_notes', Object.assign({ site: SITE_TAG, player_id: pl.id, player_name: pl.name, created: now }, r.note), id);
+      return w.error ? { status: 502, body: { error: 'save_failed' } } : { status: 200, body: { ok: true, id } };
+    }
+    case 'scout_report': {
+      // The coaches' scouting report (api/scouting.js) for this opponent, trimmed to what a
+      // game plan can use. Players never call this; the coach decides what to carry over.
+      const slug = scoutSlug(body.opponent || '');
+      if (!slug) return { status: 400, body: { error: 'missing_opponent' } };
+      const r = await fsGet(`scouting_reports/${SITE_TAG}_${slug}`);
+      if (!r) return { status: 404, body: { error: 'no_report' } };
+      return { status: 200, body: { report: { opp: r.opp || body.opponent, keys: r.keys || [], matchups: r.matchups || [], personnel: r.personnel || [], plan: r.plan || '', overview: r.overview || '', updated_at: r.updated_at || '', updated_by: r.updated_by || '' } } };
     }
     case 'set_open': {
       const w = await fsPatchVerified(SETTINGS, { open: !!body.open, updated: now });

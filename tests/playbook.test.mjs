@@ -4,7 +4,9 @@
 
 import assert from 'node:assert/strict';
 import * as fake from './_fake.js';
-import { cleanPlay, cleanClip, cleanClipLink, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
+import { toFirestore } from '../api/_firestore.js';
+import { SITE_TAG } from '../api/_site.js';
+import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanNote, cleanDate, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
 import playbook from '../api/playbook.js';
 
 fake.install();
@@ -81,6 +83,22 @@ await test('video clips: only our Blob store or known video sites', () => {
   const t = cleanPlay(Object.assign({}, PLAY, { tips: '- Sprint the first cut\n\n• <b>Fake</b> the pass\n   ' }));
   assert.deepEqual(t.play.tips, ['Sprint the first cut', 'bFake/b the pass']);
   assert.deepEqual(cleanPlay(Object.assign({}, PLAY, { tips: ['a', 'b'] })).play.tips, ['a', 'b']);
+});
+await test('due dates, film moments, game plans, practices and notes are cleaned', () => {
+  assert.equal(cleanDate('2026-11-14'), '2026-11-14'); assert.equal(cleanDate('11/14/26'), ''); assert.equal(cleanDate('2026-13-01'), '');
+  const r = cleanPlay(Object.assign({}, PLAY, { due: '2026-11-14', marks: [{ t: 134.6, text: '5 late on the screen' }, { t: 12, text: '<b>Entry</b>' }, { t: 5, text: '' }] }));
+  assert.equal(r.play.due, '2026-11-14');
+  assert.deepEqual(r.play.marks, [{ t: 12, text: 'bEntry/b' }, { t: 135, text: '5 late on the screen' }]);
+  const pl = cleanPlan({ opponent: ' Radnor ', date: '2026-11-14', where: 'away', keys: '1. Rebound\n- Run\n\n', our_plays: ['play_a', 'play_a', '../x'], matchups: [{ us: 'pbp_1', them: '#23 Smith', note: 'deny' }, { us: '', them: '' }], personnel: [{ num: '23', name: 'Smith', notes: 'lefty', guard: 'go under' }, { name: '' }], visible: true });
+  assert.equal(pl.plan.opponent, 'Radnor'); assert.deepEqual(pl.plan.keys, ['Rebound', 'Run']); assert.deepEqual(pl.plan.our_plays, ['play_a']);
+  assert.equal(pl.plan.matchups.length, 1); assert.equal(pl.plan.personnel.length, 1); assert.equal(pl.plan.where, 'away');
+  assert.equal(cleanPlan({ opponent: '' }).error, 'missing_opponent');
+  const pr = cleanPractice({ date: '2026-11-10', start: '15:30', blocks: [{ name: 'Warmup', minutes: '10.4', play_ids: ['play_a'] }, { name: '', minutes: 5 }, { name: 'Shell', minutes: 999 }] });
+  assert.equal(pr.practice.blocks.length, 2); assert.equal(pr.practice.blocks[0].minutes, 10); assert.equal(pr.practice.blocks[1].minutes, 240); assert.equal(pr.practice.start, '15:30');
+  assert.equal(cleanPractice({ date: 'soon' }).error, 'missing_date');
+  assert.equal(cleanNote({ kind: 'absent', text: '' }).note.kind, 'absent');
+  assert.equal(cleanNote({ kind: 'note', text: '' }).error, 'empty_note');
+  assert.equal(cleanNote({ kind: 'party', text: 'x', date: 'bad' }).note.kind, 'note');
 });
 await test('groups limit who can see a play', () => {
   const p = { visible: true, groups: ['Varsity'] };
@@ -203,6 +221,35 @@ await test('players ask questions on a play, the coach answers, the team sees an
   for (let i = 0; i < 9; i++) await call({ action: 'ask', token: me, id: playId, text: 'Question number ' + i });
   assert.equal((await call({ action: 'ask', token: me, id: playId, text: 'One too many' })).statusCode, 429);
   await call({ action: 'remove_player', id: other.id }, true);
+});
+await test('quiz results, game plan, practice and progress reach the player', async () => {
+  const tok = (await call({ action: 'login', code: (await call({ action: 'new_code', id: codes[0].id }, true)).body.code })).body.token;
+  assert.equal((await call({ action: 'quiz_result', token: tok, id: jvPlayId, score: 1, total: 2 })).statusCode, 404, 'not their play');
+  const q = await call({ action: 'quiz_result', token: tok, id: playId, score: 3, total: 4 });
+  assert.equal(q.statusCode, 200); assert.equal(q.body.pct, 75);
+  await call({ action: 'quiz_result', token: tok, id: playId, score: 9, total: 4 });   // clamped to 4/4
+  const plan = await call({ action: 'save_plan', plan: { opponent: 'Radnor', date: '2099-01-10', keys: ['Rebound'], our_plays: [playId], matchups: [{ us: codes[0].id, them: '#23 Smith', note: 'deny' }], visible: true } }, true);
+  assert.equal(plan.statusCode, 200);
+  await call({ action: 'save_plan', plan: { opponent: 'Hidden', date: '2099-01-02', visible: false } }, true);
+  const prac = await call({ action: 'save_practice', practice: { date: '2099-01-05', start: '15:30', blocks: [{ name: 'Shell', minutes: 15, play_ids: [playId] }], show_players: true } }, true);
+  assert.equal(prac.statusCode, 200);
+  await call({ action: 'save_practice', practice: { date: '2099-01-03', blocks: [{ name: 'Coaches only', minutes: 5 }], show_players: false } }, true);
+  const r = (await call({ action: 'plays', token: tok })).body;
+  assert.equal(r.plan.opponent, 'Radnor'); assert.equal(r.plan.matchups[0].us.name, 'Israel Ingram');
+  assert.equal(r.practice.blocks[0].name, 'Shell');
+  assert.deepEqual(r.done.viewed, [playId]); assert.equal(r.done.quiz[playId], 100);
+  const n = await call({ action: 'add_note', player_id: codes[0].id, note: { kind: 'injury', text: 'ankle, limited' } }, true);
+  assert.equal(n.statusCode, 200);
+  const admin = (await call({ action: 'admin_list' }, true)).body;
+  assert.equal(admin.quiz.length, 2); assert.equal(admin.plans.length, 2); assert.equal(admin.practices.length, 2); assert.equal(admin.notes[0].text, 'ankle, limited');
+  assert.equal((await call({ action: 'delete_note', id: n.body.id }, true)).statusCode, 200);
+  assert.equal((await call({ action: 'delete_plan', id: plan.body.id }, true)).statusCode, 200);
+  assert.equal((await call({ action: 'admin_list' }, true)).body.notes.length, 0);
+  assert.equal((await call({ action: 'plays', token: tok })).body.plan, null, 'the hidden plan never shows');
+  assert.equal((await call({ action: 'scout_report', opponent: 'Radnor' }, true)).statusCode, 404);
+  fake.state.docs.set('scouting_reports/' + SITE_TAG + '_radnor', { fields: toFirestore({ site: SITE_TAG, opp: 'Radnor', keys: ['Box out'], personnel: [{ num: '23', name: 'Smith' }], matchups: [], plan: 'Run them.' }), createTime: 'x', updateTime: 'x' });
+  const sr = await call({ action: 'scout_report', opponent: 'Radnor' }, true);
+  assert.equal(sr.statusCode, 200); assert.deepEqual(sr.body.report.keys, ['Box out']);
 });
 await test('a removed player can no longer sign in', async () => {
   await call({ action: 'remove_player', id: codes[1].id }, true);

@@ -11,7 +11,7 @@ import { clip, stripTags } from './_clinic.js';
 export const CATEGORIES = ['Offense', 'Defense', 'Baseline out', 'Sideline out', 'Press break', 'Press', 'Late game', 'Special'];
 export const TOKENS = ['O1', 'O2', 'O3', 'O4', 'O5', 'X1', 'X2', 'X3', 'X4', 'X5'];
 export const MOVE_TYPES = ['cut', 'dribble', 'screen'];
-export const LIMITS = { frames: 30, name: 60, notes: 1500, frameNote: 300, groups: 12, group: 30, playerName: 60, opponent: 60, tips: 12, tip: 200 };
+export const LIMITS = { frames: 30, name: 60, notes: 1500, frameNote: 300, groups: 12, group: 30, playerName: 60, opponent: 60, tips: 12, tip: 200, marks: 20, mark: 160, keys: 10, key: 200, matchups: 12, personnel: 15, blocks: 20, note: 600 };
 export const KINDS = ['ours', 'scout'];   // our play, or an opponent's play we are scouting
 // Court units are tenths of a foot. Half court 50 x 42 ft (high school), full 50 x 84.
 // Tokens may sit up to 5 ft out of bounds (inbounders).
@@ -87,9 +87,13 @@ export function cleanPlay(p) {
   // Coach's tips: short bullets shown in their own box, one per line in the editor.
   const tips = (Array.isArray(p.tips) ? p.tips : String(p.tips || '').split('\n'))
     .map((t) => clip(stripTags(String(t || '').replace(/^\s*[-•*]\s*/, '').trim()), LIMITS.tip)).filter(Boolean).slice(0, LIMITS.tips);
+  const due = cleanDate(p.due);
+  // Film moments: "2:14 5 was late on the screen". Seconds into the clip plus a note.
+  const marks = (Array.isArray(p.marks) ? p.marks : []).map((m) => ({ t: Math.max(0, Math.min(36000, Math.round(Number(m && m.t) || 0))), text: clip(stripTags(String((m && m.text) || '').trim()), LIMITS.mark) }))
+    .filter((m) => m.text).sort((a, b) => a.t - b.t).slice(0, LIMITS.marks);
   return {
     play: {
-      name, court, category, groups, kind, opponent, lineup, clip: video, clip_link, tips,
+      name, court, category, groups, kind, opponent, lineup, clip: video, clip_link, tips, due, marks,
       notes: clip(stripTags(String(p.notes || '').trim()), LIMITS.notes),
       visible: !!p.visible,
       frames: out,
@@ -109,6 +113,55 @@ export function cleanClipLink(v) {
   let u; try { u = new URL(v.trim()); } catch (e) { return ''; }
   if (u.protocol !== 'https:' || !CLIP_LINK_HOSTS.test(u.hostname)) return '';
   return clip(u.href, 400);
+}
+
+export function cleanDate(v) { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v || '').trim()); return m && +m[2] >= 1 && +m[2] <= 12 && +m[3] >= 1 && +m[3] <= 31 ? m[0] : ''; }
+const idOk = (v) => typeof v === 'string' && /^[A-Za-z0-9_-]{1,128}$/.test(v);
+const lines = (v, n, max) => (Array.isArray(v) ? v : String(v || '').split('\n')).map((t) => clip(stripTags(String(t || '').replace(/^\s*[-•*\d.)]+\s*/, '').trim()), n)).filter(Boolean).slice(0, max);
+
+// A game plan for one opponent: the plays to know, their guys, matchups and keys.
+export function cleanPlan(p) {
+  if (!p || typeof p !== 'object') return { error: 'bad_plan' };
+  const opponent = cleanName(p.opponent, LIMITS.opponent);
+  if (!opponent) return { error: 'missing_opponent' };
+  return { plan: {
+    opponent, date: cleanDate(p.date), title: cleanName(p.title, 80),
+    where: ['home', 'away', 'neutral'].includes(p.where) ? p.where : '',
+    keys: lines(p.keys, LIMITS.key, LIMITS.keys),
+    our_plays: [...new Set((Array.isArray(p.our_plays) ? p.our_plays : []).filter(idOk))].slice(0, 30),
+    their_plays: [...new Set((Array.isArray(p.their_plays) ? p.their_plays : []).filter(idOk))].slice(0, 30),
+    matchups: (Array.isArray(p.matchups) ? p.matchups : []).map((m) => ({ us: idOk(m && m.us) ? m.us : '', them: cleanName(m && m.them, 60), note: clip(stripTags(String((m && m.note) || '').trim()), LIMITS.key) })).filter((m) => m.us || m.them).slice(0, LIMITS.matchups),
+    personnel: (Array.isArray(p.personnel) ? p.personnel : []).map((x) => ({ num: clip(stripTags(String((x && x.num) || '').trim()), 3), name: cleanName(x && x.name, 40), pos: clip(stripTags(String((x && x.pos) || '').trim()), 4), notes: clip(stripTags(String((x && x.notes) || '').trim()), 300), guard: clip(stripTags(String((x && x.guard) || '').trim()), 300) })).filter((x) => x.name || x.num).slice(0, LIMITS.personnel),
+    notes: clip(stripTags(String(p.notes || '').trim()), LIMITS.notes),
+    visible: !!p.visible,
+  } };
+}
+
+// A practice plan: blocks of minutes, each with the plays it works on.
+export function cleanPractice(p) {
+  if (!p || typeof p !== 'object') return { error: 'bad_practice' };
+  const date = cleanDate(p.date);
+  if (!date) return { error: 'missing_date' };
+  const blocks = (Array.isArray(p.blocks) ? p.blocks : []).map((b) => ({
+    name: cleanName(b && b.name, 80),
+    minutes: Math.max(0, Math.min(240, Math.round(Number(b && b.minutes) || 0))),
+    notes: clip(stripTags(String((b && b.notes) || '').trim()), LIMITS.note),
+    play_ids: [...new Set((Array.isArray(b && b.play_ids) ? b.play_ids : []).filter(idOk))].slice(0, 12),
+  })).filter((b) => b.name).slice(0, LIMITS.blocks);
+  return { practice: {
+    date, title: cleanName(p.title, 80), start: /^\d{2}:\d{2}$/.test(String(p.start || '')) ? String(p.start) : '',
+    blocks, notes: clip(stripTags(String(p.notes || '').trim()), LIMITS.notes),
+    show_players: !!p.show_players,
+  } };
+}
+
+export const NOTE_KINDS = ['note', 'injury', 'absent', 'late', 'kudos'];
+export function cleanNote(n) {
+  if (!n || typeof n !== 'object') return { error: 'bad_note' };
+  const text = clip(stripTags(String(n.text || '').replace(/\s+/g, ' ').trim()), LIMITS.note);
+  const kind = NOTE_KINDS.includes(n.kind) ? n.kind : 'note';
+  if (!text && kind === 'note') return { error: 'empty_note' };
+  return { note: { kind, text, date: cleanDate(n.date) || new Date().toISOString().slice(0, 10) } };
 }
 
 // Can this player see this play?
