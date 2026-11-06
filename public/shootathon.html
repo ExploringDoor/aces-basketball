@@ -897,7 +897,7 @@ function openDrawer(id,refresh){
   if(open(p)) acts.push('<button class="btn" type="button" data-dact="markpaid">Mark paid (cash or check)</button>');
   if(p.refundable) acts.push('<button class="btn danger" type="button" data-dact="refund">Refund '+money(p.computed_cents)+'</button>');
   if(p.status!=='paid'&&p.status!=='canceled'&&p.status!=='refunded'&&p.status!=='removed') acts.push('<button class="btn danger" type="button" data-dact="cancel">Cancel pledge</button>');
-  if(p.status!=='removed'&&!(p.status==='paid'&&!p.offline)&&p.status!=='invoiced'&&p.status!=='pending') acts.push('<button class="btn danger" type="button" data-dact="remove">Remove from the list</button>');
+  if(p.status!=='removed'&&!(p.status==='paid'&&!p.offline)&&p.status!=='invoiced'&&!(p.status==='pending'&&Date.now()-Date.parse(p.created||0)<864e5)) acts.push('<button class="btn danger" type="button" data-dact="remove">Remove from the list</button>');
   if(p.status==='removed') acts.push('<button class="btn primary" type="button" data-dact="restore">Put it back</button>');
   $('drBody').innerHTML='<div class="dr-amt">'+big+'</div>'+(p.message?'<div class="msg">&ldquo;'+esc(p.message)+'&rdquo;</div>':'')+
     '<div class="kv">'+kv.map(function(x){ return '<div><span>'+x[0]+'</span><b>'+x[1]+'</b></div>'; }).join('')+'</div>'+
