@@ -8,6 +8,9 @@
     },
     "api/notify.js": {
       "maxDuration": 60
+    },
+    "api/newsletter.js": {
+      "maxDuration": 60
     }
   },
   "crons": [

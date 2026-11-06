@@ -46,6 +46,15 @@ service cloud.firestore {
       allow read, write: if isSuper();
     }
 
+    // Aces Weekly, the family newsletter: subscribers and the send log. Admin-only;
+    // families sign up and unsubscribe through /api/newsletter, never from the browser.
+    match /newsletter_subs/{id} {
+      allow read, write: if isSuper();
+    }
+    match /newsletter_sends/{id} {
+      allow read, write: if isSuper();
+    }
+
     // Team Playbook: plays, player codes, the view log and the on/off switch. Admin-only;
     // players sign in through /api/playbook, which reads on their behalf.
     match /playbook_plays/{id} {

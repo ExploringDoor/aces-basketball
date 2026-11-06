@@ -143,6 +143,18 @@ function buildSnapshot(event, pledges) {
   };
 }
 
+/** The public thermometer numbers, reused by the newsletter (api/newsletter.js).
+ *  null while the event is closed, so the newsletter leaves the section out. */
+export async function fundraiserSnapshot() {
+  const event = await loadEvent();
+  if (!event || !event.open) return null;
+  let pledges = [];
+  try { pledges = await fsQuery('pledges', 'event_id', 'EQUAL', SHOOTATHON.eventId); } catch (e) { pledges = []; }
+  const snap = buildSnapshot(event, pledges);
+  const makes = (event.players || []).reduce((n, p) => n + (parseInt(p.makes, 10) || 0), 0);
+  return { title: event.title || SHOOTATHON.title, goal_cents: snap.org.goal_cents, raised_cents: snap.org.raised_cents, makes, supporter_count: snap.supporter_count };
+}
+
 // ── GET ────────────────────────────────────────────────────────────────────
 async function handleGet(req, res) {
   const q = req.query || {};
