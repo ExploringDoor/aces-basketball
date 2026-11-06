@@ -6,56 +6,67 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <meta name="theme-color" content="#840036">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏀%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="/LM_Logo.png">
 <title>Complete Your Donation | Lower Merion Aces Basketball</title>
 <meta name="robots" content="noindex">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Oswald:wght@400;500;600;700;900&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--mrn:#840036;--mrn-h:#9e0040;--pink:#c9a44a;--gold:#c9a44a;--bg:#0a0005;--glass:rgba(255,255,255,.035);--glass-b:rgba(201,164,74,.16);--txt:#F0ECE8;--txt-m:rgba(240,236,232,.82);--dim:rgba(255,255,255,.6);--ok:#4ade80;--r:16px}
-body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;line-height:1.55;min-height:100vh}
+:root{--mrn:#840036;--mrn-d:#6a002b;--mrn-50:#fbf2f5;--mrn-100:#f5e1e8;--gold:#c9a44a;--gold-50:#fbf6e9;--bg:#f5f5f7;--ink:#16161a;--ink-2:#45454f;--ink-3:#767682;--line:#e6e6ea;--line-2:#d6d6dc;--ok:#1f8a4c;--ok-50:#e8f6ee;--txt-m:#45454f;--glass-b:#e6e6ea;--r:22px}
+body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.55;min-height:100vh;font-size:16px}
 a{color:inherit}
-.nav{border-bottom:1px solid var(--glass-b);padding:0 32px;display:flex;justify-content:space-between;align-items:center;height:64px}
-.logo-main{font-family:'Anton',sans-serif;font-size:24px;color:#fff;letter-spacing:4px;text-transform:uppercase;line-height:.9}
-.logo-sub{font-family:'Oswald',sans-serif;font-weight:500;font-size:10px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;text-align:center}
-.nav a.back{font-size:.82rem;color:var(--dim);text-decoration:none}
-.wrap{max-width:560px;margin:0 auto;padding:64px 24px}
-.card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r);padding:40px 34px;text-align:center}
-.badge{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 20px;background:rgba(201,164,74,.12);border:1px solid rgba(201,164,74,.4)}
-.badge.ok{background:rgba(74,222,128,.14);border:1px solid rgba(74,222,128,.42)}
-h1{font-family:'Playfair Display',serif;font-weight:700;font-size:2rem;margin-bottom:10px}
-.lead{color:var(--txt-m);margin-bottom:24px}
-.amt{font-family:'Oswald',sans-serif;font-weight:600;font-size:3rem;color:var(--gold);letter-spacing:1px;margin:6px 0}
-.recap{text-align:left;background:var(--bg);border:1px solid var(--glass-b);border-radius:12px;padding:16px 20px;margin:22px 0;font-size:.9rem}
-.recap .row{display:flex;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px solid var(--glass-b)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:8px}
+.nav{background:#fff;border-bottom:1px solid var(--line);padding:0 28px;display:flex;justify-content:space-between;align-items:center;height:84px}
+.nav .brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+.nav .brand img{height:64px;width:auto;display:block}
+.logo-main{font-family:'Anton',sans-serif;font-size:28px;letter-spacing:3px;color:var(--mrn);line-height:1}
+.logo-sub{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:5px;text-transform:uppercase;color:var(--ink-3);margin-top:4px}
+.nav a.back{font-weight:600;color:var(--mrn);text-decoration:none;padding:10px 12px;border-radius:10px}
+.nav a.back:hover{background:var(--mrn-50)}
+.wrap{max-width:600px;margin:0 auto;padding:64px 20px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:44px 36px;text-align:center;box-shadow:0 18px 50px rgba(20,20,30,.1)}
+.badge{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;background:var(--mrn-50);color:var(--mrn)}
+.badge svg{width:40px;height:40px}
+.badge.ok{background:var(--ok-50);color:var(--ok)}
+h1{font-family:'Anton',sans-serif;font-weight:400;font-size:44px;line-height:1.02;text-transform:uppercase;letter-spacing:.5px;color:var(--mrn);margin-bottom:12px}
+.lead{color:var(--ink-2);font-size:18px;margin-bottom:24px}
+.amt{font-family:'Anton',sans-serif;font-size:60px;line-height:1;color:var(--ink);margin:8px 0}
+.recap{text-align:left;background:var(--bg);border-radius:14px;padding:6px 18px;margin:22px 0;font-size:16px}
+.recap .row{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line)}
 .recap .row:last-child{border-bottom:none}
-.recap .k{color:var(--dim)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:15px 30px;border-radius:12px;font-family:'Oswald',sans-serif;font-weight:600;font-size:1.05rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;background:var(--mrn);color:#fff;transition:background .25s;border:none;cursor:pointer}
-.btn:hover{background:var(--mrn-h)}
-.muted{font-size:.8rem;color:var(--dim);margin-top:18px}
-.spinner{width:34px;height:34px;border:3px solid var(--glass-b);border-top-color:var(--pink);border-radius:50%;margin:8px auto 0;animation:spin 1s linear infinite}
+.recap .k{color:var(--ink-3)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:16px 30px;border-radius:12px;font-family:'Oswald',sans-serif;font-weight:600;font-size:17px;letter-spacing:1px;text-transform:uppercase;text-decoration:none;background:var(--mrn);color:#fff;border:none;cursor:pointer;transition:background .15s}
+.btn:hover{background:var(--mrn-d)}
+.muted{font-size:14px;color:var(--ink-3);margin-top:22px;line-height:1.6}
+.muted a{color:var(--mrn)!important;font-weight:600}
+.sbtns{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.sbtns a,.sbtns button{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#fff;border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;color:var(--ink);cursor:pointer;font-family:inherit;font-weight:600;font-size:15px;text-decoration:none}
+.sbtns a:hover,.sbtns button:hover{border-color:var(--mrn)}
+.spinner{width:36px;height:36px;border:3px solid var(--line);border-top-color:var(--mrn);border-radius:50%;margin:8px auto 0;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.spinner{animation:none}}
 .hidden{display:none}
-footer{text-align:center;padding:26px 16px;font-size:.78rem;color:#9B95A0;border-top:1px solid rgba(255,255,255,.07)}
+footer{text-align:center;padding:26px 16px 34px;font-size:14px;color:var(--ink-3)}
+footer a{color:var(--ink-3)!important}
+@media(max-width:560px){.nav{padding:0 16px;height:70px}.nav .brand img{height:50px}.logo-main{font-size:22px}.logo-sub{font-size:10px;letter-spacing:3px}.wrap{padding:32px 16px}.card{padding:32px 20px}h1{font-size:34px}.amt{font-size:48px}.sbtns{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <nav class="nav">
-  <a href="index.html" style="text-decoration:none"><div style="display:flex;align-items:center;gap:13px"><img src="/LM_Logo.png" alt="Lower Merion Aces" style="height:50px;width:auto"><div><div class="logo-main">ACES</div><div class="logo-sub">Lower Merion Basketball</div></div></div></a>
-  <a href="donate.html" class="back">← Shoot-a-Thon</a>
+  <a href="donate.html" class="brand"><img src="/LM_Logo.png" alt="Lower Merion Aces"><div><div class="logo-main">ACES</div><div class="logo-sub">Basketball</div></div></a>
+  <a href="donate.html" class="back">Back to the Shoot-a-Thon</a>
 </nav>
 
 <div class="wrap">
   <div class="card" id="loading">
-    <div class="badge">⏳</div>
+    <div class="badge"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg></div>
     <h1>Loading your donation…</h1>
     <div class="spinner"></div>
   </div>
 
   <div class="card hidden" id="ready">
-    <div class="badge">🏀</div>
+    <div class="badge"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M3 10h18" stroke="currentColor" stroke-width="2"/></svg></div>
     <h1>Complete your donation</h1>
     <p class="lead" id="readyLead"></p>
     <div class="amt" id="amt"></div>
@@ -65,14 +76,14 @@ footer{text-align:center;padding:26px 16px;font-size:.78rem;color:#9B95A0;border
   </div>
 
   <div class="card hidden" id="paid">
-    <div class="badge ok">✅</div>
+    <div class="badge ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
     <h1>Already completed</h1>
-    <p class="lead">This donation has already been paid — thank you so much for your support! A receipt is in your email.</p>
+    <p class="lead">This donation has already been paid. Thank you so much for your support! A receipt is in your email.</p>
     <a href="donate.html" class="btn">Back to the Shoot-a-Thon</a>
   </div>
 
   <div class="card hidden" id="notready">
-    <div class="badge">🤔</div>
+    <div class="badge"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg></div>
     <h1 id="nrTitle">Nothing due yet</h1>
     <p class="lead" id="nrMsg">This donation link isn't ready yet. If you pledged per made shot, we'll email your link once the event wraps up and we've counted the shots.</p>
     <a href="donate.html" class="btn">Back to the Shoot-a-Thon</a>
@@ -80,7 +91,7 @@ footer{text-align:center;padding:26px 16px;font-size:.78rem;color:#9B95A0;border
   </div>
 </div>
 
-<footer>Site by <a href="https://mainline-webdesign.com/" target="_blank" rel="noopener" style="color:#9B95A0;text-decoration:underline">Main Line Web Design</a></footer>
+<footer>Site by <a href="https://mainline-webdesign.com/" target="_blank" rel="noopener" style="text-decoration:underline">Main Line Web Design</a></footer>
 
 <script>
 function $(id){ return document.getElementById(id); }
@@ -92,7 +103,7 @@ function show(id){ ['loading','ready','paid','notready'].forEach(function(x){ $(
 var pid = qs('p') || '';
 if(qs('demo')==='1'){
   var row=function(k,v){ return '<div class="row"><span class="k">'+k+'</span><span>'+v+'</span></div>'; };
-  $('readyLead').innerHTML='Sponsoring <b>Jimmy Daniels</b> — thank you!';
+  $('readyLead').innerHTML='Sponsoring <b>Jimmy Daniels</b>. Thank you!';
   $('amt').textContent=money(4200);
   $('recap').innerHTML=row('Supporting','Jimmy Daniels')+row('Made free throws','84 × '+money(50))+row('Total','<b>'+money(4200)+'</b>');
   $('payBtn').setAttribute('href','#'); $('payBtn').textContent='Donate '+money(4200)+' →';
@@ -109,7 +120,7 @@ else {
     var row=function(k,v){ return '<div class="row"><span class="k">'+k+'</span><span>'+v+'</span></div>'; };
     var isPlayer = d.target_type==='player';
     var who = esc(d.target_name||'a player');
-    $('readyLead').innerHTML = isPlayer ? ('Sponsoring <b>'+who+'</b> — thank you!') : ('Thank you for supporting <b>'+who+'</b>!');
+    $('readyLead').innerHTML = isPlayer ? ('Sponsoring <b>'+who+'</b>. Thank you!') : ('Thank you for supporting <b>'+who+'</b>!');
     $('amt').textContent = money(d.amount_cents);
     var html='';
     html += row('Supporting', who);
