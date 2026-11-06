@@ -37,6 +37,15 @@ service cloud.firestore {
       allow read, write: if isSuper();
     }
 
+    // Opponent scouting: assignments and reports. Admin-only; coaches reach them
+    // through /api/scouting with the shared passcode, never from the browser.
+    match /scouting_reports/{id} {
+      allow read, write: if isSuper();
+    }
+    match /scouting_meta/{id} {
+      allow read, write: if isSuper();
+    }
+
     // The admins collection: readable only by an admin (used by the rules themselves).
     match /admins/{uid} {
       allow read: if isSuper();
