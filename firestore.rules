@@ -46,6 +46,21 @@ service cloud.firestore {
       allow read, write: if isSuper();
     }
 
+    // Team Playbook: plays, player codes, the view log and the on/off switch. Admin-only;
+    // players sign in through /api/playbook, which reads on their behalf.
+    match /playbook_plays/{id} {
+      allow read, write: if isSuper();
+    }
+    match /playbook_players/{id} {
+      allow read, write: if isSuper();
+    }
+    match /playbook_views/{id} {
+      allow read, write: if isSuper();
+    }
+    match /playbook_meta/{id} {
+      allow read, write: if isSuper();
+    }
+
     // The admins collection: readable only by an admin (used by the rules themselves).
     match /admins/{uid} {
       allow read: if isSuper();

@@ -44,7 +44,7 @@ const PAGES = {
 };
 
 // Menu ids that open a standalone page instead of an in-app page.
-const EXTERNAL = { shootathon: "/donate.html" };
+const EXTERNAL = { shootathon: "/donate.html", playbook: "/playbook.html" };
 
 const NAV = [
   { id:"home", label:"Home" },
@@ -80,6 +80,7 @@ const NAV = [
     { id:"videos", label:"Videos" },
     { id:"social",   label:"Follow Us" },
     { id:"shootathon", label:"Shoot-a-Thon" },
+    { id:"playbook", label:"Team Playbook" },
     { id:"support",  label:"Support the Aces" },
     { id:"store",    label:"Team Store", badge:"Soon" },
   ]},

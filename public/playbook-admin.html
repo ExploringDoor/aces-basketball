@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/LM_Logo.png">
+<meta name="theme-color" content="#840036">
+<meta name="robots" content="noindex, nofollow">
+<title>Playbook Admin | Lower Merion Aces Basketball</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --mrn:#840036;--mrn-d:#6a002b;--mrn-50:#fbf2f5;--mrn-100:#f5e1e8;--gold:#c9a44a;--gold-d:#9c7a2a;--gold-50:#fbf6e9;
+  --bg:#f4f4f6;--card:#fff;--ink:#16161a;--ink-2:#4a4a55;--ink-3:#7a7a86;--line:#e6e6ea;--line-2:#d6d6dc;
+  --ok:#1f8a4c;--ok-50:#e8f6ee;--warn:#a86a00;--warn-50:#fdf3e1;--bad:#b42318;--bad-50:#fdecea;--info:#3b4fb0;--info-50:#eef0fb;
+  --r:14px;--sh:0 1px 2px rgba(20,20,30,.05),0 1px 1px rgba(20,20,30,.03);--sh-2:0 12px 40px rgba(20,20,30,.16)
+}
+body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;min-height:100vh;font-size:15px}
+a{color:var(--mrn)}
+button{font-family:inherit}
+h1,h2,h3{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2px}
+.mono{font-family:'IBM Plex Mono',monospace}
+.muted{color:var(--ink-3)}
+.hide{display:none!important}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+/* top bar */
+.top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40}
+.top-in{max-width:1240px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);min-width:0}
+.brand img{height:64px;width:auto;flex:none}
+.brand .t1{font-family:'Anton',sans-serif;font-size:24px;letter-spacing:2px;line-height:1;color:var(--mrn)}
+.brand .t2{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--ink-3);margin-top:4px}
+.top .sp{flex:1}
+.top .links{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.tabs{max-width:1240px;margin:0 auto;padding:0 24px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{appearance:none;border:0;background:none;padding:12px 14px 13px;font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-3);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--mrn);border-bottom-color:var(--mrn)}
+.tab .cnt{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--mrn-100);color:var(--mrn);font-size:11px;line-height:18px;text-align:center;letter-spacing:0}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 15px;border-radius:10px;font-weight:600;font-size:14px;border:1px solid var(--line-2);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;transition:background .15s,border-color .15s,color .15s;white-space:nowrap;line-height:1.2}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--mrn);border-color:var(--mrn);color:#fff}.btn.primary:hover{background:var(--mrn-d)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#241a00}.btn.gold:hover{background:#b99236}
+.btn.ghost{border-color:transparent;background:transparent}.btn.ghost:hover{background:var(--bg)}
+.btn.danger{color:var(--bad);border-color:#f0c8c4}.btn.danger:hover{background:var(--bad-50);border-color:var(--bad)}
+.btn.sm{padding:6px 11px;font-size:13px;border-radius:8px}
+.btn.lg{padding:12px 20px;font-size:15px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn svg{width:16px;height:16px;flex:none}
+.btn[aria-pressed="true"]{background:var(--mrn-50);border-color:var(--mrn);color:var(--mrn)}
+.iconbtn{appearance:none;border:1px solid var(--line-2);background:#fff;border-radius:10px;width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-2);flex:none}
+.iconbtn:hover{border-color:var(--ink-3)}
+.iconbtn:disabled{opacity:.4;cursor:default}
+.iconbtn svg{width:18px;height:18px}
+/* layout */
+.wrap{max-width:1240px;margin:0 auto;padding:22px 24px 90px}
+.panel{display:none}.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:20px 22px;margin-bottom:16px}
+.card h2{font-size:19px;margin-bottom:2px}
+.card .sub{color:var(--ink-3);font-size:14px;margin-bottom:16px}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.card-head .sub{margin-bottom:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.hero{background:linear-gradient(135deg,#840036 0%,#5c0026 100%);color:#fff;border-radius:18px;padding:24px 28px;margin-bottom:16px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;border:34px solid rgba(201,164,74,.16)}
+.hero .row{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;position:relative;z-index:1}
+.hero .k{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#f0d0d8}
+.hero .big{font-family:'Anton',sans-serif;font-size:40px;line-height:1;margin-top:6px;letter-spacing:1px}
+.hero .of{font-size:16px;color:#f6dfe5;margin-top:6px}
+.hero .btn{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35);color:#fff}
+.hero .btn.gold{background:var(--gold);border-color:var(--gold);color:#241a00}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;font-weight:600;font-size:13px}
+.chip .dot{width:8px;height:8px;border-radius:50%}
+.chip.open{background:#e8f6ee;color:var(--ok)}.chip.open .dot{background:var(--ok)}
+.chip.closed{background:#fff;color:var(--ink-2)}.chip.closed .dot{background:var(--ink-3)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh)}
+.kpi .k{font-size:12.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.kpi .v{font-family:'Anton',sans-serif;font-size:32px;line-height:1.1;margin-top:4px}
+.kpi .d{font-size:13px;color:var(--ink-3);margin-top:2px}
+/* forms */
+.fld{margin-bottom:14px}
+.fld label,.lbl{display:block;font-size:12.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-2);margin-bottom:6px}
+.fld .help{font-size:13px;color:var(--ink-3);margin-top:5px}
+.inp{width:100%;background:#fff;border:1px solid var(--line-2);border-radius:10px;padding:10px 12px;color:var(--ink);font-family:inherit;font-size:15px;outline:none;transition:border-color .15s,box-shadow .15s}
+.inp:focus{border-color:var(--mrn);box-shadow:0 0 0 3px var(--mrn-100)}
+textarea.inp{resize:vertical;min-height:84px}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7a86' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+.row{display:flex;gap:14px;flex-wrap:wrap}.row>*{flex:1;min-width:160px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:15px;color:var(--ink-2);cursor:pointer;line-height:1.4}
+.chk input{width:18px;height:18px;margin-top:1px;accent-color:var(--mrn);flex:none}
+.switch{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fafafb;cursor:pointer}
+.switch input{position:absolute;opacity:0;width:1px;height:1px}
+.switch .tr{width:44px;height:26px;border-radius:999px;background:var(--line-2);position:relative;flex:none;transition:background .15s}
+.switch .tr:after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:left .15s}
+.switch input:checked+.tr{background:var(--ok)}
+.switch input:checked+.tr:after{left:21px}
+.switch .tx b{display:block}.switch .tx span{font-size:13px;color:var(--ink-3)}
+.status{font-size:14px;color:var(--ink-3);margin-top:10px;min-height:1.2em}
+.status.ok{color:var(--ok)}.status.err{color:var(--bad)}
+.seg{display:inline-flex;background:#e9e9ee;border-radius:12px;padding:4px;gap:4px}
+.seg button{border:0;background:transparent;padding:8px 16px;border-radius:9px;font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-2);cursor:pointer}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--mrn);box-shadow:var(--sh)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.fchip{border:1px solid var(--line-2);background:#fff;border-radius:999px;padding:6px 13px;font-weight:600;font-size:13.5px;cursor:pointer;color:var(--ink-2)}
+.fchip[aria-pressed="true"]{background:var(--mrn);border-color:var(--mrn);color:#fff}
+.search{min-width:200px;border:1px solid var(--line-2);border-radius:10px;padding:8px 12px;font:inherit;outline:none;background:#fff;margin-left:auto}
+.search:focus{border-color:var(--mrn)}
+/* play cards */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.pc{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--sh);display:flex;flex-direction:column}
+.pc .th{background:#d8c094;cursor:pointer;position:relative;display:flex;justify-content:center}
+.pc .th.full svg{height:260px!important;width:auto!important}
+.pc .th .pill{position:absolute;top:10px;left:10px;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:#fff;color:var(--ink-2)}
+.pc .th .pill.hidden{background:var(--warn-50);color:var(--warn)}
+.pc .th .pill.live{background:var(--ok-50);color:var(--ok)}
+.pc .meta{padding:12px 14px 10px}
+.pc .cat{font-family:'Oswald',sans-serif;font-size:11.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--mrn)}
+.pc h3{font-size:18px;margin:1px 0 2px;line-height:1.2}
+.pc .sub{font-size:13px;color:var(--ink-3)}
+.pc .acts{display:flex;gap:6px;padding:0 10px 12px;flex-wrap:wrap;align-items:center}
+.pc .acts .sp{flex:1}
+.empty{background:#fff;border:1px dashed var(--line-2);border-radius:16px;padding:44px 20px;text-align:center;color:var(--ink-3)}
+.empty h3{color:var(--ink);font-size:20px;margin-bottom:4px}
+/* tables */
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3);padding:8px 10px;border-bottom:1px solid var(--line);font-weight:600;white-space:nowrap}
+td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:14.5px}
+tr:last-child td{border-bottom:0}
+.code{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:17px;letter-spacing:3px;background:var(--gold-50);border:1px solid #efe2bd;padding:4px 10px;border-radius:8px;white-space:nowrap}
+.tag{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;background:var(--bg);color:var(--ink-2)}
+.tag.off{background:var(--bad-50);color:var(--bad)}
+.tag.on{background:var(--ok-50);color:var(--ok)}
+.tag.never{background:var(--warn-50);color:var(--warn)}
+.rowacts{display:flex;gap:4px;flex-wrap:wrap}
+.bar{height:8px;background:var(--line);border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--mrn);border-radius:999px}
+/* modal + toast */
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(20,20,30,.3)}
+.modal.on{display:flex}
+.mbox{background:#fff;border-radius:16px;box-shadow:var(--sh-2);width:min(540px,100%);max-height:calc(100vh - 36px);overflow-y:auto}
+.mbox.wide{width:min(900px,100%)}
+.mbox .mh{padding:20px 22px 6px;display:flex;align-items:flex-start;gap:12px}
+.mbox .mh h3{font-size:21px;flex:1}
+.mbox .mb{padding:10px 22px 4px}
+.mbox .mb p{color:var(--ink-2);margin-bottom:12px}
+.mbox .mf{padding:14px 22px 20px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#16161a;color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;font-size:14.5px;box-shadow:var(--sh-2);z-index:120;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.toast.err{background:var(--bad)}
+/* login */
+.login{max-width:420px;margin:9vh auto;padding:0 20px;text-align:center}
+.login img{height:110px;width:auto;margin-bottom:16px}
+.login h1{font-size:30px;margin-bottom:4px}
+.login p{color:var(--ink-3);margin-bottom:22px}
+.login form{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:var(--sh);text-align:left}
+.login .err{color:var(--bad);font-size:14px;margin-top:10px;min-height:1.2em}
+/* ───── editor ───── */
+#editor{position:fixed;inset:0;z-index:60;background:var(--bg);display:none;flex-direction:column}
+#editor.on{display:flex}
+.ed-top{background:#fff;border-bottom:1px solid var(--line);padding:10px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ed-top .nm{flex:1;min-width:200px;font-family:'Oswald',sans-serif;font-size:22px;font-weight:600;border:0;border-bottom:2px solid transparent;background:transparent;padding:4px 2px;outline:none;color:var(--ink)}
+.ed-top .nm:focus{border-bottom-color:var(--mrn)}
+.ed-top .nm::placeholder{color:#b9b9c2;font-weight:500}
+.ed-body{flex:1;min-height:0;display:grid;grid-template-columns:280px minmax(0,1fr) 300px;gap:0}
+.ed-side{background:#fff;border-right:1px solid var(--line);overflow-y:auto;padding:16px}
+.ed-side.r{border-right:0;border-left:1px solid var(--line)}
+.ed-main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.ed-court{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:14px;position:relative}
+.ed-court svg{max-height:100%;max-width:100%;height:auto;width:auto;touch-action:none;border-radius:10px;box-shadow:var(--sh-2);display:block;user-select:none;-webkit-user-select:none}
+.ed-court svg .tk{cursor:grab}
+.ed-court svg .tk.drag{cursor:grabbing}
+.ed-court svg .ctl{cursor:move}
+.ed-hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);background:rgba(22,22,26,.86);color:#fff;padding:7px 14px;border-radius:999px;font-size:13.5px;font-weight:600;pointer-events:none;white-space:nowrap;max-width:calc(100% - 40px);text-overflow:ellipsis;overflow:hidden}
+.ed-tools{display:flex;gap:8px;align-items:center;padding:8px 14px;flex-wrap:wrap;background:#fff;border-bottom:1px solid var(--line)}
+.ed-tools .lbl{margin:0 4px 0 0;display:inline}
+.tool{border:1px solid var(--line-2);background:#fff;border-radius:10px;padding:7px 12px;font-weight:600;font-size:13.5px;cursor:pointer;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
+.tool[aria-pressed="true"]{background:var(--mrn);border-color:var(--mrn);color:#fff}
+.tool:disabled{opacity:.45;cursor:default}
+.tool svg{width:36px;height:14px}
+.ed-strip{background:#fff;border-top:1px solid var(--line);padding:10px 14px;display:flex;gap:10px;align-items:center;overflow-x:auto}
+.fr{flex:none;width:112px;border:2px solid var(--line);border-radius:10px;overflow:hidden;background:#d8c094;cursor:pointer;position:relative;text-align:left;padding:0}
+.fr[aria-current="true"]{border-color:var(--mrn);box-shadow:0 0 0 3px var(--mrn-100)}
+.fr .n{position:absolute;left:0;top:0;background:var(--mrn);color:#fff;font-family:'Oswald',sans-serif;font-size:12px;padding:1px 8px;border-radius:0 0 8px 0}
+.fr.full svg{height:84px!important;width:auto!important;margin:0 auto}
+.fr.full{display:flex;justify-content:center}
+.fr-add{flex:none;width:112px;height:94px;border:2px dashed var(--line-2);border-radius:10px;background:#fff;cursor:pointer;color:var(--ink-2);font-weight:600;font-size:13.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.fr-add:hover{border-color:var(--mrn);color:var(--mrn)}
+.fr-add svg{width:20px;height:20px}
+.toks{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.tokb{border:1px solid var(--line-2);background:#fff;border-radius:10px;padding:6px 0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.tokb svg{width:30px;height:30px}
+.tokb[aria-pressed="true"]{background:var(--mrn-50);border-color:var(--mrn)}
+.tokb.off svg{opacity:.3}
+.lu{display:grid;grid-template-columns:34px 1fr;gap:6px 8px;align-items:center}
+.lu .t{width:30px;height:30px;border-radius:50%;background:var(--mrn);color:#fff;font-family:'Oswald',sans-serif;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px}
+.lu .t.x{background:#fff;color:#1d3b72;border:2px solid #1d3b72}
+.lu select{padding:7px 30px 7px 10px;font-size:14px}
+.sec{font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--ink-2);font-size:13px;font-weight:600;margin:0 0 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:16px;border-top:1px solid var(--line)}
+.sec:first-child{padding-top:0;border-top:0}
+.sel-box{background:var(--gold-50);border:1px solid #efe2bd;border-radius:12px;padding:12px}
+.sel-box h4{font-family:'Oswald',sans-serif;font-size:15px;margin-bottom:8px}
+.mtypes{display:flex;gap:6px;flex-wrap:wrap}
+.pf{display:flex;gap:6px}
+.pf button{flex:1}
+.clipbox{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fafafb}
+.clipbox .nm{font-weight:600;word-break:break-all;font-size:14px}
+.clipbox .sz{font-size:13px;color:var(--ink-3)}
+.prog{height:8px;background:var(--line);border-radius:999px;overflow:hidden;margin-top:8px}
+.prog i{display:block;height:100%;background:var(--mrn);width:0;transition:width .2s}
+.ed-mob{display:none}
+@media (max-width:1100px){ .ed-body{grid-template-columns:240px minmax(0,1fr) 260px} }
+@media (max-width:900px){
+  .ed-body{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;overflow:hidden}
+  .ed-side{display:none}
+  .ed-side.mob-on{display:block;position:fixed;left:0;right:0;bottom:0;top:auto;max-height:70vh;z-index:70;border:0;border-top:1px solid var(--line);border-radius:18px 18px 0 0;box-shadow:var(--sh-2)}
+  .ed-mob{display:flex;gap:8px;padding:8px 14px;background:#fff;border-top:1px solid var(--line)}
+  .ed-mob .btn{flex:1}
+  .ed-court{padding:8px}
+}
+@media (max-width:760px){
+  .top-in{padding:10px 16px}.brand img{height:50px}.brand .t1{font-size:20px}.brand .t2{display:none}
+  .wrap{padding:16px 16px 80px}
+  .grid2,.kpis{grid-template-columns:1fr 1fr}
+  .hero .big{font-size:32px}
+  table{display:block;overflow-x:auto;white-space:nowrap}
+}
+@media (max-width:480px){ .kpis{grid-template-columns:1fr 1fr} .pgrid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 4.5h3.5v15H7zM13.5 4.5H17v15h-3.5z" fill="currentColor"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16v4zM13 7l4 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+  <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M3 3l18 18M10.5 5.3A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6A16 16 0 0 0 2 12s3.5 7 10 7a9.8 9.8 0 0 0 4.2-.9" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M10 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="14" r="4" stroke="currentColor" stroke-width="2" fill="none"/><path d="M11 11l9-9M16 6l2.5 2.5M13 9l2.5 2.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-msg" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4V5z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div class="login" id="loginWrap">
+  <img src="/LM_Logo.png" alt="Lower Merion Aces">
+  <h1>Playbook Admin</h1>
+  <p>Coaches only. Draw plays, hand out player codes, see who's studying.</p>
+  <form id="loginForm">
+    <div class="fld"><label for="pw">Admin passcode</label><input class="inp" id="pw" type="password" autocomplete="current-password" required></div>
+    <button class="btn primary lg" type="submit" style="width:100%">Open</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+</div>
+
+<div id="app" class="hide">
+  <header class="top">
+    <div class="top-in">
+      <a class="brand" href="/"><img src="/LM_Logo.png" alt=""><div><div class="t1">ACES PLAYBOOK</div><div class="t2">Coach's board</div></div></a>
+      <div class="sp"></div>
+      <div class="links">
+        <a class="btn ghost" href="/playbook.html" target="_blank" rel="noopener">Player view</a>
+        <a class="btn ghost" href="/shootathon.html">Shoot-a-Thon</a>
+        <a class="btn ghost" href="/admin.html">Clinic admin</a>
+        <button class="btn ghost" type="button" id="logoutBtn">Log out</button>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="plays">Our plays<span class="cnt" id="cPlays">0</span></button>
+      <button class="tab" role="tab" data-tab="scout">Scouting<span class="cnt" id="cScout">0</span></button>
+      <button class="tab" role="tab" data-tab="players">Players<span class="cnt" id="cPlayers">0</span></button>
+      <button class="tab" role="tab" data-tab="activity">Who's studying</button>
+      <button class="tab" role="tab" data-tab="settings">Settings</button>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="panel" id="p-plays">
+      <div class="hero"><div class="row">
+        <div><div class="k">Team playbook</div><div class="big" id="heroN">0 plays</div><div class="of" id="heroSub"></div></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="chip" id="openChip"><span class="dot"></span><span></span></span><button class="btn gold lg" type="button" id="newPlayBtn">Draw a new play</button></div>
+      </div></div>
+      <div class="filters"><div class="chips" id="playCats"></div><input class="search" id="playQ" type="search" placeholder="Search plays" aria-label="Search plays"></div>
+      <div class="pgrid" id="playGrid"></div>
+      <div id="archivedWrap" class="hide" style="margin-top:28px"><div class="sec">Archived plays</div><div class="pgrid" id="archGrid"></div></div>
+    </section>
+
+    <section class="panel" id="p-scout">
+      <div class="hero" style="background:linear-gradient(135deg,#33333d 0%,#1d1d24 100%)"><div class="row">
+        <div><div class="k" style="color:#c9c9d2">Scouting</div><div class="big" id="scoutN">0 opponent plays</div><div class="of" style="color:#c9c9d2">Draw up what the other team runs. Players study it before the game.</div></div>
+        <button class="btn gold lg" type="button" id="newScoutBtn">Draw an opponent play</button>
+      </div></div>
+      <div class="filters"><div class="chips" id="scoutCats"></div><input class="search" id="scoutQ" type="search" placeholder="Search" aria-label="Search scouting plays"></div>
+      <div class="pgrid" id="scoutGrid"></div>
+      <div id="scoutArchWrap" class="hide" style="margin-top:28px"><div class="sec">Archived</div><div class="pgrid" id="scoutArchGrid"></div></div>
+    </section>
+
+    <section class="panel" id="p-players">
+      <div class="grid2" style="grid-template-columns:minmax(0,2fr) minmax(0,1fr)">
+        <div>
+          <div class="card">
+            <div class="card-head"><div><h2>Players and codes</h2><div class="sub">Each player signs in with their own code. Their name is stamped across every play they open.</div></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="copyCodesBtn">Copy all codes</button><button class="btn primary" type="button" id="addPlayersBtn">Add players</button></div></div>
+            <div style="overflow-x:auto"><table id="playersTable"><thead><tr><th>Player</th><th>Group</th><th>Code</th><th>Access</th><th>Last opened</th><th>Plays viewed</th><th></th></tr></thead><tbody></tbody></table></div>
+            <div class="empty hide" id="playersEmpty"><h3>No players yet</h3><p>Add your roster and each player gets a code.</p></div>
+          </div>
+        </div>
+        <div>
+          <div class="card"><h2>How codes work</h2><div class="sub">Send each player their own code. Text it, don't post it in a group chat.</div>
+            <ol style="padding-left:20px;color:var(--ink-2);display:flex;flex-direction:column;gap:8px;font-size:14.5px">
+              <li>Players go to <b class="mono" id="playerUrl">/playbook.html</b> and enter their code.</li>
+              <li>They stay signed in on that phone for 30 days.</li>
+              <li>Turn a player off and they're locked out instantly. A new code logs them out everywhere.</li>
+              <li>Use groups (Varsity, JV) to show different plays to different teams.</li>
+            </ol>
+          </div>
+          <div class="card"><h2>Share with players</h2><div class="sub">Copy a text to send with their code.</div>
+            <div class="fld"><label>Message</label><textarea class="inp" id="shareMsg" rows="5"></textarea></div>
+            <button class="btn" type="button" id="copyMsgBtn">Copy message</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="p-activity">
+      <div class="kpis" id="actKpis"></div>
+      <div class="grid2">
+        <div class="card"><div class="card-head"><div><h2>By player</h2><div class="sub">Who has opened the playbook, and who hasn't.</div></div></div>
+          <div style="overflow-x:auto"><table id="actPlayers"><thead><tr><th>Player</th><th>Plays opened</th><th>Last 7 days</th><th>Last opened</th></tr></thead><tbody></tbody></table></div></div>
+        <div class="card"><div class="card-head"><div><h2>By play</h2><div class="sub">Which plays are getting studied.</div></div></div>
+          <div style="overflow-x:auto"><table id="actPlays"><thead><tr><th>Play</th><th>Views</th><th>Players</th><th></th></tr></thead><tbody></tbody></table></div></div>
+      </div>
+      <div class="card"><div class="card-head"><div><h2>Recent activity</h2><div class="sub">Every play opened, newest first. One line per player and play every 10 minutes.</div></div>
+        <select class="inp" id="actFilter" style="width:auto;min-width:200px"><option value="">All players</option></select></div>
+        <div style="overflow-x:auto"><table id="actLog"><thead><tr><th>When</th><th>Player</th><th>Play</th><th>Device</th></tr></thead><tbody></tbody></table></div>
+        <div class="empty hide" id="actEmpty"><h3>Nothing yet</h3><p>Views show up here as players open plays.</p></div></div>
+    </section>
+
+    <section class="panel" id="p-settings">
+      <div class="grid2">
+        <div class="card"><h2>Playbook access</h2><div class="sub">Close it between seasons, or any time you want every player locked out at once.</div>
+          <label class="switch"><input type="checkbox" id="openSw"><span class="tr"></span><span class="tx"><b id="openSwT">Open</b><span>Players with a code can sign in and view plays</span></span></label>
+          <div class="status" id="openStatus"></div></div>
+        <div class="card"><h2>What players can and can't do</h2>
+          <ul style="padding-left:20px;color:var(--ink-2);display:flex;flex-direction:column;gap:7px;font-size:14.5px">
+            <li>Their name and the time are stamped across every play, so a photo is traceable to them.</li>
+            <li>The page hides itself the moment they switch apps, and after 10 minutes idle.</li>
+            <li>Printing, saving, copying and right click are turned off.</li>
+            <li>Every play they open is logged under Who's studying.</li>
+            <li>A phone can still photograph a screen. The stamp is what makes that a bad idea.</li>
+          </ul></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- editor -->
+<div id="editor" role="dialog" aria-modal="true" aria-label="Play editor">
+  <div class="ed-top">
+    <button class="iconbtn" type="button" id="edClose" aria-label="Close"><svg><use href="#i-x"/></svg></button>
+    <input class="nm" id="edName" placeholder="Name the play" maxlength="60">
+    <span class="tag" id="edKindTag"></span>
+    <button class="btn" type="button" id="edPreview"><svg><use href="#i-play"/></svg>Preview</button>
+    <button class="btn primary" type="button" id="edSave">Save</button>
+  </div>
+  <div class="ed-body">
+    <aside class="ed-side" id="edLeft">
+      <div class="sec">Play details</div>
+      <div class="fld hide" id="edOppFld"><label for="edOpp">Opponent</label><input class="inp" id="edOpp" list="oppList" placeholder="Radnor" maxlength="60"><datalist id="oppList"></datalist></div>
+      <div class="fld"><label for="edCat">Type</label><select class="inp" id="edCat"></select></div>
+      <div class="fld"><label>Court</label><div class="seg" style="display:flex"><button type="button" data-court="half" style="flex:1">Half</button><button type="button" data-court="full" style="flex:1">Full</button></div></div>
+      <div class="fld"><label for="edNotes">Coaching notes</label><textarea class="inp" id="edNotes" rows="3" placeholder="When we run it, what to look for"></textarea></div>
+      <div class="fld"><label>Who can see it</label><div class="chips" id="edGroups"></div><div class="help">Nobody picked means everyone.</div></div>
+      <label class="switch" style="margin-bottom:14px"><input type="checkbox" id="edVisible"><span class="tr"></span><span class="tx"><b>Show to players</b><span>Off keeps it as a draft only you can see</span></span></label>
+      <div class="sec" id="edLineupH">Who plays where</div>
+      <div class="lu" id="edLineup"></div>
+      <div class="help" style="font-size:13px;color:var(--ink-3);margin-top:8px" id="edLineupHelp">Names show under the numbers. Each player sees a YOU ring on their spot.</div>
+      <div class="sec" style="margin-top:16px">Video of the play</div>
+      <div id="edClip"></div>
+      <input type="file" id="edClipFile" accept="video/mp4,video/quicktime,video/webm,video/x-m4v,.mp4,.mov,.webm,.m4v" class="hide">
+      <div class="fld" style="margin-top:10px"><label for="edLink">Or a link</label><input class="inp" id="edLink" placeholder="YouTube, Hudl, Vimeo or Drive link" maxlength="400"><div class="help">Players watch it under the diagram with their name stamped on it.</div></div>
+    </aside>
+
+    <section class="ed-main">
+      <div class="ed-tools">
+        <span class="lbl">On the court</span><div class="toks" id="edToks" style="display:flex;gap:4px"></div>
+        <span style="flex:1"></span>
+        <select class="inp" id="edSet" style="width:auto;min-width:160px"><option value="">Start from a set…</option></select>
+        <select class="inp" id="edDef" style="width:auto;min-width:150px"><option value="">Add defense…</option></select>
+      </div>
+      <div class="ed-court" id="edCourtWrap">
+        <svg id="edSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="ed-hint" id="edHint"></div>
+      </div>
+      <div class="ed-mob"><button class="btn" type="button" data-mob="edLeft">Details</button><button class="btn" type="button" data-mob="edRight">This step</button></div>
+      <div class="ed-strip" id="edStrip"></div>
+    </section>
+
+    <aside class="ed-side r" id="edRight">
+      <div class="sec"><span id="edStepTitle">Setup</span><span style="display:flex;gap:4px"><button class="iconbtn" type="button" id="edFrLeft" title="Move step earlier"><svg><use href="#i-left"/></svg></button><button class="iconbtn" type="button" id="edFrRight" title="Move step later"><svg><use href="#i-right"/></svg></button><button class="iconbtn" type="button" id="edFrDup" title="Duplicate step"><svg><use href="#i-copy"/></svg></button><button class="iconbtn" type="button" id="edFrDel" title="Delete step"><svg><use href="#i-trash"/></svg></button></span></div>
+      <div class="fld"><label for="edFrNote">What happens</label><textarea class="inp" id="edFrNote" rows="2" placeholder="1 hits 4 at the elbow, 5 sets the flare screen"></textarea></div>
+      <div class="fld"><label for="edBall">Ball</label><select class="inp" id="edBall"></select><div class="help" id="edBallHelp"></div></div>
+      <div class="fld hide" id="edPfFld"><label>Order</label><div class="pf"><button class="btn sm" type="button" data-pf="0">Move, then pass</button><button class="btn sm" type="button" data-pf="1">Pass, then move</button></div></div>
+      <div id="edSel" class="sel-box hide">
+        <h4 id="edSelName"></h4>
+        <div class="mtypes" id="edMoveTypes"></div>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button class="btn sm" type="button" id="edBend">Bend the path</button><button class="btn sm" type="button" id="edStraight">Straighten</button><button class="btn sm" type="button" id="edUndoMove">Put back</button></div>
+        <div class="help" style="font-size:13px;color:var(--ink-2);margin-top:8px" id="edSelHelp"></div>
+      </div>
+      <div class="help" id="edStepHelp" style="font-size:13.5px;color:var(--ink-3);margin-top:12px"></div>
+    </aside>
+  </div>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="mbox" id="mbox"><div class="mh"><h3 id="mTitle"></h3><button class="iconbtn" id="mClose" type="button" aria-label="Close"><svg><use href="#i-x"/></svg></button></div><div class="mb" id="mBody"></div><div class="mf" id="mFoot"></div></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="/playbook-court.js"></script>
+<script>
+(function(){
+var KEY_STORE='dba_admin_key', DEMO=/[?&]demo=1/.test(location.search);
+var CATEGORIES=['Offense','Defense','Baseline out','Sideline out','Press break','Press','Late game','Special'];
+var S={ key:'', data:null, tab:'plays', q:{plays:'',scout:''}, cat:{plays:'All',scout:'All'} };
+function $(id){ return document.getElementById(id); }
+var esc=PBCourt.esc;
+function svg(id){ return '<svg><use href="#'+id+'"/></svg>'; }
+var toastT; function toast(msg,err){ var t=$('toast'); t.textContent=msg; t.className='toast on'+(err?' err':''); clearTimeout(toastT); toastT=setTimeout(function(){ t.className='toast'+(err?' err':''); },3200); }
+function fmtDate(iso,withTime){ if(!iso) return ''; var d=new Date(iso); if(isNaN(d)) return ''; var o={month:'short',day:'numeric'}; if(d.getFullYear()!==new Date().getFullYear()) o.year='numeric'; var s=d.toLocaleDateString('en-US',o); if(withTime) s+=' '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); return s; }
+function ago(iso){ if(!iso) return 'Never'; var m=Math.round((Date.now()-Date.parse(iso))/6e4); if(m<1) return 'Just now'; if(m<60) return m+' min ago'; var h=Math.round(m/60); if(h<24) return h+(h===1?' hour ago':' hours ago'); var d=Math.round(h/24); if(d<14) return d+(d===1?' day ago':' days ago'); return fmtDate(iso); }
+function copy(t){ return (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){ toast('Copied'); },function(){ window.prompt('Copy this:',t); }); }
+var ERRORS={ unauthorized:'Wrong passcode.', missing_name:'Give the play a name.', missing_opponent:'Which opponent is this?', no_frames:'The play needs at least one step.', empty_court:'Put some players on the court first.', not_found:'That one isn\'t there anymore. Reload the page.', save_failed:'Couldn\'t save. Try again.', not_configured:'The playbook isn\'t set up on the server yet.', server_error:'Something went wrong. Try again.' };
+function errText(d){ return (d&&ERRORS[d.error])||'Something went wrong.'; }
+
+function api(action,body){
+  if(DEMO) return demoApi(action,body||{});
+  return fetch('/api/playbook',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':S.key},body:JSON.stringify(Object.assign({action:action},body||{}))})
+    .then(function(r){ if(r.status===401) throw {code:'auth'}; return r.json().catch(function(){ return {error:'server_error'}; }); });
+}
+function reload(){ return api('admin_list').then(function(d){ if(d.error) throw d; S.data=d; render(); }); }
+
+/* ── demo backend ── */
+var demo=null;
+function demoApi(action,b){
+  if(!demo){ demo={ settings:{open:true}, plays:PBCourt.samples().map(function(p){ p=JSON.parse(JSON.stringify(p)); p.visible=true; p.archived=false; p.updated=new Date(Date.now()-864e5*2).toISOString(); var L={}; Object.keys(p.lineup||{}).forEach(function(k){ L[k]=p.lineup[k].id; }); p.lineup=L; return p; }),
+    players:[{id:'demo_me',name:'Demo Player',group:'Varsity',code:'ABC234',active:true,last_seen:new Date().toISOString(),last_login:new Date().toISOString()},{id:'d2',name:'Chris Lee',group:'Varsity',code:'KM7PQ2',active:true,last_seen:new Date(Date.now()-864e5).toISOString()},{id:'d3',name:'Marcus Hall',group:'Varsity',code:'Z4RT8N',active:true},{id:'d4',name:'Jaden Price',group:'JV',code:'P9WX3H',active:false},{id:'d5',name:'Sam Oduya',group:'JV',code:'QD6V2K',active:true,last_seen:new Date(Date.now()-3*864e5).toISOString()}],
+    views:[{player_id:'demo_me',player_name:'Demo Player',play_id:'demo1',play_name:'Horns Flare',at:new Date(Date.now()-3e5).toISOString(),device:'iPhone'},{player_id:'demo_me',player_name:'Demo Player',play_id:'demo5',play_name:'Radnor: Flex',at:new Date(Date.now()-9e5).toISOString(),device:'iPhone'},{player_id:'d2',player_name:'Chris Lee',play_id:'demo1',play_name:'Horns Flare',at:new Date(Date.now()-864e5).toISOString(),device:'Android'},{player_id:'d5',player_name:'Sam Oduya',play_id:'demo2',play_name:'Box Up',at:new Date(Date.now()-3*864e5).toISOString(),device:'iPhone'}] }; }
+  var r={ok:true};
+  if(action==='admin_list') r=JSON.parse(JSON.stringify(demo));
+  else if(action==='save_play'){ if(b.id){ var i=demo.plays.findIndex(function(p){return p.id===b.id;}); demo.plays[i]=Object.assign({},demo.plays[i],b.play,{updated:new Date().toISOString()}); r.id=b.id; } else { var id='demo'+Date.now(); demo.plays.push(Object.assign({id:id,archived:false,updated:new Date().toISOString()},b.play)); r.id=id; } }
+  else if(action==='set_visible'||action==='archive'||action==='restore'){ var p=demo.plays.find(function(x){return x.id===b.id;}); if(action==='set_visible') p.visible=!!b.visible; if(action==='archive'){ p.archived=true; p.visible=false; } if(action==='restore') p.archived=false; }
+  else if(action==='add_players'){ r.added=b.players.map(function(p){ var x={id:'dp'+Math.random().toString(36).slice(2,7),name:p.name,group:p.group||'',code:'DEMO'+Math.floor(Math.random()*90+10),active:true}; demo.players.push(x); return x; }); }
+  else if(action==='update_player'||action==='new_code'||action==='remove_player'){ var pl=demo.players.find(function(x){return x.id===b.id;}); if(action==='new_code'){ pl.code='NEW'+Math.floor(Math.random()*900+100); r.code=pl.code; } else if(action==='remove_player') demo.players=demo.players.filter(function(x){return x.id!==b.id;}); else { ['name','group','active'].forEach(function(k){ if(b[k]!==undefined) pl[k]=b[k]; }); } }
+  else if(action==='set_open') demo.settings.open=!!b.open;
+  return Promise.resolve(r);
+}
+
+/* ── helpers over data ── */
+function players(){ return (S.data&&S.data.players)||[]; }
+function playerById(id){ return players().find(function(p){ return p.id===id; })||null; }
+function plays(kind){ return ((S.data&&S.data.plays)||[]).filter(function(p){ return (p.kind||'ours')===kind; }); }
+function groups(){ var g={}; players().forEach(function(p){ if(p.group) g[p.group]=1; }); ((S.data&&S.data.plays)||[]).forEach(function(p){ (p.groups||[]).forEach(function(x){ g[x]=1; }); }); return Object.keys(g).sort(); }
+function opponents(){ var g={}; plays('scout').forEach(function(p){ if(p.opponent) g[p.opponent]=1; }); return Object.keys(g).sort(); }
+// a play the way the court library wants it (lineup as names)
+function viewPlay(p){ var v=Object.assign({},p,{lineup:{}}); Object.keys(p.lineup||{}).forEach(function(k){ var pl=playerById(p.lineup[k]); if(pl) v.lineup[k]={id:pl.id,name:pl.name}; }); return v; }
+function viewsFor(id){ return ((S.data&&S.data.views)||[]).filter(function(v){ return v.play_id===id; }); }
+
+/* ── tabs ── */
+function go(tab){
+  if(!$('p-'+tab)) tab='plays';
+  S.tab=tab;
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'),function(b){ b.setAttribute('aria-selected',String(b.getAttribute('data-tab')===tab)); });
+  Array.prototype.forEach.call(document.querySelectorAll('.panel'),function(p){ p.classList.toggle('on',p.id==='p-'+tab); });
+  if(location.hash!=='#'+tab) history.replaceState(null,'',location.pathname+location.search+'#'+tab);
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',function(e){ var t=e.target.closest('[data-tab]'); if(t){ e.preventDefault(); go(t.getAttribute('data-tab')); } });
+
+/* ── render ── */
+function render(){
+  var d=S.data, ours=plays('ours').filter(function(p){return !p.archived;}), scout=plays('scout').filter(function(p){return !p.archived;});
+  $('cPlays').textContent=ours.length; $('cScout').textContent=scout.length; $('cPlayers').textContent=players().length;
+  $('heroN').textContent=ours.length+(ours.length===1?' play':' plays');
+  var vis=ours.filter(function(p){return p.visible;}).length;
+  $('heroSub').textContent=vis+' live for players, '+(ours.length-vis)+' in draft. '+players().filter(function(p){return p.active;}).length+' players with access.';
+  $('scoutN').textContent=scout.length+(scout.length===1?' opponent play':' opponent plays');
+  var open=!d.settings||d.settings.open!==false;
+  $('openChip').className='chip '+(open?'open':'closed'); $('openChip').lastElementChild.textContent=open?'Open to players':'Closed';
+  $('openSw').checked=open; $('openSwT').textContent=open?'Open':'Closed';
+  $('playerUrl').textContent=location.origin+'/playbook.html';
+  if(!$('shareMsg').value) $('shareMsg').value='Aces playbook is up. Go to '+location.origin+'/playbook.html and enter your code. It\'s your own code, don\'t share it, and don\'t take pictures of the plays. Your name is on every one.';
+  renderPlays('plays'); renderPlays('scout'); renderPlayers(); renderActivity();
+}
+function renderPlays(kind){
+  var key=kind==='plays'?'plays':'scout', k=kind==='plays'?'ours':'scout';
+  var all=plays(k), live=all.filter(function(p){return !p.archived;}), arch=all.filter(function(p){return p.archived;});
+  var catOf=function(p){ return k==='scout'?(p.opponent||'Opponent'):p.category; };
+  var cats=['All']; live.forEach(function(p){ if(cats.indexOf(catOf(p))<0) cats.push(catOf(p)); });
+  if(cats.indexOf(S.cat[key])<0) S.cat[key]='All';
+  $(key==='plays'?'playCats':'scoutCats').innerHTML=cats.length>2?cats.map(function(c){ return '<button class="fchip" type="button" data-cat="'+esc(c)+'" data-key="'+key+'" aria-pressed="'+(c===S.cat[key])+'">'+esc(c)+'</button>'; }).join(''):'';
+  var q=S.q[key], list=live.filter(function(p){ return (S.cat[key]==='All'||catOf(p)===S.cat[key])&&(!q||(p.name+' '+catOf(p)+' '+p.category+' '+(p.notes||'')).toLowerCase().indexOf(q)>=0); });
+  var grid=$(key==='plays'?'playGrid':'scoutGrid');
+  if(!live.length) grid.innerHTML='<div class="empty" style="grid-column:1/-1"><h3>'+(k==='scout'?'No opponent plays yet':'No plays yet')+'</h3><p>'+(k==='scout'?'Draw up what the next opponent runs and your players can study it.':'Draw your first play. Start from a set, drag players where they go, add steps.')+'</p></div>';
+  else if(!list.length) grid.innerHTML='<div class="empty" style="grid-column:1/-1"><h3>No matches</h3></div>';
+  else grid.innerHTML=list.map(card).join('');
+  var aw=$(key==='plays'?'archivedWrap':'scoutArchWrap'); aw.classList.toggle('hide',!arch.length);
+  $(key==='plays'?'archGrid':'scoutArchGrid').innerHTML=arch.map(card).join('');
+}
+function card(p){
+  var v=viewPlay(p), steps=Math.max(0,(p.frames||[]).length-1), views=viewsFor(p.id), who={}; views.forEach(function(x){ who[x.player_id]=1; });
+  var scout=(p.kind||'ours')==='scout';
+  return '<div class="pc" data-id="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+'" data-edit="'+esc(p.id)+'" title="Edit">'+PBCourt.diagram(v,0,{noNames:true})+
+    '<span class="pill '+(p.archived?'':(p.visible?'live':'hidden'))+'">'+(p.archived?'Archived':(p.visible?'Live':'Draft'))+'</span></div>'+
+    '<div class="meta"><div class="cat">'+esc(scout?(p.opponent+' · '+p.category):p.category)+(p.court==='full'?' · Full court':'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+steps+(steps===1?' step':' steps')+' · '+(p.groups&&p.groups.length?esc(p.groups.join(', ')):'Everyone')+' · '+views.length+(views.length===1?' view':' views')+(Object.keys(who).length?' by '+Object.keys(who).length:'')+'</div></div>'+
+    '<div class="acts">'+(p.archived?'<button class="btn sm" type="button" data-restore="'+esc(p.id)+'">Restore</button>':
+      '<button class="btn sm" type="button" data-edit="'+esc(p.id)+'">'+svg('i-edit')+'Edit</button><button class="btn sm" type="button" data-vis="'+esc(p.id)+'" aria-pressed="'+!!p.visible+'">'+svg(p.visible?'i-eye':'i-eyeoff')+(p.visible?'Live':'Draft')+'</button><button class="btn sm ghost" type="button" data-dup="'+esc(p.id)+'">'+svg('i-copy')+'Copy</button><span class="sp"></span><button class="iconbtn" style="width:32px;height:32px" type="button" data-arch="'+esc(p.id)+'" title="Archive">'+svg('i-trash')+'</button>')+'</div></div>';
+}
+document.addEventListener('click',function(e){
+  var t;
+  if((t=e.target.closest('[data-cat][data-key]'))){ S.cat[t.getAttribute('data-key')]=t.getAttribute('data-cat'); renderPlays(t.getAttribute('data-key')); return; }
+  if((t=e.target.closest('[data-edit]'))){ openEditor(t.getAttribute('data-edit')); return; }
+  if((t=e.target.closest('[data-vis]'))){ var id=t.getAttribute('data-vis'), p=S.data.plays.find(function(x){return x.id===id;}); api('set_visible',{id:id,visible:!p.visible}).then(function(d){ if(d.error) return toast(errText(d),true); toast(p.visible?'Hidden from players':'Live for players'); reload(); }); return; }
+  if((t=e.target.closest('[data-arch]'))){ var id2=t.getAttribute('data-arch'); confirmBox('Archive this play?','Players won\'t see it anymore. You can restore it later.','Archive',function(){ api('archive',{id:id2}).then(function(d){ if(d.error) return toast(errText(d),true); toast('Archived'); reload(); }); }); return; }
+  if((t=e.target.closest('[data-restore]'))){ api('restore',{id:t.getAttribute('data-restore')}).then(function(){ toast('Restored as a draft'); reload(); }); return; }
+  if((t=e.target.closest('[data-dup]'))){ var src=S.data.plays.find(function(x){return x.id===t.getAttribute('data-dup');}); var c=JSON.parse(JSON.stringify(src)); c.name=src.name+' (copy)'; c.visible=false; delete c.id; api('save_play',{play:c}).then(function(d){ if(d.error) return toast(errText(d),true); toast('Copied as a draft'); reload().then(function(){ openEditor(d.id); }); }); return; }
+});
+$('playQ').addEventListener('input',function(){ S.q.plays=this.value.trim().toLowerCase(); renderPlays('plays'); });
+$('scoutQ').addEventListener('input',function(){ S.q.scout=this.value.trim().toLowerCase(); renderPlays('scout'); });
+$('newPlayBtn').addEventListener('click',function(){ openEditor(null,'ours'); });
+$('newScoutBtn').addEventListener('click',function(){ openEditor(null,'scout'); });
+
+/* ── players ── */
+function renderPlayers(){
+  var list=players(), tb=$('playersTable').querySelector('tbody'), views=(S.data.views||[]);
+  $('playersEmpty').classList.toggle('hide',!!list.length); $('playersTable').classList.toggle('hide',!list.length);
+  tb.innerHTML=list.map(function(p){
+    var n=views.filter(function(v){return v.player_id===p.id;}).length;
+    return '<tr data-pid="'+esc(p.id)+'"><td><b>'+esc(p.name)+'</b></td><td>'+(p.group?'<span class="tag">'+esc(p.group)+'</span>':'<span class="muted">None</span>')+'</td>'+
+      '<td><span class="code">'+esc(p.code)+'</span> <button class="iconbtn" style="width:30px;height:30px;vertical-align:middle" type="button" data-copy="'+esc(p.code)+'" title="Copy code">'+svg('i-copy')+'</button></td>'+
+      '<td><span class="tag '+(p.active?'on':'off')+'">'+(p.active?'On':'Off')+'</span></td><td>'+(p.last_seen?ago(p.last_seen):(p.last_login?ago(p.last_login):'<span class="tag never">Never signed in</span>'))+'</td><td>'+n+'</td>'+
+      '<td><div class="rowacts"><button class="btn sm ghost" type="button" data-pedit="'+esc(p.id)+'">Edit</button><button class="btn sm ghost" type="button" data-ptoggle="'+esc(p.id)+'">'+(p.active?'Turn off':'Turn on')+'</button><button class="btn sm ghost" type="button" data-pcode="'+esc(p.id)+'">New code</button><button class="btn sm ghost" type="button" data-ptext="'+esc(p.id)+'">Text it</button></div></td></tr>';
+  }).join('');
+}
+document.addEventListener('click',function(e){
+  var t;
+  if((t=e.target.closest('[data-copy]'))){ copy(t.getAttribute('data-copy')); return; }
+  if((t=e.target.closest('[data-ptoggle]'))){ var p=playerById(t.getAttribute('data-ptoggle')); api('update_player',{id:p.id,active:!p.active}).then(function(d){ if(d.error) return toast(errText(d),true); toast(p.active?p.name+' is locked out':p.name+' can sign in again'); reload(); }); return; }
+  if((t=e.target.closest('[data-pcode]'))){ var p2=playerById(t.getAttribute('data-pcode')); confirmBox('New code for '+p2.name+'?','The old code stops working everywhere, including on their phone. Send them the new one.','New code',function(){ api('new_code',{id:p2.id}).then(function(d){ if(d.error) return toast(errText(d),true); toast('New code: '+d.code); reload(); }); }); return; }
+  if((t=e.target.closest('[data-ptext]'))){ var p3=playerById(t.getAttribute('data-ptext')); var msg=$('shareMsg').value.replace(/your code/i,'your code '+p3.code); location.href='sms:?&body='+encodeURIComponent(msg); return; }
+  if((t=e.target.closest('[data-pedit]'))){ editPlayer(playerById(t.getAttribute('data-pedit'))); return; }
+});
+$('copyCodesBtn').addEventListener('click',function(){ copy(players().map(function(p){ return p.name+(p.group?' ('+p.group+')':'')+': '+p.code; }).join('\n')); });
+$('copyMsgBtn').addEventListener('click',function(){ copy($('shareMsg').value); });
+$('addPlayersBtn').addEventListener('click',function(){
+  modal('Add players','<p>One player per line. Add a comma and a group to sort them, like <b>Israel Ingram, Varsity</b>.</p><div class="fld"><textarea class="inp" id="mNames" rows="8" placeholder="Israel Ingram, Varsity&#10;Chris Lee, Varsity&#10;Sam Oduya, JV"></textarea></div>',
+    [['Cancel','',closeModal],['Add and make codes','primary',function(){
+      var rows=$('mNames').value.split('\n').map(function(l){ var p=l.split(','); return {name:(p[0]||'').trim(),group:(p[1]||'').trim()}; }).filter(function(p){return p.name;});
+      if(!rows.length) return toast('Enter at least one name.',true);
+      api('add_players',{players:rows}).then(function(d){ if(d.error) return toast(errText(d),true); closeModal(); toast(d.added.length+(d.added.length===1?' player added':' players added')); reload(); });
+    }]]);
+  setTimeout(function(){ $('mNames').focus(); },50);
+});
+function editPlayer(p){
+  modal('Edit '+p.name,'<div class="fld"><label>Name</label><input class="inp" id="mPName" value="'+esc(p.name)+'" maxlength="60"></div><div class="fld"><label>Group</label><input class="inp" id="mPGroup" list="mGroups" value="'+esc(p.group||'')+'" maxlength="30" placeholder="Varsity"><datalist id="mGroups">'+groups().map(function(g){return '<option value="'+esc(g)+'">';}).join('')+'</datalist></div>',
+    [['Remove player','danger',function(){ confirmBox('Remove '+p.name+'?','Their code stops working. Their views stay in the log.','Remove',function(){ api('remove_player',{id:p.id}).then(function(d){ if(d.error) return toast(errText(d),true); closeModal(); toast('Removed'); reload(); }); }); }],['Cancel','',closeModal],['Save','primary',function(){
+      api('update_player',{id:p.id,name:$('mPName').value,group:$('mPGroup').value}).then(function(d){ if(d.error) return toast(errText(d),true); closeModal(); toast('Saved'); reload(); });
+    }]]);
+}
+
+/* ── activity ── */
+function renderActivity(){
+  var views=(S.data.views||[]).slice(), list=players(), week=Date.now()-7*864e5;
+  var byP={}, byPlay={};
+  views.forEach(function(v){ byP[v.player_id]=byP[v.player_id]||{n:0,w:0,last:''}; byP[v.player_id].n++; if(Date.parse(v.at)>week) byP[v.player_id].w++; if(v.at>byP[v.player_id].last) byP[v.player_id].last=v.at; byPlay[v.play_id]=byPlay[v.play_id]||{name:v.play_name,n:0,who:{}}; byPlay[v.play_id].n++; byPlay[v.play_id].who[v.player_id]=1; });
+  var opened=list.filter(function(p){return byP[p.id];}).length, never=list.filter(function(p){return !byP[p.id]&&!p.last_login;});
+  var wk=views.filter(function(v){return Date.parse(v.at)>week;}).length;
+  $('actKpis').innerHTML=[['Players who opened it',opened+' of '+list.length,never.length?never.length+' never signed in':'Everyone has signed in'],['Views this week',wk,'play openings in the last 7 days'],['Views all time',views.length,''],['Most studied',(function(){ var b=null; Object.keys(byPlay).forEach(function(k){ if(!b||byPlay[k].n>byPlay[b].n) b=k; }); return b?byPlay[b].name:'None yet'; })(),'']].map(function(k){ return '<div class="kpi"><div class="k">'+k[0]+'</div><div class="v" style="font-size:'+(String(k[1]).length>8?'22px':'32px')+'">'+esc(k[1])+'</div><div class="d">'+esc(k[2])+'</div></div>'; }).join('');
+  $('actPlayers').querySelector('tbody').innerHTML=list.slice().sort(function(a,b){ return ((byP[b.id]||{}).n||0)-((byP[a.id]||{}).n||0); }).map(function(p){ var s=byP[p.id]; return '<tr><td><b>'+esc(p.name)+'</b>'+(p.group?' <span class="tag">'+esc(p.group)+'</span>':'')+'</td><td>'+(s?s.n:0)+'</td><td>'+(s?s.w:0)+'</td><td>'+(s?ago(s.last):(p.last_login?'<span class="muted">Signed in, no plays opened</span>':'<span class="tag never">Never signed in</span>'))+'</td></tr>'; }).join('');
+  $('actPlays').querySelector('tbody').innerHTML=Object.keys(byPlay).sort(function(a,b){return byPlay[b].n-byPlay[a].n;}).map(function(k){ var s=byPlay[k], n=Object.keys(s.who).length; return '<tr><td><b>'+esc(s.name)+'</b></td><td>'+s.n+'</td><td><div style="display:flex;align-items:center;gap:8px"><div class="bar" style="width:80px"><i style="width:'+(list.length?Math.round(n/list.length*100):0)+'%"></i></div>'+n+' of '+list.length+'</div></td><td><button class="btn sm ghost" type="button" data-edit="'+esc(k)+'">Open</button></td></tr>'; }).join('')||'<tr><td colspan="4" class="muted">No plays opened yet.</td></tr>';
+  var sel=$('actFilter'), cur=sel.value; sel.innerHTML='<option value="">All players</option>'+list.map(function(p){ return '<option value="'+esc(p.id)+'">'+esc(p.name)+'</option>'; }).join(''); sel.value=cur;
+  var rows=views.filter(function(v){ return !cur||v.player_id===cur; }).slice(0,300);
+  $('actEmpty').classList.toggle('hide',!!rows.length); $('actLog').classList.toggle('hide',!rows.length);
+  $('actLog').querySelector('tbody').innerHTML=rows.map(function(v){ return '<tr><td>'+fmtDate(v.at,true)+'</td><td><b>'+esc(v.player_name)+'</b></td><td>'+esc(v.play_name)+'</td><td class="muted">'+esc(dev(v.device))+'</td></tr>'; }).join('');
+}
+function dev(ua){ ua=String(ua||''); if(/iPhone/.test(ua)) return 'iPhone'; if(/iPad/.test(ua)) return 'iPad'; if(/Android/.test(ua)) return 'Android'; if(/Mac/.test(ua)) return 'Mac'; if(/Windows/.test(ua)) return 'Windows'; return ua?'Other':''; }
+$('actFilter').addEventListener('change',renderActivity);
+$('openSw').addEventListener('change',function(){ var on=this.checked; api('set_open',{open:on}).then(function(d){ if(d.error){ toast(errText(d),true); return; } toast(on?'Playbook open':'Playbook closed. Every player is locked out.'); reload(); }); });
+
+/* ── modal ── */
+function modal(title,body,buttons,wide){
+  $('mTitle').textContent=title; $('mBody').innerHTML=body; $('mbox').classList.toggle('wide',!!wide);
+  $('mFoot').innerHTML=buttons.map(function(b,i){ return '<button class="btn '+(b[1]||'')+'" type="button" data-mb="'+i+'">'+esc(b[0])+'</button>'; }).join('');
+  Array.prototype.forEach.call($('mFoot').querySelectorAll('[data-mb]'),function(el){ el.addEventListener('click',function(){ buttons[+el.getAttribute('data-mb')][2](); }); });
+  $('modal').classList.add('on');
+}
+function closeModal(){ $('modal').classList.remove('on'); if(previewP){ previewP.pause(); previewP=null; } }
+function confirmBox(title,text,ok,fn){ modal(title,'<p>'+esc(text)+'</p>',[['Cancel','',closeModal],[ok,'primary',function(){ closeModal(); fn(); }]]); }
+$('mClose').addEventListener('click',closeModal);
+$('modal').addEventListener('click',function(e){ if(e.target===$('modal')) closeModal(); });
+
+/* ═══════════ EDITOR ═══════════ */
+var E=null;           // { id, play, at, sel, bending, dirty }
+var edSvg=$('edSvg');
+var TOK=PBCourt.ALL;
+function frameAt(i){ return E.play.frames[i]; }
+function cur(){ return E.play.frames[E.at]; }
+function prev(){ return E.at>0?E.play.frames[E.at-1]:null; }
+function isScout(){ return E.play.kind==='scout'; }
+function blankFrame(){ return {pos:{},moves:{},ball:'',note:'',passFirst:false}; }
+function clonePos(p){ var o={}; Object.keys(p).forEach(function(k){ o[k]=[p[k][0],p[k][1]]; }); return o; }
+
+function openEditor(id,kind){
+  var src=id?S.data.plays.find(function(p){return p.id===id;}):null;
+  var play=src?JSON.parse(JSON.stringify(src)):{ name:'', kind:kind||'ours', opponent:'', category:kind==='scout'?'Offense':'Offense', court:'half', notes:'', groups:[], visible:false, lineup:{}, frames:[blankFrame()] };
+  if(!play.lineup) play.lineup={}; if(!play.groups) play.groups=[];
+  (play.frames||[]).forEach(function(f){ f.moves=f.moves||{}; f.pos=f.pos||{}; });
+  E={ id:src?src.id:null, play:play, at:0, sel:'', bending:false, dirty:false };
+  if(!src){ var set=PBCourt.SETS['Five out']; TOK.slice(0,5).forEach(function(k){ play.frames[0].pos[k]=set[k].slice(); }); play.frames[0].ball='O1'; }
+  $('edName').value=play.name; $('edNotes').value=play.notes||''; $('edVisible').checked=!!play.visible; $('edOpp').value=play.opponent||'';
+  $('edOppFld').classList.toggle('hide',!isScout());
+  $('edKindTag').textContent=isScout()?'Scouting':'Our play';
+  $('edCat').innerHTML=CATEGORIES.map(function(c){ return '<option'+(c===play.category?' selected':'')+'>'+c+'</option>'; }).join('');
+  $('oppList').innerHTML=opponents().map(function(o){ return '<option value="'+esc(o)+'">'; }).join('');
+  $('edLineupH').textContent=isScout()?'Our defenders (optional)':'Who plays where';
+  $('edLineupHelp').textContent=isScout()?'Put your guys on the X\'s so each player knows who he\'s guarding.':'Names show under the numbers. Each player sees a YOU ring on their spot.';
+  renderGroupsChips(); renderLineup(); renderCourtBtns(); renderSets(); renderClip();
+  $('editor').classList.add('on'); document.body.style.overflow='hidden';
+  drawAll();
+  setTimeout(function(){ if(!play.name) $('edName').focus(); },60);
+}
+function closeEditor(){ if(E&&E.dirty&&!window.confirm('You have unsaved changes. Close anyway?')) return; if(E&&E.newClip&&E.dirty) api('drop_clip',{url:E.newClip.url}); $('editor').classList.remove('on'); document.body.style.overflow=''; E=null; }
+$('edClose').addEventListener('click',closeEditor);
+function dirty(){ if(E) E.dirty=true; }
+function renderGroupsChips(){
+  var g=groups();
+  $('edGroups').innerHTML=g.length?g.map(function(x){ return '<button class="fchip" type="button" data-grp="'+esc(x)+'" aria-pressed="'+(E.play.groups.indexOf(x)>=0)+'">'+esc(x)+'</button>'; }).join(''):'<span class="muted" style="font-size:13.5px">Give players a group (Varsity, JV) and you can pick it here.</span>';
+}
+$('edGroups').addEventListener('click',function(e){ var b=e.target.closest('[data-grp]'); if(!b) return; var g=b.getAttribute('data-grp'), i=E.play.groups.indexOf(g); if(i<0) E.play.groups.push(g); else E.play.groups.splice(i,1); dirty(); renderGroupsChips(); });
+function renderLineup(){
+  var toks=isScout()?PBCourt.DEF:PBCourt.OFF, list=players().slice().sort(function(a,b){ return (a.group||'').localeCompare(b.group||'')||a.name.localeCompare(b.name); });
+  $('edLineup').innerHTML=toks.map(function(k){ var x=k.charAt(0)==='X'; return '<span class="t'+(x?' x':'')+'">'+k.charAt(1)+'</span><select class="inp" data-lu="'+k+'"><option value="">Nobody yet</option>'+list.map(function(p){ return '<option value="'+esc(p.id)+'"'+(E.play.lineup[k]===p.id?' selected':'')+'>'+esc(p.name)+(p.group?' ('+esc(p.group)+')':'')+'</option>'; }).join('')+'</select>'; }).join('');
+}
+$('edLineup').addEventListener('change',function(e){ var s=e.target.closest('[data-lu]'); if(!s) return; var k=s.getAttribute('data-lu'); if(s.value) E.play.lineup[k]=s.value; else delete E.play.lineup[k]; dirty(); drawAll(); });
+function renderCourtBtns(){ Array.prototype.forEach.call(document.querySelectorAll('[data-court]'),function(b){ b.setAttribute('aria-pressed',String(b.getAttribute('data-court')===E.play.court)); }); }
+document.addEventListener('click',function(e){ var b=e.target.closest('[data-court]'); if(!b||!E) return; var c=b.getAttribute('data-court'); if(c===E.play.court) return; E.play.court=c; dirty(); renderCourtBtns(); renderSets(); drawAll(); });
+function renderSets(){
+  var sets=E.play.court==='full'?PBCourt.FULL_SETS:PBCourt.SETS;
+  $('edSet').innerHTML='<option value="">Start from a set…</option>'+Object.keys(sets).map(function(k){ return '<option>'+esc(k)+'</option>'; }).join('');
+  $('edDef').innerHTML='<option value="">Add defense…</option>'+Object.keys(PBCourt.DEF_SETS).map(function(k){ return '<option>'+esc(k)+'</option>'; }).join('')+'<option value="__none">Remove defense</option>';
+}
+$('edSet').addEventListener('change',function(){
+  var k=this.value; this.value=''; if(!k) return;
+  var sets=E.play.court==='full'?PBCourt.FULL_SETS:PBCourt.SETS, set=sets[k], f=cur();
+  PBCourt.OFF.forEach(function(t){ if(set[t]) f.pos[t]=set[t].slice(); else delete f.pos[t]; });
+  if(!f.ball||!f.pos[f.ball]) f.ball=Object.keys(set)[0];
+  f.moves={}; dirty(); drawAll();
+});
+$('edDef').addEventListener('change',function(){
+  var k=this.value; this.value=''; if(!k) return;
+  var f=cur();
+  if(k==='__none'){ PBCourt.DEF.forEach(function(t){ delete f.pos[t]; delete f.moves[t]; }); }
+  else { var set=PBCourt.DEF_SETS[k]||PBCourt.manD(f.pos); PBCourt.DEF.forEach(function(t){ if(set[t]) f.pos[t]=set[t].slice(); }); }
+  dirty(); drawAll();
+});
+$('edName').addEventListener('input',function(){ E.play.name=this.value; dirty(); });
+$('edOpp').addEventListener('input',function(){ E.play.opponent=this.value; dirty(); });
+$('edNotes').addEventListener('input',function(){ E.play.notes=this.value; dirty(); });
+$('edCat').addEventListener('change',function(){ E.play.category=this.value; dirty(); });
+$('edVisible').addEventListener('change',function(){ E.play.visible=this.checked; dirty(); });
+$('edFrNote').addEventListener('input',function(){ cur().note=this.value; dirty(); renderStrip(); });
+$('edBall').addEventListener('change',function(){ cur().ball=this.value; dirty(); drawAll(); });
+document.addEventListener('click',function(e){ var b=e.target.closest('[data-pf]'); if(!b||!E) return; cur().passFirst=b.getAttribute('data-pf')==='1'; dirty(); drawAll(); });
+Array.prototype.forEach.call(document.querySelectorAll('[data-mob]'),function(b){ b.addEventListener('click',function(){ var id=b.getAttribute('data-mob'), el=$(id), on=el.classList.contains('mob-on'); $('edLeft').classList.remove('mob-on'); $('edRight').classList.remove('mob-on'); if(!on) el.classList.add('mob-on'); }); });
+$('edCourtWrap').addEventListener('pointerdown',function(){ $('edLeft').classList.remove('mob-on'); $('edRight').classList.remove('mob-on'); });
+
+/* tokens on/off */
+function renderToks(){
+  var f=cur(), scout=isScout();
+  $('edToks').innerHTML=TOK.map(function(k){ var on=!!f.pos[k]; return '<button class="tokb'+(on?'':' off')+'" type="button" data-tok="'+k+'" aria-pressed="'+on+'" title="'+k+'"><svg viewBox="-20 -20 40 40">'+PBCourt.tokenSVG(k,[0,0],{scout:scout})+'</svg></button>'; }).join('');
+}
+$('edToks').addEventListener('click',function(e){
+  var b=e.target.closest('[data-tok]'); if(!b) return; var k=b.getAttribute('data-tok'), f=cur();
+  if(f.pos[k]){ delete f.pos[k]; delete f.moves[k]; if(f.ball===k) f.ball=''; if(E.sel===k) E.sel=''; }
+  else { var p=prev(); f.pos[k]=p&&p.pos[k]?p.pos[k].slice():freeSpot(k); }
+  dirty(); drawAll();
+});
+function freeSpot(k){ var d=PBCourt.dims(E.play.court), y=k.charAt(0)==='X'?d.h*0.45:d.h*0.78, n=+k.charAt(1); return [60+(n-1)*95,y]; }
+
+/* drawing */
+function drawAll(){ drawCourt(); renderStrip(); renderStepPanel(); renderToks(); }
+function drawCourt(){
+  var play=E.play, d=PBCourt.dims(play.court), f=cur(), vo=PBCourt.viewOpts(viewPlay(play));
+  edSvg.setAttribute('viewBox',d.vb);
+  var s=PBCourt.courtSVG(play.court);
+  s+='<g>'+PBCourt.ghostsSVG(play,E.at)+'</g>';
+  s+='<g>'+(E.at>0?PBCourt.arrowsSVG(play,E.at):'')+'</g>';
+  s+='<g>'+PBCourt.tokensSVG(PBCourt.stillState(play,E.at),{selected:E.sel,hit:true,names:vo.names,scout:vo.scout})+'</g>';
+  // bend handle for the selected move
+  if(E.sel&&E.at>0){ var m=PBCourt.action(play,E.at).moves.find(function(x){return x.id===E.sel;}); if(m){ s+='<g class="ctl" data-ctl="'+E.sel+'"><line x1="'+m.a[0]+'" y1="'+m.a[1]+'" x2="'+m.c[0]+'" y2="'+m.c[1]+'" stroke="#c9a44a" stroke-width="1.2" stroke-dasharray="4 4"/><line x1="'+m.b[0]+'" y1="'+m.b[1]+'" x2="'+m.c[0]+'" y2="'+m.c[1]+'" stroke="#c9a44a" stroke-width="1.2" stroke-dasharray="4 4"/><circle cx="'+m.c[0]+'" cy="'+m.c[1]+'" r="14" fill="transparent"/><circle cx="'+m.c[0]+'" cy="'+m.c[1]+'" r="7" fill="#fff" stroke="#c9a44a" stroke-width="3"/></g>'; } }
+  edSvg.innerHTML=s;
+  hint();
+}
+function hint(){
+  var h=$('edHint'), f=cur();
+  if(E.at===0) h.textContent=Object.keys(f.pos).length?'Drag players to their starting spots. Then add a step.':'Pick a set above, or turn players on.';
+  else if(E.sel&&E.bending) h.textContent='Drag the gold handle to bend '+E.sel.charAt(1)+'\'s path.';
+  else if(E.sel) h.textContent='Drag '+E.sel.charAt(1)+' where he goes. Pick cut, dribble or screen on the right.';
+  else h.textContent='Drag anyone who moves on this step. Tap a player to change his line.';
+}
+function renderStrip(){
+  var play=E.play, v=viewPlay(play);
+  $('edStrip').innerHTML=play.frames.map(function(f,i){ return '<button class="fr'+(play.court==='full'?' full':'')+'" type="button" data-fr="'+i+'" aria-current="'+(i===E.at)+'" title="'+esc(f.note||'')+'"><span class="n">'+(i===0?'Setup':'Step '+i)+'</span>'+PBCourt.diagram(v,i,{noNames:true})+'</button>'; }).join('')+
+    '<button class="fr-add" type="button" id="edAddFr">'+svg('i-plus')+'Add step</button>';
+  var el=$('edStrip').querySelector('[aria-current="true"]'); if(el&&el.scrollIntoView) el.scrollIntoView({block:'nearest',inline:'nearest'});
+}
+$('edStrip').addEventListener('click',function(e){
+  var b=e.target.closest('[data-fr]'); if(b){ E.at=+b.getAttribute('data-fr'); E.sel=''; E.bending=false; drawAll(); return; }
+  if(e.target.closest('#edAddFr')){ addFrame(); }
+});
+function addFrame(){
+  var f=cur(), nf={pos:clonePos(f.pos),moves:{},ball:f.ball==='rim'?'':f.ball,note:'',passFirst:false};
+  E.play.frames.splice(E.at+1,0,nf); E.at++; E.sel=''; dirty(); drawAll();
+  if(E.play.frames.length>=30) toast('That\'s the most steps a play can have.');
+}
+$('edFrDup').addEventListener('click',function(){ var f=cur(); E.play.frames.splice(E.at+1,0,JSON.parse(JSON.stringify(f))); E.at++; dirty(); drawAll(); });
+$('edFrDel').addEventListener('click',function(){ if(E.play.frames.length<2) return toast('A play needs at least the setup.',true); E.play.frames.splice(E.at,1); E.at=Math.max(0,E.at-1); E.sel=''; dirty(); drawAll(); });
+$('edFrLeft').addEventListener('click',function(){ if(E.at<2) return; var fr=E.play.frames; var x=fr[E.at]; fr[E.at]=fr[E.at-1]; fr[E.at-1]=x; E.at--; dirty(); drawAll(); });
+$('edFrRight').addEventListener('click',function(){ if(E.at===0||E.at>=E.play.frames.length-1) return; var fr=E.play.frames; var x=fr[E.at]; fr[E.at]=fr[E.at+1]; fr[E.at+1]=x; E.at++; dirty(); drawAll(); });
+function renderStepPanel(){
+  var f=cur(), p=prev(), n=E.play.frames.length, scout=isScout();
+  $('edStepTitle').textContent=E.at===0?'Setup':'Step '+E.at+' of '+(n-1);
+  $('edFrNote').value=f.note||'';
+  $('edFrDel').disabled=n<2; $('edFrLeft').disabled=E.at<2; $('edFrRight').disabled=E.at===0||E.at>=n-1;
+  var on=TOK.filter(function(k){return f.pos[k];});
+  var names=PBCourt.viewOpts(viewPlay(E.play)).names;
+  $('edBall').innerHTML='<option value="">No ball</option>'+on.map(function(k){ return '<option value="'+k+'"'+(f.ball===k?' selected':'')+'>'+(k.charAt(0)==='X'?(scout?'Our ':'')+'X':(scout?'Their ':''))+k.charAt(1)+(names[k]?' ('+esc(PBCourt.shortName(names[k]))+')':'')+'</option>'; }).join('')+(E.at>0?'<option value="rim"'+(f.ball==='rim'?' selected':'')+'>Shot at the rim</option>':'');
+  var act=E.at>0?PBCourt.action(E.play,E.at):null, bh=$('edBallHelp');
+  if(E.at===0) bh.textContent='Who starts with it.';
+  else if(act&&act.ball) bh.textContent=act.ball.kind==='pass'?'Pass from '+act.ball.from.charAt(1)+' to '+act.ball.to.charAt(1)+', drawn as a dashed line.':act.ball.kind==='shot'?'The shot goes up this step.':'Rebound to '+act.ball.to.charAt(1)+'.';
+  else bh.textContent='Change who has it and a pass is drawn.';
+  $('edPfFld').classList.toggle('hide',!(act&&act.ball&&act.moves.length));
+  Array.prototype.forEach.call(document.querySelectorAll('[data-pf]'),function(b){ b.setAttribute('aria-pressed',String((b.getAttribute('data-pf')==='1')===!!f.passFirst)); });
+  // selection
+  var m=act&&E.sel?act.moves.find(function(x){return x.id===E.sel;}):null;
+  $('edSel').classList.toggle('hide',!E.sel||E.at===0);
+  if(E.sel&&E.at>0){
+    $('edSelName').textContent=(E.sel.charAt(0)==='X'?'X':'')+E.sel.charAt(1)+(names[E.sel]?' · '+names[E.sel]:'')+(m?'':' (hasn\'t moved)');
+    var t=(f.moves[E.sel]||{}).t||(f.ball===E.sel&&p&&p.ball===E.sel?'dribble':'cut');
+    $('edMoveTypes').innerHTML=[['cut','Cut','<path d="M2 7H26" stroke="currentColor" stroke-width="2.4"/><path d="M34 7L25 2.5V11.5Z" fill="currentColor"/>'],['dribble','Dribble','<path d="M2 7L6 2L10 12L14 2L18 12L22 2L26 7" stroke="currentColor" stroke-width="2" fill="none"/><path d="M34 7L25 2.5V11.5Z" fill="currentColor"/>'],['screen','Screen','<path d="M2 7H30M30 1V13" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>']].map(function(x){ return '<button class="tool" type="button" data-mt="'+x[0]+'" aria-pressed="'+(t===x[0])+'"'+(m?'':' disabled')+'><svg viewBox="0 0 36 14">'+x[2]+'</svg>'+x[1]+'</button>'; }).join('');
+    $('edBend').disabled=!m; $('edStraight').disabled=!(m&&m.curved); $('edUndoMove').disabled=!m;
+    $('edBend').setAttribute('aria-pressed',String(E.bending));
+    $('edSelHelp').textContent=m?'Drag him again to change where he ends up.':'Drag him on the court to make him move this step.';
+  }
+  $('edStepHelp').textContent=E.at===0?'The setup is where everyone starts. Add a step for the first thing that happens.':'On each step, drag the players who move. Change the ball to draw a pass. Keep steps small: one or two things at a time reads best.';
+}
+$('edMoveTypes').addEventListener('click',function(e){ var b=e.target.closest('[data-mt]'); if(!b||!E.sel) return; var f=cur(); f.moves[E.sel]=Object.assign({},f.moves[E.sel]||{},{t:b.getAttribute('data-mt')}); dirty(); drawAll(); });
+$('edBend').addEventListener('click',function(){ E.bending=!E.bending; var f=cur(), m=PBCourt.action(E.play,E.at).moves.find(function(x){return x.id===E.sel;}); if(E.bending&&m&&!m.curved){ var dx=m.b[0]-m.a[0], dy=m.b[1]-m.a[1], L=Math.hypot(dx,dy)||1; f.moves[E.sel]=Object.assign({},f.moves[E.sel]||{t:'cut'},{c:[Math.round(m.c[0]-dy/L*Math.min(60,L*0.35)),Math.round(m.c[1]+dx/L*Math.min(60,L*0.35))]}); dirty(); } drawAll(); });
+$('edStraight').addEventListener('click',function(){ var f=cur(); if(f.moves[E.sel]) delete f.moves[E.sel].c; E.bending=false; dirty(); drawAll(); });
+$('edUndoMove').addEventListener('click',function(){ var f=cur(), p=prev(); if(p&&p.pos[E.sel]){ f.pos[E.sel]=p.pos[E.sel].slice(); delete f.moves[E.sel]; } E.bending=false; dirty(); drawAll(); });
+
+/* video clip */
+var CLIP_MAX=250*1024*1024;
+function fmtSize(b){ return b>=1e9?(b/1e9).toFixed(1)+' GB':b>=1e6?Math.round(b/1e6)+' MB':Math.round(b/1e3)+' KB'; }
+function renderClip(){
+  var c=E.play.clip, box=$('edClip');
+  $('edLink').value=E.play.clip_link||'';
+  if(c&&c.url) box.innerHTML='<div class="clipbox"><div class="nm">'+esc(c.name||'Clip')+'</div><div class="sz">'+(c.size?fmtSize(c.size)+' · ':'')+'uploaded</div><div style="display:flex;gap:6px;margin-top:10px"><a class="btn sm" href="'+esc(c.url)+'" target="_blank" rel="noopener">Watch</a><button class="btn sm danger" type="button" id="edClipRm">Remove</button></div></div>';
+  else box.innerHTML='<button class="btn" type="button" id="edClipUp" style="width:100%">Upload a clip (MP4 or MOV)</button><div class="help" style="font-size:13px;color:var(--ink-3);margin-top:6px">Up to 250 MB. A 20 to 40 second clip of the play being run is plenty.</div>';
+}
+$('edClip').addEventListener('click',function(e){
+  if(e.target.closest('#edClipUp')){ if(DEMO) return toast('Uploads are turned off in the demo.',true); $('edClipFile').value=''; $('edClipFile').click(); }
+  if(e.target.closest('#edClipRm')){ var c=E.play.clip; confirmBox('Remove the video?','It\'s deleted from storage when you save.','Remove',function(){ E.play.clip=null; E.pendingDrop=c; dirty(); renderClip(); }); }
+});
+$('edLink').addEventListener('change',function(){ var v=this.value.trim(); if(v&&!/^https:\/\/([a-z0-9-]+\.)*(youtube\.com|youtu\.be|hudl\.com|vimeo\.com|drive\.google\.com)\//i.test(v)){ toast('That has to be a YouTube, Hudl, Vimeo or Google Drive link.',true); this.value=E.play.clip_link||''; return; } E.play.clip_link=v; dirty(); });
+$('edClipFile').addEventListener('change',function(){
+  var f=this.files&&this.files[0]; if(!f) return;
+  if(f.size>CLIP_MAX) return toast('That clip is over 250 MB. Trim it down first.',true);
+  if(!/^video\//.test(f.type)) return toast('That doesn\'t look like a video file.',true);
+  var box=$('edClip'); box.innerHTML='<div class="clipbox"><div class="nm">'+esc(f.name)+'</div><div class="sz" id="edClipPct">Uploading… 0%</div><div class="prog"><i id="edClipBar"></i></div></div>';
+  var safe=f.name.replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,100)||'clip.mp4';
+  var pathname='playbook/clips/'+(E.id||'new')+'/'+safe, play=E.play;
+  import('https://esm.sh/@vercel/blob@2.8.2/client').then(function(m){
+    return m.upload(pathname,f,{access:'public',handleUploadUrl:'/api/playbook-upload',headers:{'x-admin-key':S.key},contentType:f.type,multipart:f.size>20*1024*1024,onUploadProgress:function(p){ var pct=Math.round(p.percentage||0); var b=$('edClipBar'), t=$('edClipPct'); if(b) b.style.width=pct+'%'; if(t) t.textContent='Uploading… '+pct+'%'; }});
+  }).then(function(r){
+    if(E&&E.play===play){ if(play.clip&&play.clip.url) E.pendingDrop=play.clip; play.clip={url:r.url,pathname:r.pathname,name:f.name,size:f.size,type:f.type}; play.clip_link=''; E.newClip=play.clip; dirty(); renderClip(); toast('Uploaded. Save the play to keep it.'); }
+    else api('drop_clip',{url:r.url});
+  }).catch(function(e){ toast('Upload failed'+(e&&e.message?': '+String(e.message).slice(0,80):'.'),true); if(E&&E.play===play) renderClip(); });
+});
+
+/* dragging */
+var drag=null;
+function svgPt(e){ var pt=edSvg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; var m=edSvg.getScreenCTM(); if(!m) return [0,0]; var p=pt.matrixTransform(m.inverse()); return [p.x,p.y]; }
+function clampPt(p){ var d=PBCourt.dims(E.play.court), m=d.m; return [Math.round(Math.min(d.w+m,Math.max(-m,p[0]))*10)/10, Math.round(Math.min(d.h+m,Math.max(-m,p[1]))*10)/10]; }
+edSvg.addEventListener('pointerdown',function(e){
+  if(!E) return;
+  var ctl=e.target.closest('[data-ctl]'); var tk=e.target.closest('.tk');
+  if(ctl){ drag={kind:'ctl',id:ctl.getAttribute('data-ctl'),moved:false}; }
+  else if(tk){ var id=tk.getAttribute('data-id'); var f=cur(); if(!f.pos[id]) return; drag={kind:'tok',id:id,start:svgPt(e),orig:f.pos[id].slice(),moved:false}; tk.classList.add('drag'); }
+  else { if(E.sel){ E.sel=''; E.bending=false; drawCourt(); renderStepPanel(); } return; }
+  e.preventDefault(); edSvg.setPointerCapture(e.pointerId);
+});
+edSvg.addEventListener('pointermove',function(e){
+  if(!drag) return; var p=clampPt(svgPt(e)), f=cur();
+  if(drag.kind==='tok'){ if(!drag.moved&&PBCourt.dist(p,drag.start)<2) return; drag.moved=true; f.pos[drag.id]=p; if(E.at>0&&f.moves[drag.id]&&f.moves[drag.id].c) delete f.moves[drag.id].c; }
+  else { drag.moved=true; f.moves[drag.id]=Object.assign({},f.moves[drag.id]||{t:'cut'},{c:p}); }
+  liveDraw();
+});
+function liveDraw(){ drawCourt(); }
+edSvg.addEventListener('pointerup',endDrag); edSvg.addEventListener('pointercancel',endDrag);
+function endDrag(e){
+  if(!drag) return; var d=drag; drag=null;
+  if(d.kind==='tok'){
+    if(!d.moved){ E.sel=E.sel===d.id?'':d.id; E.bending=false; }
+    else { E.sel=d.id; dirty(); var f=cur(), p=prev();
+      // a ball handler who moves is dribbling unless told otherwise
+      if(E.at>0&&p&&p.ball===d.id&&f.ball===d.id&&!f.moves[d.id]) f.moves[d.id]={t:'dribble'};
+    }
+  } else dirty();
+  drawAll();
+}
+
+/* preview + save */
+var previewP=null;
+$('edPreview').addEventListener('click',function(){
+  var v=viewPlay(E.play); if(!v.frames.length||!Object.keys(v.frames[0].pos).length) return toast('Put some players on the court first.',true);
+  modal(E.play.name||'Preview','<div style="background:#d8c094;border-radius:12px;overflow:hidden"><svg id="pvSvg" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;max-height:70vh"></svg></div><div style="display:flex;gap:8px;align-items:center;margin-top:12px"><button class="btn primary" type="button" id="pvPlay">'+svg('i-play')+'Play</button><button class="iconbtn" type="button" id="pvPrev">'+svg('i-prev')+'</button><button class="iconbtn" type="button" id="pvNext">'+svg('i-next')+'</button><span class="muted" id="pvNote" style="flex:1"></span></div>',[['Close','',closeModal]],true);
+  previewP=new PBCourt.Player($('pvSvg'),v,{onChange:function(at,playing){ $('pvPlay').innerHTML=svg(playing?'i-pause':'i-play')+(playing?'Pause':'Play'); var n=v.frames.length; $('pvNote').textContent=(at===0?'Setup':'Step '+at+' of '+(n-1))+(v.frames[at].note?': '+v.frames[at].note:''); }});
+  $('pvPlay').addEventListener('click',function(){ if(previewP.isPlaying()) previewP.pause(); else previewP.playAll(); });
+  $('pvPrev').addEventListener('click',function(){ previewP.pause(); previewP.go(previewP.at-1); });
+  $('pvNext').addEventListener('click',function(){ previewP.pause(); previewP.step(); });
+});
+$('edSave').addEventListener('click',function(){
+  var p=E.play; p.name=$('edName').value.trim();
+  if(!p.name){ toast('Give the play a name.',true); $('edName').focus(); return; }
+  if(isScout()&&!$('edOpp').value.trim()){ toast('Which opponent is this?',true); $('edOpp').focus(); return; }
+  var b=$('edSave'); b.disabled=true; b.textContent='Saving...';
+  api('save_play',{id:E.id,play:p}).then(function(d){
+    b.disabled=false; b.textContent='Save';
+    if(d.error) return toast(errText(d),true);
+    E.id=d.id; E.dirty=false; E.newClip=null; if(E.pendingDrop&&!E.id) api('drop_clip',{url:E.pendingDrop.url}); E.pendingDrop=null; toast(p.visible?'Saved. Players can see it.':'Saved as a draft.'); reload();
+  }).catch(function(){ b.disabled=false; b.textContent='Save'; toast('Couldn\'t save. Try again.',true); });
+});
+document.addEventListener('keydown',function(e){
+  if(!E||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT') return;
+  if(e.key==='Escape'){ if($('modal').classList.contains('on')) closeModal(); else if(E.sel){ E.sel=''; E.bending=false; drawAll(); } else closeEditor(); }
+  if((e.key==='Delete'||e.key==='Backspace')&&E.sel){ var f=cur(); delete f.pos[E.sel]; delete f.moves[E.sel]; if(f.ball===E.sel) f.ball=''; E.sel=''; dirty(); drawAll(); }
+  if(e.key==='ArrowRight'&&E.at<E.play.frames.length-1){ E.at++; E.sel=''; drawAll(); }
+  if(e.key==='ArrowLeft'&&E.at>0){ E.at--; E.sel=''; drawAll(); }
+  if((e.metaKey||e.ctrlKey)&&e.key==='s'){ e.preventDefault(); $('edSave').click(); }
+});
+window.addEventListener('beforeunload',function(e){ if(E&&E.dirty){ e.preventDefault(); e.returnValue=''; } });
+
+/* ── login ── */
+function showApp(){ $('loginWrap').classList.add('hide'); $('app').classList.remove('hide'); go((location.hash||'#plays').slice(1)); }
+$('loginForm').addEventListener('submit',function(e){
+  e.preventDefault(); S.key=$('pw').value.trim(); var err=$('loginErr'); err.textContent='';
+  reload().then(function(){ try{ sessionStorage.setItem(KEY_STORE,S.key); }catch(x){} showApp(); }).catch(function(x){ err.textContent=x&&x.code==='auth'?'Wrong passcode.':errText(x); });
+});
+$('logoutBtn').addEventListener('click',function(){ S.key=''; try{ sessionStorage.removeItem(KEY_STORE); }catch(e){} $('app').classList.add('hide'); $('loginWrap').classList.remove('hide'); $('pw').value=''; });
+window.addEventListener('hashchange',function(){ if(!$('app').classList.contains('hide')) go(location.hash.slice(1)); });
+(function boot(){
+  if(DEMO){ S.key='demo'; reload().then(showApp); return; }
+  var k=''; try{ k=sessionStorage.getItem(KEY_STORE)||''; }catch(e){}
+  if(k){ S.key=k; reload().then(showApp).catch(function(){ S.key=''; }); }
+})();
+})();
+</script>
+</body>
+</html>
