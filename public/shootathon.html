@@ -3,358 +3,1038 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏀%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="/LM_Logo.png">
 <meta name="theme-color" content="#840036">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<title>Shoot-a-Thon Admin — Lower Merion Aces Basketball</title>
+<title>Shoot-a-Thon Admin | Lower Merion Aces Basketball</title>
 <meta name="robots" content="noindex">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Oswald:wght@400;500;600;700;900&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--mrn:#840036;--mrn-h:#9e0040;--pink:#c9a44a;--bg:#0a0005;--bg2:#15090e;--bg3:#1c0e14;--glass:#16090f;--glass-b:rgba(201,164,74,.22);--glass-h:rgba(201,164,74,.5);--txt:#f6eef0;--txt-m:rgba(255,255,255,.72);--dim:rgba(255,255,255,.55);--ok:#4ade80;--r:14px}
-body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;line-height:1.5;min-height:100vh}
-a{color:inherit}
-.topbar{border-bottom:1px solid var(--glass-b);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(10,0,5,.88);backdrop-filter:blur(20px);z-index:50}
-.brand{font-family:'Anton',sans-serif;font-weight:800;letter-spacing:3px;font-size:18px;text-transform:uppercase;display:flex;align-items:center}
-.brand span{color:var(--pink)}
-.topbar .right{display:flex;gap:8px;align-items:center}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:9px;font-family:inherit;font-weight:600;font-size:.82rem;border:1px solid var(--glass-b);background:var(--glass);color:var(--txt);cursor:pointer;transition:all .2s;text-decoration:none}
-.btn:hover{border-color:var(--pink)}
-.btn.primary{background:var(--mrn);border-color:var(--mrn);color:#fff}.btn.primary:hover{background:var(--mrn-h)}
-.btn.sm{padding:5px 10px;font-size:.72rem;border-radius:7px}
-.btn.danger:hover{border-color:#f87171;color:#f87171}
+:root{
+  --mrn:#840036;--mrn-d:#6a002b;--mrn-50:#fbf2f5;--mrn-100:#f5e1e8;--gold:#c9a44a;--gold-d:#9c7a2a;--gold-50:#fbf6e9;
+  --bg:#f4f4f6;--card:#fff;--ink:#16161a;--ink-2:#4a4a55;--ink-3:#7a7a86;--line:#e6e6ea;--line-2:#d6d6dc;
+  --ok:#1f8a4c;--ok-50:#e8f6ee;--warn:#a86a00;--warn-50:#fdf3e1;--bad:#b42318;--bad-50:#fdecea;--info:#3b4fb0;--info-50:#eef0fb;
+  --r:14px;--sh:0 1px 2px rgba(20,20,30,.05),0 1px 1px rgba(20,20,30,.03);--sh-2:0 12px 40px rgba(20,20,30,.16)
+}
+html{scroll-behavior:smooth}
+body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;min-height:100vh;font-size:15px}
+a{color:var(--mrn)}
+button{font-family:inherit}
+h1,h2,h3{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2px}
+.mono{font-family:'IBM Plex Mono',monospace}
+.muted{color:var(--ink-3)}
+/* top bar */
+.top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40}
+.top-in{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);min-width:0}
+.brand img{height:64px;width:auto;flex:none}
+.brand .t1{font-family:'Anton',sans-serif;font-size:24px;letter-spacing:2px;line-height:1;color:var(--mrn)}
+.brand .t2{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--ink-3);margin-top:4px}
+.top .sp{flex:1}
+.top .links{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.tabs{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{appearance:none;border:0;background:none;padding:12px 14px 13px;font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-3);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--mrn);border-bottom-color:var(--mrn)}
+.tab .cnt{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--mrn-100);color:var(--mrn);font-size:11px;line-height:18px;text-align:center;letter-spacing:0}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 15px;border-radius:10px;font-weight:600;font-size:14px;border:1px solid var(--line-2);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;transition:background .15s,border-color .15s,color .15s;white-space:nowrap;line-height:1.2}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--mrn);border-color:var(--mrn);color:#fff}.btn.primary:hover{background:var(--mrn-d)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#241a00}.btn.gold:hover{background:#b99236}
+.btn.ghost{border-color:transparent;background:transparent}.btn.ghost:hover{background:var(--bg)}
+.btn.danger{color:var(--bad);border-color:#f0c8c4}.btn.danger:hover{background:var(--bad-50);border-color:var(--bad)}
+.btn.sm{padding:6px 11px;font-size:13px;border-radius:8px}
+.btn.lg{padding:12px 20px;font-size:15px}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.login-wrap{max-width:380px;margin:12vh auto;padding:0 20px}
-.login-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r);padding:32px}
-.login-card h1{font-family:'Playfair Display',serif;font-weight:700;font-size:1.5rem;margin-bottom:6px}
-.login-card p{color:var(--dim);font-size:.86rem;margin-bottom:20px}
-.inp{width:100%;background:var(--bg);border:1px solid var(--glass-b);border-radius:9px;padding:11px 13px;color:var(--txt);font-family:inherit;font-size:16px;outline:none}
-.inp:focus{border-color:var(--mrn)}
-a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--pink);outline-offset:2px;border-radius:4px}
-.login-err{color:#f87171;font-size:.82rem;margin-top:10px;min-height:1em}
-.dash{max-width:1040px;margin:0 auto;padding:22px 24px 80px;display:none}
-.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
-.tile{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r);padding:16px 18px}
-.tile .n{font-family:'Oswald',sans-serif;font-weight:700;font-size:1.9rem;color:var(--pink);line-height:1}
-.tile .l{font-family:'Oswald',sans-serif;font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-top:6px}
-.sec{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r);padding:20px 22px;margin-bottom:16px}
-.sec h2{font-family:'Playfair Display',serif;font-weight:700;font-size:1.2rem;margin-bottom:3px}
-.sec .hint{color:var(--dim);font-size:.83rem;margin-bottom:16px}
-.fld{margin-bottom:13px}
-.fld label{display:block;font-size:.72rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
-.row2{display:flex;gap:14px;flex-wrap:wrap}.row2>*{flex:1;min-width:150px}
-.chk{display:flex;gap:9px;align-items:center;font-size:.9rem;color:var(--txt-m);cursor:pointer}.chk input{width:18px;height:18px}
-.subh{font-family:'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;color:var(--dim);font-size:.74rem;font-weight:600;margin:18px 0 8px}
+.btn svg{width:16px;height:16px;flex:none}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+/* layout */
+.wrap{max-width:1200px;margin:0 auto;padding:22px 24px 90px}
+.panel{display:none}.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:20px 22px;margin-bottom:16px}
+.card h2{font-size:19px;margin-bottom:2px}
+.card .sub{color:var(--ink-3);font-size:14px;margin-bottom:16px}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.card-head .sub{margin-bottom:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+/* hero */
+.hero{background:linear-gradient(135deg,#840036 0%,#5c0026 100%);color:#fff;border-radius:18px;padding:26px 28px;margin-bottom:16px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;border:34px solid rgba(201,164,74,.16)}
+.hero .row{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;position:relative;z-index:1}
+.hero .k{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#f0d0d8}
+.hero .big{font-family:'Anton',sans-serif;font-size:56px;line-height:1;margin-top:6px;letter-spacing:1px}
+.hero .of{font-size:17px;color:#f6dfe5;margin-top:6px}
+.hero .of b{color:#fff}
+.bar{height:14px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden;margin-top:18px;position:relative;z-index:1}
+.bar i{display:block;height:100%;background:var(--gold);border-radius:999px;min-width:4px}
+.hero .meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;font-weight:600;font-size:13px}
+.chip .dot{width:8px;height:8px;border-radius:50%}
+.chip.open{background:#e8f6ee;color:var(--ok)}.chip.open .dot{background:var(--ok)}
+.chip.closed{background:#fff;color:var(--ink-2)}.chip.closed .dot{background:var(--ink-3)}
+.hero .btn{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35);color:#fff}
+.hero .btn:hover{background:rgba(255,255,255,.22)}
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh)}
+.kpi .n{font-family:'Oswald',sans-serif;font-weight:600;font-size:26px;line-height:1.1;color:var(--ink)}
+.kpi .l{font-size:12px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-top:4px}
+.kpi .s{font-size:12.5px;color:var(--ink-3);margin-top:2px}
+/* chart */
+.chart{position:relative;height:220px}
+.chart svg{width:100%;height:100%;display:block;overflow:visible}
+.chart .tip{position:absolute;pointer-events:none;background:#16161a;color:#fff;font-size:12.5px;padding:7px 10px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-100%);margin-top:-8px;display:none;box-shadow:var(--sh-2)}
+.chart .tip b{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600}
+.empty{padding:34px 16px;text-align:center;color:var(--ink-3)}
+.empty b{display:block;color:var(--ink-2);font-size:15px;margin-bottom:4px}
+/* progress lists */
+.plist{display:flex;flex-direction:column;gap:12px}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:baseline}
+.prow .nm{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow .nm small{font-weight:400;color:var(--ink-3);margin-left:6px}
+.prow .amt{font-family:'Oswald',sans-serif;font-weight:500;font-size:15px;white-space:nowrap}
+.prow .amt span{color:var(--ink-3);font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:400}
+.pbar{grid-column:1/-1;height:8px;background:var(--bg);border-radius:999px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--mrn);border-radius:999px}
+.pbar.gold i{background:var(--gold)}
+/* activity */
+.act{display:flex;flex-direction:column}
+.act-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line);cursor:pointer}
+.act-row:first-child{border-top:0}
+.act-row:hover .who{color:var(--mrn)}
+.av{width:36px;height:36px;border-radius:50%;background:var(--mrn-100);color:var(--mrn);font-family:'Oswald',sans-serif;font-weight:600;display:flex;align-items:center;justify-content:center;flex:none;font-size:14px}
+.act-row .mid{flex:1;min-width:0}
+.act-row .who{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.act-row .what{font-size:13px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.act-row .amt{font-family:'Oswald',sans-serif;font-weight:500;text-align:right}
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.pill:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.paid{background:var(--ok-50);color:var(--ok)}
+.pill.pledged{background:var(--info-50);color:var(--info)}
+.pill.invoiced{background:var(--warn-50);color:var(--warn)}
+.pill.pending{background:#f1f1f4;color:var(--ink-2)}
+.pill.refunded{background:#f1f1f4;color:var(--ink-2)}
+.pill.canceled,.pill.removed,.pill.no_charge{background:#f1f1f4;color:var(--ink-3)}
+.pill.error{background:var(--bad-50);color:var(--bad)}
+.unit{display:block;font-size:12px;color:var(--ink-3);font-family:'Source Sans 3',sans-serif;font-weight:400}
+.tag{display:inline-block;padding:1px 8px;border-radius:6px;background:var(--gold-50);color:var(--gold-d);font-size:12px;font-weight:600;margin-left:6px;vertical-align:1px}
+/* toolbar + table */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.search{position:relative;flex:1;min-width:220px}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--ink-3)}
+.search input{padding-left:38px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.fchip{appearance:none;border:1px solid var(--line-2);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer}
+.fchip:hover{border-color:var(--ink-3)}
+.fchip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.fchip .c{opacity:.7;margin-left:4px;font-weight:500}
+.sumline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px;color:var(--ink-2);margin-bottom:10px}
+.sumline b{color:var(--ink)}
+.tbl{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-family:'Oswald',sans-serif;font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-3);background:#fafafb;text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+th.r,td.r{text-align:right}
+td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr{cursor:pointer;transition:background .12s}
+tbody tr:hover{background:var(--mrn-50)}
+tbody tr:last-child td{border-bottom:0}
+td .who{font-weight:600}
+td .em{font-size:13px;color:var(--ink-3)}
+td .amt{font-family:'Oswald',sans-serif;font-weight:500;font-size:16px}
+td .d2{font-size:13px;color:var(--ink-3)}
+.chev{color:var(--ink-3);width:18px;height:18px}
+/* form */
+.fld{margin-bottom:14px}
+.fld label,.lbl{display:block;font-size:12.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-2);margin-bottom:6px}
+.fld .help{font-size:13px;color:var(--ink-3);margin-top:5px}
+.inp{width:100%;background:#fff;border:1px solid var(--line-2);border-radius:10px;padding:10px 12px;color:var(--ink);font-family:inherit;font-size:15px;outline:none;transition:border-color .15s,box-shadow .15s}
+.inp:focus{border-color:var(--mrn);box-shadow:0 0 0 3px var(--mrn-100)}
+textarea.inp{resize:vertical;min-height:84px}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7a86' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+.row{display:flex;gap:14px;flex-wrap:wrap}.row>*{flex:1;min-width:160px}
+.pre{position:relative}.pre .inp{padding-left:26px}.pre>span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink-3)}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:15px;color:var(--ink-2);cursor:pointer;line-height:1.4}
+.chk input{width:18px;height:18px;margin-top:1px;accent-color:var(--mrn);flex:none}
+.switch{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:#fafafb;cursor:pointer}
+.switch input{position:absolute;opacity:0;width:1px;height:1px}
+.switch .tr{width:44px;height:26px;border-radius:999px;background:var(--line-2);position:relative;flex:none;transition:background .15s}
+.switch .tr:after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:left .15s}
+.switch input:checked+.tr{background:var(--ok)}
+.switch input:checked+.tr:after{left:21px}
+.switch input:focus-visible+.tr{outline:2px solid var(--gold);outline-offset:2px}
+.switch .tx b{display:block}.switch .tx span{font-size:13px;color:var(--ink-3)}
+.subh{font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--ink-2);font-size:13px;font-weight:600;margin:22px 0 10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .erow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-.erow .inp{flex:1}
-.erow .goal{width:120px;flex:none}
-.erow .team{width:150px;flex:none}
-.erow .makes{width:90px;flex:none;text-align:center}
-.erow .x{border:1px solid var(--glass-b);background:var(--glass);border-radius:8px;width:38px;height:42px;cursor:pointer;color:var(--dim);font-size:1.05rem;flex:none}
-.erow .x:hover{border-color:#f87171;color:#f87171}
-.pre{position:relative}.pre .inp{padding-left:24px}.pre span{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:.9rem}
-.statusline{font-size:.82rem;color:var(--dim);margin-top:10px;min-height:1.1em}
-.statusline.ok{color:var(--ok)}.statusline.err{color:#f87171}
-.tbl-wrap{border:1px solid var(--glass-b);border-radius:var(--r);overflow-x:auto;background:var(--glass)}
-table{width:100%;border-collapse:collapse;font-size:.85rem}
-th,td{padding:9px 11px;text-align:left;border-bottom:1px solid var(--glass-b);white-space:nowrap}
-th{font-family:'Oswald',sans-serif;font-weight:500;font-size:.7rem;text-transform:uppercase;letter-spacing:.6px;color:var(--dim);background:var(--bg3)}
-td.wrap{white-space:normal}
-tr:last-child td{border-bottom:none}
-.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.72rem;font-weight:600}
-.pill.pledged{background:rgba(129,140,248,.16);color:#a5b4fc}.pill.invoiced{background:rgba(224,182,74,.16);color:#e0b64a}.pill.paid{background:rgba(74,222,128,.14);color:#4ade80}.pill.pending{background:rgba(248,113,113,.14);color:#f87171}.pill.canceled{background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);text-decoration:line-through}.pill.no_charge{background:rgba(255,255,255,.08);color:rgba(255,255,255,.5)}.pill.error{background:rgba(248,113,113,.14);color:#f87171}.pill.refunded{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
-.empty{padding:24px;text-align:center;color:var(--dim)}
-.linkbox{display:flex;gap:8px;align-items:center;margin-top:8px}
-.linkbox .inp{font-family:'IBM Plex Mono',monospace;font-size:.76rem}
-.demoBanner{display:none;background:rgba(201,164,74,.12);border-bottom:1px solid rgba(201,164,74,.4);color:#c9a44a;text-align:center;padding:9px 16px;font-size:.82rem}
-.inp{color-scheme:dark}
-select.inp option{background:#16090f;color:#f6eef0}
+.erow .inp{flex:1;min-width:0}
+.erow .goal{width:130px;flex:none}
+.erow .team{width:160px;flex:none}
+.erow .makes{width:96px;flex:none;text-align:center;font-family:'Oswald',sans-serif;font-size:17px}
+.erow .x{border:1px solid var(--line-2);background:#fff;border-radius:10px;width:42px;height:42px;cursor:pointer;color:var(--ink-3);flex:none;display:flex;align-items:center;justify-content:center}
+.erow .x:hover{border-color:var(--bad);color:var(--bad)}
+.erow .x svg{width:16px;height:16px}
+.mk-name{flex:1;min-width:0;font-weight:600}
+.mk-name small{display:block;font-weight:400;color:var(--ink-3);font-size:13px}
+.mk-est{width:110px;text-align:right;font-family:'Oswald',sans-serif;color:var(--ink-2);flex:none}
+.status{font-size:14px;color:var(--ink-3);margin-top:10px;min-height:1.2em}
+.status.ok{color:var(--ok)}.status.err{color:var(--bad)}
+.savebar{position:sticky;bottom:0;background:rgba(255,255,255,.96);border-top:1px solid var(--line);margin:18px -22px -20px;padding:14px 22px;border-radius:0 0 var(--r) var(--r);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.linkrow{display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.linkrow:first-child{border-top:0}
+.linkrow .nm{width:180px;flex:none;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.linkrow .u{flex:1;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.step{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh)}
+.step .no{width:30px;height:30px;border-radius:50%;background:var(--mrn);color:#fff;font-family:'Oswald',sans-serif;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.step b{display:block;font-size:16px}.step span{font-size:14px;color:var(--ink-3)}
+/* team cards */
+.teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.tcard{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.tcard .th{padding:16px 18px 14px;border-bottom:1px solid var(--line)}
+.tcard .th h3{font-size:18px;display:flex;justify-content:space-between;gap:10px}
+.tcard .th h3 span{font-family:'Oswald',sans-serif;font-weight:500;color:var(--ink-2);font-size:16px}
+.tcard .th .muted{font-size:13px}
+.tcard .tb{padding:6px 18px 12px}
+.pl{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:2px 12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.pl:first-child{border-top:0}
+.pl .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl .nm small{display:block;font-weight:400;color:var(--ink-3);font-size:12.5px}
+.pl .amt{font-family:'Oswald',sans-serif;font-weight:500;text-align:right;white-space:nowrap}
+.pl .amt small{display:block;font-family:'Source Sans 3',sans-serif;color:var(--ink-3);font-size:12px;font-weight:400}
+.pl .pbar{grid-column:1/3}
+/* drawer + modal */
+.scrim{position:fixed;inset:0;background:rgba(20,20,30,.42);z-index:80;display:none}
+.scrim.on{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:#fff;z-index:90;box-shadow:var(--sh-2);transform:translateX(105%);transition:transform .22s ease;display:flex;flex-direction:column}
+.drawer.on{transform:none}
+.dr-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:12px}
+.dr-head .mid{flex:1;min-width:0}
+.dr-head h3{font-size:22px;line-height:1.2;word-break:break-word}
+.dr-head .muted{font-size:14px}
+.iconbtn{appearance:none;border:1px solid var(--line-2);background:#fff;border-radius:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-2);flex:none}
+.iconbtn:hover{border-color:var(--ink-3)}
+.iconbtn svg{width:18px;height:18px}
+.dr-body{flex:1;overflow-y:auto;padding:18px 22px}
+.dr-amt{font-family:'Anton',sans-serif;font-size:40px;line-height:1;color:var(--ink);margin-bottom:8px}
+.kv{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:16px 0}
+.kv div{display:flex;justify-content:space-between;gap:16px;padding:10px 14px;border-top:1px solid var(--line);font-size:14px}
+.kv div:first-child{border-top:0}
+.kv span{color:var(--ink-3);white-space:nowrap}
+.kv b{font-weight:600;text-align:right;word-break:break-word}
+.msg{background:var(--gold-50);border-left:3px solid var(--gold);padding:10px 14px;border-radius:8px;font-size:14.5px;color:var(--ink-2);margin:12px 0}
+.dr-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.dr-actions .btn{width:100%}
+.dr-actions .full{grid-column:1/-1}
+.note-box{font-size:13.5px;color:var(--ink-3);background:#fafafb;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:12px}
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(20,20,30,.22)}
+.modal.on{display:flex}
+.mbox{background:#fff;border-radius:16px;box-shadow:var(--sh-2);width:min(520px,100%);max-height:calc(100vh - 36px);overflow-y:auto}
+.mbox .mh{padding:20px 22px 6px;display:flex;align-items:flex-start;gap:12px}
+.mbox .mh h3{font-size:21px;flex:1}
+.mbox .mb{padding:10px 22px 4px}
+.mbox .mb p{color:var(--ink-2);margin-bottom:12px}
+.mbox .mf{padding:14px 22px 20px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#16161a;color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;font-size:14.5px;box-shadow:var(--sh-2);z-index:120;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.toast.err{background:var(--bad)}
+/* login */
+.login{max-width:420px;margin:9vh auto;padding:0 20px;text-align:center}
+.login img{height:110px;width:auto;margin-bottom:16px}
+.login h1{font-size:30px;margin-bottom:4px}
+.login p{color:var(--ink-3);margin-bottom:22px}
+.login form{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:var(--sh);text-align:left}
+.login .err{color:var(--bad);font-size:14px;margin-top:10px;min-height:1.2em}
+.demo{display:none;background:var(--gold-50);border-bottom:1px solid #ecd9a6;color:var(--gold-d);text-align:center;padding:9px 16px;font-size:14px;font-weight:600}
+.hide{display:none!important}
+.mobile-only{display:none}
+@media (max-width:1000px){.kpis{grid-template-columns:repeat(3,1fr)}.grid3{grid-template-columns:1fr}}
+@media (max-width:760px){
+  .top-in{padding:10px 16px;flex-wrap:wrap}.brand img{height:50px}.brand .t1{font-size:20px}
+  .top .links .btn.pub span{display:none}
+  .tabs{padding:0 10px}.wrap{padding:16px 16px 90px}
+  .grid2,.steps{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .hero{padding:22px 20px}.hero .big{font-size:44px}
+  .card{padding:18px 16px}.savebar{margin:18px -16px -18px;padding:12px 16px}
+  .desk-only{display:none}.mobile-only{display:block}
+  table thead{display:none}
+  table,tbody,tr,td{display:block;width:100%}
+  tbody tr{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:14px 14px;border-bottom:1px solid var(--line)}
+  tbody tr:last-child{border-bottom:0}
+  td{padding:0;border:0}
+  td.c-sup{grid-column:1}td.c-amt{grid-column:2;grid-row:1;text-align:right}
+  td.c-for{grid-column:1/-1;font-size:14px;color:var(--ink-2)}
+  td.c-st{grid-column:1}td.c-date{grid-column:2;text-align:right}
+  td.c-type,td.c-go{display:none}
+  .erow{flex-wrap:wrap}.erow .inp:first-child{flex-basis:100%}.erow .goal,.erow .team{flex:1;width:auto}
+  .linkrow .nm{width:110px}
+  .dr-actions{grid-template-columns:1fr}
+  .toolbar .search{flex-basis:100%}.toolbar select.inp{flex:1 1 40%!important;min-width:0}
+  .hbtns{width:100%}.hbtns .btn{flex:1}
+}
+@media print{.top,.tabs,.toolbar,.chips,.btn,.savebar,.demo{display:none!important}.panel{display:block!important}body{background:#fff}.card,.kpi{box-shadow:none}}
 </style>
 </head>
 <body>
-<div class="topbar">
-  <div class="brand"><img src="/LM_Logo.png" alt="Lower Merion Aces" style="height:38px;width:auto;margin-right:12px">ACES <span>· Shoot-a-Thon</span></div>
-  <div class="right"><a class="btn sm" href="admin.html">Clinic Admin →</a><button class="btn sm" id="logoutBtn" style="display:none">Log out</button></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" fill="none"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 19h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 5h5v5M19 5l-8 8M10 6H6a1 1 0 00-1 1v11a1 1 0 001 1h11a1 1 0 001-1v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M5 15V6a1 1 0 011-1h9" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+  <symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 11a8 8 0 00-14.3-4.9L4 8m0-4v4h4M4 13a8 8 0 0014.3 4.9L20 16m0 4v-4h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5a1 1 0 01-1-1v-6a1 1 0 011-1h14a1 1 0 011 1v6a1 1 0 01-1 1h-2M7 14h10v6H7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/></symbol>
+</svg>
+
+<div class="demo" id="demoBanner">Demo preview with sample data. Nothing here is live, and saving, sending and refunds are turned off.</div>
+
+<!-- LOGIN -->
+<div class="login" id="loginWrap">
+  <img src="/LM_Logo.png" alt="Lower Merion Aces">
+  <h1>Shoot-a-Thon Admin</h1>
+  <p>Sign in with the admin passcode (the same one as the clinic admin).</p>
+  <form id="loginForm">
+    <label class="lbl" for="pw">Admin passcode</label>
+    <input class="inp" id="pw" type="password" autocomplete="current-password">
+    <button class="btn primary lg" style="width:100%;margin-top:14px" type="submit">Sign in</button>
+    <div class="err" id="loginErr"></div>
+  </form>
 </div>
-<div class="demoBanner" id="demoBanner">👀 <b>Demo preview</b> — sample data, not live. Saving, sending links &amp; syncing are disabled here.</div>
 
-<div class="login-wrap" id="loginWrap">
-  <div class="login-card">
-    <h1>Shoot-a-Thon Admin</h1>
-    <p>Enter the admin passcode (same as the clinic admin).</p>
-    <form id="loginForm">
-      <input class="inp" id="pw" type="password" placeholder="Admin passcode" autocomplete="current-password">
-      <button class="btn primary" style="width:100%;margin-top:12px;justify-content:center" type="submit">Sign in →</button>
-      <div class="login-err" id="loginErr"></div>
-    </form>
-  </div>
-</div>
-
-<div class="dash" id="dash">
-  <div class="tiles" id="tiles"></div>
-
-  <!-- SETUP -->
-  <div class="sec">
-    <h2>Event setup</h2>
-    <p class="hint">Name the event, set the organization goal, build your teams and players, then flip it <b>Open</b>.</p>
-    <div class="row2">
-      <div class="fld"><label>Event title</label><input class="inp" id="evTitle" placeholder="Aces Shoot-a-Thon"></div>
-      <div class="fld" style="max-width:200px"><label>Organization goal ($)</label><div class="pre"><span>$</span><input class="inp" id="evGoal" inputmode="decimal" placeholder="30000"></div></div>
-      <div class="fld" style="max-width:200px"><label>Event date</label><input class="inp" id="evDate" type="date"></div>
+<!-- APP -->
+<div id="app" class="hide">
+  <header class="top">
+    <div class="top-in">
+      <a class="brand" href="#overview" data-go="overview">
+        <img src="/LM_Logo.png" alt="Lower Merion Aces">
+        <div><div class="t1">SHOOT-A-THON</div><div class="t2">Aces Basketball Admin</div></div>
+      </a>
+      <div class="sp"></div>
+      <div class="links">
+        <a class="btn sm pub" href="/donate.html" target="_blank" rel="noopener"><svg><use href="#i-ext"/></svg><span>Public page</span></a>
+        <a class="btn sm" href="admin.html"><span>Clinic admin</span></a>
+        <button class="btn sm ghost" id="logoutBtn" type="button">Log out</button>
+      </div>
     </div>
-    <div class="fld"><label>Short blurb (optional)</label><input class="inp" id="evBlurb" maxlength="500" placeholder="Sponsor an Aces player per made free throw!"></div>
-    <div class="fld"><label>About the event (optional — shown on the main page)</label><textarea class="inp" id="evAbout" rows="4" maxlength="2000" placeholder="During the event every athlete will shoot 100 free throws…"></textarea></div>
-    <div class="fld"><label>Matching-gift banner (optional — leave blank for none)</label><input class="inp" id="evMatch" maxlength="200" placeholder="e.g. All gifts matched up to $5,000 through Friday!"></div>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" data-tab="overview">Overview</button>
+      <button class="tab" role="tab" data-tab="donations">Donations<span class="cnt" id="tabCount">0</span></button>
+      <button class="tab" role="tab" data-tab="teams">Teams &amp; Players</button>
+      <button class="tab" role="tab" data-tab="setup">Event Setup</button>
+      <button class="tab" role="tab" data-tab="after">After the Event</button>
+    </nav>
+  </header>
 
-    <div class="subh">Teams <span style="text-transform:none;letter-spacing:0;font-weight:400">— name + goal</span></div>
-    <div id="teamRows"></div>
-    <button class="btn sm" id="addTeam" type="button">+ Add team</button>
+  <main class="wrap">
+    <!-- OVERVIEW -->
+    <section class="panel" id="p-overview">
+      <div class="hero">
+        <div class="row">
+          <div>
+            <div class="k" id="hTitle">Aces Shoot-a-Thon</div>
+            <div class="big" id="hRaised">$0</div>
+            <div class="of" id="hOf">raised</div>
+          </div>
+          <div class="meta">
+            <span class="chip" id="hOpen"><span class="dot"></span><span></span></span>
+            <button class="btn sm" id="hToggle" type="button">Close donations</button>
+          </div>
+        </div>
+        <div class="bar"><i id="hBar" style="width:0"></i></div>
+      </div>
 
-    <div class="subh">Players <span style="text-transform:none;letter-spacing:0;font-weight:400">— name, team, goal</span></div>
-    <div id="playerRows"></div>
-    <button class="btn sm" id="addPlayer" type="button">+ Add player</button>
-    <details style="margin-top:10px"><summary style="cursor:pointer;font-size:.82rem;color:var(--dim)">+ Bulk add (paste a whole roster)</summary>
-      <div style="margin-top:8px">
-        <textarea class="inp" id="bulkNames" rows="4" placeholder="One name per line:&#10;Israel Ingram&#10;Colin Beck&#10;William Yard"></textarea>
-        <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
-          <span style="font-size:.8rem;color:var(--dim)">Team:</span><select class="inp" id="bulkTeam" style="width:auto;flex:none"></select>
-          <button class="btn sm" id="bulkAdd" type="button">Add all</button>
-          <span style="font-size:.8rem;color:var(--dim)">→ then <b>Save setup</b></span>
+      <div class="kpis" id="kpis"></div>
+
+      <div class="grid3">
+        <div class="card">
+          <div class="card-head">
+            <div><h2>Money raised by day</h2><div class="sub">Paid donations, by the day they were paid</div></div>
+          </div>
+          <div class="chart" id="chart"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div><h2>Quick actions</h2></div></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn gold" type="button" data-act="add"><svg><use href="#i-plus"/></svg>Add a cash or check gift</button>
+            <button class="btn" type="button" data-act="copyMain"><svg><use href="#i-copy"/></svg>Copy the donation page link</button>
+            <button class="btn" type="button" data-act="csv"><svg><use href="#i-dl"/></svg>Download all donations (CSV)</button>
+            <button class="btn" type="button" data-act="sync"><svg><use href="#i-sync"/></svg>Re-check payments with Stripe</button>
+            <button class="btn" type="button" data-act="print"><svg><use href="#i-print"/></svg>Print a report</button>
+          </div>
         </div>
       </div>
-    </details>
 
-    <label class="chk" style="margin:16px 0"><input type="checkbox" id="evOpen"><span><b>Open for donations</b> — the public page accepts donations when this is on</span></label>
-    <div><button class="btn primary" id="saveSetup" type="button">Save setup</button></div>
-    <div class="statusline" id="setupStatus"></div>
-    <div id="publicLinks"></div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-head"><div><h2>Teams</h2><div class="sub">Raised toward each team goal</div></div><button class="btn sm" type="button" data-go="teams">See all</button></div>
+          <div class="plist" id="ovTeams"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div><h2>Top players</h2><div class="sub">Raised toward each player goal</div></div><button class="btn sm" type="button" data-go="teams">See all</button></div>
+          <div class="plist" id="ovPlayers"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><h2>Latest activity</h2><div class="sub">Click any one to see the details</div></div><button class="btn sm" type="button" data-go="donations">All donations</button></div>
+        <div class="act" id="ovRecent"></div>
+      </div>
+    </section>
+
+    <!-- DONATIONS -->
+    <section class="panel" id="p-donations">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Donations &amp; pledges</h2><div class="sub">Click a row to see everything about it, edit it, refund it or send a receipt.</div></div>
+          <div class="hbtns" style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" type="button" data-act="csvFiltered"><svg><use href="#i-dl"/></svg>Download these</button>
+            <button class="btn gold" type="button" data-act="add"><svg><use href="#i-plus"/></svg>Add cash or check</button>
+          </div>
+        </div>
+        <div class="toolbar">
+          <div class="search"><svg><use href="#i-search"/></svg><input class="inp" id="q" type="search" placeholder="Search by name, email, player or message" aria-label="Search donations"></div>
+          <select class="inp" id="fType" style="width:auto;flex:none" aria-label="Type">
+            <option value="">All types</option><option value="flat">One time (card)</option><option value="per_shot">Per free throw</option><option value="offline">Cash, check and other</option>
+          </select>
+          <select class="inp" id="fFor" style="width:auto;flex:none;max-width:220px" aria-label="Supporting"></select>
+          <select class="inp" id="fSort" style="width:auto;flex:none" aria-label="Sort">
+            <option value="new">Newest first</option><option value="old">Oldest first</option><option value="big">Biggest first</option><option value="name">Name A to Z</option>
+          </select>
+        </div>
+        <div class="chips" id="fStatus"></div>
+        <div class="sumline" id="sumline"></div>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Supporter</th><th>Supporting</th><th class="desk-only">Type</th><th class="r">Amount</th><th>Status</th><th>Date</th><th></th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+          <div class="empty hide" id="rowsEmpty"><b>No donations match</b>Try clearing the search or picking a different filter.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAMS -->
+    <section class="panel" id="p-teams">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Teams &amp; players</h2><div class="sub">Who is closest to their goal, and every player's personal donation link.</div></div>
+          <select class="inp" id="tSort" style="width:auto" aria-label="Sort players">
+            <option value="raised">Most raised</option><option value="pct">Closest to goal</option><option value="name">Name A to Z</option>
+          </select>
+        </div>
+      </div>
+      <div class="teams" id="teamCards"></div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-head"><div><h2>Share links</h2><div class="sub">Text or post these. Each player's link opens the page right on them.</div></div><button class="btn sm" type="button" data-act="copyAll"><svg><use href="#i-copy"/></svg>Copy all links</button></div>
+        <div id="linkList"></div>
+      </div>
+    </section>
+
+    <!-- SETUP -->
+    <section class="panel" id="p-setup">
+      <div class="card">
+        <h2>Event setup</h2>
+        <div class="sub">Name the event, set the goals, build your teams and players, then turn donations on.</div>
+
+        <label class="switch" style="margin-bottom:18px"><input type="checkbox" id="evOpen"><span class="tr"></span><span class="tx"><b>Open for donations</b><span>When this is on, the public page takes donations and pledges.</span></span></label>
+
+        <div class="row">
+          <div class="fld"><label for="evTitle">Event title</label><input class="inp" id="evTitle" placeholder="Aces Shoot-a-Thon"></div>
+          <div class="fld" style="max-width:220px"><label for="evGoal">Program goal</label><div class="pre"><span>$</span><input class="inp" id="evGoal" inputmode="decimal" placeholder="30000"></div></div>
+          <div class="fld" style="max-width:220px"><label for="evDate">Event date</label><input class="inp" id="evDate" type="date"></div>
+        </div>
+        <div class="fld"><label for="evBlurb">Short blurb</label><input class="inp" id="evBlurb" maxlength="500" placeholder="Sponsor an Aces player per made free throw!"><div class="help">Optional. One line under the title.</div></div>
+        <div class="fld"><label for="evAbout">About the event</label><textarea class="inp" id="evAbout" rows="4" maxlength="2000" placeholder="During the event every athlete shoots 100 free throws..."></textarea><div class="help">Optional. Shown on the main donation page.</div></div>
+        <div class="fld"><label for="evMatch">Matching gift banner</label><input class="inp" id="evMatch" maxlength="200" placeholder="All gifts matched up to $5,000 through Friday!"><div class="help">Optional. Leave blank for no banner.</div></div>
+
+        <div class="subh">Teams <button class="btn sm" id="addTeam" type="button"><svg><use href="#i-plus"/></svg>Add team</button></div>
+        <div id="teamRows"></div>
+
+        <div class="subh">Players <button class="btn sm" id="addPlayer" type="button"><svg><use href="#i-plus"/></svg>Add player</button></div>
+        <div id="playerRows"></div>
+        <details style="margin-top:10px"><summary style="cursor:pointer;font-weight:600;color:var(--mrn)">Paste a whole roster at once</summary>
+          <div style="margin-top:10px">
+            <textarea class="inp" id="bulkNames" rows="5" placeholder="One name per line:&#10;Israel Ingram&#10;Colin Beck&#10;William Yard"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
+              <span class="muted">Put them on</span><select class="inp" id="bulkTeam" style="width:auto;flex:none"></select>
+              <button class="btn sm" id="bulkAdd" type="button">Add them</button>
+            </div>
+          </div>
+        </details>
+
+        <div class="savebar">
+          <button class="btn primary lg" id="saveSetup" type="button">Save setup</button>
+          <span class="status" id="setupStatus" style="margin:0"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- AFTER -->
+    <section class="panel" id="p-after">
+      <div class="steps">
+        <div class="step"><div class="no">1</div><b>Enter made free throws</b><span>How many each player made at the event.</span></div>
+        <div class="step"><div class="no">2</div><b>Send pay links</b><span>Each per throw pledge gets an email with its total.</span></div>
+        <div class="step"><div class="no">3</div><b>Follow up</b><span>Resend links, or mark ones paid by cash or check.</span></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h2>1. Made free throws</h2><div class="sub">The right column shows what that player's per throw pledges will bill.</div></div></div>
+        <div id="makesRows"></div>
+        <div class="savebar">
+          <button class="btn primary lg" id="saveMakes" type="button">Save made throws</button>
+          <span class="status" id="makesStatus" style="margin:0"></span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h2>2. Collect the pledges</h2><div class="sub">One time donations are already paid. This emails every per throw pledge a secure link for its total. Players with 0 made are skipped.</div></div></div>
+        <div class="kpis" id="collectKpis" style="grid-template-columns:repeat(3,1fr)"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary lg" id="sendLinks" type="button"><svg><use href="#i-mail"/></svg>Send pay links</button>
+          <button class="btn lg" data-act="sync" type="button"><svg><use href="#i-sync"/></svg>Re-check payments</button>
+        </div>
+        <div class="status" id="sendStatus"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h2>3. Still open</h2><div class="sub">Pledges that haven't paid yet. Click one to resend its link or mark it paid.</div></div></div>
+        <div class="act" id="openList"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- drawer -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="drTitle">
+  <div class="dr-head">
+    <div class="mid"><h3 id="drTitle"></h3><div class="muted" id="drSub"></div></div>
+    <button class="iconbtn" id="drClose" type="button" aria-label="Close"><svg><use href="#i-x"/></svg></button>
   </div>
+  <div class="dr-body" id="drBody"></div>
+</aside>
 
-  <!-- MAKES -->
-  <div class="sec">
-    <h2>Enter made free throws</h2>
-    <p class="hint">After the event, enter how many free throws each player made. Then send pay-links below — each per-throw pledge is billed for throws actually made.</p>
-    <div id="makesRows"></div>
-    <div><button class="btn primary" id="saveMakes" type="button">Save made throws</button></div>
-    <div class="statusline" id="makesStatus"></div>
-  </div>
-
-  <!-- COLLECT -->
-  <div class="sec">
-    <h2>Collect the pledges</h2>
-    <p class="hint">One-time donations are already paid. This emails every per-throw <b>pledge</b> a secure link for its total (using the made counts above). Players with 0 made throws are skipped. “Sync payments” double-checks anything that didn’t confirm automatically.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn primary" id="sendLinks" type="button">✉️ Send pay-links</button>
-      <button class="btn" id="syncBtn" type="button">↻ Sync payments</button>
-      <button class="btn sm" id="refreshBtn" type="button">Refresh</button>
-    </div>
-    <div class="statusline" id="sendStatus"></div>
-  </div>
-
-  <!-- PLEDGES -->
-  <div class="sec" style="padding-bottom:10px">
-    <button class="btn sm" id="csvBtn" type="button" style="float:right">⬇ Export CSV</button>
-    <h2>Donations &amp; pledges</h2>
-    <p class="hint" id="pledgeHint"></p>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Supporter</th><th>Supporting</th><th>Type</th><th>Made</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody id="pledgeRows"></tbody>
-      </table>
-      <div class="empty" id="pledgeEmpty" style="display:none">No donations yet.</div>
-    </div>
-    <div class="statusline" id="pledgeStatus"></div>
+<!-- modal -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="mbox">
+    <div class="mh"><h3 id="mTitle"></h3><button class="iconbtn" id="mClose" type="button" aria-label="Close"><svg><use href="#i-x"/></svg></button></div>
+    <div class="mb" id="mBody"></div>
+    <div class="mf" id="mFoot"></div>
   </div>
 </div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 var KEY_STORE='dba_admin_key';
-var state={ key:'', demo:false, cfg:null, teams:[], players:[] };
+var state={ key:'', demo:false, cfg:null, teams:[], players:[], tab:'overview', open:null, filter:{q:'',status:'all',type:'',target:'',sort:'new'} };
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];}); }
 function money(c){ var v=(c||0)/100; return '$'+(v%1===0?v.toLocaleString('en-US'):v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})); }
+function moneyShort(c){ var v=(c||0)/100; if(v>=10000) return '$'+Math.round(v/1000)+'k'; if(v>=1000) return '$'+(v/1000).toFixed(1).replace(/\.0$/,'')+'k'; return '$'+Math.round(v); }
 function toCents(v){ var n=parseFloat(String(v==null?'':v).replace(/[^0-9.]/g,'')); if(!isFinite(n)||n<0) return 0; return Math.round(n*100); }
 function slugify(n){ return String(n||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40); }
+function pct(a,b){ return b>0?Math.min(100,Math.round(a/b*100)):0; }
+function fmtDate(iso,withTime){ if(!iso) return ''; var d=new Date(iso); if(isNaN(d)) return ''; var o={month:'short',day:'numeric'}; if(d.getFullYear()!==new Date().getFullYear()) o.year='numeric'; var s=d.toLocaleDateString('en-US',o); if(withTime) s+=' at '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); return s; }
+function initials(n){ var p=String(n||'?').trim().split(/\s+/); return ((p[0]||'?')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase(); }
+function svg(id){ return '<svg><use href="#'+id+'"/></svg>'; }
+var STATUS={ paid:'Paid', pledged:'Pledged', invoiced:'Pay link sent', pending:'Checkout started', refunded:'Refunded', canceled:'Canceled', removed:'Removed', no_charge:'No charge', error:'Problem' };
+var METHODS=[['cash','Cash'],['check','Check'],['venmo','Venmo'],['zelle','Zelle'],['other','Other']];
+var ERRORS={ bad_amount:'Enter an amount of at least $1.', missing_name:'Enter the donor\'s name.', bad_email:'That email doesn\'t look right.', unknown_player:'That player isn\'t in the event anymore.', unknown_team:'That team isn\'t in the event anymore.', per_shot_needs_player:'A per throw pledge has to be on a player.', paid_by_card:'This was paid by card. Refund it instead of removing it.', payment_in_flight:'A payment is in progress on this one. Cancel it first, or wait.', already_refunded:'This was already refunded.', not_paid:'This hasn\'t been paid.', not_open:'This pledge isn\'t open anymore.', nothing_owed:'Nothing is owed on this pledge yet. Enter made throws first.', no_email:'There\'s no email on this donation.', email_not_configured:'Email isn\'t set up yet.', save_failed:'Couldn\'t save. Try again.', not_refundable:'This can\'t be refunded online.' };
+function errText(d,fallback){ return (d&&d.message)||(d&&ERRORS[d.error])||((fallback||'Something went wrong')+(d&&d.detail?': '+d.detail:'.')); }
 
 function api(action, body){
   return fetch('/api/shootathon',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':state.key},body:JSON.stringify(Object.assign({action:action},body||{}))})
-    .then(function(r){ if(r.status===401) throw {code:'auth'}; if(r.status===503) throw {code:'config'}; return r.json(); });
+    .then(function(r){ if(r.status===401) throw {code:'auth'}; if(r.status===503&&action==='config') throw {code:'config'}; return r.json().catch(function(){ return {error:'server'}; }); });
 }
-function loadConfig(){ return api('config').then(function(d){ state.cfg=d; state.teams=(d.event.teams||[]).map(function(t){return{slug:t.slug,name:t.name,goal_cents:t.goal_cents};}); state.players=(d.event.players||[]).map(function(p){return{slug:p.slug,name:p.name,team:p.team||'',goal_cents:p.goal_cents,makes:p.makes||0};}); render(); }); }
+function loadConfig(){ return api('config').then(function(d){ setCfg(d); render(); }); }
+function setCfg(d){ state.cfg=d; state.teams=(d.event.teams||[]).map(function(t){return{slug:t.slug,name:t.name,goal_cents:t.goal_cents};}); state.players=(d.event.players||[]).map(function(p){return{slug:p.slug,name:p.name,team:p.team||'',goal_cents:p.goal_cents,makes:p.makes||0};}); }
+var toastT; function toast(msg,err){ var t=$('toast'); t.textContent=msg; t.className='toast on'+(err?' err':''); clearTimeout(toastT); toastT=setTimeout(function(){ t.className='toast'+(err?' err':''); },3200); }
+function setStatus(el,msg,cls){ el.textContent=msg||''; el.className='status'+(cls?' '+cls:''); }
+function blockDemo(){ if(state.demo){ toast('Turned off in the demo preview.',true); return true; } return false; }
 
-$('loginForm').addEventListener('submit',function(e){
-  e.preventDefault(); state.key=$('pw').value.trim(); var err=$('loginErr'); err.textContent='';
-  if(!state.key){ err.textContent='Enter the passcode.'; return; }
-  loadConfig().then(function(){ try{sessionStorage.setItem(KEY_STORE,state.key);}catch(e){} $('loginWrap').style.display='none'; $('dash').style.display='block'; $('logoutBtn').style.display='inline-flex'; })
-  .catch(function(e){ err.textContent=(e&&e.code==='config')?"Not configured yet (ADMIN_PASSWORD / database not set).":'Wrong passcode — try again.'; state.key=''; });
+/* ── derived numbers ── */
+function live(p){ return p.status!=='canceled'&&p.status!=='removed'&&p.status!=='refunded'; }
+function net(p){ return p.status==='paid'?Math.max(0,(p.computed_cents||0)-(p.fee_cents||0)):0; }
+function open(p){ return p.status==='pledged'||p.status==='invoiced'; }
+function derive(){
+  var c=state.cfg||{}, ev=c.event||{}, rows=c.pledges||[];
+  var byP={}, byT={};
+  (ev.players||[]).forEach(function(p){ byP[p.slug]={raised:0,owed:0,donors:0,perThrow:0}; });
+  (ev.teams||[]).forEach(function(t){ byT[t.slug]={raised:0,owed:0,donors:0}; });
+  var D={raised:0,donors:0,paidCount:0,owed:0,openCount:0,refunded:0,offline:0,perThrowRate:0,biggest:0,emails:{}};
+  rows.forEach(function(p){
+    if(!live(p)){ if(p.status==='refunded') D.refunded+=p.amount_refunded_cents||p.computed_cents||0; return; }
+    var n=net(p), owe=open(p)?(p.computed_cents||0):0;
+    D.raised+=n; D.owed+=owe; if(p.status==='paid'){ D.paidCount++; if(n>D.biggest) D.biggest=n; }
+    if(open(p)) D.openCount++;
+    if(p.offline&&p.status==='paid') D.offline+=n;
+    if(p.kind==='per_shot'&&p.status!=='no_charge') D.perThrowRate+=p.per_shot_cents||0;
+    D.emails[(p.donor_email||p.donor_name||p.id).toLowerCase()]=1;
+    var pl=p.target_type==='player'?byP[p.target_slug]:null;
+    var tm=p.target_type==='team'?byT[p.target_slug]:(pl?byT[(findPlayer(p.target_slug)||{}).team]:null);
+    if(pl){ pl.raised+=n; pl.owed+=owe; pl.donors++; if(p.kind==='per_shot') pl.perThrow+=p.per_shot_cents||0; }
+    if(tm){ tm.raised+=n; tm.owed+=owe; tm.donors++; }
+  });
+  D.donors=Object.keys(D.emails).length; D.avg=D.paidCount?Math.round(D.raised/D.paidCount):0; D.byP=byP; D.byT=byT;
+  return D;
+}
+function findPlayer(slug){ return ((state.cfg&&state.cfg.event.players)||[]).find(function(p){return p.slug===slug;})||null; }
+function findTeam(slug){ return ((state.cfg&&state.cfg.event.teams)||[]).find(function(t){return t.slug===slug;})||null; }
+function forName(p,cap){ var n=p.target_type==='org'||!p.target_name?'the whole program':p.target_name; return cap&&n==='the whole program'?'Whole program':n; }
+
+/* ── tabs ── */
+function go(tab){
+  if(!$('p-'+tab)) tab='overview';
+  state.tab=tab;
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'),function(b){ b.setAttribute('aria-selected',String(b.getAttribute('data-tab')===tab)); });
+  Array.prototype.forEach.call(document.querySelectorAll('.panel'),function(p){ p.classList.toggle('on',p.id==='p-'+tab); });
+  if(location.hash!=='#'+tab) history.replaceState(null,'','#'+tab+location.search.replace(/^[^?]*/,''));
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-tab],[data-go]'); if(t){ e.preventDefault(); go(t.getAttribute('data-tab')||t.getAttribute('data-go')); return; }
+  var a=e.target.closest('[data-act]'); if(a){ e.preventDefault(); quick(a.getAttribute('data-act'),a); return; }
+  var o=e.target.closest('[data-open]'); if(o){ openDrawer(o.getAttribute('data-open')); }
 });
-$('logoutBtn').addEventListener('click',function(){ state.key=''; try{sessionStorage.removeItem(KEY_STORE);}catch(e){} $('dash').style.display='none'; $('logoutBtn').style.display='none'; $('loginWrap').style.display='block'; $('pw').value=''; });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ if($('modal').classList.contains('on')) closeModal(); else closeDrawer(); } });
 
-/* ── editors ── */
-function teamOptions(sel){ var o='<option value="">— no team —</option>'; state.teams.forEach(function(t){ var s=t.slug||slugify(t.name); o+='<option value="'+esc(s)+'"'+(sel===s?' selected':'')+'>'+esc(t.name||'(unnamed)')+'</option>'; }); return o; }
+/* ── render ── */
+function render(){
+  var c=state.cfg||{}, ev=c.event||{}, D=derive();
+  $('tabCount').textContent=(c.pledges||[]).filter(function(p){ return p.status!=='removed'; }).length;
+  renderOverview(ev,D); renderDonations(); renderTeamsTab(ev,D); renderSetup(ev); renderAfter(ev,D);
+  if(state.open) openDrawer(state.open,true);
+}
+function renderOverview(ev,D){
+  var goal=ev.org_goal_cents||0;
+  $('hTitle').textContent=ev.title||'Aces Shoot-a-Thon';
+  $('hRaised').textContent=money(D.raised);
+  $('hOf').innerHTML=goal?('raised of the <b>'+money(goal)+'</b> goal &middot; <b>'+pct(D.raised,goal)+'%</b>'):'raised';
+  $('hBar').style.width=pct(D.raised,goal)+'%';
+  var oc=$('hOpen'); oc.className='chip '+(ev.open?'open':'closed'); oc.lastChild.textContent=ev.open?'Taking donations':'Donations closed';
+  $('hToggle').textContent=ev.open?'Close donations':'Open donations';
+  var k=[
+    [money(D.raised),'Raised',D.paidCount+' paid gift'+(D.paidCount===1?'':'s')],
+    [String(D.donors),'Supporters','people giving or pledging'],
+    [money(D.avg),'Average gift','biggest '+money(D.biggest)],
+    [money(D.owed),'Still to collect',D.openCount+' open pledge'+(D.openCount===1?'':'s')],
+    [money(D.offline),'Cash and check','recorded by hand'],
+    [money(D.refunded),'Refunded','taken off the totals']
+  ];
+  $('kpis').innerHTML=k.map(function(x){ return '<div class="kpi"><div class="n">'+x[0]+'</div><div class="l">'+x[1]+'</div><div class="s">'+esc(x[2])+'</div></div>'; }).join('');
+  drawChart();
+  var teams=(ev.teams||[]).map(function(t){ return {name:t.name,goal:t.goal_cents||0,raised:(D.byT[t.slug]||{}).raised||0,n:((ev.players||[]).filter(function(p){return p.team===t.slug;})).length}; });
+  $('ovTeams').innerHTML=teams.length?teams.map(function(t){ return progRow(t.name,t.n+' players',t.raised,t.goal,'gold'); }).join(''):'<div class="empty"><b>No teams yet</b>Add them in Event Setup.</div>';
+  var pls=(ev.players||[]).map(function(p){ return {name:p.name,team:(findTeam(p.team)||{}).name||'',goal:p.goal_cents||0,raised:(D.byP[p.slug]||{}).raised||0}; }).sort(function(a,b){ return b.raised-a.raised||a.name.localeCompare(b.name); }).slice(0,6);
+  $('ovPlayers').innerHTML=pls.length?pls.map(function(p){ return progRow(p.name,p.team,p.raised,p.goal); }).join(''):'<div class="empty"><b>No players yet</b>Add them in Event Setup.</div>';
+  var recent=((state.cfg&&state.cfg.pledges)||[]).filter(function(p){return p.status!=='removed';}).slice(0,8);
+  $('ovRecent').innerHTML=recent.length?recent.map(actRow).join(''):'<div class="empty"><b>No donations yet</b>They show up here the moment they come in.</div>';
+}
+function progRow(name,sub,raised,goal,cls){
+  return '<div class="prow"><div class="nm">'+esc(name)+(sub?'<small>'+esc(sub)+'</small>':'')+'</div><div class="amt">'+money(raised)+(goal?' <span>of '+money(goal)+'</span>':'')+'</div><div class="pbar'+(cls?' '+cls:'')+'"><i style="width:'+pct(raised,goal)+'%"></i></div></div>';
+}
+function actRow(p){
+  var what=(p.kind==='per_shot'?'Pledged ':(p.offline?'Gave by '+(p.paid_via||'cash').toLowerCase()+' to ':'Gave to '))+forName(p);
+  return '<div class="act-row" data-open="'+esc(p.id)+'" role="button" tabindex="0"><div class="av">'+esc(initials(p.donor_name))+'</div><div class="mid"><div class="who">'+esc(p.donor_name||'Anonymous')+(p.anonymous?' <span class="tag">Anonymous</span>':'')+'</div><div class="what">'+esc(what)+' &middot; '+esc(fmtDate(p.paid_at||p.created))+'</div></div><div class="amt">'+(p.kind==='per_shot'&&!p.computed_cents?esc(money(p.per_shot_cents))+'<span class="unit">per throw</span>':money(p.computed_cents))+'</div><span class="pill '+p.status+'">'+STATUS[p.status]+'</span></div>';
+}
+
+/* chart: one series, paid money by day */
+function drawChart(){
+  var el=$('chart'), rows=((state.cfg&&state.cfg.pledges)||[]).filter(function(p){ return p.status==='paid'&&(p.paid_at||p.created); });
+  if(!rows.length){ el.innerHTML='<div class="empty" style="padding-top:70px"><b>No paid donations yet</b>The chart fills in as money comes in.</div>'; return; }
+  var day=function(iso){ var d=new Date(iso); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); };
+  var sums={}; rows.forEach(function(p){ var k=day(p.paid_at||p.created); sums[k]=sums[k]||{c:0,n:0}; sums[k].c+=net(p); sums[k].n++; });
+  var keys=Object.keys(sums).sort(), start=new Date(keys[0]+'T12:00:00'), end=new Date(); end.setHours(12,0,0,0);
+  if((end-start)/864e5>59) start=new Date(end-59*864e5);
+  if((end-start)/864e5<13) start=new Date(end-13*864e5);
+  var days=[]; for(var d=new Date(start); d<=end; d=new Date(+d+864e5)){ var k=day(d); days.push({k:k,d:new Date(d),c:(sums[k]||{}).c||0,n:(sums[k]||{}).n||0}); }
+  var W=el.clientWidth||640, H=220, L=48, R=8, T=10, B=26, iw=W-L-R, ih=H-T-B;
+  var max=Math.max.apply(null,days.map(function(x){return x.c;}))||1, step=niceStep(max), top=Math.ceil(max/step)*step||step;
+  var bw=iw/days.length, gap=Math.min(6,Math.max(2,bw*.25)), w=Math.max(2,bw-gap);
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Money raised by day">';
+  for(var v=0; v<=top; v+=step){ var y=T+ih-(v/top)*ih; s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'" stroke="#ececf0" stroke-width="1"/><text x="'+(L-8)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="#7a7a86">'+moneyShort(v)+'</text>'; }
+  var every=Math.ceil(days.length/7);
+  days.forEach(function(x,i){
+    var h=(x.c/top)*ih, xx=L+i*bw+gap/2, y=T+ih-h;
+    if(x.c>0){ var r=Math.min(4,w/2,h); s+='<path d="M'+xx+','+(T+ih)+'V'+(y+r)+'Q'+xx+','+y+' '+(xx+r)+','+y+'H'+(xx+w-r)+'Q'+(xx+w)+','+y+' '+(xx+w)+','+(y+r)+'V'+(T+ih)+'Z" fill="#840036"/>'; }
+    s+='<rect class="hit" data-i="'+i+'" x="'+(L+i*bw)+'" y="'+T+'" width="'+bw+'" height="'+ih+'" fill="transparent"/>';
+    if(i%every===0) s+='<text x="'+(xx+w/2)+'" y="'+(H-6)+'" text-anchor="middle" font-size="11" fill="#7a7a86">'+x.d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</text>';
+  });
+  s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+(T+ih)+'" y2="'+(T+ih)+'" stroke="#d6d6dc"/></svg><div class="tip" id="tip"></div>';
+  el.innerHTML=s;
+  var tip=$('tip');
+  Array.prototype.forEach.call(el.querySelectorAll('.hit'),function(r){
+    r.addEventListener('mouseenter',function(){ var x=days[+r.getAttribute('data-i')]; tip.innerHTML='<b>'+money(x.c)+'</b><br>'+x.d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+' &middot; '+x.n+' gift'+(x.n===1?'':'s'); var bb=r.getBoundingClientRect(), cb=el.getBoundingClientRect(); tip.style.left=(bb.left-cb.left+bb.width/2)+'px'; tip.style.top=(T+ih-(x.c/top)*ih)+'px'; tip.style.display='block'; r.setAttribute('fill','rgba(132,0,54,.06)'); });
+    r.addEventListener('mouseleave',function(){ tip.style.display='none'; r.setAttribute('fill','transparent'); });
+  });
+}
+function niceStep(max){ var raw=max/4, mag=Math.pow(10,Math.floor(Math.log10(raw))), n=raw/mag; return (n<=1?1:n<=2?2:n<=5?5:10)*mag; }
+var rzT; window.addEventListener('resize',function(){ clearTimeout(rzT); rzT=setTimeout(function(){ if(state.cfg) drawChart(); },150); });
+
+/* donations list */
+function targetOptions(sel,onlyPlayers,withAll){
+  var ev=(state.cfg&&state.cfg.event)||{}, o=withAll?'<option value="">Everyone they support</option>':'';
+  if(!onlyPlayers) o+='<option value="org:"'+(sel==='org:'?' selected':'')+'>The whole program</option>';
+  if(!onlyPlayers&&(ev.teams||[]).length){ o+='<optgroup label="Teams">'+(ev.teams||[]).map(function(t){ var v='team:'+t.slug; return '<option value="'+esc(v)+'"'+(sel===v?' selected':'')+'>'+esc(t.name)+'</option>'; }).join('')+'</optgroup>'; }
+  if((ev.players||[]).length){ o+='<optgroup label="Players">'+(ev.players||[]).map(function(p){ var v='player:'+p.slug; return '<option value="'+esc(v)+'"'+(sel===v?' selected':'')+'>'+esc(p.name)+'</option>'; }).join('')+'</optgroup>'; }
+  return o;
+}
+function filtered(){
+  var f=state.filter, q=f.q.trim().toLowerCase(), rows=((state.cfg&&state.cfg.pledges)||[]).slice();
+  rows=rows.filter(function(p){
+    if(f.status==='all'){ if(p.status==='removed') return false; }
+    else if(f.status==='open'){ if(!open(p)) return false; }
+    else if(p.status!==f.status) return false;
+    if(f.type==='offline'&&!p.offline) return false;
+    if(f.type==='flat'&&(p.kind!=='flat'||p.offline)) return false;
+    if(f.type==='per_shot'&&p.kind!=='per_shot') return false;
+    if(f.target){ var parts=f.target.split(':'); if(parts[0]==='team'){ var pl=p.target_type==='player'?findPlayer(p.target_slug):null; if(!((p.target_type==='team'&&p.target_slug===parts[1])||(pl&&pl.team===parts[1]))) return false; } else if(p.target_type!==parts[0]||(p.target_slug||'')!==parts[1]) return false; }
+    if(q){ var hay=[p.donor_name,p.donor_email,p.target_name,p.message,p.note,p.check_no,p.id].join(' ').toLowerCase(); if(hay.indexOf(q)<0) return false; }
+    return true;
+  });
+  var t=function(p){ return String(p.paid_at||p.created||''); };
+  rows.sort(function(a,b){ if(f.sort==='old') return t(a).localeCompare(t(b)); if(f.sort==='big') return (b.computed_cents||0)-(a.computed_cents||0); if(f.sort==='name') return String(a.donor_name||'').localeCompare(String(b.donor_name||'')); return t(b).localeCompare(t(a)); });
+  return rows;
+}
+function renderDonations(){
+  var all=(state.cfg&&state.cfg.pledges)||[], f=state.filter;
+  var cnt=function(fn){ return all.filter(fn).length; };
+  var chips=[['all','All',cnt(function(p){return p.status!=='removed';})],['paid','Paid',cnt(function(p){return p.status==='paid';})],['open','Not paid yet',cnt(open)],['pending','Checkout started',cnt(function(p){return p.status==='pending';})],['refunded','Refunded',cnt(function(p){return p.status==='refunded';})],['canceled','Canceled',cnt(function(p){return p.status==='canceled';})],['removed','Removed',cnt(function(p){return p.status==='removed';})]];
+  $('fStatus').innerHTML=chips.filter(function(c){ return c[0]==='all'||c[0]==='paid'||c[0]==='open'||c[2]>0||f.status===c[0]; }).map(function(c){ return '<button class="fchip" type="button" data-st="'+c[0]+'" aria-pressed="'+(f.status===c[0])+'">'+c[1]+'<span class="c">'+c[2]+'</span></button>'; }).join('');
+  Array.prototype.forEach.call($('fStatus').querySelectorAll('.fchip'),function(b){ b.addEventListener('click',function(){ state.filter.status=b.getAttribute('data-st'); renderDonations(); }); });
+  var fs=$('fFor'), keep=f.target; fs.innerHTML=targetOptions(keep,false,true); fs.value=keep;
+  var rows=filtered(), tot=0, paid=0; rows.forEach(function(p){ if(p.status==='paid'){ tot+=net(p); paid++; } });
+  $('sumline').innerHTML='<span>Showing <b>'+rows.length+'</b> of '+all.filter(function(p){return p.status!=='removed';}).length+'</span><span><b>'+money(tot)+'</b> paid in this view'+(paid?' from '+paid+' gift'+(paid===1?'':'s'):'')+'</span>';
+  $('rows').innerHTML=rows.map(function(p){
+    var typ=p.offline?(p.paid_via||'Cash'):(p.kind==='per_shot'?'Per throw':'Card');
+    var amt=(p.kind==='per_shot'&&p.status==='pledged'&&!p.computed_cents)?money(p.per_shot_cents)+'<div class="d2">per throw</div>':money(p.computed_cents)+(p.kind==='per_shot'?'<div class="d2">'+esc(money(p.per_shot_cents))+' per throw</div>':'');
+    return '<tr data-open="'+esc(p.id)+'" tabindex="0"><td class="c-sup"><div class="who">'+esc(p.donor_name||'Anonymous')+(p.anonymous?'<span class="tag">Anon</span>':'')+'</div><div class="em">'+esc(p.donor_email||'No email')+'</div></td>'+
+      '<td class="c-for">'+esc(forName(p,true))+'</td><td class="c-type desk-only">'+esc(typ)+'</td><td class="c-amt r"><div class="amt">'+amt+'</div></td>'+
+      '<td class="c-st"><span class="pill '+p.status+'">'+STATUS[p.status]+'</span></td><td class="c-date"><span class="d2">'+esc(fmtDate(p.paid_at||p.created))+'</span></td><td class="c-go r"><svg class="chev"><use href="#i-chev"/></svg></td></tr>';
+  }).join('');
+  $('rowsEmpty').classList.toggle('hide',rows.length>0);
+}
+$('q').addEventListener('input',function(){ state.filter.q=this.value; renderDonations(); });
+$('fType').addEventListener('change',function(){ state.filter.type=this.value; renderDonations(); });
+$('fFor').addEventListener('change',function(){ state.filter.target=this.value; renderDonations(); });
+$('fSort').addEventListener('change',function(){ state.filter.sort=this.value; renderDonations(); });
+document.addEventListener('keydown',function(e){ if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('[data-open]')){ e.preventDefault(); openDrawer(e.target.getAttribute('data-open')); } });
+
+/* teams tab */
+function renderTeamsTab(ev,D){
+  var sort=$('tSort').value, origin=location.origin;
+  var groups=(ev.teams||[]).map(function(t){ return {slug:t.slug,name:t.name,goal:t.goal_cents||0}; });
+  if((ev.players||[]).some(function(p){ return !p.team||!findTeam(p.team); })) groups.push({slug:'',name:'No team',goal:0});
+  $('teamCards').innerHTML=groups.length?groups.map(function(g){
+    var tt=D.byT[g.slug]||{raised:0,owed:0,donors:0};
+    var ps=(ev.players||[]).filter(function(p){ return g.slug?p.team===g.slug:(!p.team||!findTeam(p.team)); }).map(function(p){ var s=D.byP[p.slug]||{}; return {slug:p.slug,name:p.name,goal:p.goal_cents||0,raised:s.raised||0,owed:s.owed||0,donors:s.donors||0,perThrow:s.perThrow||0,makes:p.makes||0}; });
+    ps.sort(function(a,b){ if(sort==='name') return a.name.localeCompare(b.name); if(sort==='pct') return pct(b.raised,b.goal)-pct(a.raised,a.goal)||b.raised-a.raised; return b.raised-a.raised||a.name.localeCompare(b.name); });
+    return '<div class="tcard"><div class="th"><h3>'+esc(g.name)+'<span>'+money(tt.raised)+(g.goal?' of '+money(g.goal):'')+'</span></h3><div class="muted">'+ps.length+' player'+(ps.length===1?'':'s')+' &middot; '+tt.donors+' supporter'+(tt.donors===1?'':'s')+(tt.owed?' &middot; '+money(tt.owed)+' still to collect':'')+'</div>'+(g.goal?'<div class="pbar gold" style="margin-top:10px"><i style="width:'+pct(tt.raised,g.goal)+'%"></i></div>':'')+'</div><div class="tb">'+
+      (ps.length?ps.map(function(p){ return '<div class="pl"><div class="nm">'+esc(p.name)+'<small>'+p.donors+' supporter'+(p.donors===1?'':'s')+(p.perThrow?' &middot; '+money(p.perThrow)+' per throw':'')+(p.makes?' &middot; '+p.makes+' made':'')+'</small></div><div class="amt">'+money(p.raised)+'<small>'+(p.goal?pct(p.raised,p.goal)+'% of '+money(p.goal):'no goal')+'</small></div><button class="iconbtn" type="button" title="Copy '+esc(p.name)+'\'s link" aria-label="Copy '+esc(p.name)+'\'s link" data-copy="'+esc(origin+'/donate.html?player='+encodeURIComponent(p.slug))+'">'+svg('i-copy')+'</button><div class="pbar"><i style="width:'+pct(p.raised,p.goal)+'%"></i></div></div>'; }).join(''):'<div class="empty">No players on this team yet.</div>')+
+      '</div></div>';
+  }).join(''):'<div class="card"><div class="empty"><b>No teams or players yet</b>Build them in Event Setup.</div></div>';
+  var links=[['Main donation page',origin+'/donate.html']];
+  (ev.teams||[]).forEach(function(t){ links.push([t.name+' team',origin+'/donate.html?team='+encodeURIComponent(t.slug)]); });
+  (ev.players||[]).forEach(function(p){ links.push([p.name,origin+'/donate.html?player='+encodeURIComponent(p.slug)]); });
+  $('linkList').innerHTML=links.map(function(l){ return '<div class="linkrow"><div class="nm">'+esc(l[0])+'</div><div class="u">'+esc(l[1])+'</div><button class="btn sm" type="button" data-copy="'+esc(l[1])+'">'+svg('i-copy')+'Copy</button><a class="btn sm ghost" href="'+esc(l[1])+'" target="_blank" rel="noopener" aria-label="Open">'+svg('i-ext')+'</a></div>'; }).join('');
+}
+$('tSort').addEventListener('change',function(){ renderTeamsTab(state.cfg.event,derive()); });
+document.addEventListener('click',function(e){ var b=e.target.closest('[data-copy]'); if(!b) return; copy(b.getAttribute('data-copy'),'Link copied'); });
+function copy(text,msg){ var done=function(){ toast(msg||'Copied'); }; if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done,function(){ fallbackCopy(text); done(); }); } else { fallbackCopy(text); done(); } }
+function fallbackCopy(t){ var a=document.createElement('textarea'); a.value=t; document.body.appendChild(a); a.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(a); }
+
+/* setup tab */
+function teamSel(sel){ var o='<option value="">No team</option>'; state.teams.forEach(function(t){ var s=t.slug||slugify(t.name); o+='<option value="'+esc(s)+'"'+(sel===s?' selected':'')+'>'+esc(t.name||'(unnamed)')+'</option>'; }); return o; }
+var setupDirty=false;
+function renderSetup(ev){
+  if(setupDirty) return;
+  $('evTitle').value=ev.title||''; $('evBlurb').value=ev.blurb||''; $('evGoal').value=ev.org_goal_cents?(ev.org_goal_cents/100):''; $('evOpen').checked=!!ev.open; $('evDate').value=ev.event_date||''; $('evAbout').value=ev.about||''; $('evMatch').value=ev.match_text||'';
+  renderTeams(); renderPlayers(); $('bulkTeam').innerHTML=teamSel('');
+}
+function dirty(){ setupDirty=true; setStatus($('setupStatus'),'You have changes that aren\'t saved yet.'); }
+['evTitle','evBlurb','evGoal','evDate','evAbout','evMatch','evOpen'].forEach(function(id){ $(id).addEventListener('input',dirty); $(id).addEventListener('change',dirty); });
 function renderTeams(){
-  var el=$('teamRows'); el.innerHTML='';
+  var el=$('teamRows'); el.innerHTML=state.teams.length?'':'<p class="muted" style="margin-bottom:8px">No teams yet.</p>';
   state.teams.forEach(function(t,i){
     var r=document.createElement('div'); r.className='erow';
-    r.innerHTML='<input class="inp" placeholder="Team name" value="'+esc(t.name)+'"><div class="pre goal"><span>$</span><input class="inp" inputmode="decimal" value="'+((t.goal_cents||0)/100||'')+'" placeholder="10000"></div><button class="x" type="button" title="Remove">✕</button>';
+    r.innerHTML='<input class="inp" placeholder="Team name" aria-label="Team name" value="'+esc(t.name)+'"><div class="pre goal"><span>$</span><input class="inp" inputmode="decimal" aria-label="Team goal" value="'+((t.goal_cents||0)/100||'')+'" placeholder="Goal"></div><button class="x" type="button" title="Remove team" aria-label="Remove team">'+svg('i-x')+'</button>';
     var ins=r.querySelectorAll('input');
-    ins[0].addEventListener('input',function(){ state.teams[i].name=this.value; renderPlayers(); });
-    ins[1].addEventListener('input',function(){ state.teams[i].goal_cents=toCents(this.value); });
-    r.querySelector('.x').addEventListener('click',function(){ state.teams.splice(i,1); renderTeams(); renderPlayers(); });
+    ins[0].addEventListener('input',function(){ state.teams[i].name=this.value; dirty(); renderPlayers(); });
+    ins[1].addEventListener('input',function(){ state.teams[i].goal_cents=toCents(this.value); dirty(); });
+    r.querySelector('.x').addEventListener('click',function(){ state.teams.splice(i,1); dirty(); renderTeams(); renderPlayers(); });
     el.appendChild(r);
   });
 }
 function renderPlayers(){
-  var el=$('playerRows'); el.innerHTML='';
+  var el=$('playerRows'); el.innerHTML=state.players.length?'':'<p class="muted" style="margin-bottom:8px">No players yet.</p>';
   state.players.forEach(function(p,i){
     var r=document.createElement('div'); r.className='erow';
-    r.innerHTML='<input class="inp" placeholder="Player name" value="'+esc(p.name)+'"><select class="inp team">'+teamOptions(p.team)+'</select><div class="pre goal"><span>$</span><input class="inp" inputmode="decimal" value="'+((p.goal_cents||0)/100||'')+'" placeholder="1000"></div><button class="x" type="button" title="Remove">✕</button>';
+    r.innerHTML='<input class="inp" placeholder="Player name" aria-label="Player name" value="'+esc(p.name)+'"><select class="inp team" aria-label="Team">'+teamSel(p.team)+'</select><div class="pre goal"><span>$</span><input class="inp" inputmode="decimal" aria-label="Player goal" value="'+((p.goal_cents||0)/100||'')+'" placeholder="Goal"></div><button class="x" type="button" title="Remove player" aria-label="Remove player">'+svg('i-x')+'</button>';
     var ins=r.querySelectorAll('input'), sel=r.querySelector('select');
-    ins[0].addEventListener('input',function(){ state.players[i].name=this.value; });
-    sel.addEventListener('change',function(){ state.players[i].team=this.value; });
-    ins[1].addEventListener('input',function(){ state.players[i].goal_cents=toCents(this.value); });
-    r.querySelector('.x').addEventListener('click',function(){ state.players.splice(i,1); renderPlayers(); renderMakes(); });
+    ins[0].addEventListener('input',function(){ state.players[i].name=this.value; dirty(); });
+    sel.addEventListener('change',function(){ state.players[i].team=this.value; dirty(); });
+    ins[1].addEventListener('input',function(){ state.players[i].goal_cents=toCents(this.value); dirty(); });
+    r.querySelector('.x').addEventListener('click',function(){ state.players.splice(i,1); dirty(); renderPlayers(); });
     el.appendChild(r);
   });
 }
-function renderMakes(){
-  var el=$('makesRows'); el.innerHTML='';
-  if(!state.players.length){ el.innerHTML='<p class="hint" style="margin:0">Add players above first.</p>'; return; }
-  state.players.forEach(function(p,i){
-    var r=document.createElement('div'); r.className='erow';
-    r.innerHTML='<input class="inp" readonly value="'+esc(p.name||'(unnamed)')+'"><input class="inp makes" inputmode="numeric" value="'+(parseInt(p.makes,10)||0)+'" aria-label="made free throws">';
-    r.querySelectorAll('input')[1].addEventListener('input',function(){ state.players[i].makes=parseInt(this.value,10)||0; });
-    el.appendChild(r);
-  });
-}
-$('addTeam').addEventListener('click',function(){ state.teams.push({slug:'',name:'',goal_cents:1000000}); renderTeams(); renderPlayers(); });
-$('addPlayer').addEventListener('click',function(){ state.players.push({slug:'',name:'',team:'',goal_cents:100000,makes:0}); renderPlayers(); renderMakes(); });
+$('addTeam').addEventListener('click',function(){ state.teams.push({slug:'',name:'',goal_cents:1000000}); dirty(); renderTeams(); renderPlayers(); var ins=$('teamRows').querySelectorAll('.erow'); ins[ins.length-1].querySelector('input').focus(); });
+$('addPlayer').addEventListener('click',function(){ state.players.push({slug:'',name:'',team:'',goal_cents:100000,makes:0}); dirty(); renderPlayers(); var ins=$('playerRows').querySelectorAll('.erow'); ins[ins.length-1].querySelector('input').focus(); });
 $('bulkAdd').addEventListener('click',function(){
   var names=($('bulkNames').value||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
-  if(!names.length) return;
+  if(!names.length){ toast('Paste at least one name.',true); return; }
   var team=$('bulkTeam').value;
   names.forEach(function(n){ state.players.push({slug:'',name:n,team:team,goal_cents:100000,makes:0}); });
-  $('bulkNames').value='';
-  renderPlayers(); renderMakes();
-  setStatus($('setupStatus'), names.length+' player'+(names.length===1?'':'s')+' added below — review, then click Save setup.','ok');
+  $('bulkNames').value=''; dirty(); renderPlayers();
+  setStatus($('setupStatus'),names.length+' player'+(names.length===1?'':'s')+' added. Look them over, then Save setup.','ok');
 });
-function csvCell(v){ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
-$('csvBtn').addEventListener('click',function(){
-  var rows=(state.cfg&&state.cfg.pledges)||[];
-  if(!rows.length){ alert('No donations to export yet.'); return; }
-  var head=['Supporter','Email','Supporting','Type','Pledge','Made','Amount','Status','Date','Message','Anonymous'];
-  var lines=[head.join(',')];
-  rows.forEach(function(p){
-    lines.push([p.donor_name,p.donor_email,p.target_name,(p.kind==='per_shot'?'Per throw':'One-time'),p.description,(p.makes==null?'':p.makes),(p.computed_cents/100).toFixed(2),p.status,String(p.paid_at||p.created||'').slice(0,10),p.message||'',(p.anonymous?'yes':'')].map(csvCell).join(','));
-  });
-  var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'});
-  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='aces-shootathon-donations.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
-});
-
-/* ── render ── */
-function render(){
-  var c=state.cfg||{}, ev=c.event||{}, t=c.totals||{};
-  $('tiles').innerHTML=
-    '<div class="tile"><div class="n">'+(t.pledges||0)+'</div><div class="l">Donations</div></div>'+
-    '<div class="tile"><div class="n">'+(t.paid||0)+'</div><div class="l">Paid</div></div>'+
-    '<div class="tile"><div class="n">'+money(t.raised_cents||0)+'</div><div class="l">Raised</div></div>'+
-    '<div class="tile"><div class="n">'+money(t.projected_cents||0)+'</div><div class="l">Projected</div></div>';
-  $('evTitle').value=ev.title||''; $('evBlurb').value=ev.blurb||''; $('evGoal').value=ev.org_goal_cents?(ev.org_goal_cents/100):''; $('evOpen').checked=!!ev.open; $('evDate').value=ev.event_date||''; $('evAbout').value=ev.about||''; $('evMatch').value=ev.match_text||'';
-  renderTeams(); renderPlayers(); renderMakes();
-  $('bulkTeam').innerHTML=teamOptions('');
-
-  // public links
-  var origin=location.origin; var pl='<div class="subh" style="margin-top:18px">Public links</div><div class="linkbox"><input class="inp" readonly value="'+origin+'/donate.html"><button class="btn sm" type="button" data-copy="'+origin+'/donate.html">Copy main page</button></div>';
-  (ev.players||[]).forEach(function(p){ var u=origin+'/donate.html?player='+encodeURIComponent(p.slug); pl+='<div class="linkbox"><input class="inp" readonly value="'+u+'"><button class="btn sm" type="button" data-copy="'+u+'">Copy '+esc(p.name)+'</button></div>'; });
-  $('publicLinks').innerHTML=(ev.players&&ev.players.length)?pl:'';
-  Array.prototype.forEach.call($('publicLinks').querySelectorAll('[data-copy]'),function(b){ b.addEventListener('click',function(){ var v=b.getAttribute('data-copy'); if(navigator.clipboard)navigator.clipboard.writeText(v); var o=b.textContent;b.textContent='Copied ✓';setTimeout(function(){b.textContent=o;},1300); }); });
-
-  // pledges table
-  var rows=c.pledges||[];
-  $('pledgeHint').textContent=rows.length?(rows.length+' total · '+(t.paid||0)+' paid'):'';
-  var tb=$('pledgeRows'); tb.innerHTML=''; $('pledgeEmpty').style.display=rows.length?'none':'block';
-  rows.forEach(function(p){
-    var made=(p.target_type==='player'&&p.kind==='per_shot')?(p.makes==null?'—':String(p.makes)):'—';
-    var typ=p.kind==='per_shot'?'Per throw':'One-time';
-    var actions='';
-    if(p.status==='invoiced') actions+='<button class="btn sm" data-resend="'+p.id+'">Resend</button> ';
-    if(p.status!=='paid'&&p.status!=='canceled'&&p.status!=='refunded') actions+='<button class="btn sm danger" data-cancel="'+p.id+'">Cancel</button>';
-    if(p.status==='paid') actions+='<button class="btn sm danger" data-refund="'+p.id+'" data-amt="'+p.computed_cents+'" data-who="'+esc(p.donor_name)+'">Refund</button>';
-    var tr=document.createElement('tr');
-    tr.innerHTML='<td class="wrap">'+esc(p.donor_name)+(p.anonymous?' <span style="color:var(--dim)">(anon)</span>':'')+'<br><span style="color:var(--dim);font-size:.76rem">'+esc(p.donor_email)+'</span></td>'+
-      '<td>'+esc(p.target_name)+'</td><td>'+typ+'<br><span style="color:var(--dim);font-size:.76rem">'+esc(p.description)+'</span></td>'+
-      '<td>'+made+'</td><td><b>'+money(p.computed_cents)+'</b></td><td><span class="pill '+p.status+'">'+p.status+'</span></td><td>'+(actions||'—')+'</td>';
-    tb.appendChild(tr);
-  });
-  Array.prototype.forEach.call(tb.querySelectorAll('[data-resend]'),function(b){ b.addEventListener('click',function(){ doResend(b.getAttribute('data-resend'),b); }); });
-  Array.prototype.forEach.call(tb.querySelectorAll('[data-cancel]'),function(b){ b.addEventListener('click',function(){ doCancel(b.getAttribute('data-cancel')); }); });
-  Array.prototype.forEach.call(tb.querySelectorAll('[data-refund]'),function(b){ b.addEventListener('click',function(){ doRefund(b.getAttribute('data-refund'),parseInt(b.getAttribute('data-amt'),10)||0,b.getAttribute('data-who')||'',b); }); });
-}
-
-function blockDemo(el){ if(state.demo){ setStatus(el,'Disabled in demo preview.','err'); return true; } return false; }
-function setStatus(el,msg,cls){ el.textContent=msg||''; el.className='statusline'+(cls?' '+cls:''); }
-
-/* ── actions ── */
 $('saveSetup').addEventListener('click',function(){
-  if(blockDemo($('setupStatus'))) return;
+  if(blockDemo()) return;
   var body={ title:$('evTitle').value.trim(), blurb:$('evBlurb').value.trim(), about:$('evAbout').value.trim(), match_text:$('evMatch').value.trim(), event_date:$('evDate').value, org_goal_cents:toCents($('evGoal').value), open:$('evOpen').checked,
     teams: state.teams.filter(function(t){return (t.name||'').trim();}).map(function(t){ return t.slug?{slug:t.slug,name:t.name.trim(),goal_cents:t.goal_cents||0}:{name:t.name.trim(),goal_cents:t.goal_cents||0}; }),
     players: state.players.filter(function(p){return (p.name||'').trim();}).map(function(p){ var o={name:p.name.trim(),team:p.team||'',goal_cents:p.goal_cents||0,makes:p.makes||0}; if(p.slug)o.slug=p.slug; return o; }) };
-  setStatus($('setupStatus'),'Saving…');
-  api('set_event',body).then(function(){ return loadConfig(); }).then(function(){ setStatus($('setupStatus'),'Saved ✓','ok'); }).catch(function(){ setStatus($('setupStatus'),'Save failed.','err'); });
+  var btn=this; btn.disabled=true; setStatus($('setupStatus'),'Saving...');
+  api('set_event',body).then(function(d){ if(!d||!d.ok) throw d; setupDirty=false; return loadConfig(); }).then(function(){ setStatus($('setupStatus'),'Saved.','ok'); toast('Setup saved'); })
+  .catch(function(d){ setStatus($('setupStatus'),errText(d,'Save failed'),'err'); }).then(function(){ btn.disabled=false; });
 });
+window.addEventListener('beforeunload',function(e){ if(setupDirty){ e.preventDefault(); e.returnValue=''; } });
+
+/* after tab */
+function renderAfter(ev,D){
+  var rows=(state.cfg&&state.cfg.pledges)||[], el=$('makesRows');
+  if(!state.players.length){ el.innerHTML='<div class="empty"><b>No players yet</b>Add them in Event Setup first.</div>'; }
+  else {
+    el.innerHTML='';
+    state.players.forEach(function(p,i){
+      var r=document.createElement('div'); r.className='erow';
+      var tn=(findTeam(p.team)||{}).name||'';
+      r.innerHTML='<div class="mk-name">'+esc(p.name||'(unnamed)')+'<small>'+esc(tn)+'</small></div><input class="inp makes" inputmode="numeric" value="'+(parseInt(p.makes,10)||0)+'" aria-label="Made free throws for '+esc(p.name)+'"><div class="mk-est"></div>';
+      var est=r.querySelector('.mk-est');
+      var upd=function(){ var m=parseInt(state.players[i].makes,10)||0, c=0; rows.forEach(function(x){ if(x.kind==='per_shot'&&x.target_slug===p.slug&&(x.status==='pledged'||x.status==='invoiced'||x.status==='no_charge')){ var v=(x.per_shot_cents||0)*m; if(x.cap_cents) v=Math.min(v,x.cap_cents); c+=v; } }); est.textContent=c?money(c):''; };
+      r.querySelector('input').addEventListener('input',function(){ state.players[i].makes=parseInt(this.value.replace(/[^0-9]/g,''),10)||0; upd(); setStatus($('makesStatus'),'Not saved yet.'); });
+      upd(); el.appendChild(r);
+    });
+  }
+  var pledged=rows.filter(function(p){return p.status==='pledged';}), inv=rows.filter(function(p){return p.status==='invoiced';});
+  $('collectKpis').innerHTML='<div class="kpi"><div class="n">'+pledged.length+'</div><div class="l">Waiting for a link</div></div><div class="kpi"><div class="n">'+inv.length+'</div><div class="l">Link sent, not paid</div></div><div class="kpi"><div class="n">'+money(D.owed)+'</div><div class="l">Still to collect</div></div>';
+  var openRows=rows.filter(open);
+  $('openList').innerHTML=openRows.length?openRows.map(actRow).join(''):'<div class="empty"><b>Nothing open</b>Every pledge is paid or settled.</div>';
+}
 $('saveMakes').addEventListener('click',function(){
-  if(blockDemo($('makesStatus'))) return;
+  if(blockDemo()) return;
   var makes={}; state.players.forEach(function(p){ if(p.slug) makes[p.slug]=parseInt(p.makes,10)||0; });
-  setStatus($('makesStatus'),'Saving…');
-  api('set_makes',{makes:makes}).then(function(){ return loadConfig(); }).then(function(){ setStatus($('makesStatus'),'Made throws saved ✓','ok'); }).catch(function(){ setStatus($('makesStatus'),'Save failed. (Save setup first if you just added players.)','err'); });
+  var btn=this; btn.disabled=true; setStatus($('makesStatus'),'Saving...');
+  api('set_makes',{makes:makes}).then(function(d){ if(!d||!d.ok) throw d; return loadConfig(); }).then(function(){ setStatus($('makesStatus'),'Made throws saved.','ok'); toast('Made throws saved'); })
+  .catch(function(){ setStatus($('makesStatus'),'Save failed. If you just added players, save Event Setup first.','err'); }).then(function(){ btn.disabled=false; });
 });
 $('sendLinks').addEventListener('click',function(){
-  if(blockDemo($('sendStatus'))) return;
-  if(!confirm('Email a pay-link to every per-throw PLEDGE for its current total? (One-time donations are already paid; already-invoiced pledges are skipped.)')) return;
-  setStatus($('sendStatus'),'Sending…');
-  api('send_links',{}).then(function(d){ return loadConfig().then(function(){ setStatus($('sendStatus'),'Sent: '+(d.emailed||0)+' emailed · '+(d.invoiced||0)+' invoiced · '+(d.zero||0)+' had 0 made · '+(d.skipped||0)+' skipped'+(d.remaining?' · '+d.remaining+' left (click again)':''),'ok'); }); }).catch(function(){ setStatus($('sendStatus'),'Send failed.','err'); });
+  if(blockDemo()) return;
+  confirmBox('Send pay links?','Every per throw pledge that hasn\'t gotten a link yet gets an email with its total, based on the made throws you saved. One time donations are already paid and get nothing.','Send pay links',false,function(){
+    setStatus($('sendStatus'),'Sending...');
+    return api('send_links',{}).then(function(d){ if(!d||!d.ok) throw d; return loadConfig().then(function(){ setStatus($('sendStatus'),(d.emailed||0)+' emailed, '+(d.invoiced||0)+' billed, '+(d.zero||0)+' had 0 made, '+(d.skipped||0)+' skipped'+(d.remaining?'. '+d.remaining+' left, click again.':'.'),'ok'); }); })
+    .catch(function(d){ setStatus($('sendStatus'),errText(d,'Send failed'),'err'); });
+  });
 });
-$('syncBtn').addEventListener('click',function(){
-  if(blockDemo($('sendStatus'))) return;
-  setStatus($('sendStatus'),'Checking the processor…');
-  api('sync',{}).then(function(d){ return loadConfig().then(function(){ setStatus($('sendStatus'),'Synced: checked '+(d.checked||0)+', newly paid '+(d.paid||0)+'.','ok'); }); }).catch(function(){ setStatus($('sendStatus'),'Sync failed.','err'); });
-});
-$('refreshBtn').addEventListener('click',function(){ loadConfig().catch(function(){}); });
-function doResend(id,btn){ if(blockDemo($('sendStatus'))) return; btn.disabled=true; api('resend',{id:id}).then(function(){ setStatus($('sendStatus'),'Pay-link re-sent ✓','ok'); btn.disabled=false; }).catch(function(){ setStatus($('sendStatus'),'Resend failed.','err'); btn.disabled=false; }); }
-function doRefund(id,cents,who,btn){
-  var st=$('pledgeStatus'); if(blockDemo(st)) return;
-  if(!confirm('Refund '+money(cents)+(who?' to '+who:'')+'?\n\nThe money goes back to their card and comes off the totals. They get a refund email. This cannot be undone.')) return;
-  btn.disabled=true; setStatus(st,'Refunding…','');
-  api('refund',{id:id}).then(function(d){
-    if(d&&d.ok){ return loadConfig().then(function(){ setStatus($('pledgeStatus'),'Refunded '+money(d.refunded_cents)+'.','ok'); }); }
-    var msg=(d&&d.message)||(d&&d.error==='already_refunded'?'Already refunded.':'Refund failed'+(d&&d.detail?': '+d.detail:'.'));
-    btn.disabled=false; setStatus(st,msg,'err');
-  }).catch(function(){ btn.disabled=false; setStatus(st,'Refund failed. Reload and check before trying again.','err'); });
+
+/* quick actions */
+function quick(act,btn){
+  if(act==='add') return addGiftModal();
+  if(act==='copyMain') return copy(location.origin+'/donate.html','Donation page link copied');
+  if(act==='copyAll'){ var ev=state.cfg.event, t=['Main page: '+location.origin+'/donate.html']; (ev.players||[]).forEach(function(p){ t.push(p.name+': '+location.origin+'/donate.html?player='+encodeURIComponent(p.slug)); }); return copy(t.join('\n'),'All links copied'); }
+  if(act==='csv') return csv((state.cfg&&state.cfg.pledges)||[],'aces-shootathon-donations.csv');
+  if(act==='csvFiltered') return csv(filtered(),'aces-shootathon-donations-filtered.csv');
+  if(act==='print'){ go('overview'); setTimeout(function(){ window.print(); },100); return; }
+  if(act==='sync'){ if(blockDemo()) return; btn.disabled=true; toast('Checking with Stripe...'); api('sync',{}).then(function(d){ return loadConfig().then(function(){ toast('Checked '+(d.checked||0)+', '+(d.paid||0)+' newly paid'); }); }).catch(function(){ toast('Couldn\'t check right now.',true); }).then(function(){ btn.disabled=false; }); }
 }
-function doCancel(id){ if(blockDemo($('sendStatus'))) return; if(!confirm('Cancel this pledge? (For one already paid, use Refund.)')) return; api('cancel',{id:id}).then(function(){ return loadConfig(); }).then(function(){ setStatus($('sendStatus'),'Canceled.','ok'); }).catch(function(){ setStatus($('sendStatus'),'Cancel failed.','err'); }); }
+$('hToggle').addEventListener('click',function(){
+  if(blockDemo()) return;
+  var ev=state.cfg.event, to=!ev.open;
+  confirmBox(to?'Open donations?':'Close donations?',to?'The public page starts taking donations and pledges right away.':'The public page stops taking new donations. Everything already given stays.',to?'Open donations':'Close donations',!to,function(){
+    return api('set_event',{open:to}).then(function(d){ if(!d||!d.ok) throw d; return loadConfig(); }).then(function(){ toast(to?'Donations are open':'Donations are closed'); }).catch(function(d){ toast(errText(d,'Couldn\'t change it'),true); });
+  });
+});
+function csvCell(v){ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
+function csv(rows,name){
+  if(!rows.length){ toast('No donations to download yet.',true); return; }
+  var head=['Supporter','Email','Supporting','Type','Pledge','Made','Amount','Status','Paid with','Check number','Date','Message','Private note','Anonymous','Receipt'];
+  var lines=[head.join(',')];
+  rows.forEach(function(p){ lines.push([p.donor_name,p.donor_email,forName(p),(p.offline?'Cash/check':p.kind==='per_shot'?'Per throw':'One time'),p.description,(p.makes==null?'':p.makes),(p.computed_cents/100).toFixed(2),STATUS[p.status]||p.status,p.paid_via||'',p.check_no||'',String(p.paid_at||p.created||'').slice(0,10),p.message||'',p.note||'',(p.anonymous?'yes':''),p.id].map(csvCell).join(',')); });
+  var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+  toast('Downloaded '+rows.length+' row'+(rows.length===1?'':'s'));
+}
 
-/* ── demo ── */
-var DEMO={ ok:true,
-  event:{ event_id:'fall-2026', title:'Aces Shoot-a-Thon', blurb:'Sponsor an Aces player per made free throw!', about:'During the event every athlete shoots 100 free throws. Sponsors pledge per made shot.', event_date:'2026-12-15', match_text:'All gifts matched up to $5,000 through Friday!', open:true, org_goal_cents:3000000,
-    teams:[{slug:'varsity',name:'Varsity',goal_cents:1000000},{slug:'jv',name:'JV',goal_cents:1000000},{slug:'freshman',name:'Freshman',goal_cents:1000000}],
-    players:[{slug:'jimmy-d',name:'Jimmy Daniels',team:'varsity',goal_cents:100000,makes:84},{slug:'marcus-l',name:'Marcus Lee',team:'varsity',goal_cents:100000,makes:0},{slug:'sara-k',name:'Sara Kim',team:'jv',goal_cents:100000,makes:71}] },
-  totals:{ pledges:4, paid:2, raised_cents:12000, projected_cents:46000 },
-  pledges:[
-    {id:'d1',status:'paid',kind:'flat',target_type:'player',target_name:'Jimmy Daniels',donor_name:'Uncle Dr Deji',donor_email:'deji@example.com',anonymous:false,description:'$100.00 one-time donation',computed_cents:10000,makes:84},
-    {id:'d2',status:'paid',kind:'flat',target_type:'team',target_name:'Varsity',donor_name:'Anonymous',donor_email:'x@example.com',anonymous:true,description:'$20.00 one-time donation',computed_cents:2000,makes:null},
-    {id:'d3',status:'pledged',kind:'per_shot',target_type:'player',target_name:'Jimmy Daniels',donor_name:'Eric Semeko',donor_email:'eric@example.com',anonymous:false,description:'$0.50 per made free throw',computed_cents:4200,makes:84},
-    {id:'d4',status:'pledged',kind:'per_shot',target_type:'player',target_name:'Sara Kim',donor_name:'Jill Fisher',donor_email:'jill@example.com',anonymous:false,description:'$0.25 per made free throw (up to $100.00)',computed_cents:1775,makes:71}
-  ] };
-function enterDemo(){ state.demo=true; state.cfg=DEMO; state.teams=DEMO.event.teams.map(function(t){return{slug:t.slug,name:t.name,goal_cents:t.goal_cents};}); state.players=DEMO.event.players.map(function(p){return{slug:p.slug,name:p.name,team:p.team,goal_cents:p.goal_cents,makes:p.makes};}); $('loginWrap').style.display='none'; $('dash').style.display='block'; $('demoBanner').style.display='block'; render(); }
+/* drawer */
+function byId(id){ return ((state.cfg&&state.cfg.pledges)||[]).find(function(p){return p.id===id;})||null; }
+function openDrawer(id,refresh){
+  var p=byId(id); if(!p){ closeDrawer(); return; }
+  state.open=id;
+  $('drTitle').textContent=p.donor_name||'Anonymous';
+  $('drSub').innerHTML='<span class="pill '+p.status+'">'+STATUS[p.status]+'</span>'+(p.anonymous?' <span class="tag">Anonymous on the public page</span>':'');
+  var kind=p.offline?'Gift by '+(p.paid_via||'cash').toLowerCase():(p.kind==='per_shot'?'Per free throw pledge':'One time card donation');
+  var kv=[['Supporting',esc(forName(p,true))],['Type',kind]];
+  if(p.kind==='per_shot'){ kv.push(['Pledge',p.description]); kv.push(['Made throws',p.makes==null?'Not entered':String(p.makes)]); }
+  if(p.donor_email) kv.push(['Email','<a href="mailto:'+esc(p.donor_email)+'">'+esc(p.donor_email)+'</a>']); else kv.push(['Email','None']);
+  kv.push(['Started',fmtDate(p.created,true)]);
+  if(p.invoiced_at) kv.push(['Pay link sent',fmtDate(p.invoiced_at,true)]);
+  if(p.paid_at) kv.push(['Paid',fmtDate(p.paid_at,true)]);
+  if(p.card_last4) kv.push(['Card','Ending '+esc(p.card_last4)]);
+  else if(p.paid_via) kv.push(['Paid with',esc(p.paid_via)+(p.check_no?' #'+esc(p.check_no):'')]);
+  if(p.fee_cents) kv.push(['Card fee covered',money(p.fee_cents)+' (included above)']);
+  if(p.refunded_at) kv.push(['Refunded',money(p.amount_refunded_cents)+' on '+fmtDate(p.refunded_at,true)]);
+  if(p.removed_at) kv.push(['Removed',fmtDate(p.removed_at,true)]);
+  kv.push(['Receipt #','<span class="mono">'+esc(p.id)+'</span>']);
+  var big=(p.kind==='per_shot'&&!p.computed_cents)?money(p.per_shot_cents)+'<span class="unit" style="display:inline;font-size:16px"> per throw</span>':money(p.computed_cents);
+  var acts=[];
+  acts.push('<button class="btn" type="button" data-dact="edit">Edit details</button>');
+  if(p.status==='paid'&&p.donor_email) acts.push('<button class="btn" type="button" data-dact="receipt">'+svg('i-mail')+'Email receipt</button>');
+  if(p.status==='invoiced') acts.push('<button class="btn" type="button" data-dact="resend">'+svg('i-mail')+'Resend pay link</button>');
+  if(open(p)) acts.push('<button class="btn" type="button" data-dact="markpaid">Mark paid (cash or check)</button>');
+  if(p.refundable) acts.push('<button class="btn danger" type="button" data-dact="refund">Refund '+money(p.computed_cents)+'</button>');
+  if(p.status!=='paid'&&p.status!=='canceled'&&p.status!=='refunded'&&p.status!=='removed') acts.push('<button class="btn danger" type="button" data-dact="cancel">Cancel pledge</button>');
+  if(p.status!=='removed'&&!(p.status==='paid'&&!p.offline)&&p.status!=='invoiced'&&p.status!=='pending') acts.push('<button class="btn danger" type="button" data-dact="remove">Remove from the list</button>');
+  if(p.status==='removed') acts.push('<button class="btn primary" type="button" data-dact="restore">Put it back</button>');
+  $('drBody').innerHTML='<div class="dr-amt">'+big+'</div>'+(p.message?'<div class="msg">&ldquo;'+esc(p.message)+'&rdquo;</div>':'')+
+    '<div class="kv">'+kv.map(function(x){ return '<div><span>'+x[0]+'</span><b>'+x[1]+'</b></div>'; }).join('')+'</div>'+
+    (p.note?'<div class="note-box"><b>Private note:</b> '+esc(p.note)+'</div>':'')+
+    '<div class="dr-actions">'+acts.map(function(a,i){ return acts.length%2&&i===acts.length-1?a.replace('class="btn','class="full btn'):a; }).join('')+'</div>'+
+    (p.status==='paid'&&!p.refundable&&!p.offline?'<div class="note-box">This one can\'t be refunded from here. Refund it in your Stripe dashboard.</div>':'');
+  Array.prototype.forEach.call($('drBody').querySelectorAll('[data-dact]'),function(b){ b.addEventListener('click',function(){ drAct(b.getAttribute('data-dact'),p,b); }); });
+  if(!refresh){ $('drawer').classList.add('on'); $('drawer').setAttribute('aria-hidden','false'); $('scrim').classList.add('on'); setTimeout(function(){ $('drClose').focus(); },50); }
+}
+function closeDrawer(){ state.open=null; $('drawer').classList.remove('on'); $('drawer').setAttribute('aria-hidden','true'); $('scrim').classList.remove('on'); }
+$('drClose').addEventListener('click',closeDrawer);
+$('scrim').addEventListener('click',function(){ if(!$('modal').classList.contains('on')) closeDrawer(); });
+function after(p,msg){ return function(d){ if(!d||!d.ok) throw d; return loadConfig().then(function(){ toast(msg); }); }; }
+function drAct(a,p,btn){
+  if(a==='edit') return editModal(p);
+  if(a==='markpaid') return markPaidModal(p);
+  if(blockDemo()) return;
+  if(a==='receipt') return confirmBox('Email the receipt again?','A copy of the receipt goes to '+p.donor_email+'.','Send receipt',false,function(){ return api('receipt',{id:p.id}).then(after(p,'Receipt sent')).catch(function(d){ toast(errText(d,'Couldn\'t send'),true); }); });
+  if(a==='resend') return confirmBox('Resend the pay link?','A new email with the '+money(p.computed_cents)+' pay link goes to '+p.donor_email+'.','Resend',false,function(){ return api('resend',{id:p.id}).then(after(p,'Pay link sent')).catch(function(d){ toast(errText(d,'Couldn\'t send'),true); }); });
+  if(a==='refund') return confirmBox('Refund '+money(p.computed_cents)+'?','The full amount goes back to '+(p.donor_name||'their')+(p.card_last4?'\'s card ending '+p.card_last4:' card')+' and comes off every total. They get a refund email. This can\'t be undone.','Refund '+money(p.computed_cents),true,function(){ return api('refund',{id:p.id}).then(after(p,'Refunded '+money(p.computed_cents))).catch(function(d){ toast(errText(d,'Refund failed'),true); }); });
+  if(a==='cancel') return confirmBox('Cancel this pledge?','It stops counting, and they won\'t get a pay link. Nothing is charged.','Cancel pledge',true,function(){ return api('cancel',{id:p.id}).then(after(p,'Pledge canceled')).catch(function(d){ toast(errText(d,'Couldn\'t cancel'),true); }); });
+  if(a==='remove') return confirmBox('Remove it from the list?','It comes off the totals and the public page. You can put it back any time from the Removed filter.','Remove',true,function(){ return api('remove',{id:p.id}).then(after(p,'Removed. Find it under the Removed filter.')).catch(function(d){ toast(errText(d,'Couldn\'t remove'),true); }); });
+  if(a==='restore') return api('restore',{id:p.id}).then(after(p,'Put back')).catch(function(d){ toast(errText(d,'Couldn\'t restore'),true); });
+}
 
-/* ── boot ── */
+/* modals */
+var modalCb=null;
+function showModal(title,body,foot){ $('mTitle').textContent=title; $('mBody').innerHTML=body; $('mFoot').innerHTML=foot; $('modal').classList.add('on'); $('scrim').classList.add('on'); var f=$('mBody').querySelector('input,select,textarea'); setTimeout(function(){ (f||$('mFoot').querySelector('.btn.primary,.btn.danger,.btn')).focus(); },50); }
+function closeModal(){ $('modal').classList.remove('on'); if(!state.open) $('scrim').classList.remove('on'); modalCb=null; }
+$('mClose').addEventListener('click',closeModal);
+$('modal').addEventListener('click',function(e){ if(e.target===$('modal')) closeModal(); });
+function confirmBox(title,text,okLabel,danger,fn){
+  showModal(title,'<p>'+esc(text)+'</p>','<button class="btn" type="button" id="mNo">Not now</button><button class="btn '+(danger?'danger':'primary')+'" type="button" id="mYes">'+esc(okLabel)+'</button>');
+  $('mNo').addEventListener('click',closeModal);
+  $('mYes').addEventListener('click',function(){ var b=this; b.disabled=true; b.textContent='Working...'; Promise.resolve(fn()).then(closeModal,closeModal); });
+}
+function methodSel(v){ return METHODS.map(function(m){ return '<option value="'+m[0]+'"'+(v===m[0]?' selected':'')+'>'+m[1]+'</option>'; }).join(''); }
+function methodKey(label){ var m=METHODS.find(function(x){ return x[1]===label; }); return m?m[0]:'cash'; }
+function today(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+function addGiftModal(){
+  showModal('Add a cash or check gift',
+    '<p>Record money handed to you so it counts toward the goals.</p>'+
+    '<div class="row"><div class="fld"><label for="gName">Donor name</label><input class="inp" id="gName" autocomplete="off"></div><div class="fld"><label for="gEmail">Email (optional)</label><input class="inp" id="gEmail" type="email" autocomplete="off"></div></div>'+
+    '<div class="fld"><label for="gFor">Supporting</label><select class="inp" id="gFor">'+targetOptions('org:',false,false)+'</select></div>'+
+    '<div class="row"><div class="fld"><label for="gAmt">Amount</label><div class="pre"><span>$</span><input class="inp" id="gAmt" inputmode="decimal" placeholder="50"></div></div><div class="fld"><label for="gMethod">Paid with</label><select class="inp" id="gMethod">'+methodSel('cash')+'</select></div></div>'+
+    '<div class="row"><div class="fld hide" id="gCheckWrap"><label for="gCheck">Check number</label><input class="inp" id="gCheck"></div><div class="fld"><label for="gDate">Date received</label><input class="inp" id="gDate" type="date" value="'+today()+'"></div></div>'+
+    '<label class="chk"><input type="checkbox" id="gReceipt"><span>Email them a receipt</span></label><div class="status" id="gErr"></div>',
+    '<button class="btn" type="button" id="mNo">Cancel</button><button class="btn primary" type="button" id="mYes">Add gift</button>');
+  var sync=function(){ $('gCheckWrap').classList.toggle('hide',$('gMethod').value!=='check'); var has=/\S+@\S+\.\S+/.test($('gEmail').value); $('gReceipt').disabled=!has; if(!has) $('gReceipt').checked=false; };
+  $('gMethod').addEventListener('change',sync); $('gEmail').addEventListener('input',sync); sync();
+  $('mNo').addEventListener('click',closeModal);
+  $('mYes').addEventListener('click',function(){
+    if(blockDemo()) return;
+    var t=$('gFor').value.split(':'), b=this;
+    var body={ donor_name:$('gName').value.trim(), donor_email:$('gEmail').value.trim(), target_type:t[0], target_slug:t[1]||'', amount_cents:toCents($('gAmt').value), method:$('gMethod').value, check_no:$('gCheck').value.trim(), date:$('gDate').value, send_receipt:$('gReceipt').checked };
+    if(!body.donor_name){ setStatus($('gErr'),'Enter the donor\'s name.','err'); return; }
+    if(body.amount_cents<100){ setStatus($('gErr'),'Enter an amount of at least $1.','err'); return; }
+    b.disabled=true; b.textContent='Adding...';
+    api('add_offline',body).then(function(d){ if(!d||!d.ok) throw d; closeModal(); return loadConfig().then(function(){ toast(money(body.amount_cents)+' from '+body.donor_name+' added'+(d.emailed?', receipt sent':'')); }); })
+    .catch(function(d){ b.disabled=false; b.textContent='Add gift'; setStatus($('gErr'),errText(d,'Couldn\'t add it'),'err'); });
+  });
+}
+function editModal(p){
+  var sel=p.target_type+':'+(p.target_slug||'');
+  showModal('Edit donation',
+    '<div class="row"><div class="fld"><label for="eName">Donor name</label><input class="inp" id="eName" value="'+esc(p.donor_name)+'"></div><div class="fld"><label for="eEmail">Email</label><input class="inp" id="eEmail" type="email" value="'+esc(p.donor_email)+'"></div></div>'+
+    '<div class="fld"><label for="eFor">Supporting</label><select class="inp" id="eFor">'+targetOptions(sel,p.kind==='per_shot',false)+'</select>'+(p.kind==='per_shot'?'<div class="help">A per throw pledge stays on a player.</div>':'')+'</div>'+
+    (p.offline?'<div class="row"><div class="fld"><label for="eAmt">Amount</label><div class="pre"><span>$</span><input class="inp" id="eAmt" inputmode="decimal" value="'+((p.computed_cents||0)/100)+'"></div></div><div class="fld"><label for="eMethod">Paid with</label><select class="inp" id="eMethod">'+methodSel(methodKey(p.paid_via))+'</select></div><div class="fld"><label for="eCheck">Check number</label><input class="inp" id="eCheck" value="'+esc(p.check_no)+'"></div></div>':'')+
+    '<div class="fld"><label for="eMsg">Public message</label><input class="inp" id="eMsg" maxlength="280" value="'+esc(p.message)+'"></div>'+
+    '<div class="fld"><label for="eNote">Private note</label><textarea class="inp" id="eNote" maxlength="500" rows="2" placeholder="Only admins see this">'+esc(p.note)+'</textarea></div>'+
+    '<label class="chk"><input type="checkbox" id="eAnon"'+(p.anonymous?' checked':'')+'><span>Show as Anonymous on the public page</span></label><div class="status" id="eErr"></div>',
+    '<button class="btn" type="button" id="mNo">Cancel</button><button class="btn primary" type="button" id="mYes">Save changes</button>');
+  $('mNo').addEventListener('click',closeModal);
+  $('mYes').addEventListener('click',function(){
+    if(blockDemo()) return;
+    var t=$('eFor').value.split(':'), b=this;
+    var body={ id:p.id, donor_name:$('eName').value.trim(), donor_email:$('eEmail').value.trim(), target_type:t[0], target_slug:t[1]||'', message:$('eMsg').value.trim(), note:$('eNote').value.trim(), anonymous:$('eAnon').checked };
+    if(p.offline){ body.amount_cents=toCents($('eAmt').value); body.method=$('eMethod').value; body.check_no=$('eCheck').value.trim(); }
+    b.disabled=true; b.textContent='Saving...';
+    api('edit',body).then(function(d){ if(!d||!d.ok) throw d; closeModal(); return loadConfig().then(function(){ toast('Changes saved'); }); })
+    .catch(function(d){ b.disabled=false; b.textContent='Save changes'; setStatus($('eErr'),errText(d,'Couldn\'t save'),'err'); });
+  });
+}
+function markPaidModal(p){
+  showModal('Mark paid by cash or check',
+    '<p>Use this when '+esc(p.donor_name||'they')+' paid you directly instead of using the pay link.</p>'+
+    '<div class="row"><div class="fld"><label for="kAmt">Amount received</label><div class="pre"><span>$</span><input class="inp" id="kAmt" inputmode="decimal" value="'+((p.computed_cents||0)/100||'')+'"></div></div><div class="fld"><label for="kMethod">Paid with</label><select class="inp" id="kMethod">'+methodSel('check')+'</select></div></div>'+
+    '<div class="fld" id="kCheckWrap"><label for="kCheck">Check number</label><input class="inp" id="kCheck"></div>'+
+    (p.donor_email?'<label class="chk"><input type="checkbox" id="kReceipt" checked><span>Email them a receipt</span></label>':'')+'<div class="status" id="kErr"></div>',
+    '<button class="btn" type="button" id="mNo">Cancel</button><button class="btn primary" type="button" id="mYes">Mark paid</button>');
+  $('kMethod').addEventListener('change',function(){ $('kCheckWrap').classList.toggle('hide',this.value!=='check'); });
+  $('mNo').addEventListener('click',closeModal);
+  $('mYes').addEventListener('click',function(){
+    if(blockDemo()) return;
+    var b=this, amt=toCents($('kAmt').value);
+    if(amt<=0){ setStatus($('kErr'),'Enter the amount you received.','err'); return; }
+    b.disabled=true; b.textContent='Saving...';
+    api('mark_paid',{id:p.id,amount_cents:amt,method:$('kMethod').value,check_no:$('kCheck').value.trim(),send_receipt:!!($('kReceipt')&&$('kReceipt').checked)}).then(function(d){ if(!d||!d.ok) throw d; closeModal(); return loadConfig().then(function(){ toast('Marked paid'+(d.emailed?', receipt sent':'')); }); })
+    .catch(function(d){ b.disabled=false; b.textContent='Mark paid'; setStatus($('kErr'),errText(d,'Couldn\'t save'),'err'); });
+  });
+}
+
+/* login */
+function showApp(){ $('loginWrap').classList.add('hide'); $('app').classList.remove('hide'); go((location.hash||'#overview').slice(1)); }
+$('loginForm').addEventListener('submit',function(e){
+  e.preventDefault(); state.key=$('pw').value.trim(); var err=$('loginErr'); err.textContent='';
+  if(!state.key){ err.textContent='Enter the passcode.'; return; }
+  loadConfig().then(function(){ try{sessionStorage.setItem(KEY_STORE,state.key);}catch(e){} showApp(); render(); })
+  .catch(function(e){ err.textContent=(e&&e.code==='config')?'The admin isn\'t set up yet (passcode or database missing).':'That passcode didn\'t work. Try again.'; state.key=''; });
+});
+$('logoutBtn').addEventListener('click',function(){ if(setupDirty&&!window.confirm('You have unsaved setup changes. Log out anyway?')) return; setupDirty=false; state.key=''; try{sessionStorage.removeItem(KEY_STORE);}catch(e){} closeDrawer(); $('app').classList.add('hide'); $('loginWrap').classList.remove('hide'); $('pw').value=''; });
+
+/* demo */
+function demoData(){
+  var d=function(n,h){ var x=new Date(); x.setDate(x.getDate()-n); x.setHours(h||12,0,0,0); return x.toISOString(); };
+  return { ok:true,
+    event:{ event_id:'fall-2026', title:'Aces Shoot-a-Thon', blurb:'Sponsor an Aces player per made free throw!', about:'During the event every athlete shoots 100 free throws. Sponsors pledge per made shot.', event_date:'2026-12-15', match_text:'All gifts matched up to $5,000 through Friday!', open:true, org_goal_cents:3000000,
+      teams:[{slug:'varsity',name:'Varsity',goal_cents:1000000},{slug:'jv',name:'JV',goal_cents:1000000},{slug:'freshman',name:'Freshman',goal_cents:1000000}],
+      players:[{slug:'jimmy-d',name:'Jimmy Daniels',team:'varsity',goal_cents:100000,makes:84},{slug:'marcus-l',name:'Marcus Lee',team:'varsity',goal_cents:100000,makes:0},{slug:'sara-k',name:'Sam Kim',team:'jv',goal_cents:100000,makes:71},{slug:'tj-r',name:'TJ Roberts',team:'freshman',goal_cents:100000,makes:0}] },
+    pledges:[
+      {id:'demo1',status:'paid',kind:'flat',target_type:'player',target_slug:'jimmy-d',target_name:'Jimmy Daniels',donor_name:'Dana Ruiz',donor_email:'dana@example.com',message:'Go get them Jimmy!',description:'$100.00 one-time donation',computed_cents:10000,paid_at:d(1,15),created:d(1,15),card_last4:'4242',refundable:true},
+      {id:'demo2',status:'paid',kind:'flat',offline:true,paid_via:'Check',check_no:'1042',target_type:'team',target_slug:'varsity',target_name:'Varsity',donor_name:'Grandma Jo',donor_email:'',description:'$250.00 one-time donation',computed_cents:25000,paid_at:d(3),created:d(3),note:'Handed to coach at practice'},
+      {id:'demo3',status:'pledged',kind:'per_shot',target_type:'player',target_slug:'jimmy-d',target_name:'Jimmy Daniels',donor_name:'Eric Stone',donor_email:'eric@example.com',description:'$0.50 per made free throw',per_shot_cents:50,computed_cents:4200,makes:84,created:d(4)},
+      {id:'demo4',status:'invoiced',kind:'per_shot',target_type:'player',target_slug:'sara-k',target_name:'Sam Kim',donor_name:'Jill Fisher',donor_email:'jill@example.com',description:'$0.25 per made free throw (up to $100.00)',per_shot_cents:25,cap_cents:10000,computed_cents:1775,makes:71,created:d(6),invoiced_at:d(0,9)},
+      {id:'demo5',status:'paid',kind:'flat',target_type:'org',target_slug:'',target_name:'the whole program',donor_name:'Lee Park',donor_email:'lee@example.com',anonymous:true,description:'$50.00 one-time donation',computed_cents:5150,fee_cents:150,paid_at:d(6,19),created:d(6,19),card_last4:'1881',refundable:true},
+      {id:'demo6',status:'refunded',kind:'flat',target_type:'org',target_slug:'',target_name:'the whole program',donor_name:'Test Gift',donor_email:'test@example.com',description:'$5.00 one-time donation',computed_cents:500,amount_refunded_cents:500,paid_at:d(8),created:d(8),refunded_at:d(7)},
+      {id:'demo7',status:'paid',kind:'flat',target_type:'player',target_slug:'tj-r',target_name:'TJ Roberts',donor_name:'Chris Moore',donor_email:'chris@example.com',description:'$75.00 one-time donation',computed_cents:7500,paid_at:d(9,11),created:d(9,11),card_last4:'0005',refundable:true}
+    ] };
+}
+function enterDemo(){ state.demo=true; setCfg(demoData()); $('demoBanner').style.display='block'; showApp(); render(); }
+
+/* boot */
+window.addEventListener('hashchange',function(){ if(!$('app').classList.contains('hide')) go(location.hash.slice(1)); });
 (function(){
   if(new URLSearchParams(location.search).get('demo')==='1'){ enterDemo(); return; }
   var k=''; try{ k=sessionStorage.getItem(KEY_STORE)||''; }catch(e){}
-  if(k){ state.key=k; loadConfig().then(function(){ $('loginWrap').style.display='none'; $('dash').style.display='block'; $('logoutBtn').style.display='inline-flex'; }).catch(function(){ state.key=''; try{sessionStorage.removeItem(KEY_STORE);}catch(e){} }); }
+  if(k){ state.key=k; loadConfig().then(function(){ showApp(); render(); }).catch(function(){ state.key=''; try{sessionStorage.removeItem(KEY_STORE);}catch(e){} }); }
 })();
 </script>
 </body>
