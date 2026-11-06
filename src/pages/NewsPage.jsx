@@ -4,6 +4,61 @@ import { FadeIn, Spade, Icon, news } from "../shared";
 
 const ordered = [...news].sort((a, b) => (b.sortKey || 0) - (a.sortKey || 0));
 
+// Aces Weekly sign-up. Posts to /api/newsletter; the hidden "website" field is
+// a honeypot that people never see and bots fill in.
+const OSW = "'Oswald',sans-serif";
+const SANS = "'Source Sans 3',sans-serif";
+const field = { width: "100%", boxSizing: "border-box", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 10, color: "#fff", padding: "12px 14px", fontFamily: SANS, fontSize: 15, outline: "none" };
+function WeeklySignup() {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [hp, setHp] = useState("");
+  const [state, setState] = useState("idle"); // idle, busy, done, error
+  const [err, setErr] = useState("");
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { setErr("Enter the email address you check."); return; }
+    setState("busy"); setErr("");
+    try {
+      const r = await fetch("/api/newsletter", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "subscribe", email: email.trim(), name: name.trim(), hp }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || "failed");
+      setState("done");
+    } catch (x) {
+      setState("idle");
+      setErr(x.message === "slow_down" ? "Too many tries. Give it a minute." : x.message === "not_configured" ? "Sign-ups open soon." : "Couldn't sign you up. Check your connection and try again.");
+    }
+  };
+  return (
+    <div style={{ marginTop: 44, borderRadius: 16, border: "1px solid rgba(201,164,74,0.25)", background: "linear-gradient(135deg, rgba(132,0,54,0.22), rgba(10,0,5,0.4))", padding: "28px 32px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 24, alignItems: "center" }}>
+      <div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+          <img src="/LM_Logo.png" alt="" style={{ width: 44, height: 44, objectFit: "contain" }} />
+          <span style={{ fontFamily: OSW, fontSize: 10, letterSpacing: 3, color: "var(--gold)", textTransform: "uppercase" }}>Aces Weekly</span>
+        </div>
+        <h3 style={{ fontFamily: OSW, fontWeight: 700, fontSize: "clamp(22px,2.6vw,28px)", lineHeight: 1.15, textTransform: "uppercase", margin: "0 0 10px" }}>Aces Weekly, the family newsletter</h3>
+        <p style={{ fontFamily: SANS, fontSize: 15, color: "rgba(255,255,255,0.62)", lineHeight: 1.7, margin: 0 }}>Results, the week ahead, a player of the game and program news, in your inbox once a week during the season. One email, no spam, unsubscribe any time.</p>
+      </div>
+      {state === "done" ? (
+        <div style={{ fontFamily: SANS, fontSize: 16, color: "#fff", lineHeight: 1.6 }}>
+          <div style={{ fontFamily: OSW, fontSize: 20, textTransform: "uppercase", letterSpacing: 1, color: "var(--gold)", marginBottom: 6 }}>You are on the list</div>
+          Look for Aces Weekly from Lower Merion Aces Basketball. If it lands in a promotions or spam folder, drag it to your inbox once and it will stay there.
+        </div>
+      ) : (
+        <form onSubmit={submit} style={{ display: "grid", gap: 10 }}>
+          <input style={field} type="email" autoComplete="email" value={email} placeholder="Email address" onChange={(e) => setEmail(e.target.value)} required />
+          <input style={field} type="text" autoComplete="name" value={name} placeholder="Your name (optional)" maxLength={60} onChange={(e) => setName(e.target.value)} />
+          <div style={{ position: "absolute", left: -9999, top: -9999, width: 1, height: 1, overflow: "hidden" }} aria-hidden="true">
+            <label>Website<input type="text" name="website" tabIndex={-1} autoComplete="off" value={hp} onChange={(e) => setHp(e.target.value)} /></label>
+          </div>
+          <button type="submit" disabled={state === "busy"} style={{ fontFamily: OSW, fontSize: 13, letterSpacing: 2, textTransform: "uppercase", padding: "13px 18px", borderRadius: 9, cursor: "pointer", border: "none", color: "#1a0010", background: "linear-gradient(135deg, #c9a44a, #b3873a)", fontWeight: 600, opacity: state === "busy" ? 0.7 : 1 }}>{state === "busy" ? "Signing you up" : "Sign me up"}</button>
+          {err && <div style={{ fontFamily: SANS, fontSize: 13, color: "#f87171" }}>{err}</div>}
+        </form>
+      )}
+    </div>
+  );
+}
+
 export default function NewsPage() {
   const [selected, setSelected] = useState(null);
 
@@ -61,11 +116,13 @@ export default function NewsPage() {
           <div className="divider" />
         </FadeIn>
 
+        <FadeIn delay={0.08}><WeeklySignup /></FadeIn>
+
         {/* Featured */}
         {featured && (
           <FadeIn delay={0.12}>
             <div onClick={() => setSelected(featured)} style={{
-              marginTop: 44, borderRadius: 16, overflow: "hidden", cursor: "pointer",
+              marginTop: 20, borderRadius: 16, overflow: "hidden", cursor: "pointer",
               border: "1px solid rgba(201,164,74,0.25)",
               display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))",
               background: "rgba(255,255,255,0.02)", transition: "transform 0.25s ease, box-shadow 0.25s ease",

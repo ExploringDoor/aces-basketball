@@ -10,7 +10,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node tests/clinic.test.mjs && node tests/shootathon.test.mjs && node tests/playbook.test.mjs && node tests/site.test.mjs && node tests/scouting.test.mjs && node tests/practice.test.mjs && node tests/flows.test.mjs"
+    "test": "node tests/clinic.test.mjs && node tests/shootathon.test.mjs && node tests/playbook.test.mjs && node tests/site.test.mjs && node tests/scouting.test.mjs && node tests/practice.test.mjs && node tests/newsletter.test.mjs && node tests/flows.test.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
