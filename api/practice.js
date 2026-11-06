@@ -127,7 +127,7 @@ export default async function handler(req, res) {
   if (body.action === 'delete') {
     const id = String(body.id || '');
     if (!validId(id)) return json(res, 400, { error: 'bad_id' });
-    const ok = await fsDelete(planPath(id));
+    const ok = (await fsDelete(planPath(id)).ok);
     if (!ok) return json(res, 500, { error: 'save_failed' });
     return json(res, 200, { ok: true, id });
   }
