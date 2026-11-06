@@ -9,19 +9,25 @@
 //   scouting_meta/aces_assignments    { site, map: { [slug]: { scout, helper, status } } }
 //   scouting_reports/aces_<slug>      { site, opp, <sections>, personnel, keys, matchups, links, updated_at, updated_by }
 //
-// Auth: header x-scouting-key = SCORES_PASSCODE or ADMIN_PASSWORD (the same
-// coaches' passcode as /#scores). x-scouting-user names who is editing.
+// Auth: header x-scouting-key = a coach's OWN code (from the staff list) or
+// ADMIN_PASSWORD. Every save is stamped with the coach the code belongs to;
+// the admin password is "Admin" and is the only one that manages the staff
+// list and hands out codes. Adam, 11/6: "each coach to have their own
+// password", replacing the shared scores passcode here.
 //
 // GET  ?opp=<slug>  -> { report, updated_at }      one report
-// GET               -> { staff, assignments, reports: { [slug]: { updated_at, updated_by, pct } } }
-// POST { action: "check" }
-//      { action: "staff", names: [...] }
+// GET               -> { me, staff, assignments, reports: { [slug]: { updated_at, updated_by, pct } } }
+//                      staff carries codes only for the admin
+// POST { action: "check" }                                 -> { ok, me }
+//      { action: "staff_add", name } | { action: "staff_code", name } | { action: "staff_set", name, code }
+//      | { action: "staff_remove", name }                                                       admin only
 //      { action: "assign", slug, scout, helper, status }
 //      { action: "save", slug, opp, expect, report }   expect = updated_at the editor loaded;
 //                                                       a newer save answers 409 stale
+import { randomInt } from 'node:crypto';
 import { fbAdminConfigured, fsGet, fsPatch, fsList } from './_firestore.js';
 import { SITE_TAG } from './_site.js';
-import { DEFAULT_STAFF, LIMITS, cleanStaff, cleanAssignment, cleanReport, completeness, clip, slugOf, SECTIONS } from './_scouting.js';
+import { DEFAULT_STAFF, LIMITS, cleanStaffList, normCode, codeKey, codeFor, validCode, cleanAssignment, cleanReport, completeness, clip, slugOf, SECTIONS } from './_scouting.js';
 
 const STAFF = `scouting_meta/${SITE_TAG}_staff`;
 const ASSIGN = `scouting_meta/${SITE_TAG}_assignments`;
@@ -35,18 +41,39 @@ function ctEq(a, b) {
   for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return r === 0;
 }
-const authed = (req) => {
-  const k = req.headers['x-scouting-key'] || '';
-  return ctEq(k, process.env.SCORES_PASSCODE) || ctEq(k, process.env.ADMIN_PASSWORD);
-};
-const who = (req) => clip(req.headers['x-scouting-user'], LIMITS.name) || 'a coach';
+/** Grugan47!: the coach's first name, two or three digits, a bang. */
+const newCode = (name) => codeFor(name, String(randomInt(10, 999)));
+const isAdminKey = (k) => ctEq(k, process.env.ADMIN_PASSWORD);
+
+/** Who is calling: the admin, a coach by their own code, or nobody. The
+ *  staff list is read on every call so a removed code stops working at once. */
+async function resolveAuth(req) {
+  const k = String(req.headers['x-scouting-key'] || '');
+  if (isAdminKey(k)) return { role: 'admin', name: 'Admin', staff: await loadStaff() };
+  const code = normCode(k);
+  if (!code) return null;
+  const staff = await loadStaff();
+  const hit = staff.find((c) => c.code && ctEq(codeKey(c.code), codeKey(code)));
+  return hit ? { role: 'coach', name: hit.name, staff } : null;
+}
 const json = (res, code, body) => { res.statusCode = code; res.setHeader('Content-Type', 'application/json'); res.setHeader('Cache-Control', 'no-store'); res.end(JSON.stringify(body)); };
 
+/** The staff list, bootstrapped from DEFAULT_STAFF with fresh codes the first
+ *  time anyone asks, so Adam's first admin visit already has codes to hand out. */
 async function loadStaff() {
   const d = await fsGet(STAFF);
-  const names = d && Array.isArray(d.names) ? cleanStaff(d.names) : [];
-  return names.length ? names : DEFAULT_STAFF.slice();
+  const list = d && Array.isArray(d.staff) ? cleanStaffList(d.staff) : [];
+  if (list.length) return list;
+  const fresh = cleanStaffList(DEFAULT_STAFF.map((name) => ({ name, code: newCode(name) })));
+  await fsPatch(STAFF, { site: SITE_TAG, staff: fresh, updated_at: new Date().toISOString(), updated_by: 'setup' });
+  return fresh;
 }
+async function saveStaff(list, by) {
+  const r = await fsPatch(STAFF, { site: SITE_TAG, staff: list, updated_at: new Date().toISOString(), updated_by: by });
+  return !(r && r.error);
+}
+/** What a caller may see of the staff list: names always, codes only for the admin. */
+const staffFor = (auth) => auth.staff.map((c) => (auth.role === 'admin' ? { name: c.name, code: c.code } : { name: c.name }));
 async function loadAssignments() {
   const d = await fsGet(ASSIGN);
   const map = d && d.map && typeof d.map === 'object' ? d.map : {};
@@ -61,8 +88,9 @@ const stripReport = (d) => {
 };
 
 export default async function handler(req, res) {
-  if (!authed(req)) return json(res, 401, { error: 'wrong_passcode' });
   if (!fbAdminConfigured()) return json(res, 503, { error: 'not_configured' });
+  const auth = await resolveAuth(req);
+  if (!auth) return json(res, 401, { error: 'wrong_passcode' });
 
   if (req.method === 'GET') {
     const url = new URL(req.url, 'http://x');
@@ -72,13 +100,13 @@ export default async function handler(req, res) {
       const d = await fsGet(reportPath(slug));
       return json(res, 200, { report: stripReport(d) });
     }
-    const [staff, assignments, reports] = await Promise.all([loadStaff(), loadAssignments(), fsList('scouting_reports')]);
+    const [assignments, reports] = await Promise.all([loadAssignments(), fsList('scouting_reports')]);
     const summary = {};
     for (const d of reports) {
       if (d.site !== SITE_TAG || typeof d.id !== 'string' || !d.id.startsWith(`${SITE_TAG}_`)) continue;
       summary[d.id.slice(SITE_TAG.length + 1)] = { updated_at: d.updated_at || '', updated_by: d.updated_by || '', pct: completeness(d) };
     }
-    return json(res, 200, { staff, assignments, reports: summary });
+    return json(res, 200, { me: { name: auth.name, role: auth.role }, staff: staffFor(auth), assignments, reports: summary });
   }
 
   if (req.method !== 'POST') return json(res, 405, { error: 'method_not_allowed' });
@@ -86,16 +114,35 @@ export default async function handler(req, res) {
   if (typeof body === 'string') { try { body = JSON.parse(body); } catch { body = null; } }
   if (!body || typeof body !== 'object') return json(res, 400, { error: 'bad_json' });
   const now = new Date().toISOString();
-  const by = who(req);
+  const by = auth.name;
 
-  if (body.action === 'check') return json(res, 200, { ok: true });
+  if (body.action === 'check') return json(res, 200, { ok: true, me: { name: auth.name, role: auth.role } });
 
-  if (body.action === 'staff') {
-    const names = cleanStaff(body.names);
-    if (!names.length) return json(res, 400, { error: 'no_names' });
-    const r = await fsPatch(STAFF, { site: SITE_TAG, names, updated_at: now, updated_by: by });
-    if (r && r.error) return json(res, 500, { error: 'save_failed' });
-    return json(res, 200, { ok: true, staff: names });
+  if (['staff_add', 'staff_code', 'staff_set', 'staff_remove'].includes(body.action)) {
+    if (auth.role !== 'admin') return json(res, 403, { error: 'admin_only' });
+    const name = clip(body.name, LIMITS.name);
+    if (!name) return json(res, 400, { error: 'no_name' });
+    let list = auth.staff.slice();
+    const i = list.findIndex((c) => c.name.toLowerCase() === name.toLowerCase());
+    if (body.action === 'staff_add') {
+      if (i >= 0) return json(res, 400, { error: 'already_there' });
+      if (list.length >= LIMITS.staff) return json(res, 400, { error: 'staff_full' });
+      list.push({ name, code: newCode(name) });
+    } else if (i < 0) {
+      return json(res, 404, { error: 'no_such_coach' });
+    } else if (body.action === 'staff_code') {
+      list[i] = { name: list[i].name, code: newCode(list[i].name) };
+    } else if (body.action === 'staff_set') {
+      const code = normCode(body.code);
+      if (!validCode(code)) return json(res, 400, { error: 'bad_code' });
+      if (list.some((c, j) => j !== i && codeKey(c.code) === codeKey(code))) return json(res, 400, { error: 'code_taken' });
+      list[i] = { name: list[i].name, code };
+    } else {
+      list.splice(i, 1);
+    }
+    list = cleanStaffList(list);
+    if (!(await saveStaff(list, by))) return json(res, 500, { error: 'save_failed' });
+    return json(res, 200, { ok: true, staff: list });
   }
 
   if (body.action === 'assign') {

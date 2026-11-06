@@ -1,7 +1,7 @@
 // pages/ScoutingPage.jsx
-// Coach tool (not in the menu): open /#scouting, enter the coaches' passcode
-// once (the same one as /#scores), say who you are, and the board shows every
-// opponent on the schedule with who is scouting them. Open an opponent to
+// Coach tool (not in the menu): open /#scouting, enter YOUR OWN password once
+// (Grugan47!: the admin hands them out from this page), and the board shows
+// every opponent on the schedule with who is scouting them. Open an opponent to
 // fill in the report: overview, personnel, offense, defense, special
 // situations, keys to win, matchups, film links. Print makes the one-page
 // handout for players. Saves go to /api/scouting (Firestore, staff only).
@@ -9,8 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Spade, allGames, roster, teamLogos } from "../shared";
 import { DEFAULT_STAFF, STATUSES, STATUS_LABEL, SECTIONS, PERSONNEL_FIELDS, LIMITS, opponentsFrom, emptyReport, completeness, printHtml } from "../../api/_scouting.js";
 
-const KEY_STORE = "aces-scores-key"; // shared with /#scores: one passcode, remembered once
-const USER_STORE = "aces-scouting-user";
+const KEY_STORE = "aces-scouting-key"; // this coach's own password, remembered on this phone
 const readLS = (k) => { try { return localStorage.getItem(k) || ""; } catch { return ""; } };
 const writeLS = (k, v) => { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch { /* ignore */ } };
 const NY = "America/New_York";
@@ -24,10 +23,10 @@ const select = { ...input, appearance: "none", WebkitAppearance: "none", cursor:
 const btn = (primary, small) => ({ fontFamily: OSW, fontSize: small ? 11 : 13, letterSpacing: 2, textTransform: "uppercase", padding: small ? "8px 12px" : "12px 18px", borderRadius: 9, cursor: "pointer", border: primary ? "none" : "1px solid rgba(255,255,255,0.18)", color: primary ? "#1a0010" : "#fff", background: primary ? "linear-gradient(135deg, #c9a44a, #b3873a)" : "rgba(255,255,255,0.05)", fontWeight: 600, whiteSpace: "nowrap" });
 const card = { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: 14 };
 const STATUS_COLOR = { not_started: "rgba(255,255,255,0.35)", in_progress: "#fbbf24", ready: "#4ade80" };
-const ERR = { wrong_passcode: "That passcode didn't work.", not_configured: "Scouting isn't switched on yet.", stale: "Someone saved this report after you opened it.", save_failed: "Couldn't save. Try again in a moment.", bad_opp: "That opponent isn't on the schedule." };
+const ERR = { wrong_passcode: "That password didn't work.", not_configured: "Scouting isn't switched on yet.", stale: "Someone saved this report after you opened it.", save_failed: "Couldn't save. Try again in a moment.", bad_opp: "That opponent isn't on the schedule.", admin_only: "Only the admin can change the staff list.", already_there: "That coach is already on the list.", bad_code: "A password needs 4 to 24 characters.", code_taken: "Another coach already has that password.", staff_full: "The staff list is full." };
 
 async function api(key, user, body, query = "") {
-  const r = await fetch(`/api/scouting${query}`, { method: body ? "POST" : "GET", headers: { "Content-Type": "application/json", "x-scouting-key": key, "x-scouting-user": user || "" }, body: body ? JSON.stringify(body) : undefined });
+  const r = await fetch(`/api/scouting${query}`, { method: body ? "POST" : "GET", headers: { "Content-Type": "application/json", "x-scouting-key": key }, body: body ? JSON.stringify(body) : undefined });
   const d = await r.json().catch(() => ({}));
   if (!r.ok) { const e = new Error(d.error || `http_${r.status}`); e.data = d; throw e; }
   return d;
@@ -48,10 +47,13 @@ function Board({ keyCode, user, onOpen, onAuthFail }) {
   const [err, setErr] = useState("");
   const [mine, setMine] = useState(false);
   const [editStaff, setEditStaff] = useState(false);
-  const [staffText, setStaffText] = useState("");
+  const [newName, setNewName] = useState("");
+  const [setting, setSetting] = useState({});
   const load = async () => { try { setData(await api(keyCode, user)); setErr(""); } catch (e) { if (e.message === "wrong_passcode") onAuthFail(); setErr(ERR[e.message] || "Couldn't load the board. Check your connection."); } };
   useEffect(() => { load(); }, []); // eslint-disable-line
-  const staff = (data && data.staff) || DEFAULT_STAFF;
+  const staffRows = (data && data.staff) || DEFAULT_STAFF.map((name) => ({ name }));
+  const staff = staffRows.map((c) => c.name);
+  const isAdmin = !!(data && data.me && data.me.role === "admin");
   const assign = async (slug, patch) => {
     const cur = (data && data.assignments && data.assignments[slug]) || { scout: "", helper: "", status: "not_started" };
     const next = { ...cur, ...patch };
@@ -59,11 +61,12 @@ function Board({ keyCode, user, onOpen, onAuthFail }) {
     try { const r = await api(keyCode, user, { action: "assign", slug, ...next }); setData((d) => ({ ...d, assignments: r.assignments })); }
     catch (e) { setErr(ERR[e.message] || "Couldn't save that."); load(); }
   };
-  const saveStaff = async () => {
-    const names = staffText.split(/[\n,]/).map((s) => s.trim()).filter(Boolean);
-    try { const r = await api(keyCode, user, { action: "staff", names }); setData((d) => ({ ...d, staff: r.staff })); setEditStaff(false); }
-    catch (e) { setErr(ERR[e.message] || "Couldn't save the staff list."); }
+  const staffAction = async (body) => {
+    try { const r = await api(keyCode, user, body); setData((d) => ({ ...d, staff: r.staff })); setErr(""); return true; }
+    catch (e) { setErr(ERR[e.message] || "Couldn't save the staff list."); return false; }
   };
+  const shareText = () => staffRows.filter((c) => c.code).map((c) => `${c.name}: ${c.code}`).join("\n");
+  const copyCodes = async () => { try { await navigator.clipboard.writeText(`Aces scouting, aces-basketball.vercel.app/#scouting\n${shareText()}`); setErr(""); } catch { setErr("Couldn't copy. Select the list and copy it by hand."); } };
   const rows = opponents.filter((o) => !mine || [(data && data.assignments && data.assignments[o.slug]) || {}].some((a) => a.scout === user || a.helper === user));
   const counts = {};
   for (const o of opponents) { const a = data && data.assignments && data.assignments[o.slug]; if (a && a.scout) counts[a.scout] = (counts[a.scout] || 0) + 1; }
@@ -71,14 +74,29 @@ function Board({ keyCode, user, onOpen, onAuthFail }) {
     <div style={{ display: "grid", gap: 14 }}>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
         {staff.map((s) => <span key={s} style={{ ...label, color: s === user ? "var(--gold)" : "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 999, padding: "6px 10px" }}>{s} · {counts[s] || 0}</span>)}
-        <button style={btn(false, true)} onClick={() => { setStaffText(staff.join("\n")); setEditStaff(!editStaff); }}>{editStaff ? "Cancel" : "Edit staff"}</button>
+        {isAdmin && <button style={btn(false, true)} onClick={() => setEditStaff(!editStaff)}>{editStaff ? "Close" : "Staff and passwords"}</button>}
         <label style={{ ...label, display: "flex", alignItems: "center", gap: 6, marginLeft: "auto", cursor: "pointer" }}><input type="checkbox" checked={mine} onChange={(e) => setMine(e.target.checked)} /> Just mine</label>
       </div>
-      {editStaff && (
+      {editStaff && isAdmin && (
         <div style={card}>
-          <div style={label}>Scouting staff, one per line</div>
-          <textarea style={{ ...input, marginTop: 6, minHeight: 90, fontFamily: SANS }} value={staffText} onChange={(e) => setStaffText(e.target.value)} />
-          <div style={{ marginTop: 8 }}><button style={btn(true, true)} onClick={saveStaff}>Save staff</button></div>
+          <div style={label}>Staff and passwords</div>
+          <div style={{ fontFamily: SANS, fontSize: 13, color: "rgba(255,255,255,0.5)", margin: "4px 0 10px" }}>Each coach signs in with their own password. Hand these out one to one. New code makes a fresh one; you can also type one in and Set it.</div>
+          <div style={{ display: "grid", gap: 8 }}>
+            {staffRows.map((c) => (
+              <div key={c.name} style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto auto auto", gap: 6, alignItems: "center" }}>
+                <span style={{ fontFamily: SANS, fontSize: 15, color: c.name === user ? "var(--gold)" : "#fff" }}>{c.name}</span>
+                <input style={{ ...input, padding: "7px 10px", fontFamily: OSW, letterSpacing: 1 }} value={setting[c.name] != null ? setting[c.name] : (c.code || "")} placeholder="no password yet" onChange={(e) => setSetting((p) => ({ ...p, [c.name]: e.target.value }))} />
+                <button style={btn(false, true)} disabled={setting[c.name] == null || setting[c.name] === c.code} onClick={async () => { if (await staffAction({ action: "staff_set", name: c.name, code: setting[c.name] })) setSetting((p) => { const n = { ...p }; delete n[c.name]; return n; }); }}>Set</button>
+                <button style={btn(false, true)} onClick={() => { if (window.confirm(`Give ${c.name} a new password? The old one stops working.`)) staffAction({ action: "staff_code", name: c.name }); }}>New</button>
+                <button style={btn(false, true)} onClick={() => { if (window.confirm(`Remove ${c.name} from the staff list?`)) staffAction({ action: "staff_remove", name: c.name }); }}>x</button>
+              </div>
+            ))}
+            <div style={{ display: "flex", gap: 6 }}>
+              <input style={input} value={newName} placeholder="Add a coach" maxLength={LIMITS.name} onChange={(e) => setNewName(e.target.value)} />
+              <button style={btn(true, true)} disabled={!newName.trim()} onClick={async () => { if (await staffAction({ action: "staff_add", name: newName.trim() })) setNewName(""); }}>Add</button>
+            </div>
+            <div><button style={btn(false, true)} onClick={copyCodes}>Copy the list to share</button></div>
+          </div>
         </div>
       )}
       {err && <div style={{ fontFamily: SANS, fontSize: 13, color: "#f87171" }}>{err}</div>}
@@ -278,19 +296,23 @@ function Report({ keyCode, user, opp, onBack, onAuthFail }) {
 
 export default function ScoutingPage() {
   const [keyCode, setKeyCode] = useState(() => readLS(KEY_STORE));
-  const [user, setUser] = useState(() => readLS(USER_STORE));
+  const [me, setMe] = useState(null);
   const [entry, setEntry] = useState("");
   const [err, setErr] = useState("");
   const [open, setOpen] = useState(null);
-  const [staff, setStaff] = useState(DEFAULT_STAFF);
-  useEffect(() => { if (keyCode) api(keyCode, user).then((d) => setStaff(d.staff || DEFAULT_STAFF)).catch(() => {}); }, [keyCode]); // eslint-disable-line
-  const signOut = () => { writeLS(KEY_STORE, ""); setKeyCode(""); setOpen(null); };
+  // A remembered password is checked on load, so a coach whose password was
+  // changed is asked for the new one instead of seeing errors on every save.
+  useEffect(() => {
+    if (!keyCode) { setMe(null); return; }
+    api(keyCode, "", { action: "check" }).then((d) => setMe(d.me)).catch((e) => { if (e.message === "wrong_passcode") { writeLS(KEY_STORE, ""); setKeyCode(""); } });
+  }, [keyCode]);
+  const signOut = () => { writeLS(KEY_STORE, ""); setKeyCode(""); setMe(null); setOpen(null); };
   const unlock = async (e) => {
     e.preventDefault(); setErr("");
-    try { await api(entry.trim(), user, { action: "check" }); writeLS(KEY_STORE, entry.trim()); setKeyCode(entry.trim()); }
+    try { const d = await api(entry.trim(), "", { action: "check" }); writeLS(KEY_STORE, entry.trim()); setKeyCode(entry.trim()); setMe(d.me); }
     catch (x) { setErr(ERR[x.message] || "Couldn't reach the site. Check your connection."); }
   };
-  const pickUser = (v) => { setUser(v); writeLS(USER_STORE, v); };
+  const user = me ? me.name : "";
   return (
     <section id="scouting" style={{ background: "#0a0005", padding: "110px 5% 120px", minHeight: "100vh" }}>
       <div style={{ maxWidth: 760, margin: "0 auto" }}>
@@ -299,24 +321,18 @@ export default function ScoutingPage() {
         <div className="divider" />
         {!keyCode ? (
           <form onSubmit={unlock} style={{ marginTop: 26, display: "grid", gap: 12, maxWidth: 420 }}>
-            <p style={{ fontFamily: SANS, fontSize: 14.5, color: "rgba(255,255,255,0.6)", lineHeight: 1.6, margin: 0 }}>Enter the coaches' passcode. This phone will remember it.</p>
-            <input style={input} type="password" autoComplete="current-password" value={entry} onChange={(e) => setEntry(e.target.value)} placeholder="Passcode" />
+            <p style={{ fontFamily: SANS, fontSize: 14.5, color: "rgba(255,255,255,0.6)", lineHeight: 1.6, margin: 0 }}>Enter your scouting password. This phone will remember it.</p>
+            <input style={input} type="password" autoComplete="current-password" value={entry} onChange={(e) => setEntry(e.target.value)} placeholder="Password" />
             <button style={btn(true)} type="submit">Unlock</button>
             {err && <div style={{ fontFamily: SANS, fontSize: 13, color: "#f87171" }}>{err}</div>}
           </form>
-        ) : !user ? (
-          <div style={{ marginTop: 26, display: "grid", gap: 12, maxWidth: 420 }}>
-            <p style={{ fontFamily: SANS, fontSize: 14.5, color: "rgba(255,255,255,0.6)", lineHeight: 1.6, margin: 0 }}>Who are you? Reports are stamped with your name when you save.</p>
-            <select style={select} value="" onChange={(e) => pickUser(e.target.value)}><option value="">Pick your name</option>{staff.map((s) => <option key={s} value={s}>{s}</option>)}</select>
-          </div>
+        ) : !me ? (
+          <div style={{ marginTop: 26, fontFamily: SANS, color: "rgba(255,255,255,0.5)" }}>Checking your password…</div>
         ) : (
           <div style={{ marginTop: 22 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>
               <span style={{ ...label, color: "rgba(255,255,255,0.6)" }}>Signed in as <span style={{ color: "var(--gold)" }}>{user}</span></span>
-              <span style={{ display: "flex", gap: 8 }}>
-                <button style={btn(false, true)} onClick={() => pickUser("")}>Switch name</button>
-                <button style={btn(false, true)} onClick={signOut}>Sign out</button>
-              </span>
+              <button style={btn(false, true)} onClick={signOut}>Sign out</button>
             </div>
             {open ? <Report keyCode={keyCode} user={user} opp={open} onBack={() => setOpen(null)} onAuthFail={signOut} /> : <Board keyCode={keyCode} user={user} onOpen={setOpen} onAuthFail={signOut} />}
           </div>

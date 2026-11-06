@@ -12,7 +12,48 @@
 // No shot clock in PIAA play (reference_aces_game_rules): the special
 // situations section asks about holding the ball, not about 2-for-1s.
 
-export const DEFAULT_STAFF = ['Matt', 'Eric', 'Sam Chalal'];
+// Adam, 11/6: the coaching staff. Admins add or remove names from the page.
+export const DEFAULT_STAFF = ['Matt', 'Eric', 'Gallman', 'Grugan', 'Downer', 'Adam'];
+
+// Each coach has a password of their own (Adam, 11/6: "each coach and each
+// player to have their own passwords ... very basic passwords please with a
+// few numbers and !"). The generated shape is the coach's first name, two or
+// three digits and an exclamation mark: Grugan47!. Compared case-insensitively
+// and ignoring spaces, so "grugan47 !" typed on a phone still works. An admin
+// can also set one by hand.
+export const CODE_MIN = 4;
+export const CODE_MAX = 24;
+export function normCode(raw) {
+  return String(raw == null ? '' : raw).replace(/\s+/g, '').slice(0, CODE_MAX);
+}
+export const codeKey = (c) => normCode(c).toLowerCase();
+export function validCode(c) { const n = normCode(c); return n.length >= CODE_MIN && n.length <= CODE_MAX && !/[<>"']/.test(n); }
+/** "Grugan47!" from a name and a random digit string the caller supplies. */
+export function codeFor(name, digits) {
+  const first = clip(name, LIMITS.name).split(/\s+/)[0].replace(/[^A-Za-z]/g, '') || 'Coach';
+  return `${first.charAt(0).toUpperCase()}${first.slice(1)}${String(digits).replace(/\D/g, '').slice(0, 3) || '7'}!`;
+}
+
+/** The staff roster as stored: [{ name, code }]. Names unique, codes unique
+ *  and well-formed; a coach without a valid code keeps the row but cannot
+ *  sign in until an admin gives them one. */
+export function cleanStaffList(list) {
+  const seen = new Set();
+  const codes = new Set();
+  const out = [];
+  for (const raw of Array.isArray(list) ? list : []) {
+    if (typeof raw !== 'string' && !(raw && typeof raw === 'object')) continue;
+    const name = clip(typeof raw === 'object' ? raw.name : raw, LIMITS.name);
+    if (!name || seen.has(name.toLowerCase())) continue;
+    let code = normCode(raw && typeof raw === 'object' ? raw.code : '');
+    if (!validCode(code) || codes.has(codeKey(code))) code = '';
+    seen.add(name.toLowerCase());
+    if (code) codes.add(codeKey(code));
+    out.push({ name, code });
+    if (out.length >= LIMITS.staff) break;
+  }
+  return out;
+}
 export const STATUSES = ['not_started', 'in_progress', 'ready'];
 export const STATUS_LABEL = { not_started: 'Not started', in_progress: 'In progress', ready: 'Ready' };
 
