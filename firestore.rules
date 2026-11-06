@@ -45,6 +45,14 @@ service cloud.firestore {
     match /scouting_meta/{id} {
       allow read, write: if isSuper();
     }
+    // Practice plans and the custom drill library. Admin-only; coaches reach
+    // them through /api/practice with their scouting password.
+    match /practice_plans/{id} {
+      allow read, write: if isSuper();
+    }
+    match /practice_meta/{id} {
+      allow read, write: if isSuper();
+    }
 
     // Team Playbook: plays, player codes, the view log and the on/off switch. Admin-only;
     // players sign in through /api/playbook, which reads on their behalf.

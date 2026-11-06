@@ -30,6 +30,7 @@ import AcademicsPage      from "./pages/AcademicsPage";
 import SponsorshipsPage   from "./pages/SponsorshipsPage";
 import ScoresPage         from "./pages/ScoresPage";
 import ScoutingPage       from "./pages/ScoutingPage";
+import PracticePage       from "./pages/PracticePage";
 
 const PAGES = {
   home: null, news: NewsPage, clinics: FallClinicsPage, store: StorePage, flyers: FlyerPage, standings: StandingsPage, history: HistoryPage, thousand: ThousandClubPage,
@@ -41,6 +42,7 @@ const PAGES = {
   youth: YouthProgramsPage, academics: AcademicsPage, sponsors: SponsorshipsPage,
   scores: ScoresPage, // coach tool, not in the menu: post scores from a phone
   scouting: ScoutingPage, // coach tool, not in the menu: who scouts whom, and the opponent reports
+  practice: PracticePage, // coach tool, not in the menu: practice plans built from the drill library
 };
 
 // Menu ids that open a standalone page instead of an in-app page.
