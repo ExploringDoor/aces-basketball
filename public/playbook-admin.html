@@ -379,7 +379,8 @@ tr:last-child td{border-bottom:0}
       <div class="fld hide" id="edOppFld"><label for="edOpp">Opponent</label><input class="inp" id="edOpp" list="oppList" placeholder="Radnor" maxlength="60"><datalist id="oppList"></datalist></div>
       <div class="fld"><label for="edCat">Type</label><select class="inp" id="edCat"></select></div>
       <div class="fld"><label>Court</label><div class="seg" style="display:flex"><button type="button" data-court="half" style="flex:1">Half</button><button type="button" data-court="full" style="flex:1">Full</button></div></div>
-      <div class="fld"><label for="edNotes">Coaching notes</label><textarea class="inp" id="edNotes" rows="3" placeholder="When we run it, what to look for"></textarea></div>
+      <div class="fld"><label for="edNotes">About the play</label><textarea class="inp" id="edNotes" rows="3" placeholder="When we run it, who it's for"></textarea></div>
+      <div class="fld"><label for="edTips">Coach's tips</label><textarea class="inp" id="edTips" rows="5" placeholder="One tip per line&#10;Sprint the first cut, don't jog it&#10;Fake the pass before you throw it"></textarea><div class="help">Shows in a gold box next to the play. One tip per line, up to 12.</div></div>
       <div class="fld"><label>Who can see it</label><div class="chips" id="edGroups"></div><div class="help">Nobody picked means everyone.</div></div>
       <label class="switch" style="margin-bottom:14px"><input type="checkbox" id="edVisible"><span class="tr"></span><span class="tx"><b>Show to players</b><span>Off keeps it as a draft only you can see</span></span></label>
       <div class="sec" id="edLineupH">Who plays where</div>
@@ -627,7 +628,7 @@ function openEditor(id,kind){
   (play.frames||[]).forEach(function(f){ f.moves=f.moves||{}; f.pos=f.pos||{}; });
   E={ id:src?src.id:null, play:play, at:0, sel:'', bending:false, dirty:false };
   if(!src){ var set=PBCourt.SETS['Five out']; TOK.slice(0,5).forEach(function(k){ play.frames[0].pos[k]=set[k].slice(); }); play.frames[0].ball='O1'; }
-  $('edName').value=play.name; $('edNotes').value=play.notes||''; $('edVisible').checked=!!play.visible; $('edOpp').value=play.opponent||'';
+  $('edName').value=play.name; $('edNotes').value=play.notes||''; $('edTips').value=(play.tips||[]).join('\n'); $('edVisible').checked=!!play.visible; $('edOpp').value=play.opponent||'';
   $('edOppFld').classList.toggle('hide',!isScout());
   $('edKindTag').textContent=isScout()?'Scouting':'Our play';
   $('edCat').innerHTML=CATEGORIES.map(function(c){ return '<option'+(c===play.category?' selected':'')+'>'+c+'</option>'; }).join('');
@@ -676,6 +677,7 @@ $('edDef').addEventListener('change',function(){
 $('edName').addEventListener('input',function(){ E.play.name=this.value; dirty(); });
 $('edOpp').addEventListener('input',function(){ E.play.opponent=this.value; dirty(); });
 $('edNotes').addEventListener('input',function(){ E.play.notes=this.value; dirty(); });
+$('edTips').addEventListener('input',function(){ E.play.tips=this.value.split('\n').map(function(t){ return t.replace(/^\s*[-•*]\s*/,'').trim(); }).filter(Boolean).slice(0,12); dirty(); });
 $('edCat').addEventListener('change',function(){ E.play.category=this.value; dirty(); });
 $('edVisible').addEventListener('change',function(){ E.play.visible=this.checked; dirty(); });
 $('edFrNote').addEventListener('input',function(){ cur().note=this.value; dirty(); renderStrip(); });

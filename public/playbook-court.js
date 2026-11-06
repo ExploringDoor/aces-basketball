@@ -331,7 +331,7 @@
     var p0 = FULL_SETS['Press break (4 across)'], p1 = after(p0, { O1: [392, 772] }), p2 = after(p1, { O5: [250, 565], O4: [230, 790] });
     var p3 = after(p2, { O2: [110, 330], O3: [392, 250] }), p4 = after(p3, { O2: [180, 125], O3: [305, 78] });
     return [
-      { id: 'demo1', name: 'Horns Flare', category: 'Offense', court: 'half', notes: 'Our go to set against man. Run it out of a timeout or when we need a three.', lineup: { O1: { id: 'demo_me', name: 'Demo Player' }, O2: { id: 'd2', name: 'Chris Lee' }, O3: { id: 'd3', name: 'Marcus Hall' }, O4: { id: 'd4', name: 'Jaden Price' }, O5: { id: 'd5', name: 'Sam Oduya' } }, frames: [
+      { id: 'demo1', name: 'Horns Flare', category: 'Offense', court: 'half', notes: 'Our go to set against man. Run it out of a timeout or when we need a three.', tips: ['1: fade, don\'t drift. Get your feet set behind the line before the catch.', '5: set the screen on the defender\'s top shoulder, then dive hard.', '4: look at 5 first, then skip it to 1. Don\'t pre-decide.', 'If they switch the flare, 5 has the small guy on his back. Throw it in.'], lineup: { O1: { id: 'demo_me', name: 'Demo Player' }, O2: { id: 'd2', name: 'Chris Lee' }, O3: { id: 'd3', name: 'Marcus Hall' }, O4: { id: 'd4', name: 'Jaden Price' }, O5: { id: 'd5', name: 'Sam Oduya' } }, frames: [
         F(h0, 'O1', 'Horns. 4 and 5 at the elbows, 2 and 3 spaced to the corners.'),
         F(h1, 'O4', '1 hits 4 at the elbow.'),
         F(h2, 'O4', '5 sets the flare screen. 1 fades to the wing.', { O5: { t: 'screen' }, O1: { t: 'cut', c: [372, 345] } }),

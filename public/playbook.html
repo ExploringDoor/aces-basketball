@@ -65,6 +65,12 @@ h1,h2,h3{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2px}
 .seg button[aria-pressed="true"]{background:#fff;color:var(--mrn);box-shadow:var(--sh)}
 .seg button .cnt{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--mrn-100);color:var(--mrn);font-size:11px;line-height:18px;text-align:center;letter-spacing:0;font-family:'Source Sans 3',sans-serif;font-weight:700}
 .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.tips{background:var(--gold-50);border:1px solid #efe2bd;border-radius:16px;box-shadow:var(--sh);padding:18px}
+.tips h4{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold-d,#9c7a2a);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.tips h4 svg{width:18px;height:18px}
+.tips ol{list-style:none;display:flex;flex-direction:column;gap:9px}
+.tips li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px;line-height:1.4;color:var(--ink)}
+.tips li .n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--gold);color:#241a00;font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px}
 .lineup{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
 .lineup li{display:flex;align-items:center;gap:9px;font-size:14.5px;color:var(--ink-2);padding:4px 6px;border-radius:8px}
 .lineup li.me{background:var(--gold-50);color:var(--ink);font-weight:700}
@@ -241,6 +247,7 @@ body.shielded #app{filter:blur(22px)}
       <section class="vid hide" id="vidBox"><div class="vh"><h4>Watch it run</h4><b id="vidT"></b></div><div id="vidBody"></div></section></div>
       <aside class="side">
         <div class="box"><div class="scoutbar hide" id="pvScout"></div><div class="cat" id="pvCat"></div><h2 id="pvName"></h2><div class="notes" id="pvNotes"></div></div>
+        <div class="tips hide" id="pvTips"><h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.6 1 1.2 1 2.5h6c0-1.3.3-1.9 1-2.5A6 6 0 0 0 12 3z"/></svg>Coach's tips</h4><ol id="pvTipsList"></ol></div>
         <div class="box hide" id="pvLineupBox"><h4 id="pvLineupH">Who's where</h4><ul class="lineup" id="pvLineup"></ul></div>
         <div class="box"><h4>Steps</h4><ol class="steps" id="steps"></ol><div class="kb">Space plays and pauses. Arrow keys step through it.</div></div>
         <div class="box"><h4>How to read it</h4>
@@ -360,6 +367,7 @@ function openPlay(id,fromRoute){
   $('listView').classList.add('hide'); $('playView').classList.remove('hide'); window.scrollTo(0,0);
   $('pvCat').textContent=(kindOf(p)==='scout'?p.opponent+' · ':'')+p.category; $('pvName').textContent=p.name; $('pvNotes').textContent=p.notes||''; $('pvNotes').classList.toggle('hide',!p.notes);
   $('pvScout').classList.toggle('hide',kindOf(p)!=='scout'); $('pvScout').innerHTML='<b>Scouting</b><span>This is <strong>'+esc(p.opponent)+'</strong>\'s play. The grey numbers are them, the X\'s are us.</span>';
+  var tips=p.tips||[]; $('pvTips').classList.toggle('hide',!tips.length); $('pvTipsList').innerHTML=tips.map(function(t,i){ return '<li><span class="n">'+(i+1)+'</span><span>'+esc(t)+'</span></li>'; }).join('');
   renderLineup(p); renderVideo(p);
   $('courtWrap').classList.toggle('full',p.court==='full');
   var n=p.frames.length;

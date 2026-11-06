@@ -78,6 +78,9 @@ await test('video clips: only our Blob store or known video sites', () => {
   const r = cleanPlay(Object.assign({}, PLAY, { clip: good, clip_link: 'javascript:alert(1)' }));
   assert.equal(r.play.clip.name, 'horns.mp4');
   assert.equal(r.play.clip_link, '');
+  const t = cleanPlay(Object.assign({}, PLAY, { tips: '- Sprint the first cut\n\n• <b>Fake</b> the pass\n   ' }));
+  assert.deepEqual(t.play.tips, ['Sprint the first cut', 'bFake/b the pass']);
+  assert.deepEqual(cleanPlay(Object.assign({}, PLAY, { tips: ['a', 'b'] })).play.tips, ['a', 'b']);
 });
 await test('groups limit who can see a play', () => {
   const p = { visible: true, groups: ['Varsity'] };

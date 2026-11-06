@@ -11,7 +11,7 @@ import { clip, stripTags } from './_clinic.js';
 export const CATEGORIES = ['Offense', 'Defense', 'Baseline out', 'Sideline out', 'Press break', 'Press', 'Late game', 'Special'];
 export const TOKENS = ['O1', 'O2', 'O3', 'O4', 'O5', 'X1', 'X2', 'X3', 'X4', 'X5'];
 export const MOVE_TYPES = ['cut', 'dribble', 'screen'];
-export const LIMITS = { frames: 30, name: 60, notes: 1500, frameNote: 300, groups: 12, group: 30, playerName: 60, opponent: 60 };
+export const LIMITS = { frames: 30, name: 60, notes: 1500, frameNote: 300, groups: 12, group: 30, playerName: 60, opponent: 60, tips: 12, tip: 200 };
 export const KINDS = ['ours', 'scout'];   // our play, or an opponent's play we are scouting
 // Court units are tenths of a foot. Half court 50 x 42 ft (high school), full 50 x 84.
 // Tokens may sit up to 5 ft out of bounds (inbounders).
@@ -84,9 +84,12 @@ export function cleanPlay(p) {
   // link to YouTube / Hudl / Vimeo / Google Drive. Anything else is dropped.
   const video = cleanClip(p.clip);
   const clip_link = cleanClipLink(p.clip_link);
+  // Coach's tips: short bullets shown in their own box, one per line in the editor.
+  const tips = (Array.isArray(p.tips) ? p.tips : String(p.tips || '').split('\n'))
+    .map((t) => clip(stripTags(String(t || '').replace(/^\s*[-•*]\s*/, '').trim()), LIMITS.tip)).filter(Boolean).slice(0, LIMITS.tips);
   return {
     play: {
-      name, court, category, groups, kind, opponent, lineup, clip: video, clip_link,
+      name, court, category, groups, kind, opponent, lineup, clip: video, clip_link, tips,
       notes: clip(stripTags(String(p.notes || '').trim()), LIMITS.notes),
       visible: !!p.visible,
       frames: out,
