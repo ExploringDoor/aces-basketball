@@ -6,15 +6,20 @@
 //
 // POST { action, ... }
 //   Player:  login { code } · plays { token } · view { token, id }
+//            ask { token, id, text } · questions { token, id }   (their own questions + the
+//            team's answered ones on that play)
 //   Coach:   admin_list · save_play { play, id? } · set_visible { id, visible }
 //            archive { id } · restore { id } · add_players { players:[{name,group}] }
 //            update_player { id, name?, group?, active? } · new_code { id } · remove_player { id }
 //            set_open { open } · remove_clip { id } · drop_clip { url }   (delete an uploaded video)
+//            answer { id, answer } · hide_question { id } · unhide_question { id }
 
 import { fbAdminConfigured, fsGet, fsCreate, fsPatch, fsPatchVerified, fsList, fsQuery } from './_firestore.js';
 import { cleanPlay, cleanClip, canSee, newCode, normCode, cleanName, cleanGroup, signSession, readSession, sessionMatches, LIMITS } from './_playbook.js';
 import { SITE_TAG } from './_site.js';
 import { del as blobDel } from '@vercel/blob';
+import { sendMail, emailConfigured, ADMIN_EMAIL } from './_email.js';
+import { clip, stripTags } from './_clinic.js';
 
 function ctEq(a, b) {
   a = String(a || ''); b = String(b || '');
@@ -27,11 +32,29 @@ function authed(req) { const want = process.env.ADMIN_PASSWORD || ''; return !!w
 function safeId(id) { return /^[A-Za-z0-9_-]{1,128}$/.test(String(id || '')); }
 function rid(prefix) { return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 const SETTINGS = 'playbook_meta/settings';
-const PLAYER_ACTIONS = new Set(['login', 'plays', 'view']);
+const PLAYER_ACTIONS = new Set(['login', 'plays', 'view', 'ask', 'questions']);
+const QUESTION_MAX = 500;
 
 async function loadSettings() { const s = await fsGet(SETTINGS); return { open: !s || s.open !== false }; }
 async function loadPlays() { return (await fsList('playbook_plays')).filter((p) => p.site === SITE_TAG); }
 async function loadPlayers() { return (await fsList('playbook_players')).filter((p) => p.site === SITE_TAG && !p.removed); }
+async function loadQuestions() { return (await fsList('playbook_questions')).filter((q) => q.site === SITE_TAG); }
+// What a player may see of a question: their own, or a teammate's once the coach answered it.
+function questionFor(q, player) {
+  const mine = q.player_id === player.id;
+  if (!mine && (!q.answer || q.hidden)) return null;
+  return { id: q.id, mine, player_name: mine ? 'You' : q.player_name, text: q.text, answer: q.answer || '', created: q.created, answered_at: q.answered_at || '' };
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m])); }
+async function notifyCoach(player, play, text, base) {
+  if (!emailConfigured() || !ADMIN_EMAIL) return;
+  const link = `${base}/playbook-admin.html#questions`;
+  await sendMail({
+    to: ADMIN_EMAIL,
+    subject: `Playbook question from ${player.name}: ${play.name}`,
+    html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#222"><h2 style="margin:0 0 6px;color:#840036">${esc(player.name)} has a question</h2><p style="color:#555;margin:0 0 14px">On <strong>${esc(play.name)}</strong>${player.group ? ` (${esc(player.group)})` : ''}:</p><blockquote style="margin:0 0 18px;padding:12px 16px;background:#fbf6e9;border-left:3px solid #c9a44a;font-size:16px;line-height:1.5">${esc(text)}</blockquote><p><a href="${esc(link)}" style="display:inline-block;background:#840036;color:#fff;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:999px">Answer it in the playbook &rarr;</a></p><p style="color:#888;font-size:12px">Your answer shows to ${esc(player.name)} and, once answered, to everyone on the team who can see the play.</p></div>`,
+  }).catch(() => false);
+}
 // What a player sees. The lineup goes out as names, never roster ids.
 function publicPlay(p, byId) {
   const lineup = {};
@@ -52,6 +75,12 @@ async function uniqueCode() {
 }
 
 // ── Player side ──────────────────────────────────────────────────────────
+function baseUrl(req) {
+  if (process.env.SITE_URL) return String(process.env.SITE_URL).replace(/\/+$/, '');
+  const proto = (req.headers['x-forwarded-proto'] || 'https').split(',')[0];
+  const host = req.headers['x-forwarded-host'] || req.headers.host;
+  return `${proto}://${host}`;
+}
 async function sessionPlayer(token) {
   const sess = readSession(token);
   if (!sess || !safeId(sess.p)) return { error: 'signed_out' };
@@ -101,18 +130,42 @@ async function playerAction(action, body, req) {
     await fsPatch(`playbook_players/${player.id}`, { last_seen: new Date(now).toISOString() });
     return { status: 200, body: { ok: true } };
   }
+  if (action === 'questions' || action === 'ask') {
+    if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
+    const play = await fsGet(`playbook_plays/${body.id}`);
+    if (!play || play.site !== SITE_TAG || !canSee(play, player)) return { status: 404, body: { error: 'not_found' } };
+    if (action === 'ask') {
+      const text = clip(stripTags(String(body.text || '').replace(/\s+/g, ' ').trim()), QUESTION_MAX);
+      if (text.length < 3) return { status: 400, body: { error: 'empty_question' } };
+      const now = Date.now();
+      const mine = (await fsQuery('playbook_questions', 'player_id', 'EQUAL', player.id)).filter((q) => now - Date.parse(q.created || 0) < 864e5);
+      if (mine.length >= 10) return { status: 429, body: { error: 'too_many' } };
+      const id = rid('q');
+      const w = await fsCreate('playbook_questions', {
+        site: SITE_TAG, play_id: play.id, play_name: play.name, player_id: player.id, player_name: player.name, group: player.group || '',
+        text, answer: '', answered_at: '', hidden: false, created: new Date(now).toISOString(),
+      }, id);
+      if (w.error) return { status: 502, body: { error: 'save_failed' } };
+      await notifyCoach(player, play, text, baseUrl(req));
+      return { status: 200, body: { ok: true, id } };
+    }
+    const list = (await fsQuery('playbook_questions', 'play_id', 'EQUAL', play.id)).filter((q) => q.site === SITE_TAG)
+      .map((q) => questionFor(q, player)).filter(Boolean).sort((a, b) => String(b.created).localeCompare(String(a.created)));
+    return { status: 200, body: { questions: list } };
+  }
   return { status: 400, body: { error: 'unknown_action' } };
 }
 
 // ── Coach side ───────────────────────────────────────────────────────────
 async function adminList() {
-  const [plays, players, views, settings] = await Promise.all([
+  const [plays, players, views, settings, questions] = await Promise.all([
     loadPlays(), loadPlayers(),
     fsList('playbook_views').then((v) => v.filter((x) => x.site === SITE_TAG)),
-    loadSettings(),
+    loadSettings(), loadQuestions(),
   ]);
   views.sort((a, b) => String(b.at).localeCompare(String(a.at)));
-  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views: views.slice(0, 2000) } };
+  questions.sort((a, b) => String(b.created).localeCompare(String(a.created)));
+  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views: views.slice(0, 2000), questions } };
 }
 
 async function adminAction(action, body) {
@@ -190,6 +243,19 @@ async function adminAction(action, body) {
       if (!c) return { status: 400, body: { error: 'bad_clip' } };
       await dropClip(c);
       return { status: 200, body: { ok: true } };
+    }
+    case 'answer': case 'hide_question': case 'unhide_question': {
+      if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
+      const q = await fsGet(`playbook_questions/${body.id}`);
+      if (!q || q.site !== SITE_TAG) return { status: 404, body: { error: 'not_found' } };
+      let patch;
+      if (action === 'answer') {
+        const answer = clip(stripTags(String(body.answer || '').trim()), 2000);
+        if (!answer) return { status: 400, body: { error: 'empty_answer' } };
+        patch = { answer, answered_at: now, hidden: false };
+      } else patch = { hidden: action === 'hide_question' };
+      const w = await fsPatchVerified(`playbook_questions/${body.id}`, patch);
+      return w.ok ? { status: 200, body: { ok: true } } : { status: 502, body: { error: 'save_failed' } };
     }
     case 'set_open': {
       const w = await fsPatchVerified(SETTINGS, { open: !!body.open, updated: now });

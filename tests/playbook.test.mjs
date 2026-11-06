@@ -178,6 +178,32 @@ await test('archiving hides a play from players and can be undone', async () => 
   await call({ action: 'set_visible', id: jvPlayId, visible: true }, true);
   assert.equal((await call({ action: 'plays', token: t })).body.plays.length, 2);
 });
+await test('players ask questions on a play, the coach answers, the team sees answered ones', async () => {
+  const me = (await call({ action: 'login', code: (await call({ action: 'new_code', id: codes[0].id }, true)).body.code })).body.token;
+  const other = (await call({ action: 'add_players', players: [{ name: 'Teammate Two', group: 'Varsity' }] }, true)).body.added[0];
+  const t2 = (await call({ action: 'login', code: other.code })).body.token;
+  assert.equal((await call({ action: 'ask', token: me, id: playId, text: 'hi' })).statusCode, 400, 'too short');
+  assert.equal((await call({ action: 'ask', token: me, id: jvPlayId, text: 'Can I see this one?' })).statusCode, 404, 'not their play');
+  const a = await call({ action: 'ask', token: me, id: playId, text: '  Do I fade or <b>curl</b> if they switch?  ' });
+  assert.equal(a.statusCode, 200);
+  assert.equal(fake.state.mail.length, 1, 'coach emailed');
+  assert.match(fake.state.mail[0].subject, /Israel Ingram/);
+  let q = (await call({ action: 'questions', token: me, id: playId })).body.questions;
+  assert.equal(q.length, 1); assert.equal(q[0].mine, true); assert.equal(q[0].text, 'Do I fade or bcurl/b if they switch?'); assert.equal(q[0].answer, '');
+  assert.equal((await call({ action: 'questions', token: t2, id: playId })).body.questions.length, 0, 'unanswered questions stay private');
+  const admin = (await call({ action: 'admin_list' }, true)).body;
+  assert.equal(admin.questions.length, 1); assert.equal(admin.questions[0].player_name, 'Israel Ingram');
+  assert.equal((await call({ action: 'answer', id: a.body.id, answer: '' }, true)).statusCode, 400);
+  assert.equal((await call({ action: 'answer', id: a.body.id, answer: 'Fade. 5 will have the mismatch.' }, true)).statusCode, 200);
+  q = (await call({ action: 'questions', token: t2, id: playId })).body.questions;
+  assert.equal(q.length, 1); assert.equal(q[0].player_name, 'Israel Ingram'); assert.equal(q[0].answer, 'Fade. 5 will have the mismatch.');
+  await call({ action: 'hide_question', id: a.body.id }, true);
+  assert.equal((await call({ action: 'questions', token: t2, id: playId })).body.questions.length, 0, 'hidden from teammates');
+  assert.equal((await call({ action: 'questions', token: me, id: playId })).body.questions.length, 1, 'still visible to the asker');
+  for (let i = 0; i < 9; i++) await call({ action: 'ask', token: me, id: playId, text: 'Question number ' + i });
+  assert.equal((await call({ action: 'ask', token: me, id: playId, text: 'One too many' })).statusCode, 429);
+  await call({ action: 'remove_player', id: other.id }, true);
+});
 await test('a removed player can no longer sign in', async () => {
   await call({ action: 'remove_player', id: codes[1].id }, true);
   assert.equal((await call({ action: 'login', code: codes[1].code })).statusCode, 401);

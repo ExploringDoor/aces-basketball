@@ -214,6 +214,17 @@ tr:last-child td{border-bottom:0}
 .clipbox .sz{font-size:13px;color:var(--ink-3)}
 .prog{height:8px;background:var(--line);border-radius:999px;overflow:hidden;margin-top:8px}
 .prog i{display:block;height:100%;background:var(--mrn);width:0;transition:width .2s}
+.qa-item{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;background:#fff}
+.qa-item.open{border-color:#efe2bd;background:var(--gold-50)}
+.qa-item .top{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.qa-item .top b{font-size:15.5px}
+.qa-item .top .pl{color:var(--mrn);font-family:'Oswald',sans-serif;letter-spacing:.5px;cursor:pointer;background:none;border:0;padding:0;font-size:14px}
+.qa-item .top .when{color:var(--ink-3);font-size:13px;margin-left:auto}
+.qa-item .qt{font-size:16px;line-height:1.45;margin-bottom:10px}
+.qa-item .ans{padding:10px 12px;background:#fff;border-left:3px solid var(--gold);border-radius:8px;white-space:pre-wrap;line-height:1.45}
+.qa-item .ans .lab{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold-d);display:block;margin-bottom:3px}
+.qa-item .acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.qa-item .acts .sp{flex:1}
 .ed-mob{display:none}
 @media (max-width:1100px){ .ed-body{grid-template-columns:240px minmax(0,1fr) 260px} }
 @media (max-width:900px){
@@ -280,6 +291,7 @@ tr:last-child td{border-bottom:0}
       <button class="tab" role="tab" data-tab="plays">Our plays<span class="cnt" id="cPlays">0</span></button>
       <button class="tab" role="tab" data-tab="scout">Scouting<span class="cnt" id="cScout">0</span></button>
       <button class="tab" role="tab" data-tab="players">Players<span class="cnt" id="cPlayers">0</span></button>
+      <button class="tab" role="tab" data-tab="questions">Questions<span class="cnt" id="cQ">0</span></button>
       <button class="tab" role="tab" data-tab="activity">Who's studying</button>
       <button class="tab" role="tab" data-tab="settings">Settings</button>
     </nav>
@@ -332,6 +344,11 @@ tr:last-child td{border-bottom:0}
       </div>
     </section>
 
+    <section class="panel" id="p-questions">
+      <div class="card"><div class="card-head"><div><h2>Player questions</h2><div class="sub">Players ask on a play. Your answer shows to them, and to the whole team on that play once it's answered. Hide one to keep it between you and the player.</div></div>
+        <div class="seg"><button type="button" data-qf="open" aria-pressed="true">Needs an answer</button><button type="button" data-qf="answered">Answered</button><button type="button" data-qf="all">All</button></div></div>
+        <div id="qAdmin"></div></div>
+    </section>
     <section class="panel" id="p-activity">
       <div class="kpis" id="actKpis"></div>
       <div class="grid2">
@@ -441,7 +458,7 @@ var toastT; function toast(msg,err){ var t=$('toast'); t.textContent=msg; t.clas
 function fmtDate(iso,withTime){ if(!iso) return ''; var d=new Date(iso); if(isNaN(d)) return ''; var o={month:'short',day:'numeric'}; if(d.getFullYear()!==new Date().getFullYear()) o.year='numeric'; var s=d.toLocaleDateString('en-US',o); if(withTime) s+=' '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); return s; }
 function ago(iso){ if(!iso) return 'Never'; var m=Math.round((Date.now()-Date.parse(iso))/6e4); if(m<1) return 'Just now'; if(m<60) return m+' min ago'; var h=Math.round(m/60); if(h<24) return h+(h===1?' hour ago':' hours ago'); var d=Math.round(h/24); if(d<14) return d+(d===1?' day ago':' days ago'); return fmtDate(iso); }
 function copy(t){ return (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){ toast('Copied'); },function(){ window.prompt('Copy this:',t); }); }
-var ERRORS={ unauthorized:'Wrong passcode.', missing_name:'Give the play a name.', missing_opponent:'Which opponent is this?', no_frames:'The play needs at least one step.', empty_court:'Put some players on the court first.', not_found:'That one isn\'t there anymore. Reload the page.', save_failed:'Couldn\'t save. Try again.', not_configured:'The playbook isn\'t set up on the server yet.', server_error:'Something went wrong. Try again.' };
+var ERRORS={ unauthorized:'Wrong passcode.', empty_answer:'Type an answer first.', missing_name:'Give the play a name.', missing_opponent:'Which opponent is this?', no_frames:'The play needs at least one step.', empty_court:'Put some players on the court first.', not_found:'That one isn\'t there anymore. Reload the page.', save_failed:'Couldn\'t save. Try again.', not_configured:'The playbook isn\'t set up on the server yet.', server_error:'Something went wrong. Try again.' };
 function errText(d){ return (d&&ERRORS[d.error])||'Something went wrong.'; }
 
 function api(action,body){
@@ -456,6 +473,7 @@ var demo=null;
 function demoApi(action,b){
   if(!demo){ demo={ settings:{open:true}, plays:PBCourt.samples().map(function(p){ p=JSON.parse(JSON.stringify(p)); p.visible=true; p.archived=false; p.updated=new Date(Date.now()-864e5*2).toISOString(); var L={}; Object.keys(p.lineup||{}).forEach(function(k){ L[k]=p.lineup[k].id; }); p.lineup=L; return p; }),
     players:[{id:'demo_me',name:'Demo Player',group:'Varsity',code:'ABC234',active:true,last_seen:new Date().toISOString(),last_login:new Date().toISOString()},{id:'d2',name:'Chris Lee',group:'Varsity',code:'KM7PQ2',active:true,last_seen:new Date(Date.now()-864e5).toISOString()},{id:'d3',name:'Marcus Hall',group:'Varsity',code:'Z4RT8N',active:true},{id:'d4',name:'Jaden Price',group:'JV',code:'P9WX3H',active:false},{id:'d5',name:'Sam Oduya',group:'JV',code:'QD6V2K',active:true,last_seen:new Date(Date.now()-3*864e5).toISOString()}],
+    questions:[{id:'q1',play_id:'demo1',play_name:'Horns Flare',player_id:'d2',player_name:'Chris Lee',group:'Varsity',text:'If my guy goes under the flare screen do I still fade?',answer:'No. If he goes under, curl it and 4 hits you at the elbow. Only fade when he chases.',answered_at:new Date(Date.now()-7e5).toISOString(),hidden:false,created:new Date(Date.now()-864e5).toISOString()},{id:'q2',play_id:'demo2',play_name:'Box Up',player_id:'d5',player_name:'Sam Oduya',group:'JV',text:'Who inbounds if 3 is on the bench?',answer:'',hidden:false,created:new Date(Date.now()-36e5).toISOString()}],
     views:[{player_id:'demo_me',player_name:'Demo Player',play_id:'demo1',play_name:'Horns Flare',at:new Date(Date.now()-3e5).toISOString(),device:'iPhone'},{player_id:'demo_me',player_name:'Demo Player',play_id:'demo5',play_name:'Radnor: Flex',at:new Date(Date.now()-9e5).toISOString(),device:'iPhone'},{player_id:'d2',player_name:'Chris Lee',play_id:'demo1',play_name:'Horns Flare',at:new Date(Date.now()-864e5).toISOString(),device:'Android'},{player_id:'d5',player_name:'Sam Oduya',play_id:'demo2',play_name:'Box Up',at:new Date(Date.now()-3*864e5).toISOString(),device:'iPhone'}] }; }
   var r={ok:true};
   if(action==='admin_list') r=JSON.parse(JSON.stringify(demo));
@@ -464,6 +482,7 @@ function demoApi(action,b){
   else if(action==='add_players'){ r.added=b.players.map(function(p){ var x={id:'dp'+Math.random().toString(36).slice(2,7),name:p.name,group:p.group||'',code:'DEMO'+Math.floor(Math.random()*90+10),active:true}; demo.players.push(x); return x; }); }
   else if(action==='update_player'||action==='new_code'||action==='remove_player'){ var pl=demo.players.find(function(x){return x.id===b.id;}); if(action==='new_code'){ pl.code='NEW'+Math.floor(Math.random()*900+100); r.code=pl.code; } else if(action==='remove_player') demo.players=demo.players.filter(function(x){return x.id!==b.id;}); else { ['name','group','active'].forEach(function(k){ if(b[k]!==undefined) pl[k]=b[k]; }); } }
   else if(action==='set_open') demo.settings.open=!!b.open;
+  else if(action==='answer'||action==='hide_question'||action==='unhide_question'){ var qq=demo.questions.find(function(x){return x.id===b.id;}); if(action==='answer'){ qq.answer=b.answer; qq.answered_at=new Date().toISOString(); qq.hidden=false; } else qq.hidden=action==='hide_question'; }
   return Promise.resolve(r);
 }
 
@@ -501,8 +520,29 @@ function render(){
   $('openSw').checked=open; $('openSwT').textContent=open?'Open':'Closed';
   $('playerUrl').textContent=location.origin+'/playbook.html';
   if(!$('shareMsg').value) $('shareMsg').value='Aces playbook is up. Go to '+location.origin+'/playbook.html and enter your code. It\'s your own code, don\'t share it, and don\'t take pictures of the plays. Your name is on every one.';
-  renderPlays('plays'); renderPlays('scout'); renderPlayers(); renderActivity();
+  renderPlays('plays'); renderPlays('scout'); renderPlayers(); renderActivity(); renderQuestionsAdmin();
 }
+/* ── questions ── */
+var qFilter='open';
+function renderQuestionsAdmin(){
+  var all=(S.data.questions||[]), open=all.filter(function(q){return !q.answer;});
+  $('cQ').textContent=open.length; $('cQ').style.background=open.length?'var(--gold)':''; $('cQ').style.color=open.length?'#241a00':'';
+  var list=all.filter(function(q){ return qFilter==='all'||(qFilter==='open'?!q.answer:!!q.answer); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-qf]'),function(b){ b.setAttribute('aria-pressed',String(b.getAttribute('data-qf')===qFilter)); });
+  if(!list.length){ $('qAdmin').innerHTML='<div class="empty"><h3>'+(qFilter==='open'?'Nothing waiting':'No questions yet')+'</h3><p>'+(qFilter==='open'?'Every question has an answer.':'When a player asks something on a play, it lands here and you get an email.')+'</p></div>'; return; }
+  $('qAdmin').innerHTML=list.map(function(q){
+    return '<div class="qa-item'+(q.answer?'':' open')+'" data-qid="'+esc(q.id)+'"><div class="top"><b>'+esc(q.player_name)+'</b>'+(q.group?'<span class="tag">'+esc(q.group)+'</span>':'')+'<span class="muted">on</span><button class="pl" type="button" data-edit="'+esc(q.play_id)+'">'+esc(q.play_name)+'</button><span class="when">'+esc(ago(q.created))+'</span></div><div class="qt">'+esc(q.text)+'</div>'+
+      (q.answer?'<div class="ans"><span class="lab">Your answer'+(q.hidden?' · hidden from the team':'')+'</span>'+esc(q.answer)+'</div><div class="acts"><button class="btn sm ghost" type="button" data-qedit="'+esc(q.id)+'">Edit answer</button><button class="btn sm ghost" type="button" data-qhide="'+esc(q.id)+'" data-on="'+(q.hidden?0:1)+'">'+(q.hidden?'Show to the team':'Hide from the team')+'</button></div>'
+      :'<div class="fld" style="margin:0"><textarea class="inp" id="qa-'+esc(q.id)+'" rows="2" placeholder="Type your answer"></textarea></div><div class="acts"><button class="btn primary sm" type="button" data-qans="'+esc(q.id)+'">Answer</button><span class="muted" style="font-size:13px">'+esc(q.player_name.split(' ')[0])+' sees it right away. The team sees it on the play too.</span></div>')+'</div>';
+  }).join('');
+}
+document.addEventListener('click',function(e){
+  var t;
+  if((t=e.target.closest('[data-qf]'))){ qFilter=t.getAttribute('data-qf'); renderQuestionsAdmin(); return; }
+  if((t=e.target.closest('[data-qans]'))){ var id=t.getAttribute('data-qans'), v=$('qa-'+id).value.trim(); if(!v) return toast('Type an answer first.',true); t.disabled=true; api('answer',{id:id,answer:v}).then(function(d){ if(d.error){ t.disabled=false; return toast(errText(d),true); } toast('Answered'); reload(); }); return; }
+  if((t=e.target.closest('[data-qedit]'))){ var q=S.data.questions.find(function(x){return x.id===t.getAttribute('data-qedit');}); modal('Edit your answer','<div class="fld"><label>Question from '+esc(q.player_name)+'</label><p style="margin:0 0 10px">'+esc(q.text)+'</p></div><div class="fld"><label>Answer</label><textarea class="inp" id="mAns" rows="4">'+esc(q.answer)+'</textarea></div>',[['Cancel','',closeModal],['Save','primary',function(){ api('answer',{id:q.id,answer:$('mAns').value}).then(function(d){ if(d.error) return toast(errText(d),true); closeModal(); toast('Saved'); reload(); }); }]]); return; }
+  if((t=e.target.closest('[data-qhide]'))){ api(t.getAttribute('data-on')==='1'?'hide_question':'unhide_question',{id:t.getAttribute('data-qhide')}).then(function(d){ if(d.error) return toast(errText(d),true); reload(); }); return; }
+});
 function renderPlays(kind){
   var key=kind==='plays'?'plays':'scout', k=kind==='plays'?'ours':'scout';
   var all=plays(k), live=all.filter(function(p){return !p.archived;}), arch=all.filter(function(p){return p.archived;});
@@ -520,10 +560,11 @@ function renderPlays(kind){
 }
 function card(p){
   var v=viewPlay(p), steps=Math.max(0,(p.frames||[]).length-1), views=viewsFor(p.id), who={}; views.forEach(function(x){ who[x.player_id]=1; });
+  var qOpen=(S.data.questions||[]).filter(function(q){ return q.play_id===p.id&&!q.answer; }).length;
   var scout=(p.kind||'ours')==='scout';
   return '<div class="pc" data-id="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+'" data-edit="'+esc(p.id)+'" title="Edit">'+PBCourt.diagram(v,0,{noNames:true})+
     '<span class="pill '+(p.archived?'':(p.visible?'live':'hidden'))+'">'+(p.archived?'Archived':(p.visible?'Live':'Draft'))+'</span></div>'+
-    '<div class="meta"><div class="cat">'+esc(scout?(p.opponent+' · '+p.category):p.category)+(p.court==='full'?' · Full court':'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+steps+(steps===1?' step':' steps')+' · '+(p.groups&&p.groups.length?esc(p.groups.join(', ')):'Everyone')+' · '+views.length+(views.length===1?' view':' views')+(Object.keys(who).length?' by '+Object.keys(who).length:'')+'</div></div>'+
+    '<div class="meta"><div class="cat">'+esc(scout?(p.opponent+' · '+p.category):p.category)+(p.court==='full'?' · Full court':'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+steps+(steps===1?' step':' steps')+' · '+(p.groups&&p.groups.length?esc(p.groups.join(', ')):'Everyone')+' · '+views.length+(views.length===1?' view':' views')+(Object.keys(who).length?' by '+Object.keys(who).length:'')+(qOpen?' · <b style="color:var(--gold-d)">'+qOpen+(qOpen===1?' question':' questions')+'</b>':'')+'</div></div>'+
     '<div class="acts">'+(p.archived?'<button class="btn sm" type="button" data-restore="'+esc(p.id)+'">Restore</button>':
       '<button class="btn sm" type="button" data-edit="'+esc(p.id)+'">'+svg('i-edit')+'Edit</button><button class="btn sm" type="button" data-vis="'+esc(p.id)+'" aria-pressed="'+!!p.visible+'">'+svg(p.visible?'i-eye':'i-eyeoff')+(p.visible?'Live':'Draft')+'</button><button class="btn sm ghost" type="button" data-dup="'+esc(p.id)+'">'+svg('i-copy')+'Copy</button><span class="sp"></span><button class="iconbtn" style="width:32px;height:32px" type="button" data-arch="'+esc(p.id)+'" title="Archive">'+svg('i-trash')+'</button>')+'</div></div>';
 }
