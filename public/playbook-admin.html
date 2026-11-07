@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="/LM_Logo.png">
 <meta name="theme-color" content="#840036">
+<link rel="manifest" href="/playbook-admin.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Coach Board">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="robots" content="noindex, nofollow">
 <title>Playbook Admin | Lower Merion Aces Basketball</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,6 +33,8 @@ h1,h2,h3{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2px}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
 /* top bar */
 .top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40}
+.offbar{position:sticky;top:0;z-index:45;background:#1d1d24;color:#fff;font-size:14px;line-height:1.4;padding:9px 18px;display:flex;gap:10px;align-items:center;justify-content:center;text-align:center}
+.offbar.hide{display:none} .offbar i{width:9px;height:9px;border-radius:50%;background:#e5a83a;flex:none} .offbar b{font-weight:700}
 .top-in{max-width:1240px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:16px}
 .brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);min-width:0}
 .brand img{height:64px;width:auto;flex:none}
@@ -502,6 +509,7 @@ tr:last-child td{border-bottom:0}
   </form>
 </div>
 
+<div class="offbar hide" id="offBar" role="status"><i></i><span id="offTx"></span></div>
 <div id="app" class="hide">
   <header class="top">
     <div class="top-in">
@@ -822,15 +830,73 @@ var toastT; function toast(msg,err){ var t=$('toast'); t.textContent=msg; t.clas
 function fmtDate(iso,withTime){ if(!iso) return ''; var d=new Date(iso); if(isNaN(d)) return ''; var o={month:'short',day:'numeric'}; if(d.getFullYear()!==new Date().getFullYear()) o.year='numeric'; var s=d.toLocaleDateString('en-US',o); if(withTime) s+=' '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); return s; }
 function ago(iso){ if(!iso) return 'Never'; var m=Math.round((Date.now()-Date.parse(iso))/6e4); if(m<1) return 'Just now'; if(m<60) return m+' min ago'; var h=Math.round(m/60); if(h<24) return h+(h===1?' hour ago':' hours ago'); var d=Math.round(h/24); if(d<14) return d+(d===1?' day ago':' days ago'); return fmtDate(iso); }
 function copy(t){ return (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){ toast('Copied'); },function(){ window.prompt('Copy this:',t); }); }
-var ERRORS={ unauthorized:'Wrong passcode.', empty_answer:'Type an answer first.', bad_game:'Something is off in that box score.', missing_date:'Pick the date.', empty_note:'Type the note.', no_report:'No scouting report for that opponent yet.', missing_name:'Give the play a name.', missing_opponent:'Which opponent is this?', no_frames:'The play needs at least one step.', empty_court:'Put some players on the court first.', not_found:'That one isn\'t there anymore. Reload the page.', save_failed:'Couldn\'t save. Try again.', not_configured:'The playbook isn\'t set up on the server yet.', server_error:'Something went wrong. Try again.' };
+var ERRORS={ offline_first:'No connection, and this device has not opened the board online yet. Connect once, then it works offline.', offline:'You are offline. This needs a connection; the Board, bench card and bench log still work.', unauthorized:'Wrong passcode.', empty_answer:'Type an answer first.', bad_game:'Something is off in that box score.', missing_date:'Pick the date.', empty_note:'Type the note.', no_report:'No scouting report for that opponent yet.', missing_name:'Give the play a name.', missing_opponent:'Which opponent is this?', no_frames:'The play needs at least one step.', empty_court:'Put some players on the court first.', not_found:'That one isn\'t there anymore. Reload the page.', save_failed:'Couldn\'t save. Try again.', not_configured:'The playbook isn\'t set up on the server yet.', server_error:'Something went wrong. Try again.' };
 function errText(d){ return (d&&ERRORS[d.error])||'Something went wrong.'; }
 
 function api(action,body){
   if(DEMO) return demoApi(action,body||{});
   return fetch('/api/playbook',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':S.key},body:JSON.stringify(Object.assign({action:action},body||{}))})
-    .then(function(r){ if(r.status===401) throw {code:'auth'}; return r.json().catch(function(){ return {error:'server_error'}; }); });
+    .then(function(r){ if(S.offline) setOffline(false); if(r.status===401) throw {code:'auth'}; return r.json().catch(function(){ return {error:'server_error'}; }); },
+          function(){ return offlineApi(action,body||{}); });   // no connection: run from the saved copy
 }
-function reload(){ return api('admin_list').then(function(d){ if(d.error) throw d; S.data=d; render(); }); }
+/* ── offline: the iPad keeps a copy of the board so the Board, bench card and bench log work with no signal ──
+   Saved after every good load: plays, plans, practices, end of game, glossary, goals, games, bench calls and
+   players WITHOUT their codes. Opening it offline still needs the passcode (checked against a hash of it).
+   Bench log taps made offline wait in an outbox and go up when the connection comes back. */
+var SNAP_KEY='pb_coach_snapshot', HASH_KEY='pb_coach_kh', OUTBOX_KEY='pb_coach_outbox';
+function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } }
+function keyHash(k){ if(!(window.crypto&&crypto.subtle)) return Promise.resolve(''); return crypto.subtle.digest('SHA-256',new TextEncoder().encode('aces-playbook:'+k)).then(function(b){ return Array.prototype.map.call(new Uint8Array(b),function(x){ return ('0'+x.toString(16)).slice(-2); }).join(''); }); }
+function saveSnapshot(d){
+  var keep=['plays','plans','practices','drills','games','terms','endgame','goals','settings'], out={};
+  keep.forEach(function(k){ out[k]=d[k]; });
+  out.players=(d.players||[]).map(function(p){ return {id:p.id,name:p.name,group:p.group||'',num:p.num||'',active:p.active!==false,code:''}; });
+  out.calls=(d.calls||[]).slice(0,300); out.views=[]; out.quiz=[]; out.questions=[]; out.notes=[]; out.vsum={};
+  if(!lsSet(SNAP_KEY,{at:new Date().toISOString(),data:out})){ out.plays=(out.plays||[]).filter(function(p){ return !p.archived; }); out.games=[]; lsSet(SNAP_KEY,{at:new Date().toISOString(),data:out}); }
+}
+function setOffline(on,at){
+  S.offline=!!on; $('offBar').classList.toggle('hide',!on);
+  if(on){ var t=at?new Date(at):null, q=(lsGet(OUTBOX_KEY)||[]).length;
+    $('offTx').innerHTML='<b>Offline.</b> Showing the board as of '+(t?esc(t.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})):'the last load')+'. The Board, bench card and bench log work'+(q?'; '+q+' bench call'+(q===1?'':'s')+' waiting to send':'')+'.'; }
+}
+function offlineApi(action,b){
+  var snap=lsGet(SNAP_KEY);
+  if(action==='admin_list'){
+    if(!snap) return Promise.reject({error:'offline_nodata'});
+    var ok=S.offlineOk?Promise.resolve(true):Promise.all([keyHash(S.key),Promise.resolve(lsGet(HASH_KEY))]).then(function(h){ return !!h[0]&&h[0]===h[1]; });
+    return ok.then(function(yes){ if(!yes) throw {code:'auth'}; S.offlineOk=true; var d=snap.data; d.calls=(d.calls||[]).concat([]); setOffline(true,snap.at); return d; });
+  }
+  if(action==='log_call'){
+    var box=lsGet(OUTBOX_KEY)||[], id='local_'+Date.now().toString(36);
+    box.push({action:'log_call',body:b,id:id}); lsSet(OUTBOX_KEY,box);
+    if(snap){ var pl=(snap.data.plays||[]).find(function(x){ return x.id===b.call.play_id; }); snap.data.calls=[Object.assign({id:id,play_name:pl?pl.name:'',at:new Date().toISOString()},b.call)].concat(snap.data.calls||[]); lsSet(SNAP_KEY,snap); }
+    setOffline(true,snap&&snap.at); return Promise.resolve({ok:true,id:id});
+  }
+  if(action==='delete_call'){
+    var box2=(lsGet(OUTBOX_KEY)||[]); var was=box2.length; box2=box2.filter(function(x){ return x.id!==b.id; });
+    if(box2.length===was) box2.push({action:'delete_call',body:b,id:'del_'+b.id}); lsSet(OUTBOX_KEY,box2);
+    if(snap){ snap.data.calls=(snap.data.calls||[]).filter(function(c){ return c.id!==b.id; }); lsSet(SNAP_KEY,snap); }
+    setOffline(true,snap&&snap.at); return Promise.resolve({ok:true});
+  }
+  if(action==='set_board') return Promise.resolve({ok:true,offline:true});   // phones can't hear the iPad without a connection
+  return Promise.resolve({error:'offline'});
+}
+var flushing=false;
+function flushOutbox(){
+  var box=lsGet(OUTBOX_KEY)||[]; if(!box.length||flushing||DEMO||!S.key) return Promise.resolve(0);
+  flushing=true; var sent=0;
+  return box.reduce(function(p,item){ return p.then(function(){
+    return fetch('/api/playbook',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':S.key},body:JSON.stringify(Object.assign({action:item.action},item.body))})
+      .then(function(r){ if(r.status===401) throw new Error('auth'); var rest=(lsGet(OUTBOX_KEY)||[]).filter(function(x){ return x.id!==item.id; }); lsSet(OUTBOX_KEY,rest); sent++; });
+  }); },Promise.resolve()).catch(function(){}).then(function(){ flushing=false; return sent; });
+}
+// iPads don't always fire 'online': once a minute, if offline or something is waiting, try again quietly
+setInterval(function(){ if(DEMO||!S.key) return; var waiting=(lsGet(OUTBOX_KEY)||[]).length; if(!S.offline&&!waiting) return;
+  fetch('/api/playbook',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':S.key},body:JSON.stringify({action:'admin_list'})}).then(function(r){ if(r.ok) window.dispatchEvent(new Event('online')); }).catch(function(){}); },60000);
+window.addEventListener('online',function(){ if(!S.key||DEMO) return; flushOutbox().then(function(n){ return reload().then(function(){ if(n) toast(n+' bench call'+(n===1?'':'s')+' sent.'); }); }).catch(function(){}); });
+function reload(){ return api('admin_list').then(function(d){ if(d.error) throw d; S.data=d;
+  if(!DEMO&&!S.offline){ saveSnapshot(d); keyHash(S.key).then(function(h){ if(h) lsSet(HASH_KEY,h); }); flushOutbox(); }
+  render(); }).catch(function(e){ if(e&&e.error==='offline_nodata') throw {error:'offline_first'}; throw e; }); }
 
 /* ── demo backend ── */
 var demo=null;
@@ -2037,12 +2103,13 @@ window.addEventListener('beforeunload',function(e){ if(E&&E.dirty){ e.preventDef
 /* ── login ── */
 function showApp(){ $('loginWrap').classList.add('hide'); $('app').classList.remove('hide'); go((location.hash||'#plays').slice(1)); }
 $('loginForm').addEventListener('submit',function(e){
-  e.preventDefault(); S.key=$('pw').value.trim(); var err=$('loginErr'); err.textContent='';
+  e.preventDefault(); S.key=$('pw').value.trim(); S.offlineOk=false; var err=$('loginErr'); err.textContent='';
   reload().then(function(){ try{ sessionStorage.setItem(KEY_STORE,S.key); }catch(x){} showApp(); }).catch(function(x){ err.textContent=x&&x.code==='auth'?'Wrong passcode.':errText(x); });
 });
-$('logoutBtn').addEventListener('click',function(){ S.key=''; try{ sessionStorage.removeItem(KEY_STORE); }catch(e){} $('app').classList.add('hide'); $('loginWrap').classList.remove('hide'); $('pw').value=''; });
+$('logoutBtn').addEventListener('click',function(){ S.key=''; S.offlineOk=false; try{ sessionStorage.removeItem(KEY_STORE); }catch(e){} $('app').classList.add('hide'); $('loginWrap').classList.remove('hide'); $('pw').value=''; });
 window.addEventListener('hashchange',function(){ if(!$('app').classList.contains('hide')) go(location.hash.slice(1)); });
 (function boot(){
+  if('serviceWorker' in navigator&&!DEMO){ navigator.serviceWorker.register('/playbook-sw.js',{scope:'/playbook'}).catch(function(){}); }
   if(DEMO){ S.key='demo'; reload().then(showApp); return; }
   var k=''; try{ k=sessionStorage.getItem(KEY_STORE)||''; }catch(e){}
   if(k){ S.key=k; reload().then(showApp).catch(function(){ S.key=''; }); }
