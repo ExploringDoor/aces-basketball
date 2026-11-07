@@ -11,7 +11,8 @@ import { clip, stripTags } from './_clinic.js';
 export const CATEGORIES = ['Offense', 'Defense', 'Baseline out', 'Sideline out', 'Press break', 'Press', 'Late game', 'Special'];
 export const TOKENS = ['O1', 'O2', 'O3', 'O4', 'O5', 'X1', 'X2', 'X3', 'X4', 'X5'];
 export const MOVE_TYPES = ['cut', 'dribble', 'screen'];
-export const LIMITS = { frames: 30, name: 60, notes: 1500, frameNote: 300, groups: 12, group: 30, playerName: 60, opponent: 60, tips: 12, tip: 200, marks: 20, mark: 160, keys: 10, key: 200, matchups: 12, personnel: 15, blocks: 20, note: 600 };
+export const LIMITS = { frames: 30, name: 60, notes: 1500, frameNote: 300, groups: 12, group: 30, playerName: 60, opponent: 60, tips: 12, tip: 200, marks: 20, mark: 160, keys: 10, key: 200, matchups: 12, personnel: 15, blocks: 24, note: 600, points: 6, point: 160, stations: 4 };
+export const DRILL_CATEGORIES = ['Warmup', 'Ballhandling', 'Passing', 'Shooting', 'Finishing', 'Defense', 'Rebounding', 'Transition', 'Press', 'Plays', 'Special situations', 'Competitive', 'Conditioning', 'Team', 'Other'];
 export const KINDS = ['ours', 'scout'];   // our play, or an opponent's play we are scouting
 // Court units are tenths of a foot. Half court 50 x 42 ft (high school), full 50 x 84.
 // Tokens may sit up to 5 ft out of bounds (inbounders).
@@ -147,11 +148,34 @@ export function cleanPractice(p) {
     minutes: Math.max(0, Math.min(240, Math.round(Number(b && b.minutes) || 0))),
     notes: clip(stripTags(String((b && b.notes) || '').trim()), LIMITS.note),
     play_ids: [...new Set((Array.isArray(b && b.play_ids) ? b.play_ids : []).filter(idOk))].slice(0, 12),
+    drill: clip(String((b && b.drill) || '').replace(/[^A-Za-z0-9_-]/g, ''), 60),   // library key or custom drill id
+    category: DRILL_CATEGORIES.includes(b && b.category) ? b.category : 'Other',
+    points: lines(b && b.points, LIMITS.point, LIMITS.points),
+    // Split the gym: guards on one drill, bigs on another, running at the same time.
+    stations: (Array.isArray(b && b.stations) ? b.stations : []).map((st) => ({ name: cleanName(st && st.name, 40), drill: cleanName(st && st.drill, 80), notes: clip(stripTags(String((st && st.notes) || '').trim()), 200) })).filter((st) => st.name || st.drill).slice(0, LIMITS.stations),
   })).filter((b) => b.name).slice(0, LIMITS.blocks);
   return { practice: {
     date, title: cleanName(p.title, 80), start: /^\d{2}:\d{2}$/.test(String(p.start || '')) ? String(p.start) : '',
+    focus: clip(stripTags(String(p.focus || '').trim()), 300),
     blocks, notes: clip(stripTags(String(p.notes || '').trim()), LIMITS.notes),
     show_players: !!p.show_players,
+  } };
+}
+
+// A coach's own drill, saved next to the built-in library.
+export function cleanDrill(d) {
+  if (!d || typeof d !== 'object') return { error: 'bad_drill' };
+  const name = cleanName(d.name, 80);
+  if (!name) return { error: 'missing_name' };
+  return { drill: {
+    name, category: DRILL_CATEGORIES.includes(d.category) ? d.category : 'Other',
+    minutes: Math.max(1, Math.min(120, Math.round(Number(d.minutes) || 10))),
+    players: clip(stripTags(String(d.players || '').trim()), 30),
+    equipment: clip(stripTags(String(d.equipment || '').trim()), 120),
+    setup: clip(stripTags(String(d.setup || '').trim()), 600),
+    run: clip(stripTags(String(d.run || '').trim()), 900),
+    points: lines(d.points, LIMITS.point, LIMITS.points),
+    variations: clip(stripTags(String(d.variations || '').trim()), 600),
   } };
 }
 

@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import * as fake from './_fake.js';
 import { toFirestore } from '../api/_firestore.js';
 import { SITE_TAG } from '../api/_site.js';
-import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanNote, cleanDate, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
+import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanDate, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
 import playbook from '../api/playbook.js';
 
 fake.install();
@@ -96,6 +96,11 @@ await test('due dates, film moments, game plans, practices and notes are cleaned
   const pr = cleanPractice({ date: '2026-11-10', start: '15:30', blocks: [{ name: 'Warmup', minutes: '10.4', play_ids: ['play_a'] }, { name: '', minutes: 5 }, { name: 'Shell', minutes: 999 }] });
   assert.equal(pr.practice.blocks.length, 2); assert.equal(pr.practice.blocks[0].minutes, 10); assert.equal(pr.practice.blocks[1].minutes, 240); assert.equal(pr.practice.start, '15:30');
   assert.equal(cleanPractice({ date: 'soon' }).error, 'missing_date');
+  const pb = cleanPractice({ date: '2026-11-10', focus: 'Closeouts', blocks: [{ name: 'Shell', minutes: 15, drill: 'shell-4on4', category: 'Defense', points: ['Talk', 'Hands up', ''], stations: [{ name: 'Guards', drill: 'Two ball' }, { name: '', drill: '' }] }, { name: 'Weird', category: 'Nope', drill: '../x' }] }).practice;
+  assert.equal(pb.focus, 'Closeouts'); assert.deepEqual(pb.blocks[0].points, ['Talk', 'Hands up']); assert.equal(pb.blocks[0].stations.length, 1); assert.equal(pb.blocks[1].category, 'Other'); assert.equal(pb.blocks[1].drill, 'x');
+  const dr = cleanDrill({ name: ' Coach D closeout ', category: 'Defense', minutes: '12.6', points: '- Short steps\n- High hands', run: 'x' }).drill;
+  assert.equal(dr.name, 'Coach D closeout'); assert.equal(dr.minutes, 13); assert.deepEqual(dr.points, ['Short steps', 'High hands']);
+  assert.equal(cleanDrill({ name: '' }).error, 'missing_name');
   assert.equal(cleanNote({ kind: 'absent', text: '' }).note.kind, 'absent');
   assert.equal(cleanNote({ kind: 'note', text: '' }).error, 'empty_note');
   assert.equal(cleanNote({ kind: 'party', text: 'x', date: 'bad' }).note.kind, 'note');
@@ -242,6 +247,12 @@ await test('quiz results, game plan, practice and progress reach the player', as
   assert.equal(n.statusCode, 200);
   const admin = (await call({ action: 'admin_list' }, true)).body;
   assert.equal(admin.quiz.length, 2); assert.equal(admin.plans.length, 2); assert.equal(admin.practices.length, 2); assert.equal(admin.notes[0].text, 'ankle, limited');
+  const dr = await call({ action: 'save_drill', drill: { name: 'Coach D closeout', category: 'Defense', minutes: 10 } }, true);
+  assert.equal(dr.statusCode, 200);
+  assert.equal((await call({ action: 'admin_list' }, true)).body.drills.length, 1);
+  assert.equal((await call({ action: 'save_drill', id: dr.body.id, drill: { name: 'Closeout v2', category: 'Defense', minutes: 8 } }, true)).statusCode, 200);
+  assert.equal((await call({ action: 'delete_drill', id: dr.body.id }, true)).statusCode, 200);
+  assert.equal((await call({ action: 'admin_list' }, true)).body.drills.length, 0);
   assert.equal((await call({ action: 'delete_note', id: n.body.id }, true)).statusCode, 200);
   assert.equal((await call({ action: 'delete_plan', id: plan.body.id }, true)).statusCode, 200);
   assert.equal((await call({ action: 'admin_list' }, true)).body.notes.length, 0);

@@ -18,9 +18,10 @@
 //            save_plan { id?, plan } · delete_plan { id } · save_practice { id?, practice }
 //            delete_practice { id } · add_note { player_id, note } · delete_note { id }
 //            scout_report { opponent }   (reads the coaches' scouting report for the handoff)
+//            save_drill { id?, drill } · delete_drill { id }   (the coach's own drills)
 
 import { fbAdminConfigured, fsGet, fsCreate, fsPatch, fsPatchVerified, fsList, fsQuery, fsDelete } from './_firestore.js';
-import { cleanPlay, cleanClip, cleanPlan, cleanPractice, cleanNote, canSee, newCode, normCode, cleanName, cleanGroup, signSession, readSession, sessionMatches, LIMITS } from './_playbook.js';
+import { cleanPlay, cleanClip, cleanPlan, cleanPractice, cleanDrill, cleanNote, canSee, newCode, normCode, cleanName, cleanGroup, signSession, readSession, sessionMatches, LIMITS } from './_playbook.js';
 import { SITE_TAG } from './_site.js';
 import { del as blobDel } from '@vercel/blob';
 import { sendMail, emailConfigured, ADMIN_EMAIL } from './_email.js';
@@ -63,7 +64,7 @@ function publicPlan(p, byId) {
     matchups: (p.matchups || []).map((m) => ({ us: m.us && byId[m.us] ? { id: m.us, name: byId[m.us].name } : null, them: m.them, note: m.note })),
     personnel: p.personnel || [], notes: p.notes || '' };
 }
-function publicPractice(p) { return { id: p.id, date: p.date, title: p.title || '', start: p.start || '', blocks: p.blocks || [], notes: p.notes || '' }; }
+function publicPractice(p) { return { id: p.id, date: p.date, title: p.title || '', start: p.start || '', focus: p.focus || '', blocks: (p.blocks || []).map((b) => ({ name: b.name, minutes: b.minutes, category: b.category || '', play_ids: b.play_ids || [], stations: b.stations || [] })) }; }
 async function loadQuestions() { return (await fsList('playbook_questions')).filter((q) => q.site === SITE_TAG); }
 // What a player may see of a question: their own, or a teammate's once the coach answered it.
 function questionFor(q, player) {
@@ -206,9 +207,9 @@ async function playerAction(action, body, req) {
 
 // ── Coach side ───────────────────────────────────────────────────────────
 async function adminList() {
-  const [plays, players, views, settings, questions, quiz, plans, practices, notes] = await Promise.all([
+  const [plays, players, views, settings, questions, quiz, plans, practices, notes, drills] = await Promise.all([
     loadPlays(), loadPlayers(), loadSite('playbook_views'), loadSettings(), loadQuestions(),
-    loadSite('playbook_quiz'), loadSite('playbook_plans'), loadSite('playbook_practices'), loadSite('playbook_notes'),
+    loadSite('playbook_quiz'), loadSite('playbook_plans'), loadSite('playbook_practices'), loadSite('playbook_notes'), loadSite('playbook_drills'),
   ]);
   views.sort((a, b) => String(b.at).localeCompare(String(a.at)));
   questions.sort((a, b) => String(b.created).localeCompare(String(a.created)));
@@ -216,7 +217,7 @@ async function adminList() {
   plans.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
   practices.sort((a, b) => String(b.date).localeCompare(String(a.date)));
   notes.sort((a, b) => String(b.date + b.created).localeCompare(String(a.date + a.created)));
-  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views: views.slice(0, 2000), questions, quiz: quiz.slice(0, 2000), plans, practices, notes } };
+  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views: views.slice(0, 2000), questions, quiz: quiz.slice(0, 2000), plans, practices, notes, drills } };
 }
 
 async function adminAction(action, body) {
@@ -324,9 +325,23 @@ async function adminAction(action, body) {
       const w = await fsCreate(coll, Object.assign({}, doc, { site: SITE_TAG, created: now, updated: now }), id);
       return w.error ? { status: 502, body: { error: 'save_failed' } } : { status: 200, body: { ok: true, id } };
     }
-    case 'delete_plan': case 'delete_practice': case 'delete_note': {
+    case 'save_drill': {
+      const r = cleanDrill(body.drill);
+      if (r.error) return { status: 400, body: { error: r.error } };
+      if (body.id) {
+        if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
+        const cur = await fsGet(`playbook_drills/${body.id}`);
+        if (!cur || cur.site !== SITE_TAG) return { status: 404, body: { error: 'not_found' } };
+        const w = await fsPatchVerified(`playbook_drills/${body.id}`, Object.assign({}, r.drill, { updated: now }));
+        return w.ok ? { status: 200, body: { ok: true, id: body.id } } : { status: 502, body: { error: 'save_failed' } };
+      }
+      const id = rid('drill');
+      const w = await fsCreate('playbook_drills', Object.assign({}, r.drill, { site: SITE_TAG, created: now, updated: now }), id);
+      return w.error ? { status: 502, body: { error: 'save_failed' } } : { status: 200, body: { ok: true, id } };
+    }
+    case 'delete_plan': case 'delete_practice': case 'delete_note': case 'delete_drill': {
       if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
-      const coll = action === 'delete_plan' ? 'playbook_plans' : action === 'delete_practice' ? 'playbook_practices' : 'playbook_notes';
+      const coll = action === 'delete_plan' ? 'playbook_plans' : action === 'delete_practice' ? 'playbook_practices' : action === 'delete_drill' ? 'playbook_drills' : 'playbook_notes';
       const cur = await fsGet(`${coll}/${body.id}`);
       if (!cur || cur.site !== SITE_TAG) return { status: 404, body: { error: 'not_found' } };
       const w = await fsDelete(`${coll}/${body.id}`);
