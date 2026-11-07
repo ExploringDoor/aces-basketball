@@ -152,6 +152,7 @@ export function cleanPlan(p) {
     matchups: (Array.isArray(p.matchups) ? p.matchups : []).map((m) => ({ us: idOk(m && m.us) ? m.us : '', them: cleanName(m && m.them, 60), note: clip(stripTags(String((m && m.note) || '').trim()), LIMITS.key) })).filter((m) => m.us || m.them).slice(0, LIMITS.matchups),
     personnel: (Array.isArray(p.personnel) ? p.personnel : []).map((x) => ({ num: clip(stripTags(String((x && x.num) || '').trim()), 3), name: cleanName(x && x.name, 40), pos: clip(stripTags(String((x && x.pos) || '').trim()), 4), notes: clip(stripTags(String((x && x.notes) || '').trim()), 300), guard: clip(stripTags(String((x && x.guard) || '').trim()), 300), photo: cleanPhoto(x && x.photo) })).filter((x) => x.name || x.num).slice(0, LIMITS.personnel),
     things: lines(p.things, LIMITS.key, 3),   // the three things every player must know about them
+    quiz: cleanPrepQuiz(p.quiz),
     notes: clip(stripTags(String(p.notes || '').trim()), LIMITS.notes),
     visible: !!p.visible,
   } };
@@ -272,6 +273,49 @@ export function cleanCall(c) {
   const opponent = cleanName(c.opponent, 60);
   if (!opponent) return { error: 'missing_opponent' };
   return { call: { play_id, result: c.result, opponent, date: cleanDate(c.date) || '', quarter: ['1', '2', '3', '4', 'OT'].includes(String(c.quarter)) ? String(c.quarter) : '', situation: SITUATION_KEYS.includes(c.situation) ? c.situation : '' } };
+}
+// Opponent prep quiz on a game plan: up to 6 multiple choice questions, 2 to 4 options each.
+export function cleanPrepQuiz(list) {
+  return (Array.isArray(list) ? list : []).map((q) => {
+    if (!q || typeof q !== 'object') return null;
+    const text = clip(stripTags(String(q.q || '').trim()), 160);
+    const options = (Array.isArray(q.options) ? q.options : []).map((o) => clip(stripTags(String(o || '').trim()), 80)).filter(Boolean).slice(0, 4);
+    const answer = Math.max(0, Math.min(options.length - 1, Math.round(Number(q.answer) || 0)));
+    if (!text || options.length < 2) return null;
+    return { q: text, options, answer };
+  }).filter(Boolean).slice(0, 6);
+}
+// Season goals: a metric from the box scores and a target. `dir` says which way is good.
+export const GOAL_METRICS = {
+  wins: { label: 'Wins', dir: 'over', fmt: 'int' }, ppg: { label: 'Points per game', dir: 'over', fmt: 'dec' }, allowed: { label: 'Points allowed per game', dir: 'under', fmt: 'dec' },
+  ftp: { label: 'Free throw %', dir: 'over', fmt: 'pct' }, fgp: { label: 'Field goal %', dir: 'over', fmt: 'pct' }, tpp: { label: 'Three point %', dir: 'over', fmt: 'pct' },
+  to: { label: 'Turnovers per game', dir: 'under', fmt: 'dec' }, ast: { label: 'Assists per game', dir: 'over', fmt: 'dec' }, reb: { label: 'Rebounds per game', dir: 'over', fmt: 'dec' },
+  oreb: { label: 'Offensive rebounds per game', dir: 'over', fmt: 'dec' }, stl: { label: 'Steals per game', dir: 'over', fmt: 'dec' }, ato: { label: 'Assist to turnover ratio', dir: 'over', fmt: 'dec' },
+};
+export function cleanGoals(list) {
+  const seen = new Set();
+  return (Array.isArray(list) ? list : []).map((g) => {
+    if (!g || !GOAL_METRICS[g.metric] || seen.has(g.metric)) return null;
+    const target = Number(g.target); if (!isFinite(target) || target <= 0) return null;
+    seen.add(g.metric);
+    return { metric: g.metric, target: Math.round(target * 10) / 10, label: clip(stripTags(String(g.label || '').trim()), 60) || GOAL_METRICS[g.metric].label };
+  }).filter(Boolean).slice(0, 8);
+}
+// Current value of a goal metric from the box scores (team totals = the sum of every line).
+export function goalValue(metric, games) {
+  const gs = (games || []).filter((g) => (g.kind || 'game') === 'game'), gp = gs.length;
+  if (!gp) return null;
+  const t = {}; ['ftm', 'fta', 'fgm', 'fga', 'tpm', 'tpa', 'to', 'ast', 'reb', 'oreb', 'stl'].forEach((k) => { t[k] = 0; });
+  gs.forEach((g) => (g.lines || []).forEach((l) => { Object.keys(t).forEach((k) => { t[k] += Number(l[k]) || 0; }); }));
+  const per = (k) => Math.round(t[k] / gp * 10) / 10, pct = (m, a) => (a ? Math.round(m / a * 1000) / 10 : null);
+  switch (metric) {
+    case 'wins': return gs.filter((g) => (g.us || 0) > (g.them || 0)).length;
+    case 'ppg': return Math.round(gs.reduce((a, g) => a + (g.us || 0), 0) / gp * 10) / 10;
+    case 'allowed': return Math.round(gs.reduce((a, g) => a + (g.them || 0), 0) / gp * 10) / 10;
+    case 'ftp': return pct(t.ftm, t.fta); case 'fgp': return pct(t.fgm, t.fga); case 'tpp': return pct(t.tpm, t.tpa);
+    case 'ato': return t.to ? Math.round(t.ast / t.to * 100) / 100 : null;
+    default: return per(metric);
+  }
 }
 export const TERM_KINDS = ['call', 'offense', 'defense', 'action', 'other'];
 // Glossary: one team word, what it means, optionally the play it points at.

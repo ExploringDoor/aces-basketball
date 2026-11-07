@@ -253,6 +253,37 @@
     { key: 'inb_blob2', side: 'inb', label: 'Baseline, need a 2' }, { key: 'inb_blob3', side: 'inb', label: 'Baseline, need a 3' }, { key: 'inb_slob', side: 'inb', label: 'Sideline' }, { key: 'inb_full', side: 'inb', label: 'Full court, under 5 seconds' }
   ];
 
+  /* ── season goals (keep in step with api/_playbook.js GOAL_METRICS / goalValue) ── */
+  var GOAL_METRICS = {
+    wins: { label: 'Wins', dir: 'over', fmt: 'int' }, ppg: { label: 'Points per game', dir: 'over', fmt: 'dec' }, allowed: { label: 'Points allowed per game', dir: 'under', fmt: 'dec' },
+    ftp: { label: 'Free throw %', dir: 'over', fmt: 'pct' }, fgp: { label: 'Field goal %', dir: 'over', fmt: 'pct' }, tpp: { label: 'Three point %', dir: 'over', fmt: 'pct' },
+    to: { label: 'Turnovers per game', dir: 'under', fmt: 'dec' }, ast: { label: 'Assists per game', dir: 'over', fmt: 'dec' }, reb: { label: 'Rebounds per game', dir: 'over', fmt: 'dec' },
+    oreb: { label: 'Offensive rebounds per game', dir: 'over', fmt: 'dec' }, stl: { label: 'Steals per game', dir: 'over', fmt: 'dec' }, ato: { label: 'Assist to turnover ratio', dir: 'over', fmt: 'dec' }
+  };
+  function goalValue(metric, games) {
+    var gs = (games || []).filter(function (g) { return (g.kind || 'game') === 'game'; }), gp = gs.length;
+    if (!gp) return null;
+    var t = { ftm: 0, fta: 0, fgm: 0, fga: 0, tpm: 0, tpa: 0, to: 0, ast: 0, reb: 0, oreb: 0, stl: 0 };
+    gs.forEach(function (g) { (g.lines || []).forEach(function (l) { Object.keys(t).forEach(function (k) { t[k] += Number(l[k]) || 0; }); }); });
+    var per = function (k) { return Math.round(t[k] / gp * 10) / 10; }, pct = function (m, a) { return a ? Math.round(m / a * 1000) / 10 : null; };
+    switch (metric) {
+      case 'wins': return gs.filter(function (g) { return (g.us || 0) > (g.them || 0); }).length;
+      case 'ppg': return Math.round(gs.reduce(function (a, g) { return a + (g.us || 0); }, 0) / gp * 10) / 10;
+      case 'allowed': return Math.round(gs.reduce(function (a, g) { return a + (g.them || 0); }, 0) / gp * 10) / 10;
+      case 'ftp': return pct(t.ftm, t.fta); case 'fgp': return pct(t.fgm, t.fga); case 'tpp': return pct(t.tpm, t.tpa);
+      case 'ato': return t.to ? Math.round(t.ast / t.to * 100) / 100 : null;
+      default: return per(metric);
+    }
+  }
+  // 0..100 how far along a goal is; "under" goals count down from double the target
+  function goalPct(goal, value) {
+    var m = GOAL_METRICS[goal.metric]; if (value == null || !m) return 0;
+    if (m.dir === 'under') return Math.max(0, Math.min(100, Math.round((2 * goal.target - value) / goal.target * 100)));
+    return Math.max(0, Math.min(100, Math.round(value / goal.target * 100)));
+  }
+  function goalMet(goal, value) { var m = GOAL_METRICS[goal.metric]; if (value == null || !m) return false; return m.dir === 'under' ? value <= goal.target : value >= goal.target; }
+  function goalFmt(goal, value) { var m = GOAL_METRICS[goal.metric]; if (value == null) return '–'; return m.fmt === 'pct' ? value + '%' : m.fmt === 'int' ? String(value) : (Math.round(value * 10) / 10).toString(); }
+
   /* ── animated player ─────────────────────────────────────────────────── */
   // new PBCourt.Player(svgEl, play, {watermark:[line1,line2], onChange(at, playing)})
   // at = the frame being shown; play() animates through every remaining action.
@@ -379,6 +410,6 @@
   window.PBCourt = {
     C: C, R: R, OFF: OFF, DEF: DEF, ALL: ALL, dims: dims, courtSVG: courtSVG, action: action, stateAt: stateAt, stillState: stillState,
     arrowsSVG: arrowsSVG, tokensSVG: tokensSVG, viewOpts: viewOpts, shortName: shortName, tokenSVG: tokenSVG, ballSVG: ballSVG, ghostsSVG: ghostsSVG, watermark: watermark,
-    SITUATIONS: SITUATIONS, ENDGAME_LEAVES: ENDGAME_LEAVES, SETS: SETS, FULL_SETS: FULL_SETS, DEF_SETS: DEF_SETS, manD: manD, samples: samples, diagram: diagram, duration: duration, nearestRim: nearestRim, dist: dist, lerp: lerp, esc: esc, Player: Player
+    SITUATIONS: SITUATIONS, ENDGAME_LEAVES: ENDGAME_LEAVES, GOAL_METRICS: GOAL_METRICS, goalValue: goalValue, goalPct: goalPct, goalMet: goalMet, goalFmt: goalFmt, SETS: SETS, FULL_SETS: FULL_SETS, DEF_SETS: DEF_SETS, manD: manD, samples: samples, diagram: diagram, duration: duration, nearestRim: nearestRim, dist: dist, lerp: lerp, esc: esc, Player: Player
   };
 })();

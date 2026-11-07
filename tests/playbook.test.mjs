@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import * as fake from './_fake.js';
 import { toFirestore } from '../api/_firestore.js';
 import { SITE_TAG } from '../api/_site.js';
-import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanPhoto, cleanDate, cleanFeeds, parseIcs, cleanEndgame, cleanTerm, cleanCall, cleanAudio, SITUATION_KEYS, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
+import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanPhoto, cleanDate, cleanFeeds, parseIcs, cleanEndgame, cleanTerm, cleanCall, cleanAudio, cleanPrepQuiz, cleanGoals, goalValue, SITUATION_KEYS, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
 import playbook from '../api/playbook.js';
 
 fake.install();
@@ -165,6 +165,16 @@ await test('voice notes, bench calls and the weekly digest', async () => {
   assert.match(d.text, /Horns Flare, 1 of 2 passed \(still owe it: Ben\)/);
   assert.match(d.text, /Questions waiting on you: 1/); assert.match(d.text, /Bench calls logged: 2, scored on 1/); assert.match(d.text, /vs Radnor/);
   assert.equal(d.subject, 'Aces playbook: 1 of 2 studied, 1 question waiting');
+});
+await test('prep quiz and season goals', () => {
+  const q = cleanPrepQuiz([{ q: ' Who is their shooter? ', options: ['#23 Smith', '#4 Lee', '', '#11 Ray'], answer: 0 }, { q: 'One option', options: ['x'] }, { q: '', options: ['a', 'b'] }]);
+  assert.equal(q.length, 1); assert.deepEqual(q[0], { q: 'Who is their shooter?', options: ['#23 Smith', '#4 Lee', '#11 Ray'], answer: 0 });
+  assert.equal(cleanPrepQuiz([{ q: 'x', options: ['a', 'b'], answer: 9 }])[0].answer, 1);
+  const g = cleanGoals([{ metric: 'ftp', target: '70' }, { metric: 'ftp', target: 75 }, { metric: 'nope', target: 1 }, { metric: 'to', target: 0 }, { metric: 'wins', target: 18, label: 'Win the Central' }]);
+  assert.deepEqual(g, [{ metric: 'ftp', target: 70, label: 'Free throw %' }, { metric: 'wins', target: 18, label: 'Win the Central' }]);
+  const games = [{ kind: 'game', us: 60, them: 50, lines: [{ ftm: 7, fta: 10, to: 6, ast: 10 }, { ftm: 3, fta: 4, to: 4, ast: 5 }] }, { kind: 'game', us: 40, them: 55, lines: [{ ftm: 5, fta: 6, to: 10, ast: 5 }] }, { kind: 'scrimmage', us: 99, them: 0, lines: [{ fta: 100 }] }];
+  assert.equal(goalValue('wins', games), 1); assert.equal(goalValue('ppg', games), 50); assert.equal(goalValue('allowed', games), 52.5);
+  assert.equal(goalValue('ftp', games), 75); assert.equal(goalValue('to', games), 10); assert.equal(goalValue('ato', games), 1); assert.equal(goalValue('ftp', []), null);
 });
 await test('groups limit who can see a play', () => {
   const p = { visible: true, groups: ['Varsity'] };
@@ -342,6 +352,17 @@ await test('quiz results, game plan, practice and progress reach the player', as
   assert.equal((await call({ action: 'delete_call', id: lc.body.id }, true)).statusCode, 200);
   assert.equal((await call({ action: 'quiz_result', token: tok, id: 'whereami', score: 5, total: 6 })).statusCode, 200);
   assert.equal((await call({ action: 'board', token: tok })).body.on, false);
+  assert.equal((await call({ action: 'set_goals', goals: [{ metric: 'ftp', target: 70 }] }, true)).statusCode, 200);
+  const sp = await call({ action: 'save_plan', plan: { opponent: 'Radnor', date: '2099-01-05', visible: true, quiz: [{ q: 'Who shoots?', options: ['23', '4'], answer: 0 }] } }, true);
+  assert.equal(sp.statusCode, 200, JSON.stringify(sp.body));
+  const pl3 = await call({ action: 'plays', token: tok });
+  assert.deepEqual(pl3.body.goals, [{ metric: 'ftp', target: 70, label: 'Free throw %' }]);
+  const prepPlan = pl3.body.plans.find((x) => x.opponent === 'Radnor' && x.quiz.length);
+  assert.ok(prepPlan, 'plan with quiz reaches the player'); assert.equal(prepPlan.quiz[0].answer, 0);
+  assert.equal((await call({ action: 'quiz_result', token: tok, id: 'prep_' + prepPlan.id, score: 1, total: 1 })).statusCode, 200);
+  assert.equal((await call({ action: 'quiz_result', token: tok, id: 'prep_nope', score: 1, total: 1 })).statusCode, 404);
+  assert.equal((await call({ action: 'plays', token: tok })).body.done.quiz['prep_' + prepPlan.id], 100);
+  await call({ action: 'delete_plan', id: prepPlan.id }, true);
   assert.equal((await call({ action: 'set_board', id: playId, step: 2 }, true)).statusCode, 200);
   const bd = (await call({ action: 'board', token: tok })).body;
   assert.equal(bd.on, true); assert.equal(bd.id, playId); assert.equal(bd.step, 2);
