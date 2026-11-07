@@ -126,7 +126,7 @@ export default function SponsorshipsPage() {
             {[
               { end: 7, suffix: "×", label: "State Championships" },
               { end: 25, suffix: "+", label: "Home Games / Season" },
-              { end: 23, suffix: "", label: "League Titles" },
+              { end: 24, suffix: "", label: "League Titles" },
               { end: 1663, suffix: "+", label: "All-Time Wins" },
             ].map((s, i) => (
               <div key={i}>

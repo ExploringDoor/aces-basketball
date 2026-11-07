@@ -69,7 +69,7 @@ export default function CentralLeaguePage() {
           <h2 className="section-title">The Central<br /><span style={{ color: "var(--gold)" }}>League</span></h2>
           <div className="divider" />
           <p style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.55)", marginTop: 20, lineHeight: 1.8, maxWidth: 700 }}>
-            The Central League is a premier high school sports conference in suburban Philadelphia, founded in 1967. Comprised of 12 schools primarily from Delaware, Chester, and Montgomery counties, the Central League is home to some of the best basketball programs in District 1. Lower Merion has dominated the league's basketball landscape, capturing 23 titles, the most of any school since play began.
+            The Central League is a premier high school sports conference in suburban Philadelphia, founded in 1967. Comprised of 12 schools primarily from Delaware, Chester, and Montgomery counties, the Central League is home to some of the best basketball programs in District 1. Lower Merion has dominated the league's basketball landscape, capturing 24 titles, the most of any school since play began.
           </p>
         </FadeIn>
 
