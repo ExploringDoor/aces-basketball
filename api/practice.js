@@ -48,6 +48,7 @@ async function loadCustomDrills() {
 export default async function handler(req, res) {
   if (!fbAdminConfigured()) return json(res, 503, { error: 'not_configured' });
   const auth = await resolveAuth(req);
+  if (auth && auth.role === 'blocked') return json(res, 429, { error: 'too_many_tries' });
   if (!auth) return json(res, 401, { error: 'wrong_passcode' });
   const me = { name: auth.name, role: auth.role };
   const staff = auth.staff.map((c) => c.name);

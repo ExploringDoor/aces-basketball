@@ -31,7 +31,7 @@ export function validCode(c) { const n = normCode(c); return n.length >= CODE_MI
 /** "Grugan47!" from a name and a random digit string the caller supplies. */
 export function codeFor(name, digits) {
   const first = clip(name, LIMITS.name).split(/\s+/)[0].replace(/[^A-Za-z]/g, '') || 'Coach';
-  return `${first.charAt(0).toUpperCase()}${first.slice(1)}${String(digits).replace(/\D/g, '').slice(0, 3) || '7'}!`;
+  return `${first.charAt(0).toUpperCase()}${first.slice(1)}${String(digits).replace(/\D/g, '').slice(0, 4) || '7'}!`;
 }
 
 /** The staff roster as stored: [{ name, code }]. Names unique, codes unique
@@ -195,6 +195,5 @@ export function printHtml(report, opp, next) {
 ${keys ? `<h2>Keys to the game</h2><ol>${keys}</ol>` : ''}
 ${rows ? `<h2>Their personnel</h2><table><tr><th>#</th><th>Player</th><th>Tendencies</th><th>How we guard him</th></tr>${rows}</table>` : ''}
 ${matchups ? `<h2>Matchups</h2><table><tr><th>Aces</th><th>Them</th><th>Note</th></tr>${matchups}</table>` : ''}
-${String(r.plan || '').trim() ? `<h2>Game plan</h2><p>${esc(r.plan)}</p>` : ''}
 <script>window.onload=function(){window.print()}</script></body></html>`;
 }

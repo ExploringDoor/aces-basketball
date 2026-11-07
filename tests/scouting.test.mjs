@@ -101,7 +101,7 @@ await test('the admin password and each coach code sign in; anything else is ref
   // First admin visit bootstraps the staff with Name-digits-bang codes.
   r = await call({ method: 'GET' });
   assert.deepEqual(r.body.staff.map((c) => c.name), ['Matt', 'Eric', 'Gallman', 'Grugan', 'Downer', 'Adam']);
-  for (const c of r.body.staff) assert.match(c.code, new RegExp(`^${c.name}\\d{2,3}!$`));
+  for (const c of r.body.staff) assert.match(c.code, new RegExp(`^${c.name}\\d{2,4}!$`));
   const matt = r.body.staff[0].code;
   // Matt signs in with his own code, typed sloppily, and is Matt. Coaches never see codes.
   r = await call({ body: { action: 'check' }, key: ` ${matt.toLowerCase()} ` });
@@ -120,7 +120,7 @@ await test('admin manages the staff: add, new code, set a code, remove; coaches 
   r = await call({ body: { action: 'staff_add', name: 'Sam Chalal' } });
   assert.equal(r.status, 200);
   const sam = r.body.staff.find((c) => c.name === 'Sam Chalal');
-  assert.match(sam.code, /^Sam\d{2,3}!$/);
+  assert.match(sam.code, /^Sam\d{2,4}!$/);
   r = await call({ body: { action: 'staff_add', name: 'sam chalal' } });
   assert.equal(r.status, 400);
   r = await call({ body: { action: 'staff_set', name: 'Sam Chalal', code: 'Sam2026!' } });
@@ -131,7 +131,7 @@ await test('admin manages the staff: add, new code, set a code, remove; coaches 
   assert.equal(r.body.error, 'code_taken');
   r = await call({ body: { action: 'staff_code', name: 'Eric' } });
   const eric = r.body.staff.find((c) => c.name === 'Eric').code;
-  assert.match(eric, /^Eric\d{2,3}!$/);
+  assert.match(eric, /^Eric\d{2,4}!$/);
   r = await call({ body: { action: 'staff_remove', name: 'Sam Chalal' } });
   assert.equal(r.status, 200);
   r = await call({ body: { action: 'check' }, key: 'Sam2026!' });
@@ -176,6 +176,19 @@ await test('report: save, read back, summary on the board, and a stale save is r
   assert.equal(r.status, 400);
   r = await call({ method: 'GET', query: '?opp=../admins' });
   assert.equal(r.status, 400);
+});
+
+await test('wrong passwords from one connection are slowed, then locked out for ten minutes', async () => {
+  const from = (key) => {
+    const req = { method: 'POST', url: '/api/scouting', headers: { 'x-scouting-key': key, 'x-forwarded-for': '203.0.113.9' }, body: { action: 'check' } };
+    const out = { status: 0, body: null };
+    const res = { set statusCode(c) { out.status = c; }, get statusCode() { return out.status; }, setHeader() {}, end(b) { out.body = JSON.parse(b); } };
+    return handler(req, res).then(() => out);
+  };
+  for (let i = 0; i < 8; i++) assert.equal((await from(`Guess${1000 + i}!`)).status, 401);
+  const r = await from('admin-pass');
+  assert.equal(r.status, 429);
+  assert.equal(r.body.error, 'too_many_tries');
 });
 
 console.log(`\n${pass} passed, ${fail} failed`);

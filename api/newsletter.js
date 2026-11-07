@@ -39,7 +39,10 @@ import { UNSUB_TAG, LIMITS, normEmail, validEmail, cleanName, extractEmails, cle
 const SUBS = 'newsletter_subs';
 const SENDS = 'newsletter_sends';
 const SEND_CAP = 500;
-const CONCURRENCY = 4;
+const CONCURRENCY = 8;
+// A send in flight: a second click while the first is still working must not start a second run.
+const LOCK_ID = `${SITE_TAG}_lock`;
+const LOCK_MS = 10 * 60 * 1000;
 const RATE = { perMinute: 10 };
 
 function ctEq(a, b) {
@@ -89,16 +92,17 @@ async function listSubs() {
 async function listSends() {
   let docs = [];
   try { docs = await fsList(SENDS); } catch (e) { docs = []; }
-  return docs.filter((d) => d.site === SITE_TAG)
+  return docs.filter((d) => d.site === SITE_TAG && !d.lock)
     .map((d) => ({ id: d.id, subject: d.subject || '', sent: d.sent || 0, failed: d.failed || 0, at: d.at || '', by: d.by || '' }))
     .sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 10);
 }
-/** Create or revive a subscriber. An unsubscribed family that signs up again
- *  on the site is active again; an admin paste leaves their choice alone. */
+/** Create a subscriber. A family that unsubscribed stays unsubscribed whichever way the
+ *  address comes back (the public form can be replayed by anyone); the admin brings them back
+ *  on purpose by removing the row and adding the address again. */
 async function upsertSub(email, name, source) {
   const now = new Date().toISOString();
   const cur = await fsGet(subPath(email));
-  if (cur && cur.site === SITE_TAG && cur.status === 'unsubscribed' && source === 'admin') return 'unsubscribed';
+  if (cur && cur.site === SITE_TAG && cur.status === 'unsubscribed') return 'unsubscribed';
   if (cur && cur.site === SITE_TAG && cur.status === 'active') {
     if (name && !cur.name) await fsPatch(subPath(email), { name });
     return 'existing';
@@ -229,14 +233,21 @@ export default async function handler(req, res) {
       const ok = await sendMail({ to: testTo, subject: `[TEST] ${subject}`, html: personal(testTo) });
       return json(res, ok ? 200 : 502, ok ? { ok: true, test: true, sent: 1, failed: 0, subject } : { error: 'send_failed' });
     }
-    const subs = (await listSubs()).filter((s) => s.status === 'active').slice(0, SEND_CAP);
+    // Oldest sign-ups first, so a burst of junk sign-ups cannot push the real families past the cap.
+    const active = (await listSubs()).filter((s) => s.status === 'active').sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
+    const subs = active.slice(0, SEND_CAP);
+    const skipped = active.length - subs.length;
     if (!subs.length) return json(res, 400, { error: 'no_subscribers' });
+    const lock = await fsGet(`${SENDS}/${LOCK_ID}`);
+    if (lock && lock.at && Date.now() - Date.parse(lock.at) < LOCK_MS) return json(res, 409, { error: 'send_in_progress' });
+    await fsPatch(`${SENDS}/${LOCK_ID}`, { site: SITE_TAG, lock: true, at: new Date().toISOString() });
     let sent = 0, failed = 0;
     await pool(subs, CONCURRENCY, async (s) => { if (await sendMail({ to: s.email, subject, html: personal(s.email) })) sent++; else failed++; });
     const at = new Date().toISOString();
     const id = `${SITE_TAG}_${Date.now()}`;
-    await fsCreate(SENDS, { site: SITE_TAG, subject: String(subject).slice(0, 200), sent, failed, total: subs.length, at, by: 'admin', week: `${content.from || ''}..${content.to || ''}` }, id);
-    return json(res, 200, { ok: true, sent, failed, total: subs.length, subject, sends: await listSends() });
+    await fsCreate(SENDS, { site: SITE_TAG, subject: String(subject).slice(0, 200), sent, failed, skipped, total: subs.length, at, by: 'admin', week: `${content.from || ''}..${content.to || ''}` }, id);
+    await fsPatch(`${SENDS}/${LOCK_ID}`, { site: SITE_TAG, lock: true, at: '' });
+    return json(res, 200, { ok: true, sent, failed, skipped, total: subs.length, subject, sends: await listSends() });
   }
 
   return json(res, 400, { error: 'unknown_action' });

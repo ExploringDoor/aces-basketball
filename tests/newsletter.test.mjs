@@ -158,12 +158,17 @@ await test('unsubscribe: the token verifies, a GET only shows the button, a POST
   assert.equal(r.status, 200);
   assert.ok(r.text.includes('You are unsubscribed'));
   assert.equal(fake.docs('newsletter_subs')[0].status, 'unsubscribed');
-  // Signing up again on the site makes them active again; a JSON unsubscribe works too.
-  await call({ body: { action: 'subscribe', email: 'pat@example.com' }, key: '' });
-  assert.equal(fake.docs('newsletter_subs')[0].status, 'active');
+  // The public form cannot put them back (anyone can replay it); a JSON unsubscribe still answers ok.
+  r = await call({ body: { action: 'subscribe', email: 'pat@example.com' }, key: '' });
+  assert.deepEqual(r.body, { ok: true });
+  assert.equal(fake.docs('newsletter_subs')[0].status, 'unsubscribed');
   r = await call({ body: { action: 'unsubscribe', email: 'pat@example.com', token: t }, key: '' });
   assert.deepEqual(r.body, { ok: true });
   assert.equal(fake.docs('newsletter_subs')[0].status, 'unsubscribed');
+  // The admin brings a family back on purpose: remove the row, then add the address again.
+  await call({ body: { action: 'remove', email: 'pat@example.com' } });
+  await call({ body: { action: 'add', emails: 'pat@example.com' } });
+  assert.equal(fake.docs('newsletter_subs')[0].status, 'active');
   assert.ok(unsubscribePageHtml({ email: 'a@b.co', token: 'x', state: 'ask' }).includes('method="post"'));
 });
 
@@ -233,8 +238,11 @@ await test('send: one email per active subscriber with its own unsubscribe link,
     assert.ok(m.html.includes(`/api/newsletter?u=${encodeURIComponent(m.to[0])}&amp;t=${tokenFor(m.to[0])}`));
     assert.ok(m.text.includes('Aces Weekly') && !m.text.includes('<'));
   }
-  const sends = fake.docs('newsletter_sends');
+  const sends = fake.docs('newsletter_sends').filter((d) => !d.lock);
   assert.equal(sends.length, 1);
+  // The send lock is released when the run finishes.
+  const lock = fake.docs('newsletter_sends').find((d) => d.lock);
+  assert.ok(lock && lock.at === '');
   assert.equal(sends[0].site, SITE_TAG);
   assert.equal(sends[0].sent, 2);
   assert.equal(sends[0].by, 'admin');

@@ -23,7 +23,7 @@ const input = { width: "100%", boxSizing: "border-box", background: "rgba(255,25
 const btn = (primary, small) => ({ fontFamily: OSW, fontSize: small ? 11 : 13, letterSpacing: 2, textTransform: "uppercase", padding: small ? "8px 12px" : "12px 18px", borderRadius: 9, cursor: "pointer", border: primary ? "none" : "1px solid rgba(255,255,255,0.18)", color: primary ? "#1a0010" : "#fff", background: primary ? "linear-gradient(135deg, #c9a44a, #b3873a)" : "rgba(255,255,255,0.05)", fontWeight: 600, whiteSpace: "nowrap" });
 const card = { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: 14 };
 const hint = { fontFamily: SANS, fontSize: 13, color: "rgba(255,255,255,0.5)", margin: "4px 0 10px" };
-const ERR = { unauthorized: "That password didn't work.", not_configured: "The newsletter isn't switched on yet.", email_not_configured: "Email isn't set up on the server yet.", no_content: "Write a note or pick a game first.", no_subscribers: "Nobody is on the list yet.", no_emails: "No email addresses found in that text.", bad_email: "That email address doesn't look right.", send_failed: "The test email didn't go out.", save_failed: "Couldn't save. Try again in a moment." };
+const ERR = { send_in_progress: "This issue is already going out. Give it a few minutes, then check Recent issues.", unauthorized: "That password didn't work.", not_configured: "The newsletter isn't switched on yet.", email_not_configured: "Email isn't set up on the server yet.", no_content: "Write a note or pick a game first.", no_subscribers: "Nobody is on the list yet.", no_emails: "No email addresses found in that text.", bad_email: "That email address doesn't look right.", send_failed: "The test email didn't go out.", save_failed: "Couldn't save. Try again in a moment." };
 
 async function api(key, body, query = "") {
   const r = await fetch(`/api/newsletter${query}`, { method: body ? "POST" : "GET", headers: { "Content-Type": "application/json", "x-admin-key": key }, body: body ? JSON.stringify(body) : undefined });
@@ -136,7 +136,7 @@ function Composer({ keyCode, data, setData, onAuthFail }) {
     try {
       const r = await api(keyCode, { action: "send", ...content, ...(test ? { testTo } : {}) });
       if (test) setMsg(`Test sent to ${testTo.trim().toLowerCase()}.`);
-      else { setMsg(`Sent to ${r.sent} of ${r.total}${r.failed ? `, ${r.failed} failed` : ""}.`); setData((d) => ({ ...d, sends: r.sends })); }
+      else { setMsg(`Sent to ${r.sent} of ${r.total}${r.failed ? `, ${r.failed} failed` : ""}.${r.skipped ? ` ${r.skipped} newer sign-ups are past the 500 limit and did not get this issue.` : ""}`); setData((d) => ({ ...d, sends: r.sends })); }
     } catch (e) { if (e.message === "unauthorized") onAuthFail(); setMsg(ERR[e.message] || "Couldn't send. Check your connection."); }
     setBusy("");
   };
