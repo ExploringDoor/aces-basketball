@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="/LM_Logo.png">
 <meta name="theme-color" content="#840036">
+<link rel="manifest" href="/playbook.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Playbook">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="robots" content="noindex, nofollow">
 <title>Team Playbook | Lower Merion Aces Basketball</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -515,11 +520,7 @@ body.shielded #app{filter:blur(22px)}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="/playbook-court.js"></script>
-<link rel="manifest" href="/playbook.webmanifest">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Playbook">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
 <script>
 (function(){
 var STORE='aces_playbook', DEMO=/[?&]demo=1/.test(location.search);
@@ -558,7 +559,7 @@ $('gateForm').addEventListener('submit',function(e){
     S.token=d.token; S.me=d.player; save({token:d.token,me:d.player}); $('code').value=''; fetchPlays();
   }).catch(function(){ b.disabled=false; b.textContent='Open the playbook'; $('gateErr').textContent='No connection. Try again.'; });
 });
-function showGate(msg){ $('app').classList.add('hide'); $('gate').classList.remove('hide'); $('gateErr').textContent=msg||''; document.body.classList.remove('shielded'); if(S.player) S.player.pause(); }
+function showGate(msg){ if(typeof stopVoice==='function') stopVoice(); $('app').classList.add('hide'); $('gate').classList.remove('hide'); $('gateErr').textContent=msg||''; document.body.classList.remove('shielded'); if(S.player) S.player.pause(); }
 function fetchPlays(){
   if(DEMO){ S.me={id:'demo_me',name:'Demo Player',group:''}; S.plays=PBCourt.samples(); S.plays[0].signal={call:'Fist',photo:''}; S.plays[1].signal={call:'Thumbs up',photo:''}; if(S.plays[2]) S.plays[2].signal={call:'Chop',photo:''}; S.upcoming=[{at:new Date(Date.now()+864e5).toISOString().replace(/T.*/,'T20:30:00.000Z'),allDay:false,title:'Varsity practice',where:'Kobe Bryant Gym'},{at:new Date(Date.now()+3*864e5).toISOString().replace(/T.*/,'T23:00:00.000Z'),allDay:false,title:'vs Radnor',where:'Radnor HS'}]; S.calUrl='https://example.com/aces.ics'; S.goals=[{metric:'ftp',target:70,label:'Free throw %'},{metric:'to',target:12,label:'Turnovers per game'},{metric:'wins',target:18,label:'Wins'}]; S.plays[0].situations=['need3','ato']; S.plays[1].situations=['blob','need2']; if(S.plays[2]) S.plays[2].situations=['vs_zone']; S.terms=[{id:'t1',term:'Fist',means:'Horns Flare. Our go to set against man.',kind:'call',play_id:S.plays[0].id},{id:'t2',term:'Ice',means:'Force the ball handler to the baseline on a side ball screen. Big stays low.',kind:'defense'},{id:'t3',term:'Weak',means:'Push the ball handler to his weak hand and keep him there.',kind:'defense'},{id:'t4',term:'Red',means:'Full court man press after a made free throw.',kind:'call'},{id:'t5',term:'Chop',means:'Our 2-3 zone slides.',kind:'call',play_id:S.plays[2]?S.plays[2].id:''}]; S.endgame={ball_down3:{play_ids:[S.plays[0].id],note:'Flare for 1. If they switch it, 5 seals and we throw it in.'},ball_down2:{play_ids:[S.plays[1].id],note:''},def_up3:{play_ids:[],note:'Foul before the shot goes up, under 5 seconds only. Hands up, no reach.',foul:true},inb_blob2:{play_ids:[S.plays[1].id],note:''}}; S.plays[0].due=new Date(Date.now()+3*864e5).toISOString().slice(0,10); S.plays[1].due=new Date(Date.now()-864e5).toISOString().slice(0,10); S.plays[0].marks=[{t:12,text:'Watch 5 set the screen on the top shoulder'},{t:31,text:'1 gets his feet set before the catch'}];
     S.done={viewed:['demo1','demo2'],quiz:{demo1:100}}; S.attitude='';
@@ -685,8 +686,8 @@ $('whereBack').addEventListener('click',endWhere);
 S.follow=false; S.board=null; S.pollT=null;
 function demoBoard(){ try{ var b=JSON.parse(localStorage.getItem('pb_demo_board')||'null'); if(b&&b.on&&Date.parse(b.updated)>Date.now()-72e5&&S.plays.some(function(p){return p.id===b.id;})) return b; }catch(e){} return {on:false}; }
 function pollBoard(){
-  clearTimeout(S.pollT); if(!S.me||document.hidden) { S.pollT=setTimeout(pollBoard,8000); return; }
-  var done=function(b){ onBoard(b||{on:false}); S.pollT=setTimeout(pollBoard,S.follow?3000:7000); };
+  clearTimeout(S.pollT); if(!S.me||document.hidden) { S.pollT=setTimeout(pollBoard,15000); return; }
+  var done=function(b){ onBoard(b||{on:false}); S.pollT=setTimeout(pollBoard,S.follow?4000:(b&&b.on)?6000:30000); };
   if(DEMO) return done(demoBoard());
   api({action:'board',token:S.token}).then(done).catch(function(){ done(S.board||{on:false}); });
 }
@@ -699,7 +700,8 @@ function onBoard(b){
 }
 function followTo(b,was){
   $('followBar').classList.remove('hide'); $('fbSub').textContent=b.step!=null?'held on step '+b.step:'';
-  if(!S.open||S.open.id!==b.id){ openPlay(b.id); if(S.player){ if(b.step!=null) S.player.go(b.step); else setTimeout(function(){ if(S.follow&&S.open&&S.open.id===b.id) S.player.playAll(); },900); } return; }
+  if(!S.plays.some(function(p){ return p.id===b.id; })){ if(!S.refetching){ S.refetching=true; fetchPlays().then(function(){ S.refetching=false; }); } return; }   // a play published after sign in
+  if(!S.open||S.open.id!==b.id){ history.replaceState({play:b.id},'','#play='+encodeURIComponent(b.id)); openPlay(b.id,true); if(S.player){ if(b.step!=null) S.player.go(b.step); else setTimeout(function(){ if(S.follow&&S.open&&S.open.id===b.id) S.player.playAll(); },900); } return; }
   var P=S.player; if(!P) return;
   if(b.step!=null){ if(P.isPlaying()||P.at!==b.step){ P.pause(); P.go(b.step); sync(); } }
   else if(was&&was.step!=null&&b.step==null){ P.go(0); P.playAll(); }
@@ -714,7 +716,7 @@ var deferredInstall=null, standalone=window.matchMedia('(display-mode: standalon
 window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); deferredInstall=e; renderInstall(); });
 function renderInstall(){
   var dismissed=false; try{ dismissed=localStorage.getItem('pb_install_no')==='1'; }catch(e){}
-  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
+  var ios=(/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1))&&!window.MSStream;
   var show=!standalone&&!dismissed&&(deferredInstall||ios);
   $('installCard').classList.toggle('hide',!show); if(!show) return;
   $('installBtn').classList.toggle('hide',!deferredInstall);
@@ -730,9 +732,9 @@ if('serviceWorker' in navigator&&!DEMO){ navigator.serviceWorker.register('/play
 /* ── situations library + end of game tree ── */
 var EGS={side:null,leaf:null};
 function hideAllViews(){ ['listView','playView','planView','sigView','sitView','termView','whereView'].forEach(function(id){ $(id).classList.add('hide'); }); }
-function showSits(){
+function showSits(fresh){
   hideAllViews(); $('sitView').classList.remove('hide'); window.scrollTo(0,0);
-  EGS={side:null,leaf:null}; renderEg();
+  if(fresh) EGS={side:null,leaf:null}; renderEg();
   var byKey={}; S.plays.forEach(function(p){ if(kindOf(p)==='scout') return; (p.situations||[]).forEach(function(k){ (byKey[k]=byKey[k]||[]).push(p); }); });
   var groups=[]; PBCourt.SITUATIONS.forEach(function(d){ if(!byKey[d.key]) return; var g=groups.filter(function(x){return x.name===d.group;})[0]; if(!g){ g={name:d.group,items:[]}; groups.push(g); } g.items.push(d); });
   $('sitList').innerHTML=groups.length?groups.map(function(g){ return '<h3 class="sec" style="font-family:Oswald,sans-serif;font-size:14px;letter-spacing:1.8px;text-transform:uppercase;color:#840036;margin:24px 0 2px">'+esc(g.name)+'</h3>'+g.items.map(function(d){ var list=byKey[d.key]; return '<div class="sitrow"><div class="sitlab">'+esc(d.label)+'<small>'+list.length+(list.length===1?' play':' plays')+'</small></div><div class="grid">'+cards(list)+'</div></div>'; }).join(''); }).join(''):'<div class="empty" style="margin-top:18px"><h3>No plays tagged yet</h3><p>Coach tags plays with situations in the editor. Check back soon.</p></div>';
@@ -755,7 +757,7 @@ $('eg').addEventListener('click',function(e){ var b;
   if((b=e.target.closest('[data-open]'))) openPlay(b.getAttribute('data-open'));
 });
 $('sitList').addEventListener('click',function(e){ var b=e.target.closest('[data-open]'); if(b) openPlay(b.getAttribute('data-open')); });
-$('sitCard').addEventListener('click',function(){ history.pushState({sit:1},'','#situations'); showSits(); });
+$('sitCard').addEventListener('click',function(){ history.pushState({sit:1},'','#situations'); showSits(true); });
 $('sitBack').addEventListener('click',function(){ if(history.state&&history.state.sit) history.back(); else { history.replaceState(null,'',location.pathname+location.search); closePlan(); } });
 /* ── glossary ── */
 var TQ=null, TERM_KIND={call:'Call',offense:'Offense',defense:'Defense',action:'Action',other:''};
@@ -1151,7 +1153,7 @@ function endQuiz(silent){
 $('quizBtn').addEventListener('click',startQuiz);
 
 /* ── keep it on the screen ── */
-function shield(){ if($('app').classList.contains('hide')||(DEMO&&/noshield/.test(location.search))) return; document.body.classList.add('shielded'); var vv=$('vidBody').querySelector('video'); if(vv) vv.pause(); if(S.player&&S.player.isPlaying()){ S.player.pause(); sync(); } }
+function shield(){ if($('app').classList.contains('hide')||(DEMO&&/noshield/.test(location.search))) return; if(typeof stopVoice==='function') stopVoice(); document.body.classList.add('shielded'); var vv=$('vidBody').querySelector('video'); if(vv) vv.pause(); if(S.player&&S.player.isPlaying()){ S.player.pause(); sync(); } }
 $('shield').addEventListener('click',function(){ document.body.classList.remove('shielded'); if(S.player) S.player.o.watermark=wmLines(); });
 document.addEventListener('visibilitychange',function(){ if(document.hidden) shield(); });
 window.addEventListener('blur',shield);

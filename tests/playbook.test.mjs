@@ -133,6 +133,15 @@ await test('signals, calendar feeds and iCal parsing', () => {
   const ev = parseIcs(ics, Date.parse('2099-01-01T00:00:00Z'));
   assert.equal(ev.length, 2); assert.equal(ev[0].title, 'Phoenix tournament'); assert.equal(ev[0].allDay, true);
   assert.equal(ev[1].title, 'Varsity practice'); assert.equal(ev[1].where, 'Kobe Bryant Gym, Ardmore'); assert.equal(ev[1].at, '2099-01-12T20:30:00.000Z', 'EST wall clock 3:30pm = 20:30Z');
+  // a weekly Tue/Thu practice from Google Calendar, started in November, one Thursday cancelled
+  const rec = 'BEGIN:VEVENT\r\nDTSTART;TZID=America/New_York:20261103T153000\r\nRRULE:FREQ=WEEKLY;BYDAY=TU,TH;UNTIL=20270301T000000Z\r\nEXDATE;TZID=America/New_York:20261126T153000\r\nSUMMARY:Practice\r\nEND:VEVENT';
+  const r2 = parseIcs(rec, Date.parse('2026-11-23T12:00:00Z'), 20, 14);
+  assert.deepEqual(r2.map((x) => x.at.slice(0, 10)), ['2026-11-24', '2026-12-01', '2026-12-03'], 'Tue/Thu for two weeks, Thanksgiving Thursday skipped');
+  assert.ok(r2.every((x) => x.at.endsWith('T20:30:00.000Z')), 'wall clock stays 3:30pm EST');
+  const late = parseIcs('BEGIN:VEVENT\r\nDTSTART;TZID=America/New_York:20261110T193000\r\nRRULE:FREQ=WEEKLY;BYDAY=TU\r\nSUMMARY:Game\r\nEND:VEVENT', Date.parse('2026-11-10T12:00:00Z'), 20, 14);
+  assert.deepEqual(late.map((x) => x.at), ['2026-11-11T00:30:00.000Z', '2026-11-18T00:30:00.000Z'], 'a 7:30pm Tuesday game is still Tuesday (UTC says Wednesday)');
+  const dst = parseIcs('BEGIN:VEVENT\r\nDTSTART;TZID=America/New_York:20270301T153000\r\nRRULE:FREQ=WEEKLY;COUNT=3\r\nSUMMARY:P\r\nEND:VEVENT', Date.parse('2027-03-01T00:00:00Z'), 20, 30);
+  assert.deepEqual(dst.map((x) => x.at), ['2027-03-01T20:30:00.000Z', '2027-03-08T20:30:00.000Z', '2027-03-15T19:30:00.000Z'], 'COUNT=3 and the wall clock holds across the DST switch');
 });
 await test('situations, end of game tree and glossary terms', () => {
   const r = cleanPlay(Object.assign({}, PLAY, { situations: ['blob', 'nope', 'blob', 'need3'] }));
@@ -169,7 +178,8 @@ await test('voice notes, bench calls and the weekly digest', async () => {
 await test('prep quiz and season goals', () => {
   const q = cleanPrepQuiz([{ q: ' Who is their shooter? ', options: ['#23 Smith', '#4 Lee', '', '#11 Ray'], answer: 0 }, { q: 'One option', options: ['x'] }, { q: '', options: ['a', 'b'] }]);
   assert.equal(q.length, 1); assert.deepEqual(q[0], { q: 'Who is their shooter?', options: ['#23 Smith', '#4 Lee', '#11 Ray'], answer: 0 });
-  assert.equal(cleanPrepQuiz([{ q: 'x', options: ['a', 'b'], answer: 9 }])[0].answer, 1);
+  assert.equal(cleanPrepQuiz([{ q: 'x', options: ['a', 'b'], answer: 9 }])[0].answer, 0);
+  assert.equal(cleanPrepQuiz([{ q: 'x', options: ['', 'B', 'C'], answer: 2 }])[0].answer, 1, 'the right answer follows its option when blanks drop out');
   const g = cleanGoals([{ metric: 'ftp', target: '70' }, { metric: 'ftp', target: 75 }, { metric: 'nope', target: 1 }, { metric: 'to', target: 0 }, { metric: 'wins', target: 18, label: 'Win the Central' }]);
   assert.deepEqual(g, [{ metric: 'ftp', target: 70, label: 'Free throw %' }, { metric: 'wins', target: 18, label: 'Win the Central' }]);
   const games = [{ kind: 'game', us: 60, them: 50, lines: [{ ftm: 7, fta: 10, to: 6, ast: 10 }, { ftm: 3, fta: 4, to: 4, ast: 5 }] }, { kind: 'game', us: 40, them: 55, lines: [{ ftm: 5, fta: 6, to: 10, ast: 5 }] }, { kind: 'scrimmage', us: 99, them: 0, lines: [{ fta: 100 }] }];
@@ -351,6 +361,11 @@ await test('quiz results, game plan, practice and progress reach the player', as
   assert.equal((await call({ action: 'admin_list' }, true)).body.calls[0].play_name, PLAY.name);
   assert.equal((await call({ action: 'delete_call', id: lc.body.id }, true)).statusCode, 200);
   assert.equal((await call({ action: 'quiz_result', token: tok, id: 'whereami', score: 5, total: 6 })).statusCode, 200);
+  assert.equal((await call({ action: 'quiz_result', token: tok, id: 'constructor', score: 1, total: 1 })).statusCode, 404, 'prototype keys are not quizzes');
+  assert.equal((await call({ action: 'view', token: tok, id: playId })).statusCode, 200);
+  const al = (await call({ action: 'admin_list' }, true)).body;
+  assert.equal(al.vsum[codes[0].id].n >= 1, true); assert.ok(al.views.some((v) => v.play_id === playId && v.player_id === codes[0].id), 'the coach log is built from the summaries');
+  assert.ok((await call({ action: 'plays', token: tok })).body.done.viewed.includes(playId));
   assert.equal((await call({ action: 'board', token: tok })).body.on, false);
   assert.equal((await call({ action: 'set_goals', goals: [{ metric: 'ftp', target: 70 }] }, true)).statusCode, 200);
   const sp = await call({ action: 'save_plan', plan: { opponent: 'Radnor', date: '2099-01-05', visible: true, quiz: [{ q: 'Who shoots?', options: ['23', '4'], answer: 0 }] } }, true);
@@ -363,6 +378,7 @@ await test('quiz results, game plan, practice and progress reach the player', as
   assert.equal((await call({ action: 'quiz_result', token: tok, id: 'prep_nope', score: 1, total: 1 })).statusCode, 404);
   assert.equal((await call({ action: 'plays', token: tok })).body.done.quiz['prep_' + prepPlan.id], 100);
   await call({ action: 'delete_plan', id: prepPlan.id }, true);
+  assert.equal((await call({ action: 'set_board', id: 'nope', step: 2 }, true)).statusCode, 404);
   assert.equal((await call({ action: 'set_board', id: playId, step: 2 }, true)).statusCode, 200);
   const bd = (await call({ action: 'board', token: tok })).body;
   assert.equal(bd.on, true); assert.equal(bd.id, playId); assert.equal(bd.step, 2);

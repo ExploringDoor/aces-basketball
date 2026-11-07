@@ -889,7 +889,7 @@ function viewsFor(id){ return ((S.data&&S.data.views)||[]).filter(function(v){ r
 
 /* ── tabs ── */
 function go(tab){
-  if(tab==='board') return;
+  if(tab==='board') tab=S.tab||'plays';
   if(!$('p-'+tab)) tab='plays';
   S.tab=tab;
   Array.prototype.forEach.call(document.querySelectorAll('.tab'),function(b){ b.setAttribute('aria-selected',String(b.getAttribute('data-tab')===tab)); });
@@ -979,9 +979,10 @@ $('termList').addEventListener('click',function(e){ var t;
 });
 /* ── the board: full screen play on a loop, for holding the iPad up in the huddle ── */
 var BD={P:null,p:null,paused:false,timer:null,lock:null,speed:1};
-function bdPlays(){ return plays('ours').filter(function(p){ return !p.archived&&(p.frames||[]).length; }); }
+function bdPlays(){ return plays('ours').filter(function(p){ return !p.archived&&(p.frames||[]).length>=2; }); }
 function boardOpen(id){
-  var p=(S.data.plays||[]).find(function(x){ return x.id===id; }); if(!p) return boardPick();
+  var p=(S.data.plays||[]).find(function(x){ return x.id===id; }); if(!p||(p.frames||[]).length<2) return boardPick();
+  if(!p.visible||p.archived) toast('Draft play: it runs here, but players can\'t follow it until it\'s live.');
   var v=viewPlay(p); BD.p=p; BD.paused=false; clearTimeout(BD.timer);
   var wasHidden=$('board').classList.contains('hide');
   $('board').classList.remove('hide'); $('bdGrid').classList.add('hide'); document.body.style.overflow='hidden';
@@ -995,13 +996,13 @@ function boardOpen(id){
   bdStart();
 }
 function bdCast(step,on){ if(DEMO){ try{ localStorage.setItem('pb_demo_board',JSON.stringify({on:on!==false&&!!BD.p,id:BD.p?BD.p.id:'',name:BD.p?BD.p.name:'',step:step==null?null:step,updated:new Date().toISOString()})); }catch(e){} return; } api('set_board',{id:BD.p?BD.p.id:'',step:step==null?null:step,on:on!==false}).catch(function(){}); }
-function bdStart(){ clearTimeout(BD.timer); BD.paused=false; bdClear(); BD.P.go(0); bdSync(0,false,true); bdCast(null); BD.timer=setTimeout(function(){ if(!BD.paused) BD.P.playAll(); },900); }
-function bdSync(at,playing,noLoop){
-  if(!BD.P) return;   // the Player emits while it is still being built
+function bdStart(){ clearTimeout(BD.timer); BD.paused=false; bdClear(); BD.starting=true; BD.P.go(0); BD.starting=false; bdSync(0,false); bdCast(null); BD.timer=setTimeout(function(){ if(!BD.paused) BD.P.playAll(); },900); }
+function bdSync(at,playing){
+  if(!BD.P||BD.starting) return;   // the Player emits while it is still being built, and on go(0) inside bdStart
   var n=BD.P.n(), f=BD.P.play.frames[at]||{};
   $('bdSn').textContent=at===0?'Setup':'Step '+at+' of '+(n-1); $('bdNote').textContent=f.note||(at===0?'Starting spots':'');
   $('bdPause').textContent=BD.paused?'Play':'Pause';
-  if(!noLoop&&!playing&&!BD.paused&&at>=n-1){ clearTimeout(BD.timer); BD.timer=setTimeout(function(){ if(!BD.paused&&!$('board').classList.contains('hide')) bdStart(); },1800); }
+  if(n>1&&!playing&&!BD.paused&&at>=n-1){ clearTimeout(BD.timer); BD.timer=setTimeout(function(){ if(!BD.paused&&!$('board').classList.contains('hide')) bdStart(); },1800); }
 }
 function bdToggle(){ if(!BD.P) return; if(BD.paused){ BD.paused=false; bdClear(); if(BD.P.at>=BD.P.n()-1) bdStart(); else { BD.P.playAll(); bdCast(null); } } else { BD.paused=true; clearTimeout(BD.timer); BD.P.pause(); bdCast(BD.P.at); } $('bdPause').textContent=BD.paused?'Play':'Pause'; }
 /* freeze and draw: a canvas over the court, cleared on play or restart */
@@ -1094,6 +1095,7 @@ function renderCalls(){
 }
 $('clOpp').addEventListener('change',renderCalls);
 // One sheet for the bench: our calls with diagrams and signals, what they run, matchups, fouls and timeouts.
+function clearPrint(){ ['printPlan','printBench','printReport'].forEach(function(id){ $(id).innerHTML=''; }); }
 function benchCard(p){
   if(!p) return;
   var byId={}; (S.data.plays||[]).forEach(function(x){ byId[x.id]=x; });
@@ -1113,11 +1115,11 @@ function benchCard(p){
   if(keys.length) h+='<h2>Keys</h2><ul class="bc-keys">'+keys.map(function(k){ return '<li>'+esc(k)+'</li>'; }).join('')+'</ul>';
   h+='<h2>Team fouls</h2><div class="bc-fouls">'+['Q1','Q2','Q3','Q4','OT'].map(function(q){ return '<div><span class="q">'+q+'</span>'+boxes(5,true)+'</div>'; }).join('')+'</div><div class="bc-cat">B = bonus, two shots on the fifth foul of the quarter.</div>';
   h+='<h2>Timeouts</h2><div class="bc-tos"><div><span class="q">60</span>'+boxes(3)+'</div><div><span class="q">30</span>'+boxes(2)+'</div></div>';
-  var EGD=S.data.endgame||{}; function egLine(label,key){ var v=EGD[key]||{}; var names=(v.play_ids||[]).map(function(id){ return byId[id]?byId[id].name:''; }).filter(Boolean); var txt=[key==='def_up3'&&(v.play_ids.length||v.note)?(v.foul?'FOUL':'Defend'):'',names.join(' / '),v.note].filter(Boolean).join(' · '); return '<div><span>'+label+'</span>'+(txt?'<b style="flex:1;font-weight:600">'+esc(txt)+'</b>':'<i></i>')+'</div>'; }
+  var EGD=S.data.endgame||{}; function egLine(label,key){ var v=EGD[key]||{}; var names=(v.play_ids||[]).map(function(id){ return byId[id]?byId[id].name:''; }).filter(Boolean); var txt=[key==='def_up3'&&((v.play_ids||[]).length||v.note)?(v.foul?'FOUL':'Defend'):'',names.join(' / '),v.note].filter(Boolean).join(' · '); return '<div><span>'+label+'</span>'+(txt?'<b style="flex:1;font-weight:600">'+esc(txt)+'</b>':'<i></i>')+'</div>'; }
   h+='<h2>Late game</h2><div class="bc-lines">'+egLine('Need a 3','ball_down3')+egLine('Need a 2','ball_down2')+egLine('Down 1','ball_down1')+egLine('Tied, last shot','ball_tied')+egLine('Up 3, they have it','def_up3')+egLine('Up 1 or 2, they have it','def_up12')+egLine('Baseline, need a 2','inb_blob2')+egLine('Baseline, need a 3','inb_blob3')+'</div>';
   if(p.notes) h+='<h2>From coach</h2><div class="bc-notes">'+esc(p.notes)+'</div>';
   h+='</div></div><div class="bc-foot">Lower Merion Aces · coaches only, keep it on the bench</div>';
-  $('printPlan').innerHTML=''; $('printBench').innerHTML=h;
+  clearPrint(); $('printBench').innerHTML=h;
   setTimeout(function(){ window.print(); },80);
 }
 function planEditor(src,isCopy){
@@ -1443,7 +1445,7 @@ $('peSave').addEventListener('click',function(){
 });
 function printPractice(p){
   var t=p.start||'', tot=0;
-  $('printBench').innerHTML=''; $('printPlan').innerHTML='<h1>Aces practice'+(p.title?': '+esc(p.title):'')+'</h1><div class="when">'+esc(fmtDay(p.date))+(t?' · '+fmtTime(t):'')+' · '+minsOf(p)+' minutes</div>'+(p.focus?'<div class="focus"><b>Focus:</b> '+esc(p.focus)+'</div>':'')+
+  clearPrint(); $('printPlan').innerHTML='<h1>Aces practice'+(p.title?': '+esc(p.title):'')+'</h1><div class="when">'+esc(fmtDay(p.date))+(t?' · '+fmtTime(t):'')+' · '+minsOf(p)+' minutes</div>'+(p.focus?'<div class="focus"><b>Focus:</b> '+esc(p.focus)+'</div>':'')+
     '<table><tr><th>Time</th><th>Min</th><th>Block</th><th>Coaching points</th><th>Notes</th></tr>'+(p.blocks||[]).map(function(b){ var at=t?fmtTime(addMin(t,tot)):''; tot+=b.minutes||0; var pl=(b.play_ids||[]).map(playName).join(', '); return '<tr><td class="t">'+esc(at)+'</td><td>'+(b.minutes||0)+'</td><td><b>'+esc(b.name)+'</b><br><span style="color:#555;font-size:11px">'+esc(b.category||'')+(pl?' · '+esc(pl):'')+'</span>'+(b.stations&&b.stations.length?'<ul>'+b.stations.map(function(s){return '<li><b>'+esc(s.name)+':</b> '+esc(s.drill)+(s.notes?' ('+esc(s.notes)+')':'')+'</li>';}).join('')+'</ul>':'')+'</td><td>'+(b.points&&b.points.length?'<ul>'+b.points.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>':'')+'</td><td>'+esc(b.notes||'')+'</td></tr>'; }).join('')+'</table>'+(p.notes?'<p style="margin-top:12px"><b>Staff notes:</b> '+esc(p.notes)+'</p>':'')+'<div class="foot">Lower Merion Aces · Team Playbook</div>';
   setTimeout(function(){ window.print(); },50);
 }
@@ -1646,7 +1648,7 @@ function reportModal(p){
   $('repNote').addEventListener('input',function(){ $('repPreview').innerHTML=reportHTML(p,this.value); });
 }
 function printReports(list,comment){
-  $('printPlan').innerHTML=''; $('printBench').innerHTML='';
+  clearPrint();
   $('printReport').innerHTML=list.map(function(p){ return reportHTML(p,comment!=null?comment:(p.report_note||'')); }).join('');
   setTimeout(function(){ window.print(); },80);
 }
@@ -1746,7 +1748,7 @@ function openEditor(id,kind){
   drawAll();
   setTimeout(function(){ if(!play.name) $('edName').focus(); },60);
 }
-function closeEditor(){ if(E&&E.dirty&&!window.confirm('You have unsaved changes. Close anyway?')) return; if(E&&E.newClip&&E.dirty) api('drop_clip',{url:E.newClip.url}); $('editor').classList.remove('on'); document.body.style.overflow=''; E=null; }
+function closeEditor(){ if(E&&E.dirty&&!window.confirm('You have unsaved changes. Close anyway?')) return; if(REC){ REC.discard=true; stopRec(); } if(E&&E.newClip&&E.dirty) api('drop_clip',{url:E.newClip.url}); $('editor').classList.remove('on'); document.body.style.overflow=''; E=null; }
 $('edClose').addEventListener('click',closeEditor);
 function dirty(){ if(E) E.dirty=true; }
 function renderGroupsChips(){
@@ -1802,21 +1804,22 @@ function startRec(){
   navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
     var chunks=[], mr=new MediaRecorder(stream), t0=Date.now();
     mr.ondataavailable=function(e){ if(e.data&&e.data.size) chunks.push(e.data); };
-    mr.onstop=function(){ stream.getTracks().forEach(function(t){ t.stop(); }); var b=new Blob(chunks,{type:mr.mimeType||'audio/webm'}); REC=null; clearInterval(tick); renderVn(); saveVoice(b); };
+    mr.onstop=function(){ stream.getTracks().forEach(function(t){ t.stop(); }); var b=new Blob(chunks,{type:mr.mimeType||'audio/webm'}), discard=REC&&REC.discard; REC=null; clearInterval(tick); if(discard||!E) return; renderVn(); saveVoice(b); };
     var tick=setInterval(function(){ var s=Math.round((Date.now()-t0)/1000); var el=$('vnTimer'); if(el) el.textContent=fmtT(s); if(s>=90) stopRec(); },250);
     REC={mr:mr}; mr.start(); renderVn();
   }).catch(function(){ toast('Microphone blocked. Allow it in the browser and try again.',true); });
 }
 function stopRec(){ if(REC&&REC.mr.state!=='inactive') REC.mr.stop(); }
 function toWav(blob){
-  return blob.arrayBuffer().then(function(buf){ var AC=window.AudioContext||window.webkitAudioContext; var ctx=new AC(); return new Promise(function(res,rej){ ctx.decodeAudioData(buf,res,rej); }).then(function(ab){ var rate=16000, n=Math.max(1,Math.round(Math.min(ab.duration,91)*rate)); var off=new OfflineAudioContext(1,n,rate); var src=off.createBufferSource(); src.buffer=ab; src.connect(off.destination); src.start(0); return off.startRendering(); }); })
+  return blob.arrayBuffer().then(function(buf){ var AC=window.AudioContext||window.webkitAudioContext; var ctx=new AC(); return new Promise(function(res,rej){ ctx.decodeAudioData(buf,res,rej); }).then(function(ab){ try{ ctx.close(); }catch(e){} var rate=16000, off=null; [16000,22050,44100].some(function(r){ try{ off=new OfflineAudioContext(1,Math.max(1,Math.round(Math.min(ab.duration,91)*r)),r); rate=r; return true; }catch(e){ return false; } }); if(!off) throw new Error('audio not supported'); var src=off.createBufferSource(); src.buffer=ab; src.connect(off.destination); src.start(0); return off.startRendering(); }); })
   .then(function(ab){ var ch=ab.getChannelData(0), len=ch.length, out=new ArrayBuffer(44+len*2), v=new DataView(out); function w(o,str){ for(var i=0;i<str.length;i++) v.setUint8(o+i,str.charCodeAt(i)); }
-    w(0,'RIFF'); v.setUint32(4,36+len*2,true); w(8,'WAVE'); w(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true); v.setUint32(24,16000,true); v.setUint32(28,32000,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,'data'); v.setUint32(40,len*2,true);
+    w(0,'RIFF'); v.setUint32(4,36+len*2,true); w(8,'WAVE'); w(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true); v.setUint32(24,ab.sampleRate,true); v.setUint32(28,ab.sampleRate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,'data'); v.setUint32(40,len*2,true);
     for(var i=0;i<len;i++){ var x=Math.max(-1,Math.min(1,ch[i])); v.setInt16(44+i*2,x<0?x*32768:x*32767,true); }
     return {blob:new Blob([out],{type:'audio/wav'}),seconds:Math.round(ab.duration)}; });
 }
 function saveVoice(blob){
   if(DEMO) return toast('Uploads are turned off in the demo.',true);
+  if(!E) return;
   $('edVn').innerHTML='<span class="muted">Saving the note...</span>';
   toWav(blob).then(function(w){ if(w.blob.size>8*1024*1024) throw new Error('too long'); return import('https://esm.sh/@vercel/blob@2.8.2/client').then(function(m){ return m.upload('playbook/audio/'+(E.id||'new')+'/note.wav',w.blob,{access:'public',handleUploadUrl:'/api/playbook-upload',headers:{'x-admin-key':S.key},contentType:'audio/wav'}).then(function(r){ return {url:r.url,seconds:w.seconds}; }); }); })
   .then(function(a){ E.play.audio=a; dirty(); renderVn(); toast('Voice note added. Save the play to keep it.'); })

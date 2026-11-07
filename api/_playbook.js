@@ -279,8 +279,10 @@ export function cleanPrepQuiz(list) {
   return (Array.isArray(list) ? list : []).map((q) => {
     if (!q || typeof q !== 'object') return null;
     const text = clip(stripTags(String(q.q || '').trim()), 160);
-    const options = (Array.isArray(q.options) ? q.options : []).map((o) => clip(stripTags(String(o || '').trim()), 80)).filter(Boolean).slice(0, 4);
-    const answer = Math.max(0, Math.min(options.length - 1, Math.round(Number(q.answer) || 0)));
+    const raw = (Array.isArray(q.options) ? q.options : []).slice(0, 4).map((o) => clip(stripTags(String(o || '').trim()), 80));
+    const ai = Math.round(Number(q.answer) || 0);
+    const options = raw.filter(Boolean);
+    const answer = raw[ai] ? options.indexOf(raw[ai]) : 0;   // the index moves when blanks are dropped
     if (!text || options.length < 2) return null;
     return { q: text, options, answer };
   }).filter(Boolean).slice(0, 6);
@@ -295,7 +297,7 @@ export const GOAL_METRICS = {
 export function cleanGoals(list) {
   const seen = new Set();
   return (Array.isArray(list) ? list : []).map((g) => {
-    if (!g || !GOAL_METRICS[g.metric] || seen.has(g.metric)) return null;
+    if (!g || !Object.hasOwn(GOAL_METRICS, String(g.metric)) || seen.has(g.metric)) return null;
     const target = Number(g.target); if (!isFinite(target) || target <= 0) return null;
     seen.add(g.metric);
     return { metric: g.metric, target: Math.round(target * 10) / 10, label: clip(stripTags(String(g.label || '').trim()), 60) || GOAL_METRICS[g.metric].label };
@@ -337,23 +339,52 @@ export function cleanFeeds(list) {
     return { group: cleanGroup(f && f.group), url: clip(u.href, 600) };
   }).filter(Boolean).slice(0, 6);
 }
-// Minimal iCal parse: VEVENT summary, location, start (date or datetime, with or without Z).
-export function parseIcs(text, now = Date.now(), limit = 8) {
-  const out = [];
-  const blocks = String(text || '').replace(/\r\n[ \t]/g, '').split('BEGIN:VEVENT').slice(1);
+// iCal parse: VEVENT summary, location, start (date or datetime, with or without Z). Recurring
+// events (RRULE FREQ=WEEKLY or DAILY, with INTERVAL / BYDAY / UNTIL / COUNT, minus EXDATEs) are
+// expanded for the next `horizonDays`; that is how Google Calendar exports a weekly practice.
+export function parseIcs(text, now = Date.now(), limit = 8, horizonDays = 21) {
+  const out = [], horizon = now + horizonDays * 864e5;
+  const blocks = String(text || '').replace(/\r?\n[ \t]/g, '').split('BEGIN:VEVENT').slice(1);
+  const DOW = { SU: 0, MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6 };
   for (const b of blocks) {
     const get = (k) => { const m = new RegExp('^' + k + '(?:;[^:\\n]*)?:(.*)$', 'm').exec(b); return m ? m[1].trim() : ''; };
     const ds = get('DTSTART'); if (!ds) continue;
     const allDay = /^\d{8}$/.test(ds);
-    const m = /^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})?(Z)?)?/.exec(ds); if (!m) continue;
+    const toMs = (v) => {
+      const m = /^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})?(Z)?)?/.exec(v); if (!m) return null;
+      if (m[7]) return Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0));
+      if (!m[4]) return Date.UTC(+m[1], +m[2] - 1, +m[3], 12);
+      const local = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0)); return local + easternOffsetMs(local);   // floating / TZID times are Eastern
+    };
+    const t0 = toMs(ds); if (t0 == null) continue;
     const tzid = (/DTSTART;[^:]*TZID=([^:;]+)/.exec(b) || [])[1] || '';
-    // Floating/TZID times are read as US Eastern (the team's zone); Z times are UTC.
-    let t;
-    if (m[7]) t = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0));
-    else if (allDay) t = Date.UTC(+m[1], +m[2] - 1, +m[3], 12);
-    else { const local = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0)); t = local + easternOffsetMs(local); }
-    if (t < now - 3 * 36e5) continue;
-    out.push({ at: new Date(t).toISOString(), allDay, title: get('SUMMARY').replace(/\\,/g, ',').replace(/\\n/g, ' ').slice(0, 120), where: get('LOCATION').replace(/\\,/g, ',').slice(0, 160), tz: tzid });
+    const ev = { allDay, title: get('SUMMARY').replace(/\\,/g, ',').replace(/\\n/g, ' ').slice(0, 120), where: get('LOCATION').replace(/\\,/g, ',').slice(0, 160), tz: tzid };
+    const starts = [];
+    const rrule = get('RRULE');
+    if (!rrule) starts.push(t0);
+    else {
+      const R = {}; rrule.split(';').forEach((kv) => { const i = kv.indexOf('='); if (i > 0) R[kv.slice(0, i).toUpperCase()] = kv.slice(i + 1); });
+      const freq = R.FREQ, interval = Math.max(1, parseInt(R.INTERVAL, 10) || 1);
+      const until = R.UNTIL ? toMs(R.UNTIL) : null, count = parseInt(R.COUNT, 10) || 0;
+      const exdates = new Set(); for (const m of b.matchAll(/^EXDATE(?:;[^:\n]*)?:(.*)$/gm)) m[1].split(',').forEach((v) => { const x = toMs(v.trim()); if (x != null) exdates.add(Math.floor((allDay || /Z$/.test(v.trim()) ? x : x - easternOffsetMs(x)) / 864e5)); });
+      const sameWall = (base, dayShift) => { // keep the wall-clock time across DST: shift by days in Eastern terms
+        const d = base + dayShift * 864e5; return allDay || /Z$/.test(ds) ? d : d + (easternOffsetMs(d) - easternOffsetMs(base));
+      };
+      if (freq === 'WEEKLY' || freq === 'DAILY') {
+        const wall = (t) => allDay || /Z$/.test(ds) ? t : t - easternOffsetMs(t);   // the clock on the gym wall, for weekdays and dates
+        const dow = (t) => new Date(wall(t)).getUTCDay();
+        const days = freq === 'WEEKLY' ? (R.BYDAY ? R.BYDAY.split(',').map((x) => DOW[x.slice(-2)]).filter((x) => x != null) : [dow(t0)]) : null;
+        let n = 0;
+        for (let k = 0; k < 400 && (until == null || sameWall(t0, k) <= until) && sameWall(t0, k) <= horizon; k++) {
+          const t = sameWall(t0, k);
+          const ok = freq === 'DAILY' ? k % interval === 0 : (days.includes(dow(t)) && Math.floor((k + dow(t0)) / 7) % interval === 0);
+          if (!ok) continue;
+          n++; if (count && n > count) break;
+          if (!exdates.has(Math.floor(wall(t) / 864e5))) starts.push(t);
+        }
+      } else starts.push(t0);   // monthly/yearly: just the first one
+    }
+    for (const t of starts) { if (t < now - 3 * 36e5 || (rrule && t > horizon)) continue; out.push(Object.assign({ at: new Date(t).toISOString() }, ev)); }   // one-off events keep showing however far out
   }
   return out.sort((a, b) => a.at.localeCompare(b.at)).slice(0, limit);
 }

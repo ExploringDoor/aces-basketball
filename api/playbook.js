@@ -48,17 +48,23 @@ const SETTINGS = 'playbook_meta/settings';
 const PLAYER_ACTIONS = new Set(['login', 'plays', 'view', 'ask', 'questions', 'quiz_result', 'board']);
 const QUESTION_MAX = 500;
 
-async function loadSettings() { const s = await fsGet(SETTINGS); return { open: !s || s.open !== false, attitude_share: (s && typeof s.attitude_share === 'string' && /^[a-z0-9]{12,32}$/.test(s.attitude_share)) ? s.attitude_share : '', feeds: cleanFeeds(s && s.feeds) }; }
+let settingsMemo = null;   // per warm instance, 5 seconds: every player request checks `open`
+async function loadSettings() {
+  if (settingsMemo && Date.now() - settingsMemo.at < 5000) return settingsMemo.v;
+  const v = await loadSettingsNow(); settingsMemo = { at: Date.now(), v }; return v;
+}
+async function loadSettingsNow() { const s = await fsGet(SETTINGS); return { open: !s || s.open !== false, attitude_share: (s && typeof s.attitude_share === 'string' && /^[a-z0-9]{12,32}$/.test(s.attitude_share)) ? s.attitude_share : '', feeds: cleanFeeds(s && s.feeds) }; }
 // Upcoming events from the group's calendar feed, cached per warm instance for 10 minutes.
 const feedCache = new Map();
 async function upcomingFor(feeds, group) {
-  const f = feeds.find((x) => x.group && group && x.group.toLowerCase() === group.toLowerCase()) || feeds.find((x) => !x.group) || feeds[0];
+  // a group's own feed, else the feed for everyone; never another group's calendar
+  const f = feeds.find((x) => x.group && group && x.group.toLowerCase() === group.toLowerCase()) || feeds.find((x) => !x.group);
   if (!f) return { events: [], url: '' };
   const hit = feedCache.get(f.url);
   if (hit && Date.now() - hit.at < 6e5) return { events: hit.events, url: f.url };
   try {
-    const r = await fetch(f.url, { headers: { 'User-Agent': 'aces-playbook' } });
-    const text = r.ok ? await r.text() : '';
+    const r = await fetch(f.url, { headers: { 'User-Agent': 'aces-playbook' }, signal: AbortSignal.timeout(4000) });   // a slow calendar host must not stall the playbook
+    const text = r.ok ? (await r.text()).slice(0, 2e6) : '';
     const events = parseIcs(text);
     feedCache.set(f.url, { at: Date.now(), events });
     return { events, url: f.url };
@@ -110,6 +116,7 @@ function publicPlay(p, byId) {
   for (const [tok, pid] of Object.entries(p.lineup || {})) { const pl = byId[pid]; if (pl) lineup[tok] = { id: pl.id, name: pl.name }; }
   return { id: p.id, name: p.name, kind: p.kind || 'ours', opponent: p.opponent || '', category: p.category, court: p.court, notes: p.notes || '', tips: p.tips || [], due: p.due || '', marks: p.marks || [], signal: p.signal || { call: '', photo: '' }, situations: p.situations || [], audio: p.audio || null, lineup, clip: p.clip || null, clip_link: p.clip_link || '', frames: p.frames || [], updated: p.updated || p.created || '' };
 }
+let boardMemo = null; const playMemo = new Map();   // per warm instance, for the Board polling
 // Quizzes that are not about one play: scored under a fixed id in playbook_quiz.
 const SPECIAL_QUIZ = { signals: 'Sideline signals', terms: 'Team glossary', whereami: 'Where am I drill' };
 function sortPlays(a, b) { return String(a.kind || 'ours').localeCompare(String(b.kind || 'ours')) || String(a.opponent || '').localeCompare(String(b.opponent || '')) || String(a.category).localeCompare(String(b.category)) || String(a.name).localeCompare(String(b.name)); }
@@ -165,9 +172,9 @@ async function playerAction(action, body, req) {
     const byId = {}; roster.forEach((r) => { byId[r.id] = r; });
     const plays = (await loadPlays()).filter((p) => canSee(p, player)).sort(sortPlays).map((p) => publicPlay(p, byId));
     const ids = new Set(plays.map((p) => p.id));
-    const [plans, practices, views, quiz, games, termsRaw, endgameRaw, goalsRaw] = await Promise.all([
+    const [plans, practices, vsum, quiz, games, termsRaw, endgameRaw, goalsRaw] = await Promise.all([
       loadSite('playbook_plans'), loadSite('playbook_practices'),
-      fsQuery('playbook_views', 'player_id', 'EQUAL', player.id), fsQuery('playbook_quiz', 'player_id', 'EQUAL', player.id),
+      fsGet(`playbook_vsum/${player.id}`), fsQuery('playbook_quiz', 'player_id', 'EQUAL', player.id),
       loadSite('playbook_games'),
       loadSite('playbook_terms'), fsGet('playbook_meta/endgame'), fsGet('playbook_meta/goals'),
     ]);
@@ -179,8 +186,8 @@ async function playerAction(action, body, req) {
     const practice = currentPractice(practices);
     const best = {};
     const planIds = new Set(plans.filter((x) => x.visible).map((x) => 'prep_' + x.id));
-    quiz.forEach((q) => { if ((ids.has(q.play_id) || SPECIAL_QUIZ[q.play_id] || planIds.has(q.play_id)) && (best[q.play_id] == null || q.pct > best[q.play_id])) best[q.play_id] = q.pct; });
-    const done = { viewed: [...new Set(views.map((v) => v.play_id).filter((id) => ids.has(id)))], quiz: best };
+    quiz.forEach((q) => { if ((ids.has(q.play_id) || Object.hasOwn(SPECIAL_QUIZ, String(q.play_id)) || planIds.has(q.play_id)) && (best[q.play_id] == null || q.pct > best[q.play_id])) best[q.play_id] = q.pct; });
+    const done = { viewed: Object.keys((vsum && vsum.plays) || {}).filter((id) => ids.has(id)), quiz: best };
     const settings = await loadSettings();
     const visiblePlans = plans.filter((p) => p.visible).map((p) => publicPlan(p, byId)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
     games.sort((a, b) => String(b.date).localeCompare(String(a.date)));
@@ -188,10 +195,13 @@ async function playerAction(action, body, req) {
     return { status: 200, body: { player: who(player), plays, plan: plan ? publicPlan(plan, byId) : null, plans: visiblePlans, practice: practice ? publicPractice(practice) : null, games: games.map(publicGame), done, attitude_share: settings.attitude_share, upcoming: cal.events, calendar_url: cal.url, terms, endgame: egLeaves, goals: cleanGoals(goalsRaw && goalsRaw.goals) } };
   }
   if (action === 'board') {   // what coach has on the Board right now (players' phones follow it)
-    const b = await fsGet('playbook_meta/board');
+    let b = boardMemo && Date.now() - boardMemo.at < 3000 ? boardMemo.v : null;
+    if (!b) { b = (await fsGet('playbook_meta/board')) || { on: false }; boardMemo = { at: Date.now(), v: b }; }
     const fresh = b && b.on && Date.parse(b.updated || '') > Date.now() - 2 * 36e5;
     if (!fresh) return { status: 200, body: { on: false } };
-    const play = b.play_id ? await fsGet(`playbook_plays/${b.play_id}`) : null;
+    let play = playMemo.get(b.play_id);
+    if (!play || Date.now() - play.at > 15000) { play = { at: Date.now(), v: b.play_id ? await fsGet(`playbook_plays/${b.play_id}`) : null }; playMemo.set(b.play_id, play); }
+    play = play.v;
     if (!play || play.site !== SITE_TAG || !canSee(play, player)) return { status: 200, body: { on: false } };
     return { status: 200, body: { on: true, id: play.id, name: play.name, step: typeof b.step === 'number' ? b.step : null, updated: b.updated } };
   }
@@ -202,18 +212,27 @@ async function playerAction(action, body, req) {
     // One log row per player, play and 10 minutes: replaying a play doesn't flood the log.
     const now = Date.now();
     const docId = `${player.id}_${play.id}_${Math.floor(now / 6e5)}`;
-    await fsCreate('playbook_views', {
+    const created = await fsCreate('playbook_views', {
       site: SITE_TAG, player_id: player.id, player_name: player.name, group: player.group || '',
       play_id: play.id, play_name: play.name, at: new Date(now).toISOString(),
       device: String(req.headers['user-agent'] || '').slice(0, 160),
     }, docId);
     await fsPatch(`playbook_players/${player.id}`, { last_seen: new Date(now).toISOString() });
+    if (created && created.error) return { status: 200, body: { ok: true } };   // same play inside 10 minutes: already counted
+    // Per-player summary: totals per play plus the newest 80 openings. The coach's lists read these
+    // (one doc per player) instead of the whole view log, which grows all season.
+    const at = new Date(now).toISOString(), device = String(req.headers['user-agent'] || '').slice(0, 160);
+    const sum = (await fsGet(`playbook_vsum/${player.id}`)) || null;
+    const plays = Object.assign({}, (sum && sum.plays) || {}); plays[play.id] = (plays[play.id] || 0) + 1;
+    const recent = [{ play_id: play.id, play_name: play.name, at, device }].concat((sum && sum.recent) || []).slice(0, 80);
+    const doc = { site: SITE_TAG, player_id: player.id, player_name: player.name, group: player.group || '', n: ((sum && sum.n) || 0) + 1, plays, recent, last_at: at, last_play: play.name };
+    if (sum) await fsPatch(`playbook_vsum/${player.id}`, doc); else await fsCreate('playbook_vsum', doc, player.id);
     return { status: 200, body: { ok: true } };
   }
   if (action === 'quiz_result') {
     if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
     let play;
-    if (SPECIAL_QUIZ[body.id]) play = { id: body.id, name: SPECIAL_QUIZ[body.id] };
+    if (Object.hasOwn(SPECIAL_QUIZ, String(body.id))) play = { id: body.id, name: SPECIAL_QUIZ[body.id] };
     else if (/^prep_[A-Za-z0-9_-]{1,128}$/.test(body.id)) {   // the opponent prep quiz on a game plan
       const plan = await fsGet(`playbook_plans/${body.id.slice(5)}`);
       if (!plan || plan.site !== SITE_TAG || !plan.visible) return { status: 404, body: { error: 'not_found' } };
@@ -290,7 +309,8 @@ export function buildDigest(d, nowMs = Date.now()) {
 }
 export async function sendDigest() {
   if (!emailConfigured() || !ADMIN_EMAIL) return { ok: false, error: 'email_not_configured' };
-  const [plays, players, views, quiz, questions, games, calls, settings] = await Promise.all([loadPlays(), loadPlayers(), loadSite('playbook_views'), loadSite('playbook_quiz'), loadQuestions(), loadSite('playbook_games'), loadSite('playbook_calls'), loadSettings()]);
+  const [plays, players, vsumRows, quiz, questions, games, calls, settings] = await Promise.all([loadPlays(), loadPlayers(), loadSite('playbook_vsum'), loadSite('playbook_quiz'), loadQuestions(), loadSite('playbook_games'), loadSite('playbook_calls'), loadSettings()]);
+  const views = []; vsumRows.forEach((r) => (r.recent || []).forEach((v) => views.push({ player_id: r.player_id, play_id: v.play_id, at: v.at })));
   const cal = await upcomingFor(settings.feeds, '');
   const m = buildDigest({ plays, players, views, quiz, questions, games, calls, upcoming: cal.events, base: process.env.SITE_URL ? String(process.env.SITE_URL).replace(/\/+$/, '') : 'https://aces-basketball.vercel.app' });
   const ok = await sendMail({ to: ADMIN_EMAIL, subject: m.subject, html: m.html, text: m.text }).catch(() => false);
@@ -299,19 +319,22 @@ export async function sendDigest() {
 
 // ── Coach side ───────────────────────────────────────────────────────────
 async function adminList() {
-  const [plays, players, views, settings, questions, quiz, plans, practices, notes, drills, games, terms, endgameRaw, calls, goalsRaw] = await Promise.all([
-    loadPlays(), loadPlayers(), loadSite('playbook_views'), loadSettings(), loadQuestions(),
+  const [plays, players, vsumRows, settings, questions, quiz, plans, practices, notes, drills, games, terms, endgameRaw, calls, goalsRaw] = await Promise.all([
+    loadPlays(), loadPlayers(), loadSite('playbook_vsum'), loadSettings(), loadQuestions(),
     loadSite('playbook_quiz'), loadSite('playbook_plans'), loadSite('playbook_practices'), loadSite('playbook_notes'), loadSite('playbook_drills'), loadSite('playbook_games'),
     loadSite('playbook_terms'), fsGet('playbook_meta/endgame'), loadSite('playbook_calls'), fsGet('playbook_meta/goals'),
   ]);
   games.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  // views = the newest openings across the roster (for the log and this-week counts); vsum = totals per player
+  const vsum = {}; const views = [];
+  vsumRows.forEach((r) => { vsum[r.player_id] = { n: r.n || 0, plays: r.plays || {}, last_at: r.last_at || '', last_play: r.last_play || '' }; (r.recent || []).forEach((v) => views.push({ player_id: r.player_id, player_name: r.player_name, group: r.group || '', play_id: v.play_id, play_name: v.play_name, at: v.at, device: v.device || '' })); });
   views.sort((a, b) => String(b.at).localeCompare(String(a.at)));
   questions.sort((a, b) => String(b.created).localeCompare(String(a.created)));
   quiz.sort((a, b) => String(b.at).localeCompare(String(a.at)));
   plans.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
   practices.sort((a, b) => String(b.date).localeCompare(String(a.date)));
   notes.sort((a, b) => String(b.date + b.created).localeCompare(String(a.date + a.created)));
-  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views: views.slice(0, 2000), questions, quiz: quiz.slice(0, 2000), plans, practices, notes, drills, games, terms: terms.sort((a, b) => String(a.term).localeCompare(String(b.term))), endgame: cleanEndgame(endgameRaw && endgameRaw.leaves), calls: calls.sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 2000), goals: cleanGoals(goalsRaw && goalsRaw.goals) } };
+  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views, vsum, questions, quiz: quiz.slice(0, 6000), plans, practices, notes, drills, games, terms: terms.sort((a, b) => String(a.term).localeCompare(String(b.term))), endgame: cleanEndgame(endgameRaw && endgameRaw.leaves), calls: calls.sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 2000), goals: cleanGoals(goalsRaw && goalsRaw.goals) } };
 }
 
 async function adminAction(action, body) {
@@ -329,6 +352,8 @@ async function adminAction(action, body) {
         if (!w.ok) return { status: 502, body: { error: 'save_failed' } };
         // A replaced or dropped clip is deleted from storage so it can't linger at its old address.
         if (cur.clip && cur.clip.url && (!r.play.clip || r.play.clip.url !== cur.clip.url)) await dropClip(cur.clip);
+        if (cur.audio && cur.audio.url && (!r.play.audio || r.play.audio.url !== cur.audio.url)) await dropClip(cur.audio);
+        if (cur.signal && cur.signal.photo && (!r.play.signal || r.play.signal.photo !== cur.signal.photo)) await dropClip({ url: cur.signal.photo });
         return { status: 200, body: { ok: true, id: body.id } };
       }
       const id = rid('play');
@@ -439,9 +464,11 @@ async function adminAction(action, body) {
     case 'set_board': {   // the Board: which play is up, and the step it is held on (null = looping)
       const on = body.on !== false;
       const play_id = on && safeId(body.id) ? body.id : '';
+      if (on) { const play = play_id ? await fsGet(`playbook_plays/${play_id}`) : null; if (!play || play.site !== SITE_TAG) return { status: 404, body: { error: 'not_found' } }; }
       const step = Number.isInteger(body.step) && body.step >= 0 && body.step < 60 ? body.step : null;
       const cur = await fsGet('playbook_meta/board');
       const doc = { on: on && !!play_id, play_id, step, updated: now };
+      boardMemo = null;
       const w = cur ? await fsPatchVerified('playbook_meta/board', doc) : await fsCreate('playbook_meta', Object.assign({ site: SITE_TAG }, doc), 'board');
       return (w.ok || (!cur && !w.error)) ? { status: 200, body: { ok: true } } : { status: 502, body: { error: 'save_failed' } };
     }
@@ -527,7 +554,7 @@ async function adminAction(action, body) {
     case 'set_feeds': {   // calendar feeds per group, see cleanFeeds
       const feeds = cleanFeeds(body.feeds);
       const w = await fsPatchVerified(SETTINGS, { feeds, updated: now });
-      feedCache.clear();
+      feedCache.clear(); settingsMemo = null;
       return w.ok ? { status: 200, body: { ok: true, feeds } } : { status: 502, body: { error: 'save_failed' } };
     }
     case 'test_feed': {   // fetch a feed once so the coach sees it works
@@ -537,13 +564,13 @@ async function adminAction(action, body) {
       const cal = await upcomingFor(feeds, '');
       return { status: 200, body: { events: cal.events } };
     }
-    case 'set_attitude': {   // the Attitude Board read-only share id, shown to players as the Hustle tab
+    case 'set_attitude': { settingsMemo = null;   // the Attitude Board read-only share id, shown to players as the Hustle tab
       const v = String(body.share || '').trim().toLowerCase();
       if (v && !/^[a-z0-9]{12,32}$/.test(v)) return { status: 400, body: { error: 'bad_share' } };
       const w = await fsPatchVerified(SETTINGS, { attitude_share: v, updated: now });
       return w.ok ? { status: 200, body: { ok: true } } : { status: 502, body: { error: 'save_failed' } };
     }
-    case 'set_open': {
+    case 'set_open': { settingsMemo = null;
       const w = await fsPatchVerified(SETTINGS, { open: !!body.open, updated: now });
       return w.ok ? { status: 200, body: { ok: true } } : { status: 502, body: { error: 'save_failed' } };
     }

@@ -104,6 +104,9 @@ service cloud.firestore {
     match /playbook_calls/{id} {
       allow read, write: if isSuper();
     }
+    match /playbook_vsum/{id} {
+      allow read, write: if isSuper();
+    }
 
     // The admins collection: readable only by an admin (used by the rules themselves).
     match /admins/{uid} {
