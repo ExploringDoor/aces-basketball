@@ -13,7 +13,7 @@
 //   Coach:   admin_list · save_play { play, id? } · set_visible { id, visible }
 //            archive { id } · restore { id } · add_players { players:[{name,group}] }
 //            update_player { id, name?, group?, active? } · new_code { id } · remove_player { id }
-//            set_open { open } · remove_clip { id } · drop_clip { url }   (delete an uploaded video)
+//            set_open { open } · set_attitude { share } · remove_clip { id } · drop_clip { url }
 //            answer { id, answer } · hide_question { id } · unhide_question { id }
 //            save_plan { id?, plan } · delete_plan { id } · save_practice { id?, practice }
 //            delete_practice { id } · add_note { player_id, note } · delete_note { id }
@@ -42,7 +42,7 @@ const SETTINGS = 'playbook_meta/settings';
 const PLAYER_ACTIONS = new Set(['login', 'plays', 'view', 'ask', 'questions', 'quiz_result']);
 const QUESTION_MAX = 500;
 
-async function loadSettings() { const s = await fsGet(SETTINGS); return { open: !s || s.open !== false }; }
+async function loadSettings() { const s = await fsGet(SETTINGS); return { open: !s || s.open !== false, attitude_share: (s && typeof s.attitude_share === 'string' && /^[a-z0-9]{12,32}$/.test(s.attitude_share)) ? s.attitude_share : '' }; }
 async function loadPlays() { return (await fsList('playbook_plays')).filter((p) => p.site === SITE_TAG); }
 async function loadPlayers() { return (await fsList('playbook_players')).filter((p) => p.site === SITE_TAG && !p.removed); }
 async function loadSite(coll) { return (await fsList(coll)).filter((x) => x.site === SITE_TAG); }
@@ -150,7 +150,8 @@ async function playerAction(action, body, req) {
     const best = {};
     quiz.forEach((q) => { if (ids.has(q.play_id) && (best[q.play_id] == null || q.pct > best[q.play_id])) best[q.play_id] = q.pct; });
     const done = { viewed: [...new Set(views.map((v) => v.play_id).filter((id) => ids.has(id)))], quiz: best };
-    return { status: 200, body: { player: who(player), plays, plan: plan ? publicPlan(plan, byId) : null, practice: practice ? publicPractice(practice) : null, done } };
+    const settings = await loadSettings();
+    return { status: 200, body: { player: who(player), plays, plan: plan ? publicPlan(plan, byId) : null, practice: practice ? publicPractice(practice) : null, done, attitude_share: settings.attitude_share } };
   }
   if (action === 'view') {
     if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
@@ -365,6 +366,12 @@ async function adminAction(action, body) {
       const r = await fsGet(`scouting_reports/${SITE_TAG}_${slug}`);
       if (!r) return { status: 404, body: { error: 'no_report' } };
       return { status: 200, body: { report: { opp: r.opp || body.opponent, keys: r.keys || [], matchups: r.matchups || [], personnel: r.personnel || [], plan: r.plan || '', overview: r.overview || '', updated_at: r.updated_at || '', updated_by: r.updated_by || '' } } };
+    }
+    case 'set_attitude': {   // the Attitude Board read-only share id, shown to players as the Hustle tab
+      const v = String(body.share || '').trim().toLowerCase();
+      if (v && !/^[a-z0-9]{12,32}$/.test(v)) return { status: 400, body: { error: 'bad_share' } };
+      const w = await fsPatchVerified(SETTINGS, { attitude_share: v, updated: now });
+      return w.ok ? { status: 200, body: { ok: true } } : { status: 502, body: { error: 'save_failed' } };
     }
     case 'set_open': {
       const w = await fsPatchVerified(SETTINGS, { open: !!body.open, updated: now });

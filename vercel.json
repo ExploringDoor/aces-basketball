@@ -75,5 +75,23 @@
       "destination": "/playbook-admin.html",
       "permanent": false
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/attitude",
+      "destination": "https://attitude-board.vercel.app/"
+    },
+    {
+      "source": "/attitude/",
+      "destination": "https://attitude-board.vercel.app/"
+    },
+    {
+      "source": "/attitude/:path*",
+      "destination": "https://attitude-board.vercel.app/:path*"
+    },
+    {
+      "source": "/icons/:path*",
+      "destination": "https://attitude-board.vercel.app/icons/:path*"
+    }
   ]
 }

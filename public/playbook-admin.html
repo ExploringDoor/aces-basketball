@@ -427,6 +427,7 @@ tr:last-child td{border-bottom:0}
       <div class="sp"></div>
       <div class="links">
         <a class="btn ghost" href="/playbook.html" target="_blank" rel="noopener">Player view</a>
+        <a class="btn ghost" href="/attitude/">Attitude Board</a>
         <a class="btn ghost" href="/shootathon.html">Shoot-a-Thon</a>
         <a class="btn ghost" href="/admin.html">Clinic admin</a>
         <button class="btn ghost" type="button" id="logoutBtn">Log out</button>
@@ -538,7 +539,8 @@ tr:last-child td{border-bottom:0}
       <div class="grid2">
         <div class="card"><h2>Playbook access</h2><div class="sub">Close it between seasons, or any time you want every player locked out at once.</div>
           <label class="switch"><input type="checkbox" id="openSw"><span class="tr"></span><span class="tx"><b id="openSwT">Open</b><span>Players with a code can sign in and view plays</span></span></label>
-          <div class="status" id="openStatus"></div></div>
+          <div class="status" id="openStatus"></div>
+          <div class="fld" style="margin-top:18px"><label for="abShare">Attitude Board share link</label><div style="display:flex;gap:8px"><input class="inp" id="abShare" placeholder="Paste the share link or its code" maxlength="200"><button class="btn" type="button" id="abSave">Save</button></div><div class="help">From the Attitude Board: Settings, Share. Players get a Hustle board tab in their playbook that shows the read only board.</div></div></div>
         <div class="card"><h2>What players can and can't do</h2>
           <ul style="padding-left:20px;color:var(--ink-2);display:flex;flex-direction:column;gap:7px;font-size:14.5px">
             <li>Their name and the time are stamped across every play, so a photo is traceable to them.</li>
@@ -755,6 +757,7 @@ function render(){
   var open=!d.settings||d.settings.open!==false;
   $('openChip').className='chip '+(open?'open':'closed'); $('openChip').lastElementChild.textContent=open?'Open to players':'Closed';
   $('openSw').checked=open; $('openSwT').textContent=open?'Open':'Closed';
+  if(document.activeElement!==$('abShare')) $('abShare').value=(d.settings&&d.settings.attitude_share)||'';
   $('playerUrl').textContent=location.origin+'/playbook.html';
   if(!$('shareMsg').value) $('shareMsg').value='Aces playbook is up. Go to '+location.origin+'/playbook.html and enter your code. It\'s your own code, don\'t share it, and don\'t take pictures of the plays. Your name is on every one.';
   renderPlays('plays'); renderPlays('scout'); renderPlayers(); renderActivity(); renderQuestionsAdmin(); renderPlans(); renderPractices();
@@ -1177,6 +1180,7 @@ function renderMustGrid(list,seen,qz){
 }
 function dev(ua){ ua=String(ua||''); if(/iPhone/.test(ua)) return 'iPhone'; if(/iPad/.test(ua)) return 'iPad'; if(/Android/.test(ua)) return 'Android'; if(/Mac/.test(ua)) return 'Mac'; if(/Windows/.test(ua)) return 'Windows'; return ua?'Other':''; }
 $('actFilter').addEventListener('change',renderActivity);
+$('abSave').addEventListener('click',function(){ var v=$('abShare').value.trim(); var m=/[?&]s=([a-z0-9]{12,32})/i.exec(v); v=(m?m[1]:v).toLowerCase(); api('set_attitude',{share:v}).then(function(d){ if(d.error) return toast(d.error==='bad_share'?'That doesn\'t look like a share link.':errText(d),true); toast(v?'Players now have a Hustle board tab':'Hustle board tab turned off'); reload(); }); });
 $('openSw').addEventListener('change',function(){ var on=this.checked; api('set_open',{open:on}).then(function(d){ if(d.error){ toast(errText(d),true); return; } toast(on?'Playbook open':'Playbook closed. Every player is locked out.'); reload(); }); });
 
 /* ── modal ── */

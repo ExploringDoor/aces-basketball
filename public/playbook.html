@@ -320,7 +320,8 @@ body.shielded #app{filter:blur(22px)}
     <button class="plan-card hide" type="button" id="planCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v13H4zM8 21h8M12 17v4M8 8l3 3 5-5"/></svg></span><span><span class="k" id="planK">This week</span><span class="vs" id="planVs"></span><span class="d" id="planD"></span></span><span class="go">Game plan</span></button>
     <div class="prac hide" id="pracCard"><div style="flex:1;min-width:0"><div class="t" id="pracT">Practice</div><b id="pracB"></b><div class="blocks" id="pracBlocks"></div></div></div>
     <div class="must hide" id="mustBox"><h3><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#840036" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Must know<span class="pct" id="mustPct"></span></h3><ul id="mustList"></ul></div>
-    <div class="seg" id="seg" role="tablist"><button type="button" data-kind="ours" aria-pressed="true">Our plays</button><button type="button" data-kind="scout">Scouting</button></div>
+    <div class="seg" id="seg" role="tablist"><button type="button" data-kind="ours" aria-pressed="true">Our plays</button><button type="button" data-kind="scout">Scouting</button><button type="button" data-kind="hustle" class="hide" id="segHustle">Hustle board</button></div>
+    <div class="hide" id="hustleView"><div class="prac" style="display:block;margin-bottom:12px"><div class="t">Attitude board</div><b>Hustle stats from the bench: rebounds, deflections, charges, floor burns. Attitude per minute.</b></div><iframe id="hustleFrame" title="Attitude Board" style="width:100%;height:78vh;border:0;border-radius:16px;background:#fff;box-shadow:var(--sh)" loading="lazy"></iframe></div>
     <div class="filters"><div class="chips" id="cats"></div><input class="search" id="q" type="search" placeholder="Search plays" aria-label="Search plays"></div>
     <div class="grid" id="grid"></div>
   </main>
@@ -392,7 +393,7 @@ body.shielded #app{filter:blur(22px)}
 <script>
 (function(){
 var STORE='aces_playbook', DEMO=/[?&]demo=1/.test(location.search);
-var S={ token:'', me:null, plays:[], plan:null, practice:null, done:{viewed:[],quiz:{}}, kind:'ours', cat:'All', q:'', open:null, player:null, speed:1, quiz:null };
+var S={ token:'', me:null, plays:[], plan:null, practice:null, done:{viewed:[],quiz:{}}, attitude:'', kind:'ours', cat:'All', q:'', open:null, player:null, speed:1, quiz:null };
 function $(id){ return document.getElementById(id); }
 var esc=PBCourt.esc;
 function svg(id){ return '<svg><use href="#'+id+'"/></svg>'; }
@@ -430,13 +431,13 @@ $('gateForm').addEventListener('submit',function(e){
 function showGate(msg){ $('app').classList.add('hide'); $('gate').classList.remove('hide'); $('gateErr').textContent=msg||''; document.body.classList.remove('shielded'); if(S.player) S.player.pause(); }
 function fetchPlays(){
   if(DEMO){ S.me={id:'demo_me',name:'Demo Player',group:''}; S.plays=PBCourt.samples(); S.plays[0].due=new Date(Date.now()+3*864e5).toISOString().slice(0,10); S.plays[1].due=new Date(Date.now()-864e5).toISOString().slice(0,10); S.plays[0].marks=[{t:12,text:'Watch 5 set the screen on the top shoulder'},{t:31,text:'1 gets his feet set before the catch'}];
-    S.done={viewed:['demo1','demo2'],quiz:{demo1:100}};
+    S.done={viewed:['demo1','demo2'],quiz:{demo1:100}}; S.attitude='';
     S.plan={id:'plan1',opponent:'Radnor',date:new Date(Date.now()+3*864e5).toISOString().slice(0,10),where:'away',keys:['Box out. They crash three guys every shot.','Make them play in the half court. No run outs.','Deny #23 the ball on the wing.','Free throws win this one.'],our_plays:['demo1','demo2'],their_plays:['demo5'],matchups:[{us:{id:'demo_me',name:'Demo Player'},them:'#23 Smith',note:'Deny the wing, go under on screens'},{us:{id:'d2',name:'Chris Lee'},them:'#4 Rivera',note:'Lefty, force right'}],personnel:[{num:'23',name:'Smith',pos:'G',notes:'Best player. Shoots off the dribble going left.',guard:'Deny the catch, go under ball screens'},{num:'4',name:'Rivera',pos:'G',notes:'Lefty, drives left every time.',guard:'Force right'},{num:'32',name:'Okafor',pos:'C',notes:'Crashes the glass. No range.',guard:'Box out first, sag off'}],notes:'Bus leaves 4:15. Bring both jerseys.'};
     S.practice={date:new Date().toISOString().slice(0,10),title:'',start:'15:30',focus:'Closeouts, and Horns Flare against a switch',blocks:[{name:'Warmup',minutes:8},{name:'Closeouts',minutes:10},{name:'Shell drill',minutes:15},{name:'Stations',minutes:12,stations:[{name:'Guards'},{name:'Bigs'}]},{name:'Plays, 5 on 5 live',minutes:20,play_ids:['demo1']},{name:'Free throws',minutes:6}]};
     return start(); }
   return api({action:'plays',token:S.token}).then(function(d){
     if(!d.plays){ if(d._status===401||d._status===403){ save(null); S.token=''; } showGate(ERR[d.error]||ERR.server); return; }
-    S.me=d.player; S.plays=d.plays; S.plan=d.plan||null; S.practice=d.practice||null; S.done=d.done||{viewed:[],quiz:{}}; save({token:S.token,me:S.me}); start();
+    S.me=d.player; S.plays=d.plays; S.plan=d.plan||null; S.practice=d.practice||null; S.done=d.done||{viewed:[],quiz:{}}; S.attitude=d.attitude_share||''; save({token:S.token,me:S.me}); start();
   }).catch(function(){ showGate('No connection. Try again.'); });
 }
 $('outBtn').addEventListener('click',function(){ save(null); S.token=''; S.me=null; S.plays=[]; history.replaceState(null,'',location.pathname+location.search); showGate(''); });
@@ -496,9 +497,12 @@ function catOf(p){ return kindOf(p)==='scout'?(p.opponent||'Opponent'):p.categor
 function inKind(p){ return kindOf(p)===S.kind; }
 function cats(){ var seen={}, out=['All']; S.plays.filter(inKind).forEach(function(p){ var c=catOf(p); if(!seen[c]){ seen[c]=1; out.push(c); } }); return out; }
 function renderSeg(){
-  var n={ours:0,scout:0}; S.plays.forEach(function(p){ n[kindOf(p)]++; });
-  $('seg').classList.toggle('hide',!n.scout);
-  Array.prototype.forEach.call($('seg').querySelectorAll('[data-kind]'),function(b){ var k=b.getAttribute('data-kind'); b.setAttribute('aria-pressed',String(k===S.kind)); b.innerHTML=(k==='ours'?'Our plays':'Scouting')+(n[k]?'<span class="cnt">'+n[k]+'</span>':''); });
+  var n={ours:0,scout:0,hustle:0}; S.plays.forEach(function(p){ n[kindOf(p)]++; });
+  $('segHustle').classList.toggle('hide',!S.attitude);
+  $('seg').classList.toggle('hide',!n.scout&&!S.attitude);
+  var hustle=S.kind==='hustle'; $('hustleView').classList.toggle('hide',!hustle); $('grid').classList.toggle('hide',hustle); $('cats').classList.toggle('hide',hustle); $('q').classList.toggle('hide',hustle);
+  if(hustle&&S.attitude&&!$('hustleFrame').getAttribute('src')) $('hustleFrame').setAttribute('src','/attitude/?s='+encodeURIComponent(S.attitude));
+  Array.prototype.forEach.call($('seg').querySelectorAll('[data-kind]'),function(b){ var k=b.getAttribute('data-kind'); b.setAttribute('aria-pressed',String(k===S.kind)); if(k!=='hustle') b.innerHTML=(k==='ours'?'Our plays':'Scouting')+(n[k]?'<span class="cnt">'+n[k]+'</span>':''); });
 }
 function renderCats(){
   var c=cats(); if(c.indexOf(S.cat)<0) S.cat='All';
@@ -509,6 +513,7 @@ $('cats').addEventListener('click',function(e){ var b=e.target.closest('[data-ca
 $('q').addEventListener('input',function(){ S.q=this.value.trim().toLowerCase(); renderGrid(); });
 function isNew(p){ var t=Date.parse(p.updated||''); return t && Date.now()-t<6*864e5; }
 function renderGrid(){
+  if(S.kind==='hustle') return;
   var list=S.plays.filter(function(p){ return inKind(p)&&(S.cat==='All'||catOf(p)===S.cat)&&(!S.q||(p.name+' '+catOf(p)+' '+(p.notes||'')).toLowerCase().indexOf(S.q)>=0); });
   if(!S.plays.filter(inKind).length){ $('grid').innerHTML='<div class="empty" style="grid-column:1/-1"><h3>'+(S.kind==='scout'?'No scouting plays yet':'No plays yet')+'</h3><p>Your coach hasn\'t posted any yet. Check back soon.</p></div>'; return; }
   if(!list.length){ $('grid').innerHTML='<div class="empty" style="grid-column:1/-1"><h3>No matches</h3><p>Try a different search.</p></div>'; return; }
