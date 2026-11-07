@@ -277,6 +277,10 @@ tr:last-child td{border-bottom:0}
 #board.hide{display:none}
 .bd-court{flex:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;background:#0e0e12;padding:10px}
 .bd-court svg{display:block;max-width:100%;max-height:100%;width:auto;height:auto;border-radius:10px;cursor:pointer}
+.bd-wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center} #bdDraw{position:absolute;left:0;top:0;pointer-events:none;touch-action:none;border-radius:10px} #board.drawing #bdDraw{pointer-events:auto;cursor:crosshair}
+.bd-drawbar{display:none;grid-column:1/-1;gap:8px;align-items:center} #board.drawing .bd-drawbar{display:flex} .bd-drawbar .sw{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer;flex:none} .bd-drawbar .sw[aria-pressed="true"]{border-color:#fff} .bd-drawbar .clr{flex:1}
+#board.drawing #bdDrawBtn{background:#c9a44a;border-color:#c9a44a;color:#111}
+.bd-foll{font-size:13px;color:#9a9aa6;text-align:center;grid-column:1/-1} .bd-foll b{color:#c9a44a}
 .bd-side{width:min(34vw,360px);display:flex;flex-direction:column;background:#1a1a20;padding:18px 20px;gap:14px;overflow:hidden}
 .bd-cat{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#c9a44a}
 .bd-side h1{font-family:'Oswald',sans-serif;font-size:clamp(28px,4.2vw,46px);line-height:1.02;margin:2px 0 0;color:#fff}
@@ -775,14 +779,17 @@ tr:last-child td{border-bottom:0}
   </div>
 </div>
 <div id="board" class="hide" role="dialog" aria-label="The board">
-  <div class="bd-court"><svg id="bdSvg" xmlns="http://www.w3.org/2000/svg" aria-label="Play"></svg></div>
+  <div class="bd-court"><div class="bd-wrap"><svg id="bdSvg" xmlns="http://www.w3.org/2000/svg" aria-label="Play"></svg><canvas id="bdDraw" aria-label="Drawing"></canvas></div></div>
   <div class="bd-side">
     <div><div class="bd-cat" id="bdCat"></div><h1 id="bdName"></h1><div class="bd-call" id="bdCall"></div></div>
     <div class="bd-step"><div class="bd-sn" id="bdSn"></div><div class="bd-note" id="bdNote"></div></div>
     <div class="bd-ctl">
       <button type="button" class="pri" id="bdPause">Pause</button><button type="button" id="bdRestart">From the top</button>
       <div class="bd-speed" role="group" aria-label="Speed"><button type="button" data-bsp=".6">Slow</button><button type="button" data-bsp="1" aria-pressed="true">Normal</button><button type="button" data-bsp="1.5">Fast</button></div>
-      <button type="button" class="gold" id="bdPick">Plays</button><button type="button" id="bdExit">Exit</button>
+      <button type="button" id="bdDrawBtn">Draw</button><button type="button" class="gold" id="bdPick">Plays</button>
+      <div class="bd-drawbar"><button type="button" class="sw" data-ink="#f2c94c" style="background:#f2c94c" aria-pressed="true" aria-label="Gold"></button><button type="button" class="sw" data-ink="#ffffff" style="background:#fff" aria-label="White"></button><button type="button" class="sw" data-ink="#e5484d" style="background:#e5484d" aria-label="Red"></button><button type="button" class="clr" id="bdClear">Clear</button></div>
+      <button type="button" id="bdExit" style="grid-column:1/-1">Exit</button>
+      <div class="bd-foll">Players who tap <b>Follow coach</b> on their phones see this play too.</div>
     </div>
   </div>
   <div class="bd-grid hide" id="bdGrid"><div class="bd-gh"><h2>Pick a play</h2><button type="button" id="bdGridX">Close</button></div><div class="bd-tiles" id="bdTiles"></div></div>
@@ -846,6 +853,7 @@ function demoApi(action,b){
   else if(action==='log_call'){ var cid='c'+Date.now(); var cp=demo.plays.find(function(x){return x.id===b.call.play_id;}); demo.calls.unshift(Object.assign({id:cid,play_name:cp?cp.name:'',at:new Date().toISOString()},b.call)); r.id=cid; }
   else if(action==='delete_call') demo.calls=demo.calls.filter(function(x){return x.id!==b.id;});
   else if(action==='send_digest') r.sent='coach@example.com';
+  else if(action==='set_board'){}
   else if(action==='set_endgame'){ demo.endgame=b.leaves; r.leaves=b.leaves; }
   else if(action==='save_term'){ if(b.id){ var ti=demo.terms.findIndex(function(x){return x.id===b.id;}); demo.terms[ti]=Object.assign({},demo.terms[ti],b.term); r.id=b.id; } else { var tid='t'+Date.now(); demo.terms.push(Object.assign({id:tid},b.term)); r.id=tid; } }
   else if(action==='delete_term') demo.terms=demo.terms.filter(function(x){return x.id!==b.id;});
@@ -978,7 +986,8 @@ function boardOpen(id){
     history.pushState({board:1},'',location.pathname+location.search+'#board'); }
   bdStart();
 }
-function bdStart(){ clearTimeout(BD.timer); BD.paused=false; BD.P.go(0); bdSync(0,false,true); BD.timer=setTimeout(function(){ if(!BD.paused) BD.P.playAll(); },900); }
+function bdCast(step,on){ if(DEMO){ try{ localStorage.setItem('pb_demo_board',JSON.stringify({on:on!==false&&!!BD.p,id:BD.p?BD.p.id:'',name:BD.p?BD.p.name:'',step:step==null?null:step,updated:new Date().toISOString()})); }catch(e){} return; } api('set_board',{id:BD.p?BD.p.id:'',step:step==null?null:step,on:on!==false}).catch(function(){}); }
+function bdStart(){ clearTimeout(BD.timer); BD.paused=false; bdClear(); BD.P.go(0); bdSync(0,false,true); bdCast(null); BD.timer=setTimeout(function(){ if(!BD.paused) BD.P.playAll(); },900); }
 function bdSync(at,playing,noLoop){
   if(!BD.P) return;   // the Player emits while it is still being built
   var n=BD.P.n(), f=BD.P.play.frames[at]||{};
@@ -986,10 +995,24 @@ function bdSync(at,playing,noLoop){
   $('bdPause').textContent=BD.paused?'Play':'Pause';
   if(!noLoop&&!playing&&!BD.paused&&at>=n-1){ clearTimeout(BD.timer); BD.timer=setTimeout(function(){ if(!BD.paused&&!$('board').classList.contains('hide')) bdStart(); },1800); }
 }
-function bdToggle(){ if(!BD.P) return; if(BD.paused){ BD.paused=false; if(BD.P.at>=BD.P.n()-1) bdStart(); else BD.P.playAll(); } else { BD.paused=true; clearTimeout(BD.timer); BD.P.pause(); } $('bdPause').textContent=BD.paused?'Play':'Pause'; }
+function bdToggle(){ if(!BD.P) return; if(BD.paused){ BD.paused=false; bdClear(); if(BD.P.at>=BD.P.n()-1) bdStart(); else { BD.P.playAll(); bdCast(null); } } else { BD.paused=true; clearTimeout(BD.timer); BD.P.pause(); bdCast(BD.P.at); } $('bdPause').textContent=BD.paused?'Play':'Pause'; }
+/* freeze and draw: a canvas over the court, cleared on play or restart */
+var INK='#f2c94c', DRW=null;
+function bdSizeCanvas(){ var c=$('bdDraw'), r=$('bdSvg').getBoundingClientRect(), w=c.parentNode.getBoundingClientRect(); var dpr=window.devicePixelRatio||1; c.style.left=(r.left-w.left)+'px'; c.style.top=(r.top-w.top)+'px'; c.style.width=r.width+'px'; c.style.height=r.height+'px'; if(c.width!==Math.round(r.width*dpr)||c.height!==Math.round(r.height*dpr)){ c.width=Math.round(r.width*dpr); c.height=Math.round(r.height*dpr); } }
+function bdClear(){ var c=$('bdDraw'); c.getContext('2d').clearRect(0,0,c.width,c.height); }
+function bdDrawMode(on){ $('board').classList.toggle('drawing',on); if(on){ bdSizeCanvas(); if(!BD.paused) bdToggle(); } }
+$('bdDrawBtn').addEventListener('click',function(){ bdDrawMode(!$('board').classList.contains('drawing')); });
+$('bdClear').addEventListener('click',bdClear);
+document.addEventListener('click',function(e){ var b=e.target.closest('[data-ink]'); if(!b) return; INK=b.getAttribute('data-ink'); Array.prototype.forEach.call(document.querySelectorAll('[data-ink]'),function(x){ x.setAttribute('aria-pressed',String(x===b)); }); });
+(function(){ var c=$('bdDraw'); function pt(e){ var r=c.getBoundingClientRect(), dpr=c.width/r.width; return [(e.clientX-r.left)*dpr,(e.clientY-r.top)*dpr]; }
+  c.addEventListener('pointerdown',function(e){ if(!$('board').classList.contains('drawing')) return; e.preventDefault(); c.setPointerCapture(e.pointerId); var x=c.getContext('2d'), p=pt(e); x.lineCap='round'; x.lineJoin='round'; x.strokeStyle=INK; x.lineWidth=6*(c.width/c.getBoundingClientRect().width); x.beginPath(); x.moveTo(p[0],p[1]); DRW={x:x}; });
+  c.addEventListener('pointermove',function(e){ if(!DRW) return; e.preventDefault(); var p=pt(e); DRW.x.lineTo(p[0],p[1]); DRW.x.stroke(); });
+  ['pointerup','pointercancel'].forEach(function(ev){ c.addEventListener(ev,function(){ DRW=null; }); });
+  window.addEventListener('resize',function(){ if(!$('board').classList.contains('hide')) bdSizeCanvas(); });
+})();
 function boardClose(){
   if($('board').classList.contains('hide')) return;
-  clearTimeout(BD.timer); if(BD.P) BD.P.pause(); $('board').classList.add('hide'); $('bdGrid').classList.add('hide'); document.body.style.overflow='';
+  clearTimeout(BD.timer); if(BD.P) BD.P.pause(); bdCast(null,false); bdDrawMode(false); $('board').classList.add('hide'); $('bdGrid').classList.add('hide'); document.body.style.overflow='';
   try{ if(document.fullscreenElement||document.webkitFullscreenElement){ (document.exitFullscreen||document.webkitExitFullscreen).call(document).catch(function(){}); } }catch(e){}
   try{ if(BD.lock){ BD.lock.release(); BD.lock=null; } }catch(e){}
   if(history.state&&history.state.board) history.back();
@@ -1013,7 +1036,7 @@ $('bdSvg').addEventListener('click',bdToggle);
 $('bdRestart').addEventListener('click',function(){ if(BD.P) bdStart(); });
 $('bdExit').addEventListener('click',boardClose);
 document.addEventListener('click',function(e){ var b=e.target.closest('[data-bsp]'); if(!b) return; BD.speed=+b.getAttribute('data-bsp'); if(BD.P) BD.P.speed=BD.speed; Array.prototype.forEach.call(document.querySelectorAll('[data-bsp]'),function(x){ x.setAttribute('aria-pressed',String(x===b)); }); });
-window.addEventListener('popstate',function(){ if(!(history.state&&history.state.board)&&!$('board').classList.contains('hide')){ clearTimeout(BD.timer); if(BD.P) BD.P.pause(); $('board').classList.add('hide'); $('bdGrid').classList.add('hide'); document.body.style.overflow=''; try{ if(BD.lock){ BD.lock.release(); BD.lock=null; } }catch(e){} } });
+window.addEventListener('popstate',function(){ if(!(history.state&&history.state.board)&&!$('board').classList.contains('hide')){ clearTimeout(BD.timer); if(BD.P) BD.P.pause(); bdCast(null,false); bdDrawMode(false); $('board').classList.add('hide'); $('bdGrid').classList.add('hide'); document.body.style.overflow=''; try{ if(BD.lock){ BD.lock.release(); BD.lock=null; } }catch(e){} } });
 document.addEventListener('keydown',function(e){ if($('board').classList.contains('hide')) return; if(e.key==='Escape') boardClose(); else if(e.key===' '){ e.preventDefault(); bdToggle(); } });
 /* ── bench call log: tap the play you called, tap what happened ── */
 var BL=null;

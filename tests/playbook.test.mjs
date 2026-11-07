@@ -341,6 +341,12 @@ await test('quiz results, game plan, practice and progress reach the player', as
   assert.equal((await call({ action: 'admin_list' }, true)).body.calls[0].play_name, PLAY.name);
   assert.equal((await call({ action: 'delete_call', id: lc.body.id }, true)).statusCode, 200);
   assert.equal((await call({ action: 'quiz_result', token: tok, id: 'whereami', score: 5, total: 6 })).statusCode, 200);
+  assert.equal((await call({ action: 'board', token: tok })).body.on, false);
+  assert.equal((await call({ action: 'set_board', id: playId, step: 2 }, true)).statusCode, 200);
+  const bd = (await call({ action: 'board', token: tok })).body;
+  assert.equal(bd.on, true); assert.equal(bd.id, playId); assert.equal(bd.step, 2);
+  assert.equal((await call({ action: 'set_board', on: false }, true)).statusCode, 200);
+  assert.equal((await call({ action: 'board', token: tok })).body.on, false);
   assert.equal((await call({ action: 'scout_report', opponent: 'Radnor' }, true)).statusCode, 404);
   fake.state.docs.set('scouting_reports/' + SITE_TAG + '_radnor', { fields: toFirestore({ site: SITE_TAG, opp: 'Radnor', keys: ['Box out'], personnel: [{ num: '23', name: 'Smith' }], matchups: [], plan: 'Run them.' }), createTime: 'x', updateTime: 'x' });
   const sr = await call({ action: 'scout_report', opponent: 'Radnor' }, true);

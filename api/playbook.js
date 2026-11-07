@@ -16,6 +16,7 @@
 //            set_open { open } · set_attitude { share } · set_feeds { feeds } · test_feed { url }
 //            set_endgame { leaves } · save_term { id?, term } · delete_term { id }
 //            log_call { call } · delete_call { id } · send_digest {}   (cron: /api/playbook-digest)
+//            set_board { id, step, on }   (players poll `board { token }` and follow it)
 //            remove_clip { id } · drop_clip { url }
 //            answer { id, answer } · hide_question { id } · unhide_question { id }
 //            save_plan { id?, plan } · delete_plan { id } · save_practice { id?, practice }
@@ -43,7 +44,7 @@ function authed(req) { const want = process.env.ADMIN_PASSWORD || ''; return !!w
 function safeId(id) { return /^[A-Za-z0-9_-]{1,128}$/.test(String(id || '')); }
 function rid(prefix) { return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 const SETTINGS = 'playbook_meta/settings';
-const PLAYER_ACTIONS = new Set(['login', 'plays', 'view', 'ask', 'questions', 'quiz_result']);
+const PLAYER_ACTIONS = new Set(['login', 'plays', 'view', 'ask', 'questions', 'quiz_result', 'board']);
 const QUESTION_MAX = 500;
 
 async function loadSettings() { const s = await fsGet(SETTINGS); return { open: !s || s.open !== false, attitude_share: (s && typeof s.attitude_share === 'string' && /^[a-z0-9]{12,32}$/.test(s.attitude_share)) ? s.attitude_share : '', feeds: cleanFeeds(s && s.feeds) }; }
@@ -183,6 +184,14 @@ async function playerAction(action, body, req) {
     games.sort((a, b) => String(b.date).localeCompare(String(a.date)));
     const cal = await upcomingFor(settings.feeds, player.group || '');
     return { status: 200, body: { player: who(player), plays, plan: plan ? publicPlan(plan, byId) : null, plans: visiblePlans, practice: practice ? publicPractice(practice) : null, games: games.map(publicGame), done, attitude_share: settings.attitude_share, upcoming: cal.events, calendar_url: cal.url, terms, endgame: egLeaves } };
+  }
+  if (action === 'board') {   // what coach has on the Board right now (players' phones follow it)
+    const b = await fsGet('playbook_meta/board');
+    const fresh = b && b.on && Date.parse(b.updated || '') > Date.now() - 2 * 36e5;
+    if (!fresh) return { status: 200, body: { on: false } };
+    const play = b.play_id ? await fsGet(`playbook_plays/${b.play_id}`) : null;
+    if (!play || play.site !== SITE_TAG || !canSee(play, player)) return { status: 200, body: { on: false } };
+    return { status: 200, body: { on: true, id: play.id, name: play.name, step: typeof b.step === 'number' ? b.step : null, updated: b.updated } };
   }
   if (action === 'view') {
     if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
@@ -416,6 +425,15 @@ async function adminAction(action, body) {
       const id = rid('call');
       const w = await fsCreate('playbook_calls', Object.assign({}, r.call, { play_name: play.name, site: SITE_TAG, at: now }), id);
       return w.error ? { status: 502, body: { error: 'save_failed' } } : { status: 200, body: { ok: true, id } };
+    }
+    case 'set_board': {   // the Board: which play is up, and the step it is held on (null = looping)
+      const on = body.on !== false;
+      const play_id = on && safeId(body.id) ? body.id : '';
+      const step = Number.isInteger(body.step) && body.step >= 0 && body.step < 60 ? body.step : null;
+      const cur = await fsGet('playbook_meta/board');
+      const doc = { on: on && !!play_id, play_id, step, updated: now };
+      const w = cur ? await fsPatchVerified('playbook_meta/board', doc) : await fsCreate('playbook_meta', Object.assign({ site: SITE_TAG }, doc), 'board');
+      return (w.ok || (!cur && !w.error)) ? { status: 200, body: { ok: true } } : { status: 502, body: { error: 'save_failed' } };
     }
     case 'send_digest': {   // the Sunday email, on demand
       const r = await sendDigest();
