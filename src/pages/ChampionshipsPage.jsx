@@ -106,7 +106,7 @@ export default function ChampionshipsPage() {
             <div style={{ position: "absolute", left: 28, bottom: 22, right: 28 }}>
               <div style={{ display: "inline-block", padding: "3px 12px", borderRadius: 20, background: "rgba(201,164,74,0.92)", color: "#1a0010", fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, fontWeight: 700, textTransform: "uppercase", marginBottom: 10 }}>Reigning Champions</div>
               <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: "clamp(22px,3vw,32px)", fontWeight: 700, textTransform: "uppercase", lineHeight: 1.05 }}>2025 Central League Champions</div>
-              <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.65)", marginTop: 6 }}>Lower Merion's 23rd league title. Click to view the full photo.</div>
+              <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.65)", marginTop: 6 }}>Lower Merion's 24th league title. Click to view the full photo.</div>
             </div>
           </div>
         </FadeIn>

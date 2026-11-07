@@ -179,7 +179,7 @@ export const championships = {
     "1976","1978","1996","2006","2021","2022","2024"
   ],
   league: [
-    "1972","1975","1976","1978","1984","1995","1996","1997","1998",
+    "1968","1972","1975","1976","1978","1984","1995","1996","1997","1998",
     "2000","2001","2002","2006","2009","2012","2013","2014","2017",
     "2018","2019","2022","2024","2025"
   ],
@@ -201,11 +201,11 @@ export const news = [
     sortKey: 20250215,
     category: "Championship",
     title: "Aces Capture 2025 Central League Title",
-    excerpt: "Lower Merion claims its 23rd Central League championship, the most of any program in league history.",
+    excerpt: "Lower Merion claims its 24th Central League championship, the most of any program in league history.",
     image: "/Lower_Merion_ACES_Bball_vs_Penncrest_02-10-2025-327.jpg",
     featured: true,
     body: [
-      "Lower Merion added another banner to the rafters in 2025, capturing the program's 23rd Central League championship — the most of any school since the conference was founded in 1967.",
+      "Lower Merion added another banner to the rafters in 2025, capturing the program's 24th Central League championship — the most of any school since the conference was founded in 1967.",
       "The title extended a run of sustained success under longtime head coach Gregg Downer, whose teams have defined the top of the Central League for more than three decades.",
       "The Aces will look to keep the tradition going when the new season tips off. Full game recaps will be posted here throughout the year.",
     ],
@@ -612,7 +612,7 @@ export const centralLeagueChampions = [
   { year: 1971, teams: ["Ridley"] },
   { year: 1970, teams: ["Haverford"] },
   { year: 1969, teams: ["Penncrest"] },
-  { year: 1968, teams: ["Penncrest"] },
+  { year: 1968, teams: ["Lower Merion", "Penncrest"] },
 ];
 
 export const coachingStaff = [
