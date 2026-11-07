@@ -63,6 +63,15 @@ service cloud.firestore {
       allow read, write: if isSuper();
     }
 
+    // Schedule change alerts: who signed up and the send log. Admin-only;
+    // people sign up and unsubscribe through /api/alerts, never from the browser.
+    match /alert_subs/{id} {
+      allow read, write: if isSuper();
+    }
+    match /alert_sends/{id} {
+      allow read, write: if isSuper();
+    }
+
     // Team Playbook: plays, player codes, the view log and the on/off switch. Admin-only;
     // players sign in through /api/playbook, which reads on their behalf.
     match /playbook_plays/{id} {

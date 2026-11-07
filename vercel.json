@@ -11,6 +11,9 @@
     },
     "api/newsletter.js": {
       "maxDuration": 300
+    },
+    "api/alerts.js": {
+      "maxDuration": 120
     }
   },
   "crons": [
@@ -77,6 +80,11 @@
     {
       "source": "/playbook-admin",
       "destination": "/playbook-admin.html",
+      "permanent": false
+    },
+    {
+      "source": "/alerts",
+      "destination": "/alerts.html",
       "permanent": false
     }
   ],

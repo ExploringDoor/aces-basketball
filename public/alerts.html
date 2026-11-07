@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#840036">
+<title>Schedule Alerts | Lower Merion Aces Basketball</title>
+<meta name="description" content="Get an email anytime an Aces practice or game is added, moved or canceled.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://aces-basketball.vercel.app/alerts">
+<meta property="og:title" content="Aces Schedule Alerts">
+<meta property="og:description" content="Get an email anytime an Aces practice or game is added, moved or canceled.">
+<meta property="og:image" content="https://aces-basketball.vercel.app/og-image.png">
+<link rel="icon" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--mrn:#840036;--mrn-h:#9e0040;--gold:#c9a44a;--bg:#0a0005;--line:rgba(255,255,255,.1);--card:rgba(255,255,255,.04);--txt:#f4f1f2;--m:rgba(255,255,255,.75);--dim:rgba(255,255,255,.55);--err:#f87171;--ok:#4ade80}
+body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;line-height:1.5;min-height:100vh}
+a{color:inherit}
+.nav{display:flex;justify-content:space-between;align-items:center;height:64px;padding:0 20px;border-bottom:1px solid var(--line)}
+.brand{text-decoration:none;display:flex;flex-direction:column;align-items:center}
+.brand b{font-family:'Anton',sans-serif;font-weight:400;font-size:24px;color:var(--gold);letter-spacing:3px;line-height:.9}
+.brand span{font-family:'Oswald',sans-serif;font-weight:600;font-size:10px;letter-spacing:6px;color:var(--dim)}
+.nav a.back{font-size:.85rem;color:var(--dim);text-decoration:none}
+.wrap{max-width:560px;margin:0 auto;padding:36px 16px 80px}
+.tag{font-family:'Oswald',sans-serif;font-weight:600;font-size:.74rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+h1{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(2.2rem,8vw,3rem);line-height:1.02;text-transform:uppercase}
+.lead{color:var(--m);margin:12px 0 26px;font-size:1.05rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 18px}
+.q{font-family:'Oswald',sans-serif;font-weight:600;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--m);margin:0 0 10px}
+.q + .sub{font-size:.85rem;color:var(--dim);margin:-6px 0 10px}
+.block{margin-bottom:22px}
+.teams{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pick{position:relative;display:block;cursor:pointer}
+.pick input{position:absolute;opacity:0;width:1px;height:1px}
+.pick span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:62px;padding:10px 6px;border:2px solid var(--line);border-radius:12px;font-family:'Oswald',sans-serif;font-weight:600;font-size:1.05rem;letter-spacing:.5px;text-transform:uppercase;color:var(--m);background:rgba(255,255,255,.02);transition:border-color .15s,background .15s,color .15s}
+.pick input:checked + span{border-color:var(--gold);background:rgba(201,164,74,.14);color:#fff}
+.pick input:focus-visible + span{outline:2px solid var(--gold);outline-offset:2px}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.roles .pick span{min-height:48px;font-size:.95rem}
+label.f{display:block;font-size:.85rem;color:var(--m);margin-bottom:6px;font-weight:600}
+input[type=text],input[type=email],textarea,select{width:100%;font:inherit;font-size:16px;color:var(--txt);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:12px 14px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.btn{display:block;width:100%;font-family:'Oswald',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:2px;text-transform:uppercase;color:#fff;background:var(--mrn);border:0;border-radius:999px;padding:15px 20px;cursor:pointer}
+.btn:hover{background:var(--mrn-h)}.btn:disabled{opacity:.6;cursor:default}
+.err{color:var(--err);font-size:.92rem;margin-top:12px;min-height:1.2em}
+.fine{font-size:.82rem;color:var(--dim);margin-top:14px;text-align:center}
+.done{text-align:center;padding:30px 18px}
+.done .check{width:64px;height:64px;border-radius:50%;background:rgba(74,222,128,.14);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.done h2{font-family:'Anton',sans-serif;font-weight:400;font-size:2rem;text-transform:uppercase;margin-bottom:8px}
+.done p{color:var(--m);margin-bottom:8px}
+.link{background:none;border:0;color:var(--gold);font:inherit;font-weight:600;cursor:pointer;margin-top:14px;text-decoration:underline}
+[hidden]{display:none!important}
+/* admin */
+.adm h2{font-family:'Anton',sans-serif;font-weight:400;font-size:1.6rem;text-transform:uppercase;margin:0 0 12px}
+.counts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.counts div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.counts b{display:block;font-family:'Anton',sans-serif;font-weight:400;font-size:1.9rem;color:var(--gold)}
+.counts span{font-size:.8rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+.list{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:22px}
+.row{display:flex;gap:10px;align-items:center;padding:11px 12px;border-bottom:1px solid var(--line);font-size:.92rem}
+.row:last-child{border-bottom:0}
+.row .who{flex:1;min-width:0}.row .who b{display:block}.row .who small{color:var(--dim);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.5px;padding:2px 7px;border-radius:999px;background:rgba(201,164,74,.16);color:var(--gold);margin:2px 3px 0 0}
+.chip.off{background:rgba(255,255,255,.08);color:var(--dim)}
+.x{background:none;border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit;font-size:.8rem}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.filters button{background:var(--card);border:1px solid var(--line);color:var(--m);border-radius:999px;padding:6px 12px;font:inherit;font-size:.85rem;cursor:pointer}
+.filters button.on{border-color:var(--gold);color:#fff}
+.small{font-size:.85rem;color:var(--dim)}
+.ok{color:var(--ok)}
+@media (max-width:420px){.teams span{font-size:.92rem}}
+</style>
+</head>
+<body>
+<nav class="nav"><a class="brand" href="/"><b>ACES</b><span>BASKETBALL</span></a><a class="back" href="/">Back to site</a></nav>
+
+<main class="wrap" id="signup">
+  <div class="tag">Lower Merion Aces</div>
+  <h1>Schedule alerts</h1>
+  <p class="lead">Get an email anytime a practice or game is added, moved or canceled. For players, parents and coaches.</p>
+
+  <form class="card" id="form" novalidate>
+    <div class="block">
+      <div class="q">Which team?</div>
+      <div class="sub">Pick more than one if you have kids on two teams.</div>
+      <div class="teams">
+        <label class="pick"><input type="checkbox" name="teams" value="Varsity"><span>Varsity</span></label>
+        <label class="pick"><input type="checkbox" name="teams" value="JV"><span>JV</span></label>
+        <label class="pick"><input type="checkbox" name="teams" value="9th Grade"><span>9th Grade</span></label>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="q">I'm a</div>
+      <div class="roles">
+        <label class="pick"><input type="radio" name="role" value="Player"><span>Player</span></label>
+        <label class="pick"><input type="radio" name="role" value="Parent"><span>Parent</span></label>
+        <label class="pick"><input type="radio" name="role" value="Coach"><span>Coach</span></label>
+      </div>
+    </div>
+
+    <div class="block">
+      <label class="f" for="name">Your name</label>
+      <input type="text" id="name" name="name" autocomplete="name" maxlength="60">
+    </div>
+    <div class="block" id="playerWrap" hidden>
+      <label class="f" for="player">Your player's name</label>
+      <input type="text" id="player" name="player" maxlength="60">
+    </div>
+    <div class="block">
+      <label class="f" for="email">Email</label>
+      <input type="email" id="email" name="email" autocomplete="email" inputmode="email" maxlength="120">
+    </div>
+    <div class="hp" aria-hidden="true"><label>Leave this empty <input type="text" name="hp" tabindex="-1" autocomplete="off"></label></div>
+
+    <button class="btn" type="submit" id="go">Sign me up</button>
+    <div class="err" id="err" role="alert"></div>
+    <p class="fine">Only schedule changes. Every email has a one tap unsubscribe.</p>
+  </form>
+
+  <div class="card done" id="done" hidden>
+    <div class="check"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <h2>You're on the list</h2>
+    <p id="doneMsg"></p>
+    <p class="small">Check your inbox for a welcome email. If it's not there, look in spam and mark it "not spam" so the alerts get through.</p>
+    <button class="link" type="button" id="again">Sign up someone else</button>
+  </div>
+</main>
+
+<main class="wrap adm" id="admin" hidden>
+  <div class="tag">Coaches only</div>
+  <h1>Alert list</h1>
+  <p class="lead" id="admLead">Everyone signed up for schedule change emails.</p>
+
+  <form class="card block" id="login">
+    <label class="f" for="pw">Coach password</label>
+    <input type="text" id="pw" autocomplete="off" style="-webkit-text-security:disc">
+    <button class="btn" style="margin-top:14px" type="submit">Open</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+
+  <div id="admBody" hidden>
+    <div class="counts" id="counts"></div>
+    <div class="filters" id="filters"></div>
+    <div class="list" id="list"></div>
+
+    <div class="card block">
+      <div class="q">Add a list of emails</div>
+      <div class="sub">Paste from a group text or a spreadsheet. Every email in it gets added.</div>
+      <textarea id="addEmails" rows="4" style="margin:6px 0 12px"></textarea>
+      <div class="teams" style="margin-bottom:12px">
+        <label class="pick"><input type="checkbox" name="addTeams" value="Varsity"><span>Varsity</span></label>
+        <label class="pick"><input type="checkbox" name="addTeams" value="JV"><span>JV</span></label>
+        <label class="pick"><input type="checkbox" name="addTeams" value="9th Grade"><span>9th Grade</span></label>
+      </div>
+      <button class="btn" type="button" id="addBtn">Add them</button>
+      <div class="err" id="addMsg"></div>
+    </div>
+
+    <div class="card block">
+      <div class="q">Send a test alert</div>
+      <input type="email" id="testTo" placeholder="your email" style="margin:6px 0 12px">
+      <button class="btn" type="button" id="testBtn">Send test</button>
+      <div class="err" id="testMsg"></div>
+    </div>
+
+    <div class="q">Recent alerts sent</div>
+    <div class="list" id="sends"></div>
+  </div>
+</main>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); };
+  var joinList = function (a) { return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; };
+  var ERR = { bad_email: 'That email doesn’t look right.', pick_team: 'Pick at least one team.', pick_role: 'Pick player, parent or coach.', missing_name: 'Add your name.', slow_down: 'Too many tries. Wait a minute and try again.' };
+
+  /* ---------- sign up ---------- */
+  var form = $('form');
+  form.addEventListener('change', function () {
+    var r = form.querySelector('input[name=role]:checked');
+    $('playerWrap').hidden = !(r && r.value === 'Parent');
+  });
+  // ?team=jv on the link pre-checks that team
+  try {
+    var want = (new URLSearchParams(location.search).get('team') || '').toLowerCase().replace(/\s+/g, '');
+    [].forEach.call(form.querySelectorAll('input[name=teams]'), function (c) { if (want && c.value.toLowerCase().replace(/\s+/g, '').indexOf(want) === 0) c.checked = true; });
+  } catch (e) {}
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var teams = [].map.call(form.querySelectorAll('input[name=teams]:checked'), function (c) { return c.value; });
+    var role = (form.querySelector('input[name=role]:checked') || {}).value || '';
+    var body = { action: 'subscribe', teams: teams, role: role, name: $('name').value.trim(), player: $('player').value.trim(), email: $('email').value.trim(), hp: form.hp.value };
+    var miss = !teams.length ? 'pick_team' : !role ? 'pick_role' : !body.name ? 'missing_name' : !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(body.email) ? 'bad_email' : '';
+    if (miss) { $('err').textContent = ERR[miss]; return; }
+    $('err').textContent = ''; $('go').disabled = true; $('go').textContent = 'Signing you up…';
+    fetch('/api/alerts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (x) {
+        if (!x.ok) throw new Error(x.d && x.d.error);
+        var t = (x.d.teams && x.d.teams.length) ? x.d.teams : teams;
+        $('doneMsg').textContent = body.email + ' gets an email whenever the ' + joinList(t) + ' schedule changes.';
+        form.hidden = true; $('done').hidden = false; window.scrollTo(0, 0);
+      })
+      .catch(function (e) { $('err').textContent = ERR[e.message] || 'Something went wrong. Try again in a minute.'; })
+      .then(function () { $('go').disabled = false; $('go').textContent = 'Sign me up'; });
+  });
+  $('again').addEventListener('click', function () {
+    form.reset(); $('playerWrap').hidden = true; form.hidden = false; $('done').hidden = true; $('name').focus();
+  });
+
+  /* ---------- coaches: who signed up (/alerts#admin) ---------- */
+  var KEY = '', DATA = null, FILTER = 'All';
+  function getKey() { try { return sessionStorage.getItem('dba_admin_key') || localStorage.getItem('aces-admin-key') || ''; } catch (e) { return ''; } }
+  function api(method, body) {
+    var opt = { method: method, headers: { 'x-admin-key': KEY } };
+    if (body) { opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body); }
+    return fetch('/api/alerts' + (method === 'GET' ? '?admin=1' : ''), opt).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || r.status); return d; }); });
+  }
+  function showAdmin() {
+    $('signup').hidden = true; $('admin').hidden = false;
+    KEY = getKey();
+    if (KEY) load(); else $('pw').focus();
+  }
+  function load() {
+    api('GET').then(function (d) {
+      DATA = d; try { sessionStorage.setItem('dba_admin_key', KEY); } catch (e) {}
+      $('login').hidden = true; $('admBody').hidden = false; render();
+      if (!d.emailReady) $('admLead').textContent = 'Email sending is not set up on the site yet, so alerts will not go out.';
+    }).catch(function (e) {
+      $('login').hidden = false; $('admBody').hidden = true;
+      $('loginErr').textContent = e.message === 'unauthorized' ? (KEY ? 'Wrong password.' : '') : 'Could not load the list.';
+      KEY = '';
+    });
+  }
+  function render() {
+    var subs = DATA.subscribers || [], active = subs.filter(function (s) { return s.status === 'active'; });
+    $('counts').innerHTML = DATA.teams.map(function (t) {
+      return '<div><b>' + active.filter(function (s) { return s.teams.indexOf(t) >= 0; }).length + '</b><span>' + esc(t) + '</span></div>';
+    }).join('');
+    $('filters').innerHTML = ['All'].concat(DATA.teams).concat(['Unsubscribed']).map(function (f) {
+      return '<button type="button" data-f="' + esc(f) + '" class="' + (f === FILTER ? 'on' : '') + '">' + esc(f) + '</button>';
+    }).join('');
+    var shown = subs.filter(function (s) {
+      if (FILTER === 'Unsubscribed') return s.status !== 'active';
+      if (s.status !== 'active') return false;
+      return FILTER === 'All' || s.teams.indexOf(FILTER) >= 0;
+    });
+    $('list').innerHTML = shown.length ? shown.map(function (s) {
+      var who = s.name || s.email;
+      var bits = [s.role, s.player ? 'parent of ' + s.player : ''].filter(Boolean).join(', ');
+      return '<div class="row"><div class="who"><b>' + esc(who) + '</b><small>' + esc(s.email) + (bits ? ' · ' + esc(bits) : '') + '</small>' +
+        s.teams.map(function (t) { return '<span class="chip' + (s.status === 'active' ? '' : ' off') + '">' + esc(t) + '</span>'; }).join('') + '</div>' +
+        (s.status === 'active' ? '<button class="x" type="button" data-rm="' + esc(s.email) + '">Remove</button>' : '<span class="small">off</span>') + '</div>';
+    }).join('') : '<div class="row small">Nobody here yet.</div>';
+    $('sends').innerHTML = (DATA.sends || []).length ? DATA.sends.map(function (s) {
+      var d = new Date(s.at);
+      return '<div class="row"><div class="who"><b>' + esc(s.subject) + '</b><small>' + esc(isNaN(d) ? '' : d.toLocaleString()) + ' · sent to ' + s.sent + (s.failed ? ', ' + s.failed + ' failed' : '') + '</small></div></div>';
+    }).join('') : '<div class="row small">No alerts sent yet.</div>';
+  }
+  $('login').addEventListener('submit', function (ev) { ev.preventDefault(); KEY = $('pw').value.trim(); if (KEY) load(); });
+  $('filters').addEventListener('click', function (ev) { var b = ev.target.closest('[data-f]'); if (b) { FILTER = b.getAttribute('data-f'); render(); } });
+  $('list').addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-rm]'); if (!b) return;
+    var email = b.getAttribute('data-rm');
+    if (!confirm('Take ' + email + ' off the alert list?')) return;
+    api('POST', { action: 'remove', email: email }).then(function (d) { DATA.subscribers = d.subscribers; render(); }).catch(function () { alert('Could not remove. Try again.'); });
+  });
+  $('addBtn').addEventListener('click', function () {
+    var teams = [].map.call(document.querySelectorAll('input[name=addTeams]:checked'), function (c) { return c.value; });
+    if (!teams.length) { $('addMsg').textContent = 'Pick at least one team.'; return; }
+    $('addMsg').textContent = 'Adding…';
+    api('POST', { action: 'add', emails: $('addEmails').value, teams: teams }).then(function (d) {
+      DATA.subscribers = d.subscribers; render();
+      $('addMsg').innerHTML = '<span class="ok">Found ' + d.found + ': ' + d.added + ' new, ' + (d.more_teams + d.existing) + ' already on the list' + (d.back ? ', ' + d.back + ' turned back on' : '') + '.</span>';
+      $('addEmails').value = '';
+    }).catch(function (e) { $('addMsg').textContent = e.message === 'no_emails' ? 'No emails found in that text.' : 'Could not add. Try again.'; });
+  });
+  $('testBtn').addEventListener('click', function () {
+    $('testMsg').textContent = 'Sending…';
+    api('POST', { action: 'test', to: $('testTo').value.trim(), team: 'Varsity' })
+      .then(function () { $('testMsg').innerHTML = '<span class="ok">Sent. Check that inbox.</span>'; })
+      .catch(function (e) { $('testMsg').textContent = e.message === 'bad_email' ? 'That email doesn’t look right.' : 'Send failed.'; });
+  });
+
+  if (location.hash === '#admin') showAdmin();
+  window.addEventListener('hashchange', function () { if (location.hash === '#admin') showAdmin(); });
+})();
+</script>
+</body>
+</html>
