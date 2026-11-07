@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import * as fake from './_fake.js';
 import { toFirestore } from '../api/_firestore.js';
 import { SITE_TAG } from '../api/_site.js';
-import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanDate, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
+import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanPhoto, cleanDate, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
 import playbook from '../api/playbook.js';
 
 fake.install();
@@ -104,6 +104,24 @@ await test('due dates, film moments, game plans, practices and notes are cleaned
   assert.equal(cleanNote({ kind: 'absent', text: '' }).note.kind, 'absent');
   assert.equal(cleanNote({ kind: 'note', text: '' }).error, 'empty_note');
   assert.equal(cleanNote({ kind: 'party', text: 'x', date: 'bad' }).note.kind, 'note');
+});
+await test('box scores: stats clamp, points and rebounds fill in, headshots only from our store', () => {
+  const g = cleanGame({ date: '2026-12-05', opponent: 'Radnor', where: 'away', us: '61', them: '55', source: 'hudl', lines: [
+    { player_id: 'pbp_1', name: 'Israel Ingram', num: '5', min: '28', fgm: 7, fga: 12, tpm: 2, tpa: 5, ftm: 3, fta: 4, oreb: 1, dreb: 6, ast: 4, stl: 2, blk: 0, to: 3, pf: 2 },
+    { name: '', player_id: '' }, { name: 'Bench Guy', pts: '999', min: '99', reb: 3 }] });
+  assert.equal(g.error, undefined);
+  assert.equal(g.game.lines.length, 2);
+  assert.equal(g.game.lines[0].pts, 19); assert.equal(g.game.lines[0].reb, 7);
+  assert.equal(g.game.lines[1].pts, 200); assert.equal(g.game.lines[1].min, 60);
+  assert.equal(g.game.us, 61); assert.equal(g.game.source, 'hudl');
+  assert.equal(cleanGame({ date: '2026-12-05' }).error, 'missing_opponent');
+  assert.equal(cleanGame({ opponent: 'Radnor' }).error, 'missing_date');
+  assert.equal(cleanPhoto('https://abc.public.blob.vercel-storage.com/playbook/photos/plan_1/smith-x9.jpg'), 'https://abc.public.blob.vercel-storage.com/playbook/photos/plan_1/smith-x9.jpg');
+  assert.equal(cleanPhoto('https://abc.public.blob.vercel-storage.com/playbook/clips/plan_1/smith.jpg'), '');
+  assert.equal(cleanPhoto('https://evil.com/x.jpg'), '');
+  const pl = cleanPlan({ opponent: 'Radnor', things: 'They press after makes\nLefty #4\nBox out #32\nFourth thing', personnel: [{ name: 'Smith', photo: 'https://abc.public.blob.vercel-storage.com/playbook/photos/p/s.jpg' }, { name: 'Jones', photo: 'https://evil.com/x.jpg' }] }).plan;
+  assert.deepEqual(pl.things, ['They press after makes', 'Lefty #4', 'Box out #32']);
+  assert.equal(pl.personnel[0].photo.indexOf('https://abc'), 0); assert.equal(pl.personnel[1].photo, '');
 });
 await test('groups limit who can see a play', () => {
   const p = { visible: true, groups: ['Varsity'] };
@@ -247,6 +265,13 @@ await test('quiz results, game plan, practice and progress reach the player', as
   assert.equal(n.statusCode, 200);
   const admin = (await call({ action: 'admin_list' }, true)).body;
   assert.equal(admin.quiz.length, 2); assert.equal(admin.plans.length, 2); assert.equal(admin.practices.length, 2); assert.equal(admin.notes[0].text, 'ankle, limited');
+  const gm = await call({ action: 'save_game', game: { date: '2026-12-05', opponent: 'Radnor', us: 61, them: 55, lines: [{ player_id: codes[0].id, name: 'Israel Ingram', num: '5', pts: 19, reb: 7 }] } }, true);
+  assert.equal(gm.statusCode, 200);
+  const pr2 = (await call({ action: 'plays', token: tok })).body;
+  assert.equal(pr2.games.length, 1); assert.equal(pr2.games[0].lines[0].pts, 19); assert.equal(pr2.plans.length, 1, 'visible plans come along for the opponent pages');
+  assert.equal((await call({ action: 'update_player', id: codes[0].id, num: '5' }, true)).statusCode, 200);
+  assert.equal((await call({ action: 'admin_list' }, true)).body.games.length, 1);
+  assert.equal((await call({ action: 'delete_game', id: gm.body.id }, true)).statusCode, 200);
   const dr = await call({ action: 'save_drill', drill: { name: 'Coach D closeout', category: 'Defense', minutes: 10 } }, true);
   assert.equal(dr.statusCode, 200);
   assert.equal((await call({ action: 'admin_list' }, true)).body.drills.length, 1);

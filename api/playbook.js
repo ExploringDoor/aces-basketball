@@ -19,9 +19,10 @@
 //            delete_practice { id } · add_note { player_id, note } · delete_note { id }
 //            scout_report { opponent }   (reads the coaches' scouting report for the handoff)
 //            save_drill { id?, drill } · delete_drill { id }   (the coach's own drills)
+//            save_game { id?, game } · delete_game { id }   (box scores, typed or from a Hudl export)
 
 import { fbAdminConfigured, fsGet, fsCreate, fsPatch, fsPatchVerified, fsList, fsQuery, fsDelete } from './_firestore.js';
-import { cleanPlay, cleanClip, cleanPlan, cleanPractice, cleanDrill, cleanNote, canSee, newCode, normCode, cleanName, cleanGroup, signSession, readSession, sessionMatches, LIMITS } from './_playbook.js';
+import { cleanPlay, cleanClip, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, canSee, newCode, normCode, cleanName, cleanGroup, signSession, readSession, sessionMatches, LIMITS } from './_playbook.js';
 import { SITE_TAG } from './_site.js';
 import { del as blobDel } from '@vercel/blob';
 import { sendMail, emailConfigured, ADMIN_EMAIL } from './_email.js';
@@ -60,10 +61,11 @@ function currentPractice(list) {
   return list.filter((p) => p.show_players && p.date >= t).sort((a, b) => a.date.localeCompare(b.date))[0] || null;
 }
 function publicPlan(p, byId) {
-  return { id: p.id, opponent: p.opponent, date: p.date || '', title: p.title || '', where: p.where || '', keys: p.keys || [], our_plays: p.our_plays || [], their_plays: p.their_plays || [],
+  return { id: p.id, opponent: p.opponent, date: p.date || '', title: p.title || '', where: p.where || '', keys: p.keys || [], things: p.things || [], our_plays: p.our_plays || [], their_plays: p.their_plays || [],
     matchups: (p.matchups || []).map((m) => ({ us: m.us && byId[m.us] ? { id: m.us, name: byId[m.us].name } : null, them: m.them, note: m.note })),
     personnel: p.personnel || [], notes: p.notes || '' };
 }
+function publicGame(g) { return { id: g.id, date: g.date, opponent: g.opponent, where: g.where || '', us: g.us || 0, them: g.them || 0, kind: g.kind || 'game', lines: g.lines || [] }; }
 function publicPractice(p) { return { id: p.id, date: p.date, title: p.title || '', start: p.start || '', focus: p.focus || '', blocks: (p.blocks || []).map((b) => ({ name: b.name, minutes: b.minutes, category: b.category || '', play_ids: b.play_ids || [], stations: b.stations || [] })) }; }
 async function loadQuestions() { return (await fsList('playbook_questions')).filter((q) => q.site === SITE_TAG); }
 // What a player may see of a question: their own, or a teammate's once the coach answered it.
@@ -117,7 +119,7 @@ async function sessionPlayer(token) {
   if (!settings.open) return { error: 'closed' };
   return { player };
 }
-const who = (pl) => ({ id: pl.id, name: pl.name, group: pl.group || '' });
+const who = (pl) => ({ id: pl.id, name: pl.name, group: pl.group || '', num: pl.num || '' });
 
 async function playerAction(action, body, req) {
   if (action === 'login') {
@@ -141,9 +143,10 @@ async function playerAction(action, body, req) {
     const byId = {}; roster.forEach((r) => { byId[r.id] = r; });
     const plays = (await loadPlays()).filter((p) => canSee(p, player)).sort(sortPlays).map((p) => publicPlay(p, byId));
     const ids = new Set(plays.map((p) => p.id));
-    const [plans, practices, views, quiz] = await Promise.all([
+    const [plans, practices, views, quiz, games] = await Promise.all([
       loadSite('playbook_plans'), loadSite('playbook_practices'),
       fsQuery('playbook_views', 'player_id', 'EQUAL', player.id), fsQuery('playbook_quiz', 'player_id', 'EQUAL', player.id),
+      loadSite('playbook_games'),
     ]);
     const plan = currentPlan(plans);
     const practice = currentPractice(practices);
@@ -151,7 +154,9 @@ async function playerAction(action, body, req) {
     quiz.forEach((q) => { if (ids.has(q.play_id) && (best[q.play_id] == null || q.pct > best[q.play_id])) best[q.play_id] = q.pct; });
     const done = { viewed: [...new Set(views.map((v) => v.play_id).filter((id) => ids.has(id)))], quiz: best };
     const settings = await loadSettings();
-    return { status: 200, body: { player: who(player), plays, plan: plan ? publicPlan(plan, byId) : null, practice: practice ? publicPractice(practice) : null, done, attitude_share: settings.attitude_share } };
+    const visiblePlans = plans.filter((p) => p.visible).map((p) => publicPlan(p, byId)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    games.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    return { status: 200, body: { player: who(player), plays, plan: plan ? publicPlan(plan, byId) : null, plans: visiblePlans, practice: practice ? publicPractice(practice) : null, games: games.map(publicGame), done, attitude_share: settings.attitude_share } };
   }
   if (action === 'view') {
     if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
@@ -208,17 +213,18 @@ async function playerAction(action, body, req) {
 
 // ── Coach side ───────────────────────────────────────────────────────────
 async function adminList() {
-  const [plays, players, views, settings, questions, quiz, plans, practices, notes, drills] = await Promise.all([
+  const [plays, players, views, settings, questions, quiz, plans, practices, notes, drills, games] = await Promise.all([
     loadPlays(), loadPlayers(), loadSite('playbook_views'), loadSettings(), loadQuestions(),
-    loadSite('playbook_quiz'), loadSite('playbook_plans'), loadSite('playbook_practices'), loadSite('playbook_notes'), loadSite('playbook_drills'),
+    loadSite('playbook_quiz'), loadSite('playbook_plans'), loadSite('playbook_practices'), loadSite('playbook_notes'), loadSite('playbook_drills'), loadSite('playbook_games'),
   ]);
+  games.sort((a, b) => String(b.date).localeCompare(String(a.date)));
   views.sort((a, b) => String(b.at).localeCompare(String(a.at)));
   questions.sort((a, b) => String(b.created).localeCompare(String(a.created)));
   quiz.sort((a, b) => String(b.at).localeCompare(String(a.at)));
   plans.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
   practices.sort((a, b) => String(b.date).localeCompare(String(a.date)));
   notes.sort((a, b) => String(b.date + b.created).localeCompare(String(a.date + a.created)));
-  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views: views.slice(0, 2000), questions, quiz: quiz.slice(0, 2000), plans, practices, notes, drills } };
+  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views: views.slice(0, 2000), questions, quiz: quiz.slice(0, 2000), plans, practices, notes, drills, games } };
 }
 
 async function adminAction(action, body) {
@@ -254,15 +260,15 @@ async function adminAction(action, body) {
     }
     case 'add_players': {
       const list = (Array.isArray(body.players) ? body.players : []).slice(0, 60)
-        .map((p) => ({ name: cleanName(p && p.name, LIMITS.playerName), group: cleanGroup(p && p.group) })).filter((p) => p.name);
+        .map((p) => ({ name: cleanName(p && p.name, LIMITS.playerName), group: cleanGroup(p && p.group), num: clip(stripTags(String((p && p.num) || '').trim()), 3) })).filter((p) => p.name);
       if (!list.length) return { status: 400, body: { error: 'missing_name' } };
       const added = [];
       for (const p of list) {
         const id = rid('pbp');
         const code = await uniqueCode();
-        const w = await fsCreate('playbook_players', { site: SITE_TAG, name: p.name, group: p.group, code, active: true, removed: false, created: now }, id);
+        const w = await fsCreate('playbook_players', { site: SITE_TAG, name: p.name, group: p.group, num: p.num, code, active: true, removed: false, created: now }, id);
         if (w.error) return { status: 502, body: { error: 'save_failed', added } };
-        added.push({ id, name: p.name, group: p.group, code });
+        added.push({ id, name: p.name, group: p.group, num: p.num, code });
       }
       return { status: 200, body: { ok: true, added } };
     }
@@ -277,6 +283,7 @@ async function adminAction(action, body) {
         patch = {};
         if (body.name !== undefined) { const n = cleanName(body.name, LIMITS.playerName); if (!n) return { status: 400, body: { error: 'missing_name' } }; patch.name = n; }
         if (body.group !== undefined) patch.group = cleanGroup(body.group);
+        if (body.num !== undefined) patch.num = clip(stripTags(String(body.num || '').trim()), 3);
         if (body.active !== undefined) patch.active = !!body.active;
         if (!Object.keys(patch).length) return { status: 400, body: { error: 'nothing_to_change' } };
       }
@@ -340,9 +347,23 @@ async function adminAction(action, body) {
       const w = await fsCreate('playbook_drills', Object.assign({}, r.drill, { site: SITE_TAG, created: now, updated: now }), id);
       return w.error ? { status: 502, body: { error: 'save_failed' } } : { status: 200, body: { ok: true, id } };
     }
-    case 'delete_plan': case 'delete_practice': case 'delete_note': case 'delete_drill': {
+    case 'save_game': {
+      const r = cleanGame(body.game);
+      if (r.error) return { status: 400, body: { error: r.error } };
+      if (body.id) {
+        if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
+        const cur = await fsGet(`playbook_games/${body.id}`);
+        if (!cur || cur.site !== SITE_TAG) return { status: 404, body: { error: 'not_found' } };
+        const w = await fsPatchVerified(`playbook_games/${body.id}`, Object.assign({}, r.game, { updated: now }));
+        return w.ok ? { status: 200, body: { ok: true, id: body.id } } : { status: 502, body: { error: 'save_failed' } };
+      }
+      const id = rid('game');
+      const w = await fsCreate('playbook_games', Object.assign({}, r.game, { site: SITE_TAG, created: now, updated: now }), id);
+      return w.error ? { status: 502, body: { error: 'save_failed' } } : { status: 200, body: { ok: true, id } };
+    }
+    case 'delete_plan': case 'delete_practice': case 'delete_note': case 'delete_drill': case 'delete_game': {
       if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
-      const coll = action === 'delete_plan' ? 'playbook_plans' : action === 'delete_practice' ? 'playbook_practices' : action === 'delete_drill' ? 'playbook_drills' : 'playbook_notes';
+      const coll = action === 'delete_plan' ? 'playbook_plans' : action === 'delete_practice' ? 'playbook_practices' : action === 'delete_drill' ? 'playbook_drills' : action === 'delete_game' ? 'playbook_games' : 'playbook_notes';
       const cur = await fsGet(`${coll}/${body.id}`);
       if (!cur || cur.site !== SITE_TAG) return { status: 404, body: { error: 'not_found' } };
       const w = await fsDelete(`${coll}/${body.id}`);

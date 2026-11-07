@@ -111,6 +111,26 @@ h1,h2,h3{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2px}
 .pcard .new{position:absolute;top:10px;left:10px;background:var(--gold);color:#241a00;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;padding:3px 9px;border-radius:999px;text-transform:uppercase}
 .pcard .playic{position:absolute;right:10px;bottom:10px;width:40px;height:40px;border-radius:50%;background:var(--mrn);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 .pcard .playic svg{width:18px;height:18px;margin-left:2px}
+.mystats{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-bottom:16px}
+.mystats .ms{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 10px;text-align:center;box-shadow:var(--sh)}
+.mystats .ms b{font-family:'Anton',sans-serif;font-size:28px;color:var(--mrn);display:block;line-height:1.05}
+.mystats .ms span{font-size:11.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.stt{width:100%;border-collapse:collapse;font-size:13.5px;white-space:nowrap}
+.stt th{text-align:left;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-3);padding:7px 8px;border-bottom:1px solid var(--line)}
+.stt td{padding:8px;border-bottom:1px solid var(--line)}
+.stt td.n,.stt th.n{text-align:right;font-variant-numeric:tabular-nums}
+.stt tr.me td{background:var(--gold-50);font-weight:700}
+.lead{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.lead .lc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:var(--sh)}
+.lead .lc .k{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+.lead .lc b{font-family:'Anton',sans-serif;font-size:26px;color:var(--mrn);display:block;line-height:1.1}
+.lead .lc span{font-size:13px;color:var(--ink-2)}
+.gres{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:6px;cursor:pointer;font:inherit;width:100%;text-align:left}
+.gres .r{font-family:'Oswald',sans-serif;font-weight:700;padding:2px 9px;border-radius:999px;font-size:13px}
+.gres .r.W{background:#e8f6ee;color:#1f8a4c}.gres .r.L{background:var(--bad-50,#fdecea);color:var(--bad)}
+.gres b{flex:1}
+.gres span{color:var(--ink-3);font-size:13px}
+.gbox{margin:-2px 0 10px;padding:8px 10px 12px;background:#fff;border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;overflow-x:auto}
 .plan-card{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;background:linear-gradient(135deg,#840036 0%,#5c0026 100%);color:#fff;border-radius:18px;padding:18px 22px;margin-bottom:18px;cursor:pointer;border:0;text-align:left;width:100%;font:inherit;position:relative;overflow:hidden}
 .plan-card:after{content:"";position:absolute;right:-40px;top:-50px;width:200px;height:200px;border-radius:50%;border:26px solid rgba(201,164,74,.16)}
 .plan-card .k{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:#f0d0d8}
@@ -139,6 +159,29 @@ h1,h2,h3{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2px}
 .must .nm{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .must .due{font-size:12.5px;color:var(--ink-3);white-space:nowrap}
 .must .due.late{color:var(--bad);font-weight:600}
+.opps{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-bottom:18px}
+.opp{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;cursor:pointer;text-align:left;font:inherit;color:inherit;box-shadow:var(--sh);display:flex;gap:12px;align-items:center}
+.opp:hover{border-color:var(--line-2);transform:translateY(-1px)}
+.opp .ini{width:46px;height:46px;border-radius:50%;background:#33333d;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:20px;flex:none}
+.opp b{font-size:17px;display:block}
+.opp span{font-size:13px;color:var(--ink-3)}
+.opp .faces{display:flex;margin-left:auto}
+.opp .faces img{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #fff;margin-left:-8px;background:#ddd}
+.gp-head.scout{background:linear-gradient(135deg,#33333d 0%,#1d1d24 100%)}
+.things{list-style:none;display:flex;flex-direction:column;gap:9px}
+.things li{display:flex;gap:12px;align-items:flex-start;font-size:17px;font-weight:600;line-height:1.35}
+.things li .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--gold);color:#241a00;font-family:'Oswald',sans-serif;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px}
+.guys{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.guy{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--sh)}
+.guy .ph{aspect-ratio:1/1;background:#e9e9ee;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:56px;color:#b9b9c2;position:relative}
+.guy .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.guy .ph .num{position:absolute;left:10px;top:10px;background:#33333d;color:#fff;font-family:'Anton',sans-serif;font-size:18px;padding:2px 10px;border-radius:8px}
+.guy .gb{padding:12px 14px}
+.guy .gb b{font-size:17px;display:block}
+.guy .gb .pos{font-size:12.5px;color:var(--ink-3);letter-spacing:1px;text-transform:uppercase}
+.guy .gb p{font-size:14px;color:var(--ink-2);margin-top:6px;line-height:1.4}
+.guy .gb .how{margin-top:8px;padding:8px 10px;background:var(--gold-50);border-left:3px solid var(--gold);border-radius:6px;font-size:13.5px;line-height:1.4}
+.guy .gb .how b{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-d,#9c7a2a);display:block;margin-bottom:2px}
 .pcard .dueb{position:absolute;top:10px;right:10px;background:#fff;color:var(--ink-2);font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.3px;padding:3px 9px;border-radius:999px;text-transform:uppercase}
 .pcard .dueb.ok{background:#e8f6ee;color:#1f8a4c}
 .pcard .dueb.late{background:var(--bad-50,#fdecea);color:var(--bad)}
@@ -320,8 +363,10 @@ body.shielded #app{filter:blur(22px)}
     <button class="plan-card hide" type="button" id="planCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v13H4zM8 21h8M12 17v4M8 8l3 3 5-5"/></svg></span><span><span class="k" id="planK">This week</span><span class="vs" id="planVs"></span><span class="d" id="planD"></span></span><span class="go">Game plan</span></button>
     <div class="prac hide" id="pracCard"><div style="flex:1;min-width:0"><div class="t" id="pracT">Practice</div><b id="pracB"></b><div class="blocks" id="pracBlocks"></div></div></div>
     <div class="must hide" id="mustBox"><h3><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#840036" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Must know<span class="pct" id="mustPct"></span></h3><ul id="mustList"></ul></div>
-    <div class="seg" id="seg" role="tablist"><button type="button" data-kind="ours" aria-pressed="true">Our plays</button><button type="button" data-kind="scout">Scouting</button><button type="button" data-kind="hustle" class="hide" id="segHustle">Hustle board</button></div>
+    <div class="seg" id="seg" role="tablist"><button type="button" data-kind="ours" aria-pressed="true">Our plays</button><button type="button" data-kind="scout">Scouting</button><button type="button" data-kind="stats" class="hide" id="segStats">Stats</button><button type="button" data-kind="hustle" class="hide" id="segHustle">Hustle board</button></div>
+    <div class="hide" id="statsView"></div>
     <div class="hide" id="hustleView"><div class="prac" style="display:block;margin-bottom:12px"><div class="t">Attitude board</div><b>Hustle stats from the bench: rebounds, deflections, charges, floor burns. Attitude per minute.</b></div><iframe id="hustleFrame" title="Attitude Board" style="width:100%;height:78vh;border:0;border-radius:16px;background:#fff;box-shadow:var(--sh)" loading="lazy"></iframe></div>
+    <div class="opps hide" id="opps"></div>
     <div class="filters"><div class="chips" id="cats"></div><input class="search" id="q" type="search" placeholder="Search plays" aria-label="Search plays"></div>
     <div class="grid" id="grid"></div>
   </main>
@@ -369,9 +414,11 @@ body.shielded #app{filter:blur(22px)}
   </main>
   <main class="wrap hide" id="planView">
     <button class="crumb" type="button" id="planBack"><svg><use href="#i-back"/></svg>All plays</button>
-    <div class="gp-head"><div class="k" id="gpK">Game plan</div><h2 id="gpVs"></h2><div class="d" id="gpD"></div></div>
+    <div class="gp-head" id="gpHead"><div class="k" id="gpK">Game plan</div><h2 id="gpVs"></h2><div class="d" id="gpD"></div></div>
     <div class="gp">
       <div>
+        <div class="box" id="gpThingsBox" style="border-color:#efe2bd;background:var(--gold-50)"><h4 style="color:var(--gold-d,#9c7a2a)">Three things to know</h4><ol class="things" id="gpThings"></ol></div>
+        <div class="box" id="gpGuysBox" style="background:none;border:0;box-shadow:none;padding:0"><h4>Know their guys</h4><div class="guys" id="gpGuys"></div></div>
         <div class="box" id="gpKeysBox"><h4>Keys to the game</h4><ol class="keys" id="gpKeys"></ol></div>
         <h3 class="sec" id="gpOursH">Our plays for this game</h3><div class="grid" id="gpOurs"></div>
         <h3 class="sec" id="gpTheirsH">What they run</h3><div class="grid" id="gpTheirs"></div>
@@ -379,7 +426,7 @@ body.shielded #app{filter:blur(22px)}
       </div>
       <aside class="side">
         <div class="box" id="gpMuBox"><h4>Matchups</h4><ul class="mu" id="gpMu"></ul></div>
-        <div class="box" id="gpPersBox"><h4>Know their guys</h4><div style="overflow-x:auto"><table class="pers" id="gpPers"></table></div></div>
+        <div class="box hide" id="gpPersBox"></div>
       </aside>
     </div>
   </main>
@@ -393,7 +440,7 @@ body.shielded #app{filter:blur(22px)}
 <script>
 (function(){
 var STORE='aces_playbook', DEMO=/[?&]demo=1/.test(location.search);
-var S={ token:'', me:null, plays:[], plan:null, practice:null, done:{viewed:[],quiz:{}}, attitude:'', kind:'ours', cat:'All', q:'', open:null, player:null, speed:1, quiz:null };
+var S={ token:'', me:null, plays:[], plan:null, plans:[], games:[], practice:null, done:{viewed:[],quiz:{}}, attitude:'', kind:'ours', cat:'All', q:'', open:null, player:null, speed:1, quiz:null };
 function $(id){ return document.getElementById(id); }
 var esc=PBCourt.esc;
 function svg(id){ return '<svg><use href="#'+id+'"/></svg>'; }
@@ -433,11 +480,13 @@ function fetchPlays(){
   if(DEMO){ S.me={id:'demo_me',name:'Demo Player',group:''}; S.plays=PBCourt.samples(); S.plays[0].due=new Date(Date.now()+3*864e5).toISOString().slice(0,10); S.plays[1].due=new Date(Date.now()-864e5).toISOString().slice(0,10); S.plays[0].marks=[{t:12,text:'Watch 5 set the screen on the top shoulder'},{t:31,text:'1 gets his feet set before the catch'}];
     S.done={viewed:['demo1','demo2'],quiz:{demo1:100}}; S.attitude='';
     S.plan={id:'plan1',opponent:'Radnor',date:new Date(Date.now()+3*864e5).toISOString().slice(0,10),where:'away',keys:['Box out. They crash three guys every shot.','Make them play in the half court. No run outs.','Deny #23 the ball on the wing.','Free throws win this one.'],our_plays:['demo1','demo2'],their_plays:['demo5'],matchups:[{us:{id:'demo_me',name:'Demo Player'},them:'#23 Smith',note:'Deny the wing, go under on screens'},{us:{id:'d2',name:'Chris Lee'},them:'#4 Rivera',note:'Lefty, force right'}],personnel:[{num:'23',name:'Smith',pos:'G',notes:'Best player. Shoots off the dribble going left.',guard:'Deny the catch, go under ball screens'},{num:'4',name:'Rivera',pos:'G',notes:'Lefty, drives left every time.',guard:'Force right'},{num:'32',name:'Okafor',pos:'C',notes:'Crashes the glass. No range.',guard:'Box out first, sag off'}],notes:'Bus leaves 4:15. Bring both jerseys.'};
+    S.games=[{id:'g1',date:new Date(Date.now()-3*864e5).toISOString().slice(0,10),opponent:'Conestoga',where:'home',us:61,them:55,lines:[{player_id:'demo_me',name:'Demo Player',num:'5',min:28,pts:19,fgm:7,fga:12,tpm:2,tpa:5,ftm:3,fta:4,oreb:1,dreb:6,reb:7,ast:4,stl:2,blk:0,to:3,pf:2},{player_id:'d2',name:'Chris Lee',num:'24',min:30,pts:14,fgm:5,fga:11,tpm:1,tpa:3,ftm:3,fta:3,oreb:2,dreb:5,reb:7,ast:2,stl:1,blk:1,to:2,pf:3},{player_id:'d5',name:'Sam Oduya',num:'35',min:22,pts:9,fgm:4,fga:6,tpm:0,tpa:0,ftm:1,fta:2,oreb:4,dreb:6,reb:10,ast:0,stl:0,blk:3,to:2,pf:4}]},{id:'g2',date:new Date(Date.now()-7*864e5).toISOString().slice(0,10),opponent:'Harriton',where:'away',us:48,them:52,lines:[{player_id:'demo_me',name:'Demo Player',num:'5',min:30,pts:12,fgm:4,fga:14,tpm:1,tpa:6,ftm:3,fta:4,oreb:0,dreb:4,reb:4,ast:6,stl:1,blk:0,to:4,pf:3},{player_id:'d2',name:'Chris Lee',num:'24',min:29,pts:16,fgm:6,fga:12,tpm:2,tpa:4,ftm:2,fta:2,oreb:1,dreb:4,reb:5,ast:1,stl:2,blk:0,to:1,pf:2}]}];
+    S.plan.things=['They press after every made basket. Inbound fast.','#23 goes left every time. Force him right.','They crash three guys on every shot. Box out first.']; S.plan.personnel[0].photo=''; S.plans=[S.plan,{id:'plan2',opponent:'Garnet Valley',date:new Date(Date.now()+10*864e5).toISOString().slice(0,10),where:'home',keys:[],things:['Zone team, 2-3 all night.'],our_plays:['demo3'],their_plays:[],matchups:[],personnel:[{num:'11',name:'Dawson',pos:'F',notes:'Stretch four, shoots it from the corners.',guard:'Stay attached, no help off him'}],notes:''}];
     S.practice={date:new Date().toISOString().slice(0,10),title:'',start:'15:30',focus:'Closeouts, and Horns Flare against a switch',blocks:[{name:'Warmup',minutes:8},{name:'Closeouts',minutes:10},{name:'Shell drill',minutes:15},{name:'Stations',minutes:12,stations:[{name:'Guards'},{name:'Bigs'}]},{name:'Plays, 5 on 5 live',minutes:20,play_ids:['demo1']},{name:'Free throws',minutes:6}]};
     return start(); }
   return api({action:'plays',token:S.token}).then(function(d){
     if(!d.plays){ if(d._status===401||d._status===403){ save(null); S.token=''; } showGate(ERR[d.error]||ERR.server); return; }
-    S.me=d.player; S.plays=d.plays; S.plan=d.plan||null; S.practice=d.practice||null; S.done=d.done||{viewed:[],quiz:{}}; S.attitude=d.attitude_share||''; save({token:S.token,me:S.me}); start();
+    S.me=d.player; S.plays=d.plays; S.plan=d.plan||null; S.plans=d.plans||[]; S.games=d.games||[]; S.practice=d.practice||null; S.done=d.done||{viewed:[],quiz:{}}; S.attitude=d.attitude_share||''; save({token:S.token,me:S.me}); start();
   }).catch(function(){ showGate('No connection. Try again.'); });
 }
 $('outBtn').addEventListener('click',function(){ save(null); S.token=''; S.me=null; S.plays=[]; history.replaceState(null,'',location.pathname+location.search); showGate(''); });
@@ -471,25 +520,33 @@ function fmtTime(hm){ var p=hm.split(':'), h=+p[0], m=p[1]; return (h%12||12)+':
 // not opened / watched / passed the quiz
 function status(p){ if((S.done.quiz||{})[p.id]>=80) return 'ok'; if((S.done.viewed||[]).indexOf(p.id)>=0) return 'seen'; return 'no'; }
 $('mustList').addEventListener('click',function(e){ var b=e.target.closest('[data-open]'); if(b) openPlay(b.getAttribute('data-open')); });
-$('planCard').addEventListener('click',function(){ history.pushState({plan:1},'','#plan'); showPlan(); });
-$('planBack').addEventListener('click',function(){ if(history.state&&history.state.plan) history.back(); else { history.replaceState(null,'',location.pathname+location.search); closePlan(); } });
+$('planCard').addEventListener('click',function(){ history.pushState({plan:1},'','#opp='+encodeURIComponent(S.plan.opponent)); showOpp(S.plan.opponent); });
+$('planBack').addEventListener('click',function(){ if(history.state&&(history.state.plan||history.state.opp)) history.back(); else { history.replaceState(null,'',location.pathname+location.search); closePlan(); } });
 function closePlan(){ $('planView').classList.add('hide'); $('listView').classList.remove('hide'); }
-function showPlan(){
-  var P=S.plan; if(!P){ closePlan(); return; }
+function showPlan(){ if(S.plan) showOpp(S.plan.opponent); else closePlan(); }
+function showOpp(name){
+  var o=opponents().find(function(x){ return x.name===name; }); if(!o){ closePlan(); return; }
+  var P=o.plan||{opponent:name,keys:[],things:[],our_plays:[],their_plays:[],matchups:[],personnel:[],notes:''};
   $('listView').classList.add('hide'); $('playView').classList.add('hide'); $('planView').classList.remove('hide'); window.scrollTo(0,0);
-  $('gpK').textContent=(P.date?fmtDay(P.date):'Game plan')+(P.where==='home'?' · Kobe Bryant Gym':P.where==='away'?' · Away':P.where==='neutral'?' · Neutral site':'');
-  $('gpVs').textContent='Aces vs '+P.opponent; $('gpD').textContent=P.title||'';
-  $('gpKeysBox').classList.toggle('hide',!P.keys.length); $('gpKeys').innerHTML=P.keys.map(function(k,i){ return '<li><span class="n">'+(i+1)+'</span><span>'+esc(k)+'</span></li>'; }).join('');
+  $('gpHead').className='gp-head'+(o.plan?'':' scout');
+  $('gpK').textContent=o.plan?((P.date?fmtDay(P.date):'Game plan')+(P.where==='home'?' · Kobe Bryant Gym':P.where==='away'?' · Away':P.where==='neutral'?' · Neutral site':'')):'Scouting';
+  $('gpVs').textContent='Aces vs '+name; $('gpD').textContent=P.title||(o.plan?'':'What they run, and how we guard them.');
+  var things=(P.things||[]).length?P.things:(P.keys||[]).slice(0,3);
+  $('gpThingsBox').classList.toggle('hide',!things.length); $('gpThings').innerHTML=things.map(function(k,i){ return '<li><span class="n">'+(i+1)+'</span><span>'+esc(k)+'</span></li>'; }).join('');
+  var keys=(P.things||[]).length?(P.keys||[]):(P.keys||[]).slice(3);
+  $('gpKeysBox').classList.toggle('hide',!keys.length); $('gpKeys').innerHTML=keys.map(function(k,i){ return '<li><span class="n">'+(i+1)+'</span><span>'+esc(k)+'</span></li>'; }).join('');
+  var pers=P.personnel||[]; $('gpGuysBox').classList.toggle('hide',!pers.length);
+  $('gpGuys').innerHTML=pers.map(function(x){ return '<div class="guy"><div class="ph">'+(x.photo?'<img src="'+esc(x.photo)+'" alt="">':esc((x.name||'?').charAt(0)))+(x.num?'<span class="num">#'+esc(x.num)+'</span>':'')+'</div><div class="gb"><b>'+esc(x.name)+'</b>'+(x.pos?'<div class="pos">'+esc(x.pos)+'</div>':'')+(x.notes?'<p>'+esc(x.notes)+'</p>':'')+(x.guard?'<div class="how"><b>How we guard him</b>'+esc(x.guard)+'</div>':'')+'</div></div>'; }).join('');
   var byId={}; S.plays.forEach(function(p){ byId[p.id]=p; });
   var wm=wmLines();
-  var cards=function(ids){ return ids.map(function(id){ return byId[id]; }).filter(Boolean).map(function(p){ var st=status(p); return '<button class="pcard" type="button" data-open="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{watermark:wm,meId:S.me.id,noNames:true})+'<span class="playic">'+svg('i-play')+'</span>'+(st==='ok'?'<span class="dueb ok">Passed</span>':'')+'</div><div class="meta"><div class="cat">'+esc(catOf(p))+'</div><h3>'+esc(p.name)+'</h3></div></button>'; }).join(''); };
-  var ours=cards(P.our_plays||[]), theirs=cards(P.their_plays||[]);
+  var cards=function(list){ return list.filter(Boolean).map(function(p){ var st=status(p); return '<button class="pcard" type="button" data-open="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{watermark:wm,meId:S.me.id,noNames:true})+'<span class="playic">'+svg('i-play')+'</span>'+(st==='ok'?'<span class="dueb ok">Passed</span>':'')+'</div><div class="meta"><div class="cat">'+esc(catOf(p))+'</div><h3>'+esc(p.name)+'</h3></div></button>'; }).join(''); };
+  var ours=cards((P.our_plays||[]).map(function(id){return byId[id];}));
+  var theirIds=(P.their_plays||[]).slice(); o.plays.forEach(function(p){ if(theirIds.indexOf(p.id)<0) theirIds.push(p.id); });
+  var theirs=cards(theirIds.map(function(id){return byId[id];}));
   $('gpOursH').classList.toggle('hide',!ours); $('gpOurs').innerHTML=ours; $('gpTheirsH').classList.toggle('hide',!theirs); $('gpTheirs').innerHTML=theirs;
   $('gpNotesBox').classList.toggle('hide',!P.notes); $('gpNotes').textContent=P.notes||'';
   var mu=P.matchups||[]; $('gpMuBox').classList.toggle('hide',!mu.length);
   $('gpMu').innerHTML=mu.map(function(m){ var me=m.us&&m.us.id===S.me.id; return '<li'+(me?' class="me"':'')+'><span>'+(m.us?esc(m.us.name)+(me?' (you)':''):'')+'</span><span class="vs">vs</span><span>'+esc(m.them)+'</span>'+(m.note?'<span class="note">'+esc(m.note)+'</span>':'')+'</li>'; }).join('');
-  var pers=P.personnel||[]; $('gpPersBox').classList.toggle('hide',!pers.length);
-  $('gpPers').innerHTML='<tr><th>#</th><th>Player</th><th>What he does</th><th>How we guard him</th></tr>'+pers.map(function(x){ return '<tr><td class="n">'+esc(x.num)+'</td><td><b>'+esc(x.name)+'</b>'+(x.pos?' <span class="muted">'+esc(x.pos)+'</span>':'')+'</td><td>'+esc(x.notes)+'</td><td>'+esc(x.guard)+'</td></tr>'; }).join('');
 }
 $('planView').addEventListener('click',function(e){ var b=e.target.closest('[data-open]'); if(b){ history.pushState({play:b.getAttribute('data-open')},'','#play='+encodeURIComponent(b.getAttribute('data-open'))); openPlay(b.getAttribute('data-open'),true); } });
 function kindOf(p){ return p.kind==='scout'?'scout':'ours'; }
@@ -500,10 +557,25 @@ function renderSeg(){
   var n={ours:0,scout:0,hustle:0}; S.plays.forEach(function(p){ n[kindOf(p)]++; });
   $('segHustle').classList.toggle('hide',!S.attitude);
   $('seg').classList.toggle('hide',!n.scout&&!S.attitude);
+  renderOpps();
   var hustle=S.kind==='hustle'; $('hustleView').classList.toggle('hide',!hustle); $('grid').classList.toggle('hide',hustle); $('cats').classList.toggle('hide',hustle); $('q').classList.toggle('hide',hustle);
   if(hustle&&S.attitude&&!$('hustleFrame').getAttribute('src')) $('hustleFrame').setAttribute('src','/attitude/?s='+encodeURIComponent(S.attitude));
   Array.prototype.forEach.call($('seg').querySelectorAll('[data-kind]'),function(b){ var k=b.getAttribute('data-kind'); b.setAttribute('aria-pressed',String(k===S.kind)); if(k!=='hustle') b.innerHTML=(k==='ours'?'Our plays':'Scouting')+(n[k]?'<span class="cnt">'+n[k]+'</span>':''); });
 }
+function opponents(){
+  var m={};
+  S.plans.forEach(function(p){ var k=p.opponent; m[k]=m[k]||{name:k,plan:null,plays:[]}; if(!m[k].plan||String(p.date)>String(m[k].plan.date)) m[k].plan=p; });
+  S.plays.filter(function(p){return kindOf(p)==='scout';}).forEach(function(p){ var k=p.opponent||'Opponent'; m[k]=m[k]||{name:k,plan:null,plays:[]}; m[k].plays.push(p); });
+  return Object.keys(m).map(function(k){return m[k];}).sort(function(a,b){ var da=a.plan&&a.plan.date||'', db=b.plan&&b.plan.date||''; var t=todayStr(); var fa=da>=t?0:1, fb=db>=t?0:1; return fa-fb||(fa===0?da.localeCompare(db):db.localeCompare(da))||a.name.localeCompare(b.name); });
+}
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function renderOpps(){
+  var list=S.kind==='scout'?opponents():[];
+  $('opps').classList.toggle('hide',!list.length);
+  $('opps').innerHTML=list.map(function(o){ var ini=o.name.split(/\s+/).map(function(w){return w[0];}).join('').slice(0,2).toUpperCase(); var faces=(o.plan&&o.plan.personnel||[]).filter(function(x){return x.photo;}).slice(0,3);
+    return '<button class="opp" type="button" data-opp="'+esc(o.name)+'"><span class="ini">'+esc(ini)+'</span><span><b>'+esc(o.name)+'</b><span>'+(o.plan&&o.plan.date?fmtDay(o.plan.date)+(o.plan.where==='home'?' · Home':o.plan.where==='away'?' · Away':''):'')+(o.plays.length?(o.plan&&o.plan.date?' · ':'')+o.plays.length+(o.plays.length===1?' play':' plays'):'')+'</span></span>'+(faces.length?'<span class="faces">'+faces.map(function(x){return '<img src="'+esc(x.photo)+'" alt="">';}).join('')+'</span>':'')+'</button>'; }).join('');
+}
+$('opps').addEventListener('click',function(e){ var b=e.target.closest('[data-opp]'); if(!b) return; history.pushState({opp:1},'','#opp='+encodeURIComponent(b.getAttribute('data-opp'))); showOpp(b.getAttribute('data-opp')); });
 function renderCats(){
   var c=cats(); if(c.indexOf(S.cat)<0) S.cat='All';
   $('cats').innerHTML=c.length>2? c.map(function(k){ return '<button class="chip" type="button" data-cat="'+esc(k)+'" aria-pressed="'+(k===S.cat)+'">'+esc(k)+'</button>'; }).join('') : '';
@@ -512,8 +584,25 @@ $('seg').addEventListener('click',function(e){ var b=e.target.closest('[data-kin
 $('cats').addEventListener('click',function(e){ var b=e.target.closest('[data-cat]'); if(!b) return; S.cat=b.getAttribute('data-cat'); renderCats(); renderGrid(); });
 $('q').addEventListener('input',function(){ S.q=this.value.trim().toLowerCase(); renderGrid(); });
 function isNew(p){ var t=Date.parse(p.updated||''); return t && Date.now()-t<6*864e5; }
+var STAT_KEYS=['min','pts','fgm','fga','tpm','tpa','ftm','fta','oreb','dreb','reb','ast','stl','blk','to','pf'];
+var STAT_LAB={min:'MIN',pts:'PTS',fgm:'FGM',fga:'FGA',tpm:'3PM',tpa:'3PA',ftm:'FTM',fta:'FTA',oreb:'OREB',dreb:'DREB',reb:'REB',ast:'AST',stl:'STL',blk:'BLK',to:'TO',pf:'PF'};
+function pct(m,a){ return a?(m/a*100).toFixed(1):'–'; }
+function seasonRows(){ var by={}; S.games.forEach(function(g){ (g.lines||[]).forEach(function(l){ var k=l.player_id||('n:'+l.name); var r=by[k]=by[k]||{key:k,player_id:l.player_id||'',name:l.name,num:l.num,gp:0}; STAT_KEYS.forEach(function(s){ r[s]=(r[s]||0)+(l[s]||0); }); if((l.min||0)>0||(l.pts||0)>0||(l.fga||0)>0||(l.reb||0)>0) r.gp++; }); }); return Object.keys(by).map(function(k){return by[k];}); }
+function renderStats(){
+  var rows=seasonRows(), me=rows.find(function(r){ return r.player_id===S.me.id; }), gs=S.games.slice().sort(function(a,b){ return String(b.date).localeCompare(String(a.date)); });
+  var w=gs.filter(function(g){return g.us>g.them;}).length, l=gs.filter(function(g){return g.us<g.them;}).length;
+  var h='';
+  if(me&&me.gp){ var avg=function(k){ return (me[k]/me.gp).toFixed(1); }; h+='<h3 style="font-size:18px;margin:4px 0 10px">Your season <span class="muted" style="font-weight:400;font-size:14px">'+me.gp+' games</span></h3><div class="mystats">'+[['PPG',avg('pts')],['RPG',avg('reb')],['APG',avg('ast')],['SPG',avg('stl')],['BPG',avg('blk')],['MIN',avg('min')],['FG%',pct(me.fgm,me.fga)],['3P%',pct(me.tpm,me.tpa)],['FT%',pct(me.ftm,me.fta)]].map(function(x){ return '<div class="ms"><b>'+x[1]+'</b><span>'+x[0]+'</span></div>'; }).join('')+'</div>'; }
+  else h+='<div class="empty" style="margin-bottom:16px"><h3>No box score lines for you yet</h3><p>Once coach loads a game you played in, your numbers show here.</p></div>';
+  h+='<h3 style="font-size:18px;margin:4px 0 10px">Team leaders <span class="muted" style="font-weight:400;font-size:14px">per game</span></h3><div class="lead" style="margin-bottom:18px">'+['pts','reb','ast','stl','blk'].map(function(k){ var best=rows.filter(function(r){return r.gp;}).sort(function(a,b){ return (b[k]/b.gp)-(a[k]/a.gp); })[0]; return '<div class="lc"><div class="k">'+STAT_LAB[k]+'</div><b>'+(best?(best[k]/best.gp).toFixed(1):'–')+'</b><span>'+(best?esc(best.name):'')+'</span></div>'; }).join('')+'</div>';
+  h+='<h3 style="font-size:18px;margin:4px 0 10px">Games <span class="muted" style="font-weight:400;font-size:14px">'+w+'-'+l+'</span></h3>'+gs.map(function(g){ var res=g.us>g.them?'W':g.us<g.them?'L':'T'; var mine=(g.lines||[]).find(function(x){return x.player_id===S.me.id;}); return '<button class="gres" type="button" data-g="'+esc(g.id)+'"><span class="r '+res+'">'+res+' '+g.us+'-'+g.them+'</span><b>'+(g.where==='away'?'at ':'vs ')+esc(g.opponent)+'</b><span>'+esc(fmtDay(g.date))+(mine?' · you: '+(mine.pts||0)+' pts, '+(mine.reb||0)+' reb, '+(mine.ast||0)+' ast':'')+'</span></button><div class="gbox hide" id="gbox-'+esc(g.id)+'"></div>'; }).join('');
+  $('statsView').innerHTML=h;
+}
+$('statsView').addEventListener('click',function(e){ var b=e.target.closest('[data-g]'); if(!b) return; var g=S.games.find(function(x){return x.id===b.getAttribute('data-g');}); var box=$('gbox-'+g.id); if(!box.classList.contains('hide')){ box.classList.add('hide'); return; }
+  var cols=['pts','reb','ast','stl','blk','to','min'];
+  box.innerHTML='<table class="stt"><thead><tr><th>Player</th>'+cols.map(function(k){return '<th class="n">'+STAT_LAB[k]+'</th>';}).join('')+'<th class="n">FG</th><th class="n">3PT</th><th class="n">FT</th></tr></thead><tbody>'+(g.lines||[]).slice().sort(function(a,b){return (b.pts||0)-(a.pts||0);}).map(function(l){ return '<tr'+(l.player_id===S.me.id?' class="me"':'')+'><td>'+(l.num?'<span class="muted">#'+esc(l.num)+'</span> ':'')+esc(l.name)+'</td>'+cols.map(function(k){return '<td class="n">'+(l[k]||0)+'</td>';}).join('')+'<td class="n">'+(l.fgm||0)+'-'+(l.fga||0)+'</td><td class="n">'+(l.tpm||0)+'-'+(l.tpa||0)+'</td><td class="n">'+(l.ftm||0)+'-'+(l.fta||0)+'</td></tr>'; }).join('')+'</tbody></table>'; box.classList.remove('hide'); });
 function renderGrid(){
-  if(S.kind==='hustle') return;
+  if(S.kind==='hustle'||S.kind==='stats') return;
   var list=S.plays.filter(function(p){ return inKind(p)&&(S.cat==='All'||catOf(p)===S.cat)&&(!S.q||(p.name+' '+catOf(p)+' '+(p.notes||'')).toLowerCase().indexOf(S.q)>=0); });
   if(!S.plays.filter(inKind).length){ $('grid').innerHTML='<div class="empty" style="grid-column:1/-1"><h3>'+(S.kind==='scout'?'No scouting plays yet':'No plays yet')+'</h3><p>Your coach hasn\'t posted any yet. Check back soon.</p></div>'; return; }
   if(!list.length){ $('grid').innerHTML='<div class="empty" style="grid-column:1/-1"><h3>No matches</h3><p>Try a different search.</p></div>'; return; }
@@ -620,7 +709,7 @@ $('qSend').addEventListener('click',function(){
 function closePlay(){ endQuiz(true); if(S.player) S.player.pause(); $('vidBody').innerHTML=''; S.open=null; $('playView').classList.add('hide'); $('listView').classList.remove('hide'); }
 $('backBtn').addEventListener('click',function(){ if(history.state&&history.state.play) history.back(); else { history.replaceState(null,'',location.pathname+location.search); closePlay(); } });
 $('homeBtn').addEventListener('click',function(){ if(S.open) $('backBtn').click(); });
-function route(){ var m=/#play=([^&]+)/.exec(location.hash); if(m){ closePlan(); openPlay(decodeURIComponent(m[1]),true); } else if(location.hash==='#plan'){ closePlay(); showPlan(); } else { closePlay(); closePlan(); } }
+function route(){ var m=/#play=([^&]+)/.exec(location.hash), o=/#opp=([^&]+)/.exec(location.hash); if(m){ closePlan(); openPlay(decodeURIComponent(m[1]),true); } else if(o){ closePlay(); showOpp(decodeURIComponent(o[1])); } else if(location.hash==='#plan'){ closePlay(); showPlan(); } else { closePlay(); closePlan(); } }
 window.addEventListener('popstate',route);
 
 function sync(){

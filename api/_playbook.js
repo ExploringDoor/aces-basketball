@@ -108,6 +108,13 @@ export function cleanClip(c) {
   if (u.protocol !== 'https:' || !/\.public\.blob\.vercel-storage\.com$/.test(u.hostname) || !/^\/playbook\/clips\//.test(u.pathname)) return null;
   return { url: u.href, pathname: clip(String(c.pathname || u.pathname.slice(1)), 300), name: cleanName(c.name, 120), size: Math.max(0, Math.round(Number(c.size) || 0)), type: clip(String(c.type || ''), 60) };
 }
+// A headshot the coach uploaded to our Blob store (playbook/photos/...). Anything else is dropped.
+export function cleanPhoto(v) {
+  if (typeof v !== 'string' || !v) return '';
+  let u; try { u = new URL(v); } catch (e) { return ''; }
+  if (u.protocol !== 'https:' || !/\.public\.blob\.vercel-storage\.com$/.test(u.hostname) || !/^\/playbook\/photos\//.test(u.pathname)) return '';
+  return clip(u.href, 400);
+}
 export const CLIP_LINK_HOSTS = /(^|\.)(youtube\.com|youtu\.be|hudl\.com|vimeo\.com|drive\.google\.com)$/;
 export function cleanClipLink(v) {
   if (typeof v !== 'string' || !v.trim()) return '';
@@ -132,7 +139,8 @@ export function cleanPlan(p) {
     our_plays: [...new Set((Array.isArray(p.our_plays) ? p.our_plays : []).filter(idOk))].slice(0, 30),
     their_plays: [...new Set((Array.isArray(p.their_plays) ? p.their_plays : []).filter(idOk))].slice(0, 30),
     matchups: (Array.isArray(p.matchups) ? p.matchups : []).map((m) => ({ us: idOk(m && m.us) ? m.us : '', them: cleanName(m && m.them, 60), note: clip(stripTags(String((m && m.note) || '').trim()), LIMITS.key) })).filter((m) => m.us || m.them).slice(0, LIMITS.matchups),
-    personnel: (Array.isArray(p.personnel) ? p.personnel : []).map((x) => ({ num: clip(stripTags(String((x && x.num) || '').trim()), 3), name: cleanName(x && x.name, 40), pos: clip(stripTags(String((x && x.pos) || '').trim()), 4), notes: clip(stripTags(String((x && x.notes) || '').trim()), 300), guard: clip(stripTags(String((x && x.guard) || '').trim()), 300) })).filter((x) => x.name || x.num).slice(0, LIMITS.personnel),
+    personnel: (Array.isArray(p.personnel) ? p.personnel : []).map((x) => ({ num: clip(stripTags(String((x && x.num) || '').trim()), 3), name: cleanName(x && x.name, 40), pos: clip(stripTags(String((x && x.pos) || '').trim()), 4), notes: clip(stripTags(String((x && x.notes) || '').trim()), 300), guard: clip(stripTags(String((x && x.guard) || '').trim()), 300), photo: cleanPhoto(x && x.photo) })).filter((x) => x.name || x.num).slice(0, LIMITS.personnel),
+    things: lines(p.things, LIMITS.key, 3),   // the three things every player must know about them
     notes: clip(stripTags(String(p.notes || '').trim()), LIMITS.notes),
     visible: !!p.visible,
   } };
@@ -176,6 +184,33 @@ export function cleanDrill(d) {
     run: clip(stripTags(String(d.run || '').trim()), 900),
     points: lines(d.points, LIMITS.point, LIMITS.points),
     variations: clip(stripTags(String(d.variations || '').trim()), 600),
+  } };
+}
+
+// A game's box score, typed in or imported from Hudl. One line per player.
+export const STAT_KEYS = ['min', 'pts', 'fgm', 'fga', 'tpm', 'tpa', 'ftm', 'fta', 'oreb', 'dreb', 'reb', 'ast', 'stl', 'blk', 'to', 'pf'];
+export const STAT_LABELS = { min: 'MIN', pts: 'PTS', fgm: 'FGM', fga: 'FGA', tpm: '3PM', tpa: '3PA', ftm: 'FTM', fta: 'FTA', oreb: 'OREB', dreb: 'DREB', reb: 'REB', ast: 'AST', stl: 'STL', blk: 'BLK', to: 'TO', pf: 'PF' };
+const statInt = (v, max) => { const n = Math.round(Number(String(v == null ? '' : v).replace(/[^0-9.-]/g, '')) || 0); return Math.max(0, Math.min(max, n)); };
+export function cleanGame(g) {
+  if (!g || typeof g !== 'object') return { error: 'bad_game' };
+  const date = cleanDate(g.date);
+  if (!date) return { error: 'missing_date' };
+  const opponent = cleanName(g.opponent, LIMITS.opponent);
+  if (!opponent) return { error: 'missing_opponent' };
+  const lines = (Array.isArray(g.lines) ? g.lines : []).map((l) => {
+    const row = { player_id: idOk(l && l.player_id) ? l.player_id : '', name: cleanName(l && l.name, 60), num: clip(stripTags(String((l && l.num) || '').trim()), 3) };
+    STAT_KEYS.forEach((k) => { row[k] = statInt(l && l[k], k === 'min' ? 60 : 200); });
+    if (!row.reb && (row.oreb || row.dreb)) row.reb = row.oreb + row.dreb;
+    if (!row.pts && (row.fgm || row.ftm)) row.pts = 2 * (row.fgm - row.tpm) + 3 * row.tpm + row.ftm;
+    return row;
+  }).filter((l) => l.name || l.player_id).slice(0, 20);
+  return { game: {
+    date, opponent, where: ['home', 'away', 'neutral'].includes(g.where) ? g.where : '',
+    us: statInt(g.us, 200), them: statInt(g.them, 200),
+    kind: ['game', 'scrimmage', 'tournament'].includes(g.kind) ? g.kind : 'game',
+    source: ['hudl', 'manual', 'maxpreps', 'other'].includes(g.source) ? g.source : 'manual',
+    notes: clip(stripTags(String(g.notes || '').trim()), 300),
+    lines,
   } };
 }
 

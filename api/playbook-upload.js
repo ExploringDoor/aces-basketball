@@ -18,6 +18,7 @@ function ctEq(a, b) {
 function authed(req) { const want = process.env.ADMIN_PASSWORD || ''; return !!want && ctEq(req.headers['x-admin-key'] || '', want); }
 
 export const CLIP = { maxBytes: 250 * 1024 * 1024, types: ['video/mp4', 'video/quicktime', 'video/webm', 'video/x-m4v'] };
+export const PHOTO = { maxBytes: 10 * 1024 * 1024, types: ['image/jpeg', 'image/png', 'image/webp', 'image/heic'] };
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
@@ -28,8 +29,10 @@ export default async function handler(req, res) {
     const json = await handleUpload({
       body: req.body, request: req,
       onBeforeGenerateToken: async (pathname) => {
-        if (!/^playbook\/clips\/[A-Za-z0-9_-]{1,80}\/[^/]{1,120}$/.test(pathname)) throw new Error('bad_pathname');
-        return { allowedContentTypes: CLIP.types, maximumSizeInBytes: CLIP.maxBytes, addRandomSuffix: true, tokenPayload: '' };
+        const m = /^playbook\/(clips|photos)\/[A-Za-z0-9_-]{1,80}\/[^/]{1,120}$/.exec(pathname);
+        if (!m) throw new Error('bad_pathname');
+        const kind = m[1] === 'photos' ? PHOTO : CLIP;
+        return { allowedContentTypes: kind.types, maximumSizeInBytes: kind.maxBytes, addRandomSuffix: true, tokenPayload: '' };
       },
       onUploadCompleted: async () => {},   // the coach's browser saves the clip onto the play (save_play)
     });
