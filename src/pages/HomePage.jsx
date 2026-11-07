@@ -175,7 +175,7 @@ export default function HomePage({ goTo }) {
         <div className="marquee-track">
           {[0,1].map(dup => (
             <div key={dup} aria-hidden={dup === 1} style={{ display:"flex", alignItems:"center", flexShrink:0 }}>
-              {["ACES NATION","7× STATE CHAMPIONS","23 LEAGUE TITLES","KOBE'S ALMA MATER","EST. 1911","THE PRIDE OF THE MAIN LINE"].map((t, i) => (
+              {["ACES NATION","7× STATE CHAMPIONS","24 LEAGUE TITLES","KOBE'S ALMA MATER","EST. 1911","THE PRIDE OF THE MAIN LINE"].map((t, i) => (
                 <span key={i} style={{ display:"flex", alignItems:"center" }}>
                   <span style={{ fontFamily:"'Anton',sans-serif", fontSize:"clamp(22px,3vw,34px)", letterSpacing:2, whiteSpace:"nowrap", padding:"0 28px", color: i % 2 === 0 ? "#fff" : "transparent", WebkitTextStroke: i % 2 === 0 ? "0" : "1.2px rgba(255,255,255,0.85)" }}>{t}</span>
                   <Spade size={15} color="#c9a44a" />

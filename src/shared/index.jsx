@@ -537,7 +537,7 @@ export const roster = [
 ];
 
 export const centralLeagueTeams = [
-  { name: "Lower Merion", mascot: "Aces", color: "#840036", initials: "LM", desc: "The flagship program of the Central League. 7 PIAA state titles (1933, '41, '42, '43, '96, '06, '13), 16 District 1 titles, 23 league championships and 1,600+ all-time wins. Home of Kobe Bryant and legendary coach Gregg Downer.", isSelf: true },
+  { name: "Lower Merion", mascot: "Aces", color: "#840036", initials: "LM", desc: "The flagship program of the Central League. 7 PIAA state titles (1933, '41, '42, '43, '96, '06, '13), 16 District 1 titles, 24 league championships and 1,600+ all-time wins. Home of Kobe Bryant and legendary coach Gregg Downer.", isSelf: true },
   { name: "Conestoga", mascot: "Pioneers", color: "#003366", initials: "CO", desc: "Founding Central League member (1967). Has emerged as a top contender in recent years, winning the Central League title in 2025-26 and earning the #1 seed in District 1 6A. A rising power in Chester County." },
   { name: "Garnet Valley", mascot: "Jaguars", color: "#8B0000", initials: "GV", desc: "Joined the Central League in 2008. Quickly became competitive, capturing the 2021 Central League title along with District 1 success and a trip to the 2019 PIAA 6A state finals. A rising power in Delaware County." },
   { name: "Harriton", mascot: "Rams", color: "#1E4D2B", initials: "HN", desc: "A founding member that departed in 1969 and returned in 2008. Located in Lower Merion Township alongside LM, creating the crosstown rivalry. Competitive in league play with growing program success." },

@@ -49,7 +49,7 @@ export default function HistoryPage() {
               { stat: ".663",  label: "Win Percentage" },
               { stat: "7",     label: "State Championships" },
               { stat: "17",    label: "District 1 Titles" },
-              { stat: "23",    label: "League Titles" },
+              { stat: "24",    label: "League Titles" },
             ].map((s, i) => (
               <div key={i} style={{ flex: "1 1 120px", background: "rgba(255,255,255,0.03)", padding: "28px 16px", textAlign: "center" }}>
                 <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 36, fontWeight: 700, color: "var(--gold)", lineHeight: 1 }}>{s.stat}</div>

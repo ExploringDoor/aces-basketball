@@ -14,7 +14,7 @@ export default function ChampionshipsPage() {
   const tabs = [
     { key: "state",    label: "State Championships (7)" },
     { key: "district", label: "District 1 Titles (17)" },
-    { key: "league",   label: "Central League Titles (23)" },
+    { key: "league",   label: "Central League Titles (24)" },
   ];
 
   const handleMouseMove = (e) => {
