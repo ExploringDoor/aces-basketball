@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import * as fake from './_fake.js';
 import { toFirestore } from '../api/_firestore.js';
 import { SITE_TAG } from '../api/_site.js';
-import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanPhoto, cleanDate, cleanFeeds, parseIcs, cleanEndgame, cleanTerm, SITUATION_KEYS, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
+import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanPhoto, cleanDate, cleanFeeds, parseIcs, cleanEndgame, cleanTerm, cleanCall, cleanAudio, SITUATION_KEYS, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
 import playbook from '../api/playbook.js';
 
 fake.install();
@@ -144,6 +144,27 @@ await test('situations, end of game tree and glossary terms', () => {
   assert.equal(cleanTerm({ term: 'Ice', means: '' }).error, 'missing_meaning');
   assert.deepEqual(cleanTerm({ term: ' Ice ', means: 'Force the ball handler to the baseline on a side screen', kind: 'defense', play_id: 'p9' }).term, { term: 'Ice', means: 'Force the ball handler to the baseline on a side screen', play_id: 'p9', kind: 'defense' });
   assert.equal(cleanTerm({ term: 'X', means: 'y', kind: 'weird', play_id: 'bad id' }).term.kind, 'other');
+});
+await test('voice notes, bench calls and the weekly digest', async () => {
+  assert.deepEqual(cleanAudio({ url: 'https://abc.public.blob.vercel-storage.com/playbook/audio/p1/note-x.wav', seconds: '31.6' }), { url: 'https://abc.public.blob.vercel-storage.com/playbook/audio/p1/note-x.wav', seconds: 32 });
+  assert.equal(cleanAudio({ url: 'https://abc.public.blob.vercel-storage.com/playbook/photos/p1/x.jpg' }), null);
+  assert.equal(cleanPlay(Object.assign({}, PLAY, { audio: { url: 'https://evil.test/a.wav' } })).play.audio, null);
+  assert.equal(cleanCall({ play_id: 'p1', result: 'dunk', opponent: 'Radnor' }).error, 'bad_result');
+  assert.deepEqual(cleanCall({ play_id: 'p1', result: 'score', opponent: ' Radnor ', date: '2026-12-05', quarter: 4, situation: 'need3' }).call, { play_id: 'p1', result: 'score', opponent: 'Radnor', date: '2026-12-05', quarter: '4', situation: 'need3' });
+  const { buildDigest } = await import('../api/playbook.js');
+  const now = Date.parse('2026-12-06T12:00:00Z');
+  const d = buildDigest({ base: 'https://x.test',
+    plays: [{ id: 'p1', name: 'Horns Flare', visible: true, due: '2026-12-09', groups: [] }, { id: 'p2', name: 'Old', visible: true, archived: true }],
+    players: [{ id: 'a', name: 'Ava', active: true }, { id: 'b', name: 'Ben', active: true }, { id: 'c', name: 'Gone', active: false }],
+    views: [{ player_id: 'a', play_id: 'p1', at: '2026-12-05T01:00:00Z' }, { player_id: 'b', play_id: 'p1', at: '2026-11-01T01:00:00Z' }],
+    quiz: [{ player_id: 'a', play_id: 'p1', pct: 100, at: '2026-12-05T01:00:00Z' }],
+    questions: [{ player_name: 'Ben', text: 'Who screens?', answer: '', hidden: false }], games: [], calls: [{ result: 'score', at: '2026-12-05T01:00:00Z' }, { result: 'miss', at: '2026-12-05T01:00:00Z' }],
+    upcoming: [{ at: '2026-12-08T20:00:00Z', title: 'vs Radnor' }] }, now);
+  assert.match(d.text, /Studied this week: 1 of 2 players \(Ava 1\)/);
+  assert.match(d.text, /Did not open the playbook: Ben/);
+  assert.match(d.text, /Horns Flare, 1 of 2 passed \(still owe it: Ben\)/);
+  assert.match(d.text, /Questions waiting on you: 1/); assert.match(d.text, /Bench calls logged: 2, scored on 1/); assert.match(d.text, /vs Radnor/);
+  assert.equal(d.subject, 'Aces playbook: 1 of 2 studied, 1 question waiting');
 });
 await test('groups limit who can see a play', () => {
   const p = { visible: true, groups: ['Varsity'] };
@@ -315,6 +336,11 @@ await test('quiz results, game plan, practice and progress reach the player', as
   assert.equal((await call({ action: 'quiz_result', token: tok, id: 'terms', score: 3, total: 4 })).statusCode, 200);
   assert.equal((await call({ action: 'delete_term', id: term.body.id }, true)).statusCode, 200);
   assert.equal((await call({ action: 'update_player', id: codes[0].id, report_note: 'Great first month' }, true)).statusCode, 200);
+  const lc = await call({ action: 'log_call', call: { play_id: playId, result: 'score', opponent: 'Radnor', quarter: '4' } }, true);
+  assert.equal(lc.statusCode, 200, JSON.stringify(lc.body));
+  assert.equal((await call({ action: 'admin_list' }, true)).body.calls[0].play_name, PLAY.name);
+  assert.equal((await call({ action: 'delete_call', id: lc.body.id }, true)).statusCode, 200);
+  assert.equal((await call({ action: 'quiz_result', token: tok, id: 'whereami', score: 5, total: 6 })).statusCode, 200);
   assert.equal((await call({ action: 'scout_report', opponent: 'Radnor' }, true)).statusCode, 404);
   fake.state.docs.set('scouting_reports/' + SITE_TAG + '_radnor', { fields: toFirestore({ site: SITE_TAG, opp: 'Radnor', keys: ['Box out'], personnel: [{ num: '23', name: 'Smith' }], matchups: [], plan: 'Run them.' }), createTime: 'x', updateTime: 'x' });
   const sr = await call({ action: 'scout_report', opponent: 'Radnor' }, true);

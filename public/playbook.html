@@ -175,6 +175,10 @@ h1,h2,h3{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2px}
 .sitrow{margin-top:18px} .sitrow .sitlab{font-family:'Oswald',sans-serif;font-size:16px;color:var(--ink);margin-bottom:8px;display:flex;align-items:baseline;gap:8px} .sitrow .sitlab small{font-size:13px;color:var(--ink-2);font-family:inherit}
 .tsearch{width:100%;height:46px;border:1px solid var(--line);border-radius:12px;padding:0 14px;font:inherit;font-size:16px;background:#fff;margin-top:14px}
 .terms{display:flex;flex-direction:column;gap:10px;margin-top:12px} .trow{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--sh)} .trow .tt{display:flex;align-items:center;gap:10px;font-family:'Oswald',sans-serif;font-size:20px;color:#840036} .trow .tk{font:600 11px/1 'Inter',sans-serif;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-2);background:var(--bg,#f3f3f6);border-radius:999px;padding:5px 9px} .trow .tm{font-size:15.5px;line-height:1.45;margin-top:4px;color:var(--ink)} .trow .tp{margin-top:8px;font:600 13.5px/1 'Inter',sans-serif;color:#840036;background:none;border:1.5px solid #840036;border-radius:999px;padding:7px 12px;cursor:pointer}
+.vn{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:14px 16px} .vn .vnbtn{width:52px;height:52px;border-radius:50%;background:#840036;color:#fff;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none} .vn .vnbtn svg{width:22px;height:22px;fill:#fff} .vn b{display:block;font-family:'Oswald',sans-serif;font-size:17px} .vn span{color:var(--ink-2);font-size:13.5px} .vn .bar{height:4px;background:#eee;border-radius:2px;margin-top:8px;overflow:hidden} .vn .bar i{display:block;height:100%;width:0;background:#840036}
+.inst{display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,#1d1d24,#33333d);color:#fff;border-radius:16px;padding:14px 16px;margin-bottom:18px} .inst .ic{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex:none} .inst .ic svg{width:24px;height:24px} .inst b{display:block;font-family:'Oswald',sans-serif;font-size:17px} .inst span{font-size:13.5px;color:#d9d9e0} .inst .btn{margin-left:auto;background:var(--gold);color:#241a00;border:0;border-radius:999px;padding:9px 14px;font:700 13.5px/1 'Inter',sans-serif;cursor:pointer;white-space:nowrap} .inst .x{background:none;border:0;color:#aaa;font-size:20px;cursor:pointer;padding:4px;margin-left:4px}
+.wstage{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);overflow:hidden;margin-top:14px} .wstage .court{background:#d8c094} .wq{padding:14px 16px;background:var(--gold-50);border-top:1px solid var(--line)} .wq .lab{font-family:'Oswald',sans-serif;font-size:11.5px;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold-d,#9c7a2a)} .wq .tx{font-size:17px;font-weight:600;margin-top:2px} .wq .sub{color:var(--ink-2);font-size:14px;margin-top:3px} .wq .row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;font-size:14px;color:var(--ink-2)}
+.wq.right{background:#e9f6ee} .wq.wrong{background:#fdecea} .wq .big{font-family:'Oswald',sans-serif;font-size:48px;text-align:center;color:#b42318} .wq .big.ok{color:#1f8a4c}
 .must{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:18px;box-shadow:var(--sh)}
 .must h3{font-size:16px;display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .must h3 .pct{margin-left:auto;font-family:'Oswald',sans-serif;font-weight:500;color:var(--ink-3);font-size:14px}
@@ -394,6 +398,8 @@ body.shielded #app{filter:blur(22px)}
     <div class="prac hide" id="pracCard"><div style="flex:1;min-width:0"><div class="t" id="pracT">Practice</div><b id="pracB"></b><div class="blocks" id="pracBlocks"></div></div></div>
     <div class="upc hide" id="upcCard"><div class="uh"><h3>Upcoming</h3><a class="addcal hide" id="addCal" href="#" rel="noopener">Add to my phone</a></div><ul id="upcList"></ul></div>
     <button class="sigcard hide" type="button" id="sigCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12m0-6.5a1.5 1.5 0 0 1 3 0V12m0-5a1.5 1.5 0 0 1 3 0v7a6 6 0 0 1-6 6h-1.5a5 5 0 0 1-4.3-2.4L3 14.2a1.5 1.5 0 0 1 2.5-1.6L8 15"/></svg></span><span><b>Sideline signals</b><span class="sub" id="sigCardSub"></span></span><span class="go">Learn them</span></button>
+    <div class="inst hide" id="installCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 7v8m-3-3 3 3 3-3"/></svg></span><div style="min-width:0"><b>Put it on your home screen</b><span id="installSub">Opens like an app, and you get a badge when coach posts something new.</span></div><button class="btn hide" type="button" id="installBtn">Add</button><button class="x" type="button" id="installX" aria-label="Not now">×</button></div>
+    <button class="sigcard hide" type="button" id="whereCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/></svg></span><span><b>Where am I?</b><span class="sub" id="whereCardSub"></span></span><span class="go">Drill</span></button>
     <button class="sigcard hide" type="button" id="sitCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><b>Situations</b><span class="sub" id="sitCardSub"></span></span><span class="go">Open</span></button>
     <button class="sigcard hide" type="button" id="termCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v12H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></span><span><b>Team language</b><span class="sub" id="termCardSub"></span></span><span class="go">Learn it</span></button>
     <div class="must hide" id="mustBox"><h3><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#840036" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Must know<span class="pct" id="mustPct"></span></h3><ul id="mustList"></ul></div>
@@ -425,6 +431,7 @@ body.shielded #app{filter:blur(22px)}
       <section class="vid hide" id="vidBox"><div class="vh"><h4>Watch it run</h4><b id="vidT"></b></div><div id="vidBody"></div><div class="moments hide" id="moments"></div></section></div>
       <aside class="side">
         <div class="box"><div class="scoutbar hide" id="pvScout"></div><div class="cat" id="pvCat"></div><h2 id="pvName"></h2><div class="notes" id="pvNotes"></div></div>
+        <div class="vn hide" id="pvVn"><button class="vnbtn" type="button" id="vnBtn" aria-label="Listen"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z"/></svg></button><div style="flex:1;min-width:0"><b>Coach talks it through</b><span id="vnDur"></span><div class="bar"><i id="vnBar"></i></div></div></div>
         <div class="tips hide" id="pvTips"><h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.6 1 1.2 1 2.5h6c0-1.3.3-1.9 1-2.5A6 6 0 0 0 12 3z"/></svg>Coach's tips</h4><ol id="pvTipsList"></ol></div>
         <div class="sits hide" id="pvSits"></div>
         <div class="tips hide" id="pvSig"><h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12m0-6.5a1.5 1.5 0 0 1 3 0V12m0-5a1.5 1.5 0 0 1 3 0v7a6 6 0 0 1-6 6h-1.5a5 5 0 0 1-4.3-2.4L3 14.2a1.5 1.5 0 0 1 2.5-1.6L8 15"/></svg>Sideline signal</h4><div class="sigrow"><div class="ph hide" id="pvSigPh"><img id="pvSigImg" alt="Hand signal"></div><div><div class="call" id="pvSigCall"></div><div class="sub">See it or hear it, run this.</div></div></div></div>
@@ -473,6 +480,11 @@ body.shielded #app{filter:blur(22px)}
     <div class="sigq hide" id="sigQ"></div>
     <div class="siggrid" id="sigGrid"></div>
   </main>
+  <main class="wrap hide" id="whereView">
+    <button class="crumb" type="button" id="whereBack"><svg><use href="#i-back"/></svg>All plays</button>
+    <div class="gp-head"><div class="k">Drill</div><h2>Where am I?</h2><div class="d">Every play, two taps: where you start, and where you go first. Fastest way to learn the whole book.</div></div>
+    <div class="wstage"><div class="court"><svg id="wcourt" xmlns="http://www.w3.org/2000/svg" aria-label="Court"></svg></div><div class="wq" id="wq"></div></div>
+  </main>
   <main class="wrap hide" id="sitView">
     <button class="crumb" type="button" id="sitBack"><svg><use href="#i-back"/></svg>All plays</button>
     <div class="gp-head"><div class="k">Special situations</div><h2>Situations</h2><div class="d">What we run when the moment calls for it, and the end of game plan.</div></div>
@@ -494,6 +506,11 @@ body.shielded #app{filter:blur(22px)}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="/playbook-court.js"></script>
+<link rel="manifest" href="/playbook.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Playbook">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script>
 (function(){
 var STORE='aces_playbook', DEMO=/[?&]demo=1/.test(location.search);
@@ -576,6 +593,9 @@ function renderTop(){
   $('sitCard').classList.toggle('hide',!nSit&&!egN); $('sitCardSub').textContent=[nSit?nSit+(nSit===1?' play tagged':' plays tagged'):'',egN?'end of game plan':''].filter(Boolean).join(' · ');
   var nT=(S.terms||[]).length; $('termCard').classList.toggle('hide',!nT);
   if(nT){ var bt=(S.done.quiz||{}).terms; $('termCardSub').textContent=nT+(nT===1?' word':' words')+(bt>=80?' · passed '+bt+'%':bt!=null?' · best '+bt+'%':' · take the quiz'); }
+  var wp=wherePlays(); $('whereCard').classList.toggle('hide',wp.length<2);
+  if(wp.length>=2){ var bw=(S.done.quiz||{}).whereami; $('whereCardSub').textContent=wp.length+' plays'+(bw>=80?' · passed '+bw+'%':bw!=null?' · best '+bw+'%':' · two taps each'); }
+  renderInstall(); updateBadge();
   var sigs=sigPlays(); $('sigCard').classList.toggle('hide',!sigs.length);
   if(sigs.length){ var bs=(S.done.quiz||{}).signals; $('sigCardSub').textContent=sigs.length+(sigs.length===1?' signal':' signals')+(bs>=80?' · passed '+bs+'%':bs!=null?' · best '+bs+'%':' · take the quiz'); }
   var must=S.plays.filter(function(p){ return p.due&&dayDiff(p.due)>=-7; }).sort(function(a,b){ return a.due.localeCompare(b.due); });
@@ -593,10 +613,81 @@ $('planCard').addEventListener('click',function(){ history.pushState({plan:1},''
 $('planBack').addEventListener('click',function(){ if(history.state&&(history.state.plan||history.state.opp)) history.back(); else { history.replaceState(null,'',location.pathname+location.search); closePlan(); } });
 // a grid of small play cards, used by the game plan, situations and end of game views
 function cards(list){ var wm=wmLines(); return list.filter(Boolean).map(function(p){ var st=status(p); return '<button class="pcard" type="button" data-open="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{watermark:wm,meId:S.me.id,noNames:true})+'<span class="playic">'+svg('i-play')+'</span>'+(st==='ok'?'<span class="dueb ok">Passed</span>':'')+'</div><div class="meta"><div class="cat">'+esc(catOf(p))+'</div><h3>'+esc(p.name)+'</h3></div></button>'; }).join(''); }
-function closePlan(){ $('planView').classList.add('hide'); $('sigView').classList.add('hide'); $('sitView').classList.add('hide'); $('termView').classList.add('hide'); $('listView').classList.remove('hide'); }
+function closePlan(){ $('planView').classList.add('hide'); $('sigView').classList.add('hide'); $('sitView').classList.add('hide'); $('termView').classList.add('hide'); $('whereView').classList.add('hide'); $('listView').classList.remove('hide'); }
+/* ── coach's voice note: plays over the animation ── */
+var VA=null;
+function stopVoice(){ if(VA){ VA.pause(); VA=null; } $('vnBtn').innerHTML='<svg viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z"/></svg>'; }
+$('vnBtn').addEventListener('click',function(){
+  var p=S.open; if(!p||!p.audio) return;
+  if(VA){ var was=!VA.paused; stopVoice(); if(was&&S.player) S.player.pause(); return; }
+  VA=new Audio(p.audio.url); VA.preload='auto';
+  VA.addEventListener('timeupdate',function(){ if(VA&&VA.duration) $('vnBar').style.width=(VA.currentTime/VA.duration*100)+'%'; });
+  VA.addEventListener('ended',function(){ stopVoice(); $('vnBar').style.width='100%'; });
+  VA.play().then(function(){ $('vnBtn').innerHTML='<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>'; if(S.player&&!S.quiz){ S.player.go(0); S.player.playAll(); } }).catch(function(){ stopVoice(); toast('Could not play the note.'); });
+});
+/* ── where am I drill ── */
+var WQ=null, WP=null;
+function wherePlays(){ return S.plays.filter(function(p){ return kindOf(p)!=='scout'&&(p.frames||[]).length>=2; }); }
+function svgPt(svg,e){ var pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; var m=svg.getScreenCTM(); if(!m) return null; var r=pt.matrixTransform(m.inverse()); return [r.x,r.y]; }
+function showWhere(){
+  hideAllViews(); $('whereView').classList.remove('hide'); window.scrollTo(0,0);
+  var list=wherePlays().sort(function(){ return Math.random()-.5; }).slice(0,8), qs=[];
+  list.forEach(function(p){ var me=myTok(p)||'O1', named=!!myTok(p), st=PBCourt.stillState(p,0); if(!st.pos[me]) return;
+    qs.push({p:p,me:me,named:named,type:'start',answer:st.pos[me],i:0});
+    for(var i=1;i<p.frames.length;i++){ var act=PBCourt.action(p,i), m=act.moves.find(function(x){return x.id===me;}); if(m){ qs.push({p:p,me:me,named:named,type:'move',answer:m.b,i:i}); break; } } });
+  if(!qs.length){ $('wq').innerHTML='<div class="tx">Nothing to drill yet.</div>'; return; }
+  WQ={qs:qs,k:0,score:0,busy:false}; askWhere();
+}
+function askWhere(){
+  var q=WQ.qs[WQ.k];
+  if(!WP) WP=new PBCourt.Player($('wcourt'),q.p,{watermark:wmLines(),meId:S.me.id}); else { WP.o.watermark=wmLines(); WP.load(q.p); }
+  WP.go(q.type==='start'?0:q.i-1); WP.gA.innerHTML=''; $('wcourt').classList.add('quizzing');
+  if(q.type==='start'){ var t=WP.gT.querySelector('.tk[data-id="'+q.me+'"]'); if(t) t.remove(); }
+  var who=q.named?'you':'the '+q.me.charAt(1);
+  $('wq').className='wq'; $('wq').innerHTML='<div class="lab">'+(WQ.k+1)+' of '+WQ.qs.length+' · '+esc(q.p.name)+'</div><div class="tx">'+(q.type==='start'?'Where '+(q.named?'do you':'does '+q.me.charAt(1))+' start?':'Where '+(q.named?'do you':'does '+q.me.charAt(1))+' go next?')+'</div><div class="sub">'+(q.type==='start'?(q.named?'Tap your starting spot.':'Tap where '+q.me.charAt(1)+' starts.'):'Tap where '+who+' cut'+(q.named?'':'s')+' to. '+esc(q.p.frames[q.i].note||''))+'</div><div class="row"><button class="btn ghost" type="button" id="wqQuit">Quit</button><span>'+WQ.score+' right so far</span></div>';
+  $('wqQuit').addEventListener('click',function(){ endWhere(); });
+}
+$('wcourt').addEventListener('click',function(e){
+  var Q=WQ; if(!Q||Q.busy) return; var q=Q.qs[Q.k], pt=svgPt($('wcourt'),e); if(!pt) return;
+  var ok=PBCourt.dist(pt,q.answer)<=70; Q.busy=true; if(ok) Q.score++;
+  var ns='http://www.w3.org/2000/svg', g=document.createElementNS(ns,'g'); g.innerHTML='<circle cx="'+pt[0]+'" cy="'+pt[1]+'" r="20" fill="'+(ok?'#1f8a4c':'#b42318')+'" fill-opacity=".25" stroke="'+(ok?'#1f8a4c':'#b42318')+'" stroke-width="3"/>';
+  if(q.type==='start'){ WP.go(0); WP.gA.appendChild(g); }
+  else { WP.gA.innerHTML=PBCourt.arrowsSVG(q.p,q.i); WP.gA.appendChild(g); WP.step(function(){}); }
+  $('wq').className='wq '+(ok?'right':'wrong'); $('wq').innerHTML='<div class="lab">'+(ok?'Right':'Not quite')+'</div><div class="tx">'+(ok?'That\'s your spot.':'That\'s where it really is.')+'</div><div class="row"><span>'+Q.score+' right so far</span><button class="btn primary" type="button" id="wqNext">'+(Q.k+1<Q.qs.length?'Next':'See my score')+'</button></div>';
+  $('wqNext').addEventListener('click',function(){ Q.busy=false; Q.k++; if(Q.k<Q.qs.length) askWhere(); else finishWhere(); });
+});
+function finishWhere(){
+  var Q=WQ, pct=Math.round(Q.score/Q.qs.length*100), passed=pct>=80; $('wcourt').classList.remove('quizzing');
+  $('wq').className='wq'+(passed?' right':''); $('wq').innerHTML='<div class="big'+(passed?' ok':'')+'">'+pct+'%</div><p style="text-align:center">'+Q.score+' of '+Q.qs.length+' right. '+(passed?'You know where you live.':pct>=50?'Close. Run it again.':'Watch the plays, then come back.')+'</p><div class="row" style="justify-content:center"><button class="btn primary" type="button" id="wqAgain">Again</button><button class="btn" type="button" id="wqDone">Done</button></div>';
+  $('wqAgain').addEventListener('click',showWhere); $('wqDone').addEventListener('click',function(){ endWhere(); });
+  var cur=(S.done.quiz||{}).whereami||0; if(pct>cur){ S.done.quiz=S.done.quiz||{}; S.done.quiz.whereami=pct; renderTop(); }
+  if(!DEMO) api({action:'quiz_result',token:S.token,id:'whereami',score:Q.score,total:Q.qs.length}).catch(function(){});
+  WQ=null;
+}
+function endWhere(){ WQ=null; if(history.state&&history.state.where) history.back(); else { history.replaceState(null,'',location.pathname+location.search); closePlan(); } }
+$('whereCard').addEventListener('click',function(){ history.pushState({where:1},'','#whereami'); showWhere(); });
+$('whereBack').addEventListener('click',endWhere);
+/* ── home screen install + badge ── */
+var deferredInstall=null, standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); deferredInstall=e; renderInstall(); });
+function renderInstall(){
+  var dismissed=false; try{ dismissed=localStorage.getItem('pb_install_no')==='1'; }catch(e){}
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
+  var show=!standalone&&!dismissed&&(deferredInstall||ios);
+  $('installCard').classList.toggle('hide',!show); if(!show) return;
+  $('installBtn').classList.toggle('hide',!deferredInstall);
+  $('installSub').textContent=deferredInstall?'Opens like an app, and you get a badge when coach posts something new.':'In Safari tap Share, then Add to Home Screen. Opens like an app.';
+}
+$('installBtn').addEventListener('click',function(){ if(!deferredInstall) return; deferredInstall.prompt(); deferredInstall.userChoice.then(function(){ deferredInstall=null; renderInstall(); }); });
+$('installX').addEventListener('click',function(){ try{ localStorage.setItem('pb_install_no','1'); }catch(e){} renderInstall(); });
+function updateBadge(){
+  var n=S.plays.filter(function(p){ return kindOf(p)!=='scout'&&((isNew(p)&&(S.done.viewed||[]).indexOf(p.id)<0)||(p.due&&dayDiff(p.due)<=7&&status(p)!=='ok')); }).length;
+  try{ if('setAppBadge' in navigator){ (n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(function(){}); } }catch(e){}
+}
+if('serviceWorker' in navigator&&!DEMO){ navigator.serviceWorker.register('/playbook-sw.js',{scope:'/playbook'}).catch(function(){}); }
 /* ── situations library + end of game tree ── */
 var EGS={side:null,leaf:null};
-function hideAllViews(){ ['listView','playView','planView','sigView','sitView','termView'].forEach(function(id){ $(id).classList.add('hide'); }); }
+function hideAllViews(){ ['listView','playView','planView','sigView','sitView','termView','whereView'].forEach(function(id){ $(id).classList.add('hide'); }); }
 function showSits(){
   hideAllViews(); $('sitView').classList.remove('hide'); window.scrollTo(0,0);
   EGS={side:null,leaf:null}; renderEg();
@@ -715,7 +806,7 @@ function showPlan(){ if(S.plan) showOpp(S.plan.opponent); else closePlan(); }
 function showOpp(name){
   var o=opponents().find(function(x){ return x.name===name; }); if(!o){ closePlan(); return; }
   var P=o.plan||{opponent:name,keys:[],things:[],our_plays:[],their_plays:[],matchups:[],personnel:[],notes:''};
-  $('listView').classList.add('hide'); $('playView').classList.add('hide'); $('sigView').classList.add('hide'); $('sitView').classList.add('hide'); $('termView').classList.add('hide'); $('planView').classList.remove('hide'); window.scrollTo(0,0);
+  $('listView').classList.add('hide'); $('playView').classList.add('hide'); $('sigView').classList.add('hide'); $('sitView').classList.add('hide'); $('termView').classList.add('hide'); $('whereView').classList.add('hide'); $('planView').classList.remove('hide'); window.scrollTo(0,0);
   $('gpHead').className='gp-head'+(o.plan?'':' scout');
   $('gpK').textContent=o.plan?((P.date?fmtDay(P.date):'Game plan')+(P.where==='home'?' · Kobe Bryant Gym':P.where==='away'?' · Away':P.where==='neutral'?' · Neutral site':'')):'Scouting';
   $('gpVs').textContent='Aces vs '+name; $('gpD').textContent=P.title||(o.plan?'':'What they run, and how we guard them.');
@@ -816,7 +907,8 @@ function openPlay(id,fromRoute){
   $('pvScout').classList.toggle('hide',kindOf(p)!=='scout'); $('pvScout').innerHTML='<b>Scouting</b><span>This is <strong>'+esc(p.opponent)+'</strong>\'s play. The grey numbers are them, the X\'s are us.</span>';
   var tips=p.tips||[]; $('pvTips').classList.toggle('hide',!tips.length); $('pvTipsList').innerHTML=tips.map(function(t,i){ return '<li><span class="n">'+(i+1)+'</span><span>'+esc(t)+'</span></li>'; }).join('');
   var sits=(p.situations||[]).map(function(k){ var d=PBCourt.SITUATIONS.filter(function(x){return x.key===k;})[0]; return d?'<span class="sc">'+esc(d.label)+'</span>':''; }).join(''); $('pvSits').classList.toggle('hide',!sits); $('pvSits').innerHTML=sits;
-  $('sitView').classList.add('hide'); $('termView').classList.add('hide');
+  $('sitView').classList.add('hide'); $('termView').classList.add('hide'); $('whereView').classList.add('hide');
+  stopVoice(); var au=p.audio&&p.audio.url?p.audio:null; $('pvVn').classList.toggle('hide',!au); if(au){ $('vnDur').textContent=(au.seconds?Math.floor(au.seconds/60)+':'+('0'+au.seconds%60).slice(-2):'')+' · tap to hear coach while the play runs'; $('vnBar').style.width='0'; }
   var sg=p.signal||{}; $('pvSig').classList.toggle('hide',!(sg.call||sg.photo)); $('pvSigPh').classList.toggle('hide',!sg.photo); $('pvSigImg').src=sg.photo||''; $('pvSigCall').textContent=sg.call||'';
   $('sigView').classList.add('hide');
   renderLineup(p); renderVideo(p); loadQuestions(p);
@@ -897,10 +989,10 @@ $('qSend').addEventListener('click',function(){
     toast('Sent to coach'); loadQuestions(p);
   }).catch(function(){ done(); toast('No connection. Try again.'); });
 });
-function closePlay(){ endQuiz(true); if(S.player) S.player.pause(); $('vidBody').innerHTML=''; S.open=null; $('playView').classList.add('hide'); $('listView').classList.remove('hide'); }
+function closePlay(){ stopVoice(); endQuiz(true); if(S.player) S.player.pause(); $('vidBody').innerHTML=''; S.open=null; $('playView').classList.add('hide'); $('listView').classList.remove('hide'); }
 $('backBtn').addEventListener('click',function(){ if(history.state&&history.state.play) history.back(); else { history.replaceState(null,'',location.pathname+location.search); closePlay(); } });
 $('homeBtn').addEventListener('click',function(){ if(S.open) $('backBtn').click(); });
-function route(){ var m=/#play=([^&]+)/.exec(location.hash), o=/#opp=([^&]+)/.exec(location.hash); if(m){ closePlan(); openPlay(decodeURIComponent(m[1]),true); } else if(o){ closePlay(); showOpp(decodeURIComponent(o[1])); } else if(location.hash==='#plan'){ closePlay(); showPlan(); } else if(location.hash==='#signals'){ closePlay(); closePlan(); showSig(); } else if(location.hash==='#situations'){ closePlay(); closePlan(); showSits(); } else if(location.hash==='#terms'){ closePlay(); closePlan(); showTerms(); } else { closePlay(); closePlan(); } }
+function route(){ var m=/#play=([^&]+)/.exec(location.hash), o=/#opp=([^&]+)/.exec(location.hash); if(m){ closePlan(); openPlay(decodeURIComponent(m[1]),true); } else if(o){ closePlay(); showOpp(decodeURIComponent(o[1])); } else if(location.hash==='#plan'){ closePlay(); showPlan(); } else if(location.hash==='#signals'){ closePlay(); closePlan(); showSig(); } else if(location.hash==='#situations'){ closePlay(); closePlan(); showSits(); } else if(location.hash==='#terms'){ closePlay(); closePlan(); showTerms(); } else if(location.hash==='#whereami'){ closePlay(); closePlan(); showWhere(); } else { closePlay(); closePlan(); } }
 window.addEventListener('popstate',route);
 
 function sync(){

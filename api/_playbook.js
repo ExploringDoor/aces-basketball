@@ -91,13 +91,14 @@ export function cleanPlay(p) {
   const due = cleanDate(p.due);
   // Sideline signal: the call word and a photo of the hand signal (Blob playbook/photos/...).
   const situations = [...new Set((Array.isArray(p.situations) ? p.situations : []).map(String).filter((k) => SITUATION_KEYS.includes(k)))].slice(0, 6);
+  const audio = cleanAudio(p.audio);
   const signal = { call: cleanName(p.signal && p.signal.call, 30), photo: cleanPhoto(p.signal && p.signal.photo) };
   // Film moments: "2:14 5 was late on the screen". Seconds into the clip plus a note.
   const marks = (Array.isArray(p.marks) ? p.marks : []).map((m) => ({ t: Math.max(0, Math.min(36000, Math.round(Number(m && m.t) || 0))), text: clip(stripTags(String((m && m.text) || '').trim()), LIMITS.mark) }))
     .filter((m) => m.text).sort((a, b) => a.t - b.t).slice(0, LIMITS.marks);
   return {
     play: {
-      name, court, category, groups, kind, opponent, lineup, clip: video, clip_link, tips, due, marks, signal, situations,
+      name, court, category, groups, kind, opponent, lineup, clip: video, clip_link, tips, due, marks, signal, situations, audio,
       notes: clip(stripTags(String(p.notes || '').trim()), LIMITS.notes),
       visible: !!p.visible,
       frames: out,
@@ -117,6 +118,13 @@ export function cleanPhoto(v) {
   let u; try { u = new URL(v); } catch (e) { return ''; }
   if (u.protocol !== 'https:' || !/\.public\.blob\.vercel-storage\.com$/.test(u.hostname) || !/^\/playbook\/photos\//.test(u.pathname)) return '';
   return clip(u.href, 400);
+}
+// Coach's voice note: a WAV on the Blob store under playbook/audio/, plus its length.
+export function cleanAudio(a) {
+  if (!a || typeof a !== 'object' || typeof a.url !== 'string' || !a.url) return null;
+  let u; try { u = new URL(a.url); } catch (e) { return null; }
+  if (u.protocol !== 'https:' || !/\.public\.blob\.vercel-storage\.com$/.test(u.hostname) || !/^\/playbook\/audio\//.test(u.pathname)) return null;
+  return { url: clip(u.href, 400), seconds: Math.max(0, Math.min(180, Math.round(Number(a.seconds) || 0))) };
 }
 export const CLIP_LINK_HOSTS = /(^|\.)(youtube\.com|youtu\.be|hudl\.com|vimeo\.com|drive\.google\.com)$/;
 export function cleanClipLink(v) {
@@ -253,6 +261,17 @@ export function cleanEndgame(obj) {
     leaves[l.key] = leaf;
   }
   return leaves;
+}
+// Bench call log: one row per play called in a game and what came of it.
+export const CALL_RESULTS = ['score', 'miss', 'foul', 'to'];
+export function cleanCall(c) {
+  if (!c || typeof c !== 'object') return { error: 'bad_call' };
+  const play_id = /^[A-Za-z0-9_-]{1,128}$/.test(String(c.play_id || '')) ? String(c.play_id) : '';
+  if (!play_id) return { error: 'missing_play' };
+  if (!CALL_RESULTS.includes(c.result)) return { error: 'bad_result' };
+  const opponent = cleanName(c.opponent, 60);
+  if (!opponent) return { error: 'missing_opponent' };
+  return { call: { play_id, result: c.result, opponent, date: cleanDate(c.date) || '', quarter: ['1', '2', '3', '4', 'OT'].includes(String(c.quarter)) ? String(c.quarter) : '', situation: SITUATION_KEYS.includes(c.situation) ? c.situation : '' } };
 }
 export const TERM_KINDS = ['call', 'offense', 'defense', 'action', 'other'];
 // Glossary: one team word, what it means, optionally the play it points at.

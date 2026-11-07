@@ -15,6 +15,7 @@
 //            update_player { id, name?, group?, active? } · new_code { id } · remove_player { id }
 //            set_open { open } · set_attitude { share } · set_feeds { feeds } · test_feed { url }
 //            set_endgame { leaves } · save_term { id?, term } · delete_term { id }
+//            log_call { call } · delete_call { id } · send_digest {}   (cron: /api/playbook-digest)
 //            remove_clip { id } · drop_clip { url }
 //            answer { id, answer } · hide_question { id } · unhide_question { id }
 //            save_plan { id?, plan } · delete_plan { id } · save_practice { id?, practice }
@@ -24,7 +25,7 @@
 //            save_game { id?, game } · delete_game { id }   (box scores, typed or from a Hudl export)
 
 import { fbAdminConfigured, fsGet, fsCreate, fsPatch, fsPatchVerified, fsList, fsQuery, fsDelete } from './_firestore.js';
-import { cleanPlay, cleanClip, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanFeeds, parseIcs, cleanEndgame, cleanTerm, canSee, newCode, normCode, cleanName, cleanGroup, signSession, readSession, sessionMatches, LIMITS } from './_playbook.js';
+import { cleanPlay, cleanClip, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanFeeds, parseIcs, cleanEndgame, cleanTerm, cleanCall, canSee, newCode, normCode, cleanName, cleanGroup, signSession, readSession, sessionMatches, LIMITS } from './_playbook.js';
 import { SITE_TAG } from './_site.js';
 import { del as blobDel } from '@vercel/blob';
 import { sendMail, emailConfigured, ADMIN_EMAIL } from './_email.js';
@@ -105,8 +106,10 @@ async function notifyCoach(player, play, text, base) {
 function publicPlay(p, byId) {
   const lineup = {};
   for (const [tok, pid] of Object.entries(p.lineup || {})) { const pl = byId[pid]; if (pl) lineup[tok] = { id: pl.id, name: pl.name }; }
-  return { id: p.id, name: p.name, kind: p.kind || 'ours', opponent: p.opponent || '', category: p.category, court: p.court, notes: p.notes || '', tips: p.tips || [], due: p.due || '', marks: p.marks || [], signal: p.signal || { call: '', photo: '' }, situations: p.situations || [], lineup, clip: p.clip || null, clip_link: p.clip_link || '', frames: p.frames || [], updated: p.updated || p.created || '' };
+  return { id: p.id, name: p.name, kind: p.kind || 'ours', opponent: p.opponent || '', category: p.category, court: p.court, notes: p.notes || '', tips: p.tips || [], due: p.due || '', marks: p.marks || [], signal: p.signal || { call: '', photo: '' }, situations: p.situations || [], audio: p.audio || null, lineup, clip: p.clip || null, clip_link: p.clip_link || '', frames: p.frames || [], updated: p.updated || p.created || '' };
 }
+// Quizzes that are not about one play: scored under a fixed id in playbook_quiz.
+const SPECIAL_QUIZ = { signals: 'Sideline signals', terms: 'Team glossary', whereami: 'Where am I drill' };
 function sortPlays(a, b) { return String(a.kind || 'ours').localeCompare(String(b.kind || 'ours')) || String(a.opponent || '').localeCompare(String(b.opponent || '')) || String(a.category).localeCompare(String(b.category)) || String(a.name).localeCompare(String(b.name)); }
 
 async function dropClip(c) { try { if (c && c.url && process.env.BLOB_READ_WRITE_TOKEN) await blobDel(c.url); } catch (e) { /* best effort: the play no longer points at it */ } }
@@ -173,7 +176,7 @@ async function playerAction(action, body, req) {
     const plan = currentPlan(plans);
     const practice = currentPractice(practices);
     const best = {};
-    quiz.forEach((q) => { if ((ids.has(q.play_id) || q.play_id === 'signals' || q.play_id === 'terms') && (best[q.play_id] == null || q.pct > best[q.play_id])) best[q.play_id] = q.pct; });
+    quiz.forEach((q) => { if ((ids.has(q.play_id) || SPECIAL_QUIZ[q.play_id]) && (best[q.play_id] == null || q.pct > best[q.play_id])) best[q.play_id] = q.pct; });
     const done = { viewed: [...new Set(views.map((v) => v.play_id).filter((id) => ids.has(id)))], quiz: best };
     const settings = await loadSettings();
     const visiblePlans = plans.filter((p) => p.visible).map((p) => publicPlan(p, byId)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
@@ -198,9 +201,8 @@ async function playerAction(action, body, req) {
   }
   if (action === 'quiz_result') {
     if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
-    const SPECIAL = { signals: 'Sideline signals', terms: 'Team glossary' };
-    const play = SPECIAL[body.id] ? { id: body.id, name: SPECIAL[body.id] } : await fsGet(`playbook_plays/${body.id}`);
-    if (!play || (!SPECIAL[body.id] && (play.site !== SITE_TAG || !canSee(play, player)))) return { status: 404, body: { error: 'not_found' } };
+    const play = SPECIAL_QUIZ[body.id] ? { id: body.id, name: SPECIAL_QUIZ[body.id] } : await fsGet(`playbook_plays/${body.id}`);
+    if (!play || (!SPECIAL_QUIZ[body.id] && (play.site !== SITE_TAG || !canSee(play, player)))) return { status: 404, body: { error: 'not_found' } };
     const total = Math.max(1, Math.min(60, Math.round(Number(body.total) || 0)));
     const score = Math.max(0, Math.min(total, Math.round(Number(body.score) || 0)));
     const pct = Math.round(score / total * 100);
@@ -235,12 +237,53 @@ async function playerAction(action, body, req) {
   return { status: 400, body: { error: 'unknown_action' } };
 }
 
+// ── Weekly digest (Sunday night email to the coach; also the send_digest action) ──
+function fmtD(d) { if (!d) return ''; const x = new Date(d + 'T12:00:00'); return isNaN(x) ? d : x.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); }
+export function buildDigest(d, nowMs = Date.now()) {
+  const week = nowMs - 7 * 864e5, soon = nowMs + 7 * 864e5;
+  const ours = d.plays.filter((p) => !p.archived && p.visible !== false && (p.kind || 'ours') === 'ours');
+  const active = d.players.filter((p) => p.active !== false);
+  const sees = (pl, play) => !(play.groups || []).length || (play.groups || []).includes(pl.group || '');
+  const opened = {}; d.views.forEach((v) => { if (Date.parse(v.at || '') >= week) (opened[v.player_id] = opened[v.player_id] || new Set()).add(v.play_id); });
+  const studied = active.filter((p) => opened[p.id]).map((p) => ({ name: p.name, n: opened[p.id].size })).sort((a, b) => b.n - a.n);
+  const idle = active.filter((p) => !opened[p.id]).map((p) => p.name);
+  const qz = d.quiz.filter((q) => Date.parse(q.at || '') >= week);
+  const avg = qz.length ? Math.round(qz.reduce((a, q) => a + (q.pct || 0), 0) / qz.length) : null;
+  const best = {}; d.quiz.forEach((q) => { const k = q.player_id + '|' + q.play_id; if (best[k] == null || q.pct > best[k]) best[k] = q.pct; });
+  const due = ours.filter((p) => p.due && Date.parse(p.due + 'T12:00:00') >= nowMs - 864e5 && Date.parse(p.due + 'T12:00:00') <= soon).sort((a, b) => a.due.localeCompare(b.due))
+    .map((p) => { const who = active.filter((pl) => sees(pl, p)); const passed = who.filter((pl) => best[pl.id + '|' + p.id] >= 80); return { name: p.name, due: p.due, passed: passed.length, of: who.length, missing: who.filter((pl) => !(best[pl.id + '|' + p.id] >= 80)).map((pl) => pl.name) }; });
+  const open = d.questions.filter((q) => !q.answer && !q.hidden);
+  const games = d.games.filter((g) => Date.parse(g.updated || g.created || '') >= week);
+  const events = (d.upcoming || []).filter((e) => Date.parse(e.at) <= soon);
+  const calls = (d.calls || []).filter((c) => Date.parse(c.at || '') >= week);
+  const lines = [];
+  lines.push(`Studied this week: ${studied.length} of ${active.length} players` + (studied.length ? ' (' + studied.slice(0, 6).map((x) => `${x.name} ${x.n}`).join(', ') + (studied.length > 6 ? ', ...' : '') + ')' : ''));
+  if (idle.length) lines.push(`Did not open the playbook: ${idle.join(', ')}`);
+  lines.push(`Quizzes: ${qz.length} taken` + (avg != null ? `, team average ${avg}%` : ''));
+  due.forEach((x) => lines.push(`Must know by ${fmtD(x.due)}: ${x.name}, ${x.passed} of ${x.of} passed` + (x.missing.length ? ` (still owe it: ${x.missing.slice(0, 8).join(', ')}${x.missing.length > 8 ? ', ...' : ''})` : '')));
+  if (open.length) lines.push(`Questions waiting on you: ${open.length}` + ' (' + open.slice(0, 3).map((q) => `${q.player_name}: ${String(q.text || '').slice(0, 60)}`).join(' | ') + ')');
+  if (games.length) lines.push(`Box scores added: ${games.map((g) => `${g.opponent} ${g.us}-${g.them}`).join(', ')}`);
+  if (calls.length) { const sc = calls.filter((c) => c.result === 'score').length; lines.push(`Bench calls logged: ${calls.length}, scored on ${sc}`); }
+  if (events.length) lines.push(`This week: ${events.map((e) => `${fmtD(e.at.slice(0, 10))} ${e.title}`).join('; ')}`);
+  const row = (t) => `<li style="margin:0 0 8px">${esc(t)}</li>`;
+  const html = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#222"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#777">Aces playbook · week ending ${esc(new Date(nowMs).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))}</div><h2 style="margin:4px 0 14px;color:#840036">Who studied, what's due, what's waiting</h2><ul style="padding-left:18px;font-size:15px;line-height:1.45">${lines.map(row).join('')}</ul><p style="margin-top:18px"><a href="${esc(d.base)}/playbook-admin.html#activity" style="color:#840036;font-weight:bold">Open Who's studying</a></p><p style="color:#888;font-size:12px">Sent every Sunday night from the team playbook.</p></div>`;
+  return { subject: `Aces playbook: ${studied.length} of ${active.length} studied, ${open.length} question${open.length === 1 ? '' : 's'} waiting`, html, text: lines.join('\n') };
+}
+export async function sendDigest() {
+  if (!emailConfigured() || !ADMIN_EMAIL) return { ok: false, error: 'email_not_configured' };
+  const [plays, players, views, quiz, questions, games, calls, settings] = await Promise.all([loadPlays(), loadPlayers(), loadSite('playbook_views'), loadSite('playbook_quiz'), loadQuestions(), loadSite('playbook_games'), loadSite('playbook_calls'), loadSettings()]);
+  const cal = await upcomingFor(settings.feeds, '');
+  const m = buildDigest({ plays, players, views, quiz, questions, games, calls, upcoming: cal.events, base: process.env.SITE_URL ? String(process.env.SITE_URL).replace(/\/+$/, '') : 'https://aces-basketball.vercel.app' });
+  const ok = await sendMail({ to: ADMIN_EMAIL, subject: m.subject, html: m.html, text: m.text }).catch(() => false);
+  return ok ? { ok: true, sent: ADMIN_EMAIL } : { ok: false, error: 'send_failed' };
+}
+
 // ── Coach side ───────────────────────────────────────────────────────────
 async function adminList() {
-  const [plays, players, views, settings, questions, quiz, plans, practices, notes, drills, games, terms, endgameRaw] = await Promise.all([
+  const [plays, players, views, settings, questions, quiz, plans, practices, notes, drills, games, terms, endgameRaw, calls] = await Promise.all([
     loadPlays(), loadPlayers(), loadSite('playbook_views'), loadSettings(), loadQuestions(),
     loadSite('playbook_quiz'), loadSite('playbook_plans'), loadSite('playbook_practices'), loadSite('playbook_notes'), loadSite('playbook_drills'), loadSite('playbook_games'),
-    loadSite('playbook_terms'), fsGet('playbook_meta/endgame'),
+    loadSite('playbook_terms'), fsGet('playbook_meta/endgame'), loadSite('playbook_calls'),
   ]);
   games.sort((a, b) => String(b.date).localeCompare(String(a.date)));
   views.sort((a, b) => String(b.at).localeCompare(String(a.at)));
@@ -249,7 +292,7 @@ async function adminList() {
   plans.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
   practices.sort((a, b) => String(b.date).localeCompare(String(a.date)));
   notes.sort((a, b) => String(b.date + b.created).localeCompare(String(a.date + a.created)));
-  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views: views.slice(0, 2000), questions, quiz: quiz.slice(0, 2000), plans, practices, notes, drills, games, terms: terms.sort((a, b) => String(a.term).localeCompare(String(b.term))), endgame: cleanEndgame(endgameRaw && endgameRaw.leaves) } };
+  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views: views.slice(0, 2000), questions, quiz: quiz.slice(0, 2000), plans, practices, notes, drills, games, terms: terms.sort((a, b) => String(a.term).localeCompare(String(b.term))), endgame: cleanEndgame(endgameRaw && endgameRaw.leaves), calls: calls.sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 2000) } };
 }
 
 async function adminAction(action, body) {
@@ -365,6 +408,19 @@ async function adminAction(action, body) {
       const w = cur ? await fsPatchVerified('playbook_meta/endgame', { leaves, updated: now }) : await fsCreate('playbook_meta', { site: SITE_TAG, leaves, updated: now }, 'endgame');
       return (w.ok || (!cur && !w.error)) ? { status: 200, body: { ok: true, leaves } } : { status: 502, body: { error: 'save_failed' } };
     }
+    case 'log_call': {   // bench call log: what we ran and what came of it
+      const r = cleanCall(body.call);
+      if (r.error) return { status: 400, body: { error: r.error } };
+      const play = await fsGet(`playbook_plays/${r.call.play_id}`);
+      if (!play || play.site !== SITE_TAG) return { status: 404, body: { error: 'not_found' } };
+      const id = rid('call');
+      const w = await fsCreate('playbook_calls', Object.assign({}, r.call, { play_name: play.name, site: SITE_TAG, at: now }), id);
+      return w.error ? { status: 502, body: { error: 'save_failed' } } : { status: 200, body: { ok: true, id } };
+    }
+    case 'send_digest': {   // the Sunday email, on demand
+      const r = await sendDigest();
+      return r.ok ? { status: 200, body: { ok: true, sent: r.sent } } : { status: 502, body: { error: r.error || 'send_failed' } };
+    }
     case 'save_term': {
       const r = cleanTerm(body.term);
       if (r.error) return { status: 400, body: { error: r.error } };
@@ -407,9 +463,9 @@ async function adminAction(action, body) {
       const w = await fsCreate('playbook_games', Object.assign({}, r.game, { site: SITE_TAG, created: now, updated: now }), id);
       return w.error ? { status: 502, body: { error: 'save_failed' } } : { status: 200, body: { ok: true, id } };
     }
-    case 'delete_plan': case 'delete_practice': case 'delete_note': case 'delete_drill': case 'delete_game': case 'delete_term': {
+    case 'delete_plan': case 'delete_practice': case 'delete_note': case 'delete_drill': case 'delete_game': case 'delete_term': case 'delete_call': {
       if (!safeId(body.id)) return { status: 400, body: { error: 'bad_id' } };
-      const coll = action === 'delete_plan' ? 'playbook_plans' : action === 'delete_practice' ? 'playbook_practices' : action === 'delete_drill' ? 'playbook_drills' : action === 'delete_game' ? 'playbook_games' : action === 'delete_term' ? 'playbook_terms' : 'playbook_notes';
+      const coll = action === 'delete_plan' ? 'playbook_plans' : action === 'delete_practice' ? 'playbook_practices' : action === 'delete_drill' ? 'playbook_drills' : action === 'delete_game' ? 'playbook_games' : action === 'delete_term' ? 'playbook_terms' : action === 'delete_call' ? 'playbook_calls' : 'playbook_notes';
       const cur = await fsGet(`${coll}/${body.id}`);
       if (!cur || cur.site !== SITE_TAG) return { status: 404, body: { error: 'not_found' } };
       const w = await fsDelete(`${coll}/${body.id}`);
