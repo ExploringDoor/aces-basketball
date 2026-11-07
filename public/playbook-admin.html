@@ -260,6 +260,12 @@ tr:last-child td{border-bottom:0}
 .prow{display:grid;grid-template-columns:44px 50px 1.2fr 50px 2fr 2fr auto;gap:6px;margin-bottom:6px;align-items:center}
 .sig-ph{width:56px;height:56px;border-radius:12px;background:#e9e9ee;border:1px solid var(--line-2);cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0;font:600 12px/1 'Inter',sans-serif;color:var(--ink-2);flex:none}
 .sig-ph img{width:100%;height:100%;object-fit:cover}
+.eg-ed .eg-side{margin-top:14px} .eg-ed .eg-side>b{display:block;font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:1.4px;text-transform:uppercase;color:var(--mrn);margin-bottom:6px}
+.eg-leaf{display:grid;grid-template-columns:170px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line);align-items:start} .eg-leaf .lab{font-weight:700;font-size:14.5px;padding-top:6px} .eg-leaf .chips{margin-bottom:6px} .eg-leaf .inp{font-size:13.5px}
+.eg-leaf .fd{display:inline-flex;border:1px solid var(--line-2);border-radius:999px;overflow:hidden;margin-bottom:6px} .eg-leaf .fd button{font:600 13px/1 'Inter',sans-serif;padding:8px 12px;border:0;background:#fff;cursor:pointer;color:var(--ink-2)} .eg-leaf .fd button[aria-pressed="true"]{background:var(--mrn);color:#fff}
+@media (max-width:640px){ .eg-leaf{grid-template-columns:1fr} }
+.sit-ov{display:flex;flex-direction:column;gap:6px} .sit-ov .sr{display:flex;gap:10px;align-items:baseline;font-size:14px;padding:6px 0;border-bottom:1px dashed var(--line)} .sit-ov .sr b{min-width:190px;font-weight:600} .sit-ov .sr span{color:var(--ink-2)}
+.term-row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);align-items:start} .term-row .tt{font-family:'Oswald',sans-serif;font-size:18px;color:var(--mrn)} .term-row .tt small{font:600 11px/1 'Inter',sans-serif;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3);background:var(--bg);border-radius:999px;padding:4px 8px;margin-left:8px;vertical-align:middle} .term-row .tm{font-size:14px;color:var(--ink-2);margin-top:2px} .term-row .tp{font-size:12.5px;color:var(--mrn);font-weight:600;margin-top:3px}
 .feedrow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed var(--line)}
 .feedrow .fr-url{grid-column:1/-1;min-width:0;font-size:13px}
 .prow .pe-ph{width:44px;height:44px;border-radius:50%;background:#e9e9ee;border:1px solid var(--line-2);cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0;font-size:11px;color:var(--ink-3)}
@@ -369,7 +375,13 @@ tr:last-child td{border-bottom:0}
 .run-list .it.now{background:var(--mrn-50);border:1px solid var(--mrn-100);font-weight:700}
 .run-list .it .m{color:var(--ink-3);font-size:13px}
 /* print */
-#printPlan,#printBench{display:none}
+#printPlan,#printBench,#printReport{display:none}
+.rep-page{font-family:Arial,Helvetica,sans-serif;color:#111;font-size:12px} .rep-head{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #840036;padding-bottom:8px;margin-bottom:12px} .rep-head img{height:48px} .rep-head .k{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#555} .rep-head h1{font-size:24px;margin:0;color:#840036} .rep-head .sub{color:#555;font-size:12px}
+.rep-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px} .rep-box{border:1px solid #ddd;border-radius:8px;padding:10px 12px;margin-bottom:12px;break-inside:avoid} .rep-box h3{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#555;margin:0 0 8px}
+.rep-tiles{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px} .rep-tiles div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted #ddd;padding:3px 0} .rep-tiles span{color:#555} .rep-tiles b{font-size:13px} .rep-tiles small{font-weight:400;color:#777;font-size:10px}
+.rep-note{color:#777;font-size:10.5px;margin-top:6px} .rep-box ul{margin:0;padding-left:16px} .rep-box li{margin:3px 0} .rep-comment{white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0} .rep-foot{font-size:9.5px;color:#777;text-align:center;margin-top:8px}
+.rep-screen{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px}
+@media print{ #printReport{display:block!important;padding:0 6px} #printReport .rep-page{page-break-after:always} #printReport .rep-page:last-child{page-break-after:auto} }
 @media print{ #printBench{display:block!important;font-family:Arial,Helvetica,sans-serif;color:#111;padding:0 6px;font-size:11px}
   #printBench .bc-head{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #840036;padding-bottom:6px;margin-bottom:8px} #printBench .bc-head img{height:44px}
   #printBench .bc-k{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#555} #printBench h1{font-size:22px;margin:0;color:#840036}
@@ -477,6 +489,7 @@ tr:last-child td{border-bottom:0}
       <button class="tab" role="tab" data-tab="scout">Scouting<span class="cnt" id="cScout">0</span></button>
       <button class="tab" role="tab" data-tab="players">Players<span class="cnt" id="cPlayers">0</span></button>
       <button class="tab" role="tab" data-tab="plans">Game plans<span class="cnt" id="cPlans">0</span></button>
+      <button class="tab" role="tab" data-tab="sits">Situations<span class="cnt" id="cSits">0</span></button>
       <button class="tab" role="tab" data-tab="practice">Practice<span class="cnt" id="cPrac">0</span></button>
       <button class="tab" role="tab" data-tab="stats">Stats<span class="cnt" id="cStats">0</span></button>
       <button class="tab" role="tab" data-tab="questions">Questions<span class="cnt" id="cQ">0</span></button>
@@ -511,7 +524,7 @@ tr:last-child td{border-bottom:0}
         <div>
           <div class="card">
             <div class="card-head"><div><h2>Players and codes</h2><div class="sub">Each player signs in with their own code. Their name is stamped across every play they open.</div></div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="copyCodesBtn">Copy all codes</button><button class="btn primary" type="button" id="addPlayersBtn">Add players</button></div></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="reportAllBtn">Print all reports</button><button class="btn" type="button" id="copyCodesBtn">Copy all codes</button><button class="btn primary" type="button" id="addPlayersBtn">Add players</button></div></div>
             <div style="overflow-x:auto"><table id="playersTable"><thead><tr><th>Player</th><th>Group</th><th>Code</th><th>Access</th><th>Last opened</th><th>Plays viewed</th><th></th></tr></thead><tbody></tbody></table></div>
             <div class="empty hide" id="playersEmpty"><h3>No players yet</h3><p>Add your roster and each player gets a code.</p></div>
           </div>
@@ -540,6 +553,17 @@ tr:last-child td{border-bottom:0}
       <div id="planList"></div>
     </section>
 
+    <section class="panel" id="p-sits">
+      <div class="hero"><div class="row">
+        <div><div class="k">Situations and team language</div><div class="big">End of game, special situations, our words</div><div class="of">Tag plays with the moment they are for, fill in the end of game tree once, and give the guys a glossary of what you yell. Players get a Situations page, a tap through end of game plan, and a glossary quiz.</div></div>
+      </div></div>
+      <div class="card"><div class="card-head"><div><h2>End of game</h2><div class="sub">Who has the ball, what's the score, what do we run. Players tap through it; it also prints on the bench card.</div></div><button class="btn primary" type="button" id="egSave">Save end of game</button></div>
+        <div class="eg-ed" id="egEd"></div></div>
+      <div class="grid2">
+        <div class="card"><div class="card-head"><div><h2>Situations library</h2><div class="sub">Which plays are tagged for what. Tag a play in the editor under Situations.</div></div></div><div id="sitOverview"></div></div>
+        <div class="card"><div class="card-head"><div><h2>Glossary</h2><div class="sub">Team words and what they mean. Players get the list and a quiz.</div></div><button class="btn primary sm" type="button" id="termAdd">Add a word</button></div><div id="termList"></div></div>
+      </div>
+    </section>
     <section class="panel" id="p-practice">
       <div class="hero" style="background:linear-gradient(135deg,#33333d 0%,#1d1d24 100%)"><div class="row">
         <div><div class="k" style="color:#c9c9d2">Practice plans</div><div class="big" id="pracN">0 practices</div><div class="of" style="color:#c9c9d2" id="pracSub">A library of 75 drills with coaching points, templates to start from, a running clock for the gym, and a printable plan for the clipboard.</div></div>
@@ -624,6 +648,7 @@ tr:last-child td{border-bottom:0}
       <div class="fld"><label for="edNotes">About the play</label><textarea class="inp" id="edNotes" rows="3" placeholder="When we run it, who it's for"></textarea></div>
       <div class="fld"><label for="edTips">Coach's tips</label><textarea class="inp" id="edTips" rows="5" placeholder="One tip per line&#10;Sprint the first cut, don't jog it&#10;Fake the pass before you throw it"></textarea><div class="help">Shows in a gold box next to the play. One tip per line, up to 12.</div></div>
       <div class="fld"><label for="edSigCall">Sideline signal</label><div style="display:flex;gap:10px;align-items:center"><button class="pe-ph sig-ph" type="button" id="edSigPh" title="Photo of the hand signal">Photo</button><input class="inp" id="edSigCall" maxlength="30" placeholder="Call word, like Fist or Thumbs up"><button class="iconbtn hide" style="width:32px;height:32px;flex:none" type="button" id="edSigRm" title="Remove the photo"><svg><use href="#i-x"/></svg></button></div><div class="help">A photo of the hand signal plus what the coach calls out. Players learn every signal in the Signals quiz.</div></div>
+      <div class="fld"><label>Situations</label><div class="chips" id="edSits"></div><div class="help">What moment this play is for. Players find it under Situations, and it feeds the end of game tree.</div></div>
       <div class="fld"><label>Who can see it</label><div class="chips" id="edGroups"></div><div class="help">Nobody picked means everyone.</div></div>
       <div class="fld"><label for="edDue">Must know by</label><input class="inp" id="edDue" type="date"><div class="help">Players see it in a Must Know list with a due date. Leave blank for no deadline.</div></div>
       <label class="switch" style="margin-bottom:14px"><input type="checkbox" id="edVisible"><span class="tr"></span><span class="tx"><b>Show to players</b><span>Off keeps it as a draft only you can see</span></span></label>
@@ -721,6 +746,7 @@ tr:last-child td{border-bottom:0}
 </div>
 <div id="printPlan"></div>
 <div id="printBench"></div>
+<div id="printReport"></div>
 
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="mbox" id="mbox"><div class="mh"><h3 id="mTitle"></h3><button class="iconbtn" id="mClose" type="button" aria-label="Close"><svg><use href="#i-x"/></svg></button></div><div class="mb" id="mBody"></div><div class="mf" id="mFoot"></div></div>
@@ -754,11 +780,13 @@ function reload(){ return api('admin_list').then(function(d){ if(d.error) throw 
 /* ── demo backend ── */
 var demo=null;
 function demoApi(action,b){
-  if(!demo){ demo={ settings:{open:true}, plays:PBCourt.samples().map(function(p,i){ p=JSON.parse(JSON.stringify(p)); p.visible=true; p.archived=false; if(i<2) p.due=new Date(Date.now()+(i?-1:3)*864e5).toISOString().slice(0,10); p.updated=new Date(Date.now()-864e5*2).toISOString(); var L={}; Object.keys(p.lineup||{}).forEach(function(k){ L[k]=p.lineup[k].id; }); p.lineup=L; return p; }),
+  if(!demo){ demo={ settings:{open:true}, plays:PBCourt.samples().map(function(p,i){ p=JSON.parse(JSON.stringify(p)); p.visible=true; p.archived=false; p.situations=i===0?['need3','ato']:i===1?['blob','need2']:i===2?['vs_zone']:[]; if(i<2) p.due=new Date(Date.now()+(i?-1:3)*864e5).toISOString().slice(0,10); p.updated=new Date(Date.now()-864e5*2).toISOString(); var L={}; Object.keys(p.lineup||{}).forEach(function(k){ L[k]=p.lineup[k].id; }); p.lineup=L; return p; }),
     players:[{id:'demo_me',name:'Demo Player',group:'Varsity',code:'ABC234',active:true,last_seen:new Date().toISOString(),last_login:new Date().toISOString()},{id:'d2',name:'Chris Lee',group:'Varsity',code:'KM7PQ2',active:true,last_seen:new Date(Date.now()-864e5).toISOString()},{id:'d3',name:'Marcus Hall',group:'Varsity',code:'Z4RT8N',active:true},{id:'d4',name:'Jaden Price',group:'JV',code:'P9WX3H',active:false},{id:'d5',name:'Sam Oduya',group:'JV',code:'QD6V2K',active:true,last_seen:new Date(Date.now()-3*864e5).toISOString()}],
     quiz:[{player_id:'demo_me',player_name:'Demo Player',play_id:'demo1',play_name:'Horns Flare',score:4,total:4,pct:100,at:new Date().toISOString()},{player_id:'d2',player_name:'Chris Lee',play_id:'demo1',play_name:'Horns Flare',score:2,total:4,pct:50,at:new Date().toISOString()}],
     plans:[{id:'plan1',opponent:'Radnor',date:new Date(Date.now()+3*864e5).toISOString().slice(0,10),where:'away',keys:['Box out. They crash three guys every shot.','Make them play in the half court.','Deny #23 the ball on the wing.'],our_plays:['demo1','demo2'],their_plays:['demo5'],matchups:[{us:'demo_me',them:'#23 Smith',note:'Deny the wing'}],personnel:[{num:'23',name:'Smith',pos:'G',notes:'Best player. Shoots going left.',guard:'Deny the catch'}],notes:'Bus leaves 4:15.',visible:true}],
     practices:[{id:'prac1',date:new Date().toISOString().slice(0,10),start:'15:30',title:'Pre Radnor',focus:'Closeouts, and Horns Flare against a switch',blocks:[{name:'Huddle: focus of the day',minutes:3,category:'Team',drill:'huddle',points:['Short','One focus, said twice'],play_ids:[],stations:[]},{name:'Dynamic warmup',minutes:8,category:'Warmup',drill:'dynamic-warmup',points:['Quiet feet on the shuffles','Last two sprints are game speed'],play_ids:[],stations:[]},{name:'Closeouts, 1 on 1',minutes:10,category:'Defense',drill:'closeout-1on1',points:['Sprint half, chop the feet half','High hands, take away the shot','Mirror the ball, no reaching'],play_ids:[],stations:[]},{name:'Shell drill, 4 on 4',minutes:15,notes:'Talk on every switch',category:'Defense',drill:'shell-4on4',points:['Jump to the ball on every pass','See ball and man','Help the helper, talk early'],play_ids:[],stations:[]},{name:'Stations',minutes:12,category:'Shooting',drill:'',points:[],play_ids:[],stations:[{name:'Guards',drill:'Pull ups off the dribble',notes:''},{name:'Bigs',drill:'Contact finishing with the pad',notes:'Coach G'}]},{name:'Plays, 5 on 5 live',minutes:20,category:'Plays',drill:'plays-5on5',points:['Run it through contact','Read the defense, take the counter when they cheat'],play_ids:['demo1','demo2'],stations:[]},{name:'Pressure free throws',minutes:6,category:'Shooting',drill:'pressure-free-throws',points:['Walk to the line with a routine','Make the first, the second is easier'],play_ids:[],stations:[]}],notes:'Matt runs the bigs station.',show_players:true},{id:'prac0',date:new Date(Date.now()-2*864e5).toISOString().slice(0,10),start:'15:30',title:'',focus:'Press break',blocks:[{name:'Dynamic warmup',minutes:8,category:'Warmup',drill:'dynamic-warmup',points:[],play_ids:[],stations:[]},{name:'Trap escape, corner',minutes:6,category:'Press',drill:'trap-escape-2on1',points:[],play_ids:[],stations:[]},{name:'Press break, 5 on 5',minutes:15,category:'Press',drill:'press-break-5on5',points:[],play_ids:['demo4'],stations:[]},{name:'Scrimmage, 5 on 5',minutes:20,category:'Competitive',drill:'scrimmage-5on5',points:[],play_ids:[],stations:[]}],notes:'',show_players:false}],
+    terms:[{id:'t1',term:'Fist',means:'Horns Flare. Our go to set against man.',kind:'call',play_id:'demo1'},{id:'t2',term:'Ice',means:'Force the ball handler to the baseline on a side ball screen. Big stays low.',kind:'defense'},{id:'t3',term:'Red',means:'Full court man press after a made free throw.',kind:'call'}],
+    endgame:{ball_down3:{play_ids:['demo1'],note:'Flare for 1. If they switch it, 5 seals.'},def_up3:{play_ids:[],note:'Foul before the shot, under 5 seconds only.',foul:true}},
     drills:[{id:'dmine1',name:'Coach D closeout ladder',category:'Defense',minutes:8,players:'6+',equipment:'1 ball',setup:'Three cones from the block to the three point line.',run:'Close out to each cone in order, chopping the feet, then live 1 on 1 from the last one.',points:['Hands high on the last two steps','Stop on balance, no flying by'],variations:'Add a shot fake at the last cone.',created:new Date().toISOString()}],
     games:[{id:'g1',date:new Date(Date.now()-3*864e5).toISOString().slice(0,10),opponent:'Conestoga',where:'home',us:61,them:55,kind:'game',source:'hudl',lines:[{player_id:'demo_me',name:'Demo Player',num:'5',min:28,pts:19,fgm:7,fga:12,tpm:2,tpa:5,ftm:3,fta:4,oreb:1,dreb:6,reb:7,ast:4,stl:2,blk:0,to:3,pf:2},{player_id:'d2',name:'Chris Lee',num:'24',min:30,pts:14,fgm:5,fga:11,tpm:1,tpa:3,ftm:3,fta:3,oreb:2,dreb:5,reb:7,ast:2,stl:1,blk:1,to:2,pf:3},{player_id:'d3',name:'Marcus Hall',num:'13',min:26,pts:11,fgm:4,fga:9,tpm:3,tpa:6,ftm:0,fta:0,oreb:0,dreb:3,reb:3,ast:5,stl:3,blk:0,to:1,pf:1},{player_id:'d5',name:'Sam Oduya',num:'35',min:22,pts:9,fgm:4,fga:6,tpm:0,tpa:0,ftm:1,fta:2,oreb:4,dreb:6,reb:10,ast:0,stl:0,blk:3,to:2,pf:4},{player_id:'',name:'Will Parrish',num:'2',min:18,pts:8,fgm:3,fga:7,tpm:2,tpa:4,ftm:0,fta:0,oreb:0,dreb:2,reb:2,ast:1,stl:1,blk:0,to:1,pf:2}]},{id:'g2',date:new Date(Date.now()-7*864e5).toISOString().slice(0,10),opponent:'Harriton',where:'away',us:48,them:52,kind:'game',source:'manual',lines:[{player_id:'demo_me',name:'Demo Player',num:'5',min:30,pts:12,fgm:4,fga:14,tpm:1,tpa:6,ftm:3,fta:4,oreb:0,dreb:4,reb:4,ast:6,stl:1,blk:0,to:4,pf:3},{player_id:'d2',name:'Chris Lee',num:'24',min:29,pts:16,fgm:6,fga:12,tpm:2,tpa:4,ftm:2,fta:2,oreb:1,dreb:4,reb:5,ast:1,stl:2,blk:0,to:1,pf:2},{player_id:'d3',name:'Marcus Hall',num:'13',min:25,pts:6,fgm:2,fga:8,tpm:2,tpa:7,ftm:0,fta:0,oreb:0,dreb:2,reb:2,ast:3,stl:1,blk:0,to:2,pf:2},{player_id:'d5',name:'Sam Oduya',num:'35',min:24,pts:10,fgm:5,fga:8,tpm:0,tpa:0,ftm:0,fta:2,oreb:3,dreb:7,reb:10,ast:1,stl:0,blk:2,to:3,pf:4}]}],
     notes:[{id:'n1',player_id:'d4',player_name:'Jaden Price',kind:'injury',text:'Ankle, limited for the week',date:new Date(Date.now()-2*864e5).toISOString().slice(0,10),created:new Date().toISOString()}],
@@ -769,8 +797,11 @@ function demoApi(action,b){
   else if(action==='save_play'){ if(b.id){ var i=demo.plays.findIndex(function(p){return p.id===b.id;}); demo.plays[i]=Object.assign({},demo.plays[i],b.play,{updated:new Date().toISOString()}); r.id=b.id; } else { var id='demo'+Date.now(); demo.plays.push(Object.assign({id:id,archived:false,updated:new Date().toISOString()},b.play)); r.id=id; } }
   else if(action==='set_visible'||action==='archive'||action==='restore'){ var p=demo.plays.find(function(x){return x.id===b.id;}); if(action==='set_visible') p.visible=!!b.visible; if(action==='archive'){ p.archived=true; p.visible=false; } if(action==='restore') p.archived=false; }
   else if(action==='add_players'){ r.added=b.players.map(function(p){ var x={id:'dp'+Math.random().toString(36).slice(2,7),name:p.name,group:p.group||'',code:'DEMO'+Math.floor(Math.random()*90+10),active:true}; demo.players.push(x); return x; }); }
-  else if(action==='update_player'||action==='new_code'||action==='remove_player'){ var pl=demo.players.find(function(x){return x.id===b.id;}); if(action==='new_code'){ pl.code='NEW'+Math.floor(Math.random()*900+100); r.code=pl.code; } else if(action==='remove_player') demo.players=demo.players.filter(function(x){return x.id!==b.id;}); else { ['name','group','active'].forEach(function(k){ if(b[k]!==undefined) pl[k]=b[k]; }); } }
+  else if(action==='update_player'||action==='new_code'||action==='remove_player'){ var pl=demo.players.find(function(x){return x.id===b.id;}); if(action==='new_code'){ pl.code='NEW'+Math.floor(Math.random()*900+100); r.code=pl.code; } else if(action==='remove_player') demo.players=demo.players.filter(function(x){return x.id!==b.id;}); else { ['name','group','num','active','report_note'].forEach(function(k){ if(b[k]!==undefined) pl[k]=b[k]; }); } }
   else if(action==='set_open') demo.settings.open=!!b.open;
+  else if(action==='set_endgame'){ demo.endgame=b.leaves; r.leaves=b.leaves; }
+  else if(action==='save_term'){ if(b.id){ var ti=demo.terms.findIndex(function(x){return x.id===b.id;}); demo.terms[ti]=Object.assign({},demo.terms[ti],b.term); r.id=b.id; } else { var tid='t'+Date.now(); demo.terms.push(Object.assign({id:tid},b.term)); r.id=tid; } }
+  else if(action==='delete_term') demo.terms=demo.terms.filter(function(x){return x.id!==b.id;});
   else if(action==='set_feeds'){ demo.settings.feeds=b.feeds||[]; r.feeds=demo.settings.feeds; }
   else if(action==='test_feed') r.events=[{at:new Date(Date.now()+864e5).toISOString(),allDay:false,title:'Varsity practice',where:'Kobe Bryant Gym'},{at:new Date(Date.now()+3*864e5).toISOString(),allDay:false,title:'vs Radnor',where:'Away'}];
   else if(action==='save_game'){ if(b.id){ var gi=demo.games.findIndex(function(x){return x.id===b.id;}); demo.games[gi]=Object.assign({},demo.games[gi],b.game); r.id=b.id; } else { r.id='g'+Date.now(); demo.games.push(Object.assign({id:r.id},b.game)); } }
@@ -820,7 +851,7 @@ function render(){
   if(!$('feedRows').contains(document.activeElement)) renderFeeds((d.settings&&d.settings.feeds)||[]);
   $('playerUrl').textContent=location.origin+'/playbook.html';
   if(!$('shareMsg').value) $('shareMsg').value='Aces playbook is up. Go to '+location.origin+'/playbook.html and enter your code. It\'s your own code, don\'t share it, and don\'t take pictures of the plays. Your name is on every one.';
-  renderPlays('plays'); renderPlays('scout'); renderPlayers(); renderActivity(); renderQuestionsAdmin(); renderPlans(); renderPractices(); renderStats();
+  renderPlays('plays'); renderPlays('scout'); renderPlayers(); renderActivity(); renderQuestionsAdmin(); renderPlans(); renderPractices(); renderStats(); renderSits();
 }
 function fmtDay(d){ if(!d) return ''; var x=new Date(d+'T12:00:00'); return isNaN(x)?d:x.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}); }
 function fmtTime(hm){ if(!hm) return ''; var p=hm.split(':'), h=+p[0]; return (h%12||12)+':'+p[1]+(h>=12?' pm':' am'); }
@@ -848,6 +879,39 @@ document.addEventListener('click',function(e){
   if((t=e.target.closest('[data-pnotes]'))){ notesModal(playerById(t.getAttribute('data-pnotes'))); return; }
 });
 var PL=null;  // the plan being edited
+/* ── situations tab: end of game tree, library overview, glossary ── */
+var EG=null;
+function renderSits(){
+  var ours=plays('ours').filter(function(p){return !p.archived;}), terms=S.data.terms||[];
+  var tagged=ours.filter(function(p){ return (p.situations||[]).length; }).length;
+  $('cSits').textContent=terms.length+tagged;
+  if(!EG) EG=JSON.parse(JSON.stringify(S.data.endgame||{}));
+  var SIDES=[['ball','We have the ball'],['def','They have the ball'],['inb','We are inbounding']];
+  $('egEd').innerHTML=SIDES.map(function(sd){ return '<div class="eg-side"><b>'+sd[1]+'</b>'+PBCourt.ENDGAME_LEAVES.filter(function(l){return l.side===sd[0];}).map(function(l){ var v=EG[l.key]||(EG[l.key]={play_ids:[],note:''}); return '<div class="eg-leaf" data-leaf="'+l.key+'"><div class="lab">'+esc(l.label)+'</div><div>'+(l.key==='def_up3'?'<div class="fd"><button type="button" data-foul="1" aria-pressed="'+(!!v.foul)+'">Foul</button><button type="button" data-foul="0" aria-pressed="'+(!v.foul)+'">Play defense</button></div>':'')+'<div class="chips">'+(ours.length?ours.map(function(p){ return '<button class="fchip" type="button" data-egp="'+esc(p.id)+'" aria-pressed="'+((v.play_ids||[]).indexOf(p.id)>=0)+'">'+esc(p.name)+'</button>'; }).join(''):'<span class="muted" style="font-size:13px">Draw some plays first.</span>')+'</div><input class="inp" data-egnote="1" value="'+esc(v.note||'')+'" placeholder="One line for the huddle" maxlength="300"></div></div>'; }).join('')+'</div>'; }).join('');
+  var byKey={}; ours.forEach(function(p){ (p.situations||[]).forEach(function(k){ (byKey[k]=byKey[k]||[]).push(p.name); }); });
+  $('sitOverview').innerHTML='<div class="sit-ov">'+PBCourt.SITUATIONS.map(function(d){ var l=byKey[d.key]||[]; return '<div class="sr"><b>'+esc(d.label)+'</b><span>'+(l.length?esc(l.join(', ')):'<i>nothing tagged</i>')+'</span></div>'; }).join('')+'</div>';
+  var byId={}; ours.forEach(function(p){ byId[p.id]=p; }); var KL={call:'Call',offense:'Offense',defense:'Defense',action:'Action',other:''};
+  $('termList').innerHTML=terms.length?terms.map(function(t){ var p=t.play_id&&byId[t.play_id]; return '<div class="term-row"><div><div class="tt">'+esc(t.term)+(KL[t.kind]?'<small>'+KL[t.kind]+'</small>':'')+'</div><div class="tm">'+esc(t.means)+'</div>'+(p?'<div class="tp">→ '+esc(p.name)+'</div>':'')+'</div><div class="rowacts"><button class="btn sm ghost" type="button" data-tedit="'+esc(t.id)+'">Edit</button><button class="iconbtn" style="width:32px;height:32px" type="button" data-tdel="'+esc(t.id)+'" title="Delete">'+svg('i-trash')+'</button></div></div>'; }).join(''):'<div class="muted" style="font-size:14px">No words yet. Start with the calls you use every game.</div>';
+}
+$('egEd').addEventListener('click',function(e){
+  var leaf=e.target.closest('[data-leaf]'); if(!leaf) return; var key=leaf.getAttribute('data-leaf'), v=EG[key], b;
+  if((b=e.target.closest('[data-egp]'))){ var id=b.getAttribute('data-egp'), i=v.play_ids.indexOf(id); if(i<0){ if(v.play_ids.length>=4) return toast('Four plays max per situation.',true); v.play_ids.push(id); } else v.play_ids.splice(i,1); b.setAttribute('aria-pressed',String(i<0)); return; }
+  if((b=e.target.closest('[data-foul]'))){ v.foul=b.getAttribute('data-foul')==='1'; Array.prototype.forEach.call(leaf.querySelectorAll('[data-foul]'),function(x){ x.setAttribute('aria-pressed',String(x===b)); }); }
+});
+$('egEd').addEventListener('input',function(e){ var n=e.target.closest('[data-egnote]'); if(!n) return; EG[n.closest('[data-leaf]').getAttribute('data-leaf')].note=n.value; });
+$('egSave').addEventListener('click',function(){ var b=$('egSave'); b.disabled=true; api('set_endgame',{leaves:EG}).then(function(d){ b.disabled=false; if(d.error) return toast(errText(d),true); EG=null; toast('End of game plan saved. Players see it under Situations.'); reload(); }); });
+function termEditor(t){
+  var ours=plays('ours').filter(function(p){return !p.archived;}), KL=[['call','Call word'],['offense','Offense'],['defense','Defense'],['action','Action'],['other','Other']];
+  modal(t?'Edit '+t.term:'New word','<div class="row"><div class="fld" style="flex:1"><label>Word</label><input class="inp" id="tmTerm" value="'+esc(t?t.term:'')+'" maxlength="40" placeholder="Ice"></div><div class="fld" style="flex:1"><label>Kind</label><select class="inp" id="tmKind">'+KL.map(function(k){ return '<option value="'+k[0]+'"'+(t&&t.kind===k[0]?' selected':'')+'>'+k[1]+'</option>'; }).join('')+'</select></div></div>'+
+    '<div class="fld"><label>What it means</label><textarea class="inp" id="tmMeans" rows="3" maxlength="300" placeholder="Force the ball handler to the baseline on a side ball screen. Big stays low.">'+esc(t?t.means:'')+'</textarea></div>'+
+    '<div class="fld"><label>Points at a play</label><select class="inp" id="tmPlay"><option value="">None</option>'+ours.map(function(p){ return '<option value="'+esc(p.id)+'"'+(t&&t.play_id===p.id?' selected':'')+'>'+esc(p.name)+'</option>'; }).join('')+'</select><div class="help">Players get a See the play button under the word.</div></div>',
+    [['Cancel','',closeModal],['Save','primary',function(){ api('save_term',{id:t?t.id:null,term:{term:$('tmTerm').value,means:$('tmMeans').value,kind:$('tmKind').value,play_id:$('tmPlay').value}}).then(function(d){ if(d.error) return toast(d.error==='missing_term'?'Give it a word.':d.error==='missing_meaning'?'Say what it means.':errText(d),true); closeModal(); toast('Saved'); reload(); }); }]]);
+}
+$('termAdd').addEventListener('click',function(){ termEditor(null); });
+$('termList').addEventListener('click',function(e){ var t;
+  if((t=e.target.closest('[data-tedit]'))){ termEditor((S.data.terms||[]).find(function(x){return x.id===t.getAttribute('data-tedit');})); return; }
+  if((t=e.target.closest('[data-tdel]'))){ var id=t.getAttribute('data-tdel'); confirmBox('Delete this word?','It comes off the players\' glossary.','Delete',function(){ api('delete_term',{id:id}).then(function(d){ if(d.error) return toast(errText(d),true); toast('Deleted'); reload(); }); }); }
+});
 // One sheet for the bench: our calls with diagrams and signals, what they run, matchups, fouls and timeouts.
 function benchCard(p){
   if(!p) return;
@@ -868,7 +932,8 @@ function benchCard(p){
   if(keys.length) h+='<h2>Keys</h2><ul class="bc-keys">'+keys.map(function(k){ return '<li>'+esc(k)+'</li>'; }).join('')+'</ul>';
   h+='<h2>Team fouls</h2><div class="bc-fouls">'+['Q1','Q2','Q3','Q4','OT'].map(function(q){ return '<div><span class="q">'+q+'</span>'+boxes(5,true)+'</div>'; }).join('')+'</div><div class="bc-cat">B = bonus, two shots on the fifth foul of the quarter.</div>';
   h+='<h2>Timeouts</h2><div class="bc-tos"><div><span class="q">60</span>'+boxes(3)+'</div><div><span class="q">30</span>'+boxes(2)+'</div></div>';
-  h+='<h2>Late game</h2><div class="bc-lines">'+['Need a 3','Need a 2','Up 3, under 10 seconds','Foul to give','Press break'].map(function(t){ return '<div><span>'+t+'</span><i></i></div>'; }).join('')+'</div>';
+  var EGD=S.data.endgame||{}; function egLine(label,key){ var v=EGD[key]||{}; var names=(v.play_ids||[]).map(function(id){ return byId[id]?byId[id].name:''; }).filter(Boolean); var txt=[key==='def_up3'&&(v.play_ids.length||v.note)?(v.foul?'FOUL':'Defend'):'',names.join(' / '),v.note].filter(Boolean).join(' · '); return '<div><span>'+label+'</span>'+(txt?'<b style="flex:1;font-weight:600">'+esc(txt)+'</b>':'<i></i>')+'</div>'; }
+  h+='<h2>Late game</h2><div class="bc-lines">'+egLine('Need a 3','ball_down3')+egLine('Need a 2','ball_down2')+egLine('Down 1','ball_down1')+egLine('Tied, last shot','ball_tied')+egLine('Up 3, they have it','def_up3')+egLine('Up 1 or 2, they have it','def_up12')+egLine('Baseline, need a 2','inb_blob2')+egLine('Baseline, need a 3','inb_blob3')+'</div>';
   if(p.notes) h+='<h2>From coach</h2><div class="bc-notes">'+esc(p.notes)+'</div>';
   h+='</div></div><div class="bc-foot">Lower Merion Aces · coaches only, keep it on the bench</div>';
   $('printPlan').innerHTML=''; $('printBench').innerHTML=h;
@@ -1323,7 +1388,7 @@ function renderPlayers(){
     return '<tr data-pid="'+esc(p.id)+'"><td>'+(p.num?'<span class="mono" style="color:var(--ink-3);margin-right:6px">#'+esc(p.num)+'</span>':'')+'<b>'+esc(p.name)+'</b>'+(flag?' <span class="kd '+esc(flag.kind)+'" style="padding:1px 8px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase">'+esc(flag.kind)+'</span>':'')+'</td><td>'+(p.group?'<span class="tag">'+esc(p.group)+'</span>':'<span class="muted">None</span>')+'</td>'+
       '<td><span class="code">'+esc(p.code)+'</span> <button class="iconbtn" style="width:30px;height:30px;vertical-align:middle" type="button" data-copy="'+esc(p.code)+'" title="Copy code">'+svg('i-copy')+'</button></td>'+
       '<td><span class="tag '+(p.active?'on':'off')+'">'+(p.active?'On':'Off')+'</span></td><td>'+(p.last_seen?ago(p.last_seen):(p.last_login?ago(p.last_login):'<span class="tag never">Never signed in</span>'))+'</td><td>'+n+'</td>'+
-      '<td><div class="rowacts"><button class="btn sm ghost" type="button" data-pedit="'+esc(p.id)+'">Edit</button><button class="btn sm ghost" type="button" data-ptoggle="'+esc(p.id)+'">'+(p.active?'Turn off':'Turn on')+'</button><button class="btn sm ghost" type="button" data-pcode="'+esc(p.id)+'">New code</button><button class="btn sm ghost" type="button" data-ptext="'+esc(p.id)+'">Text it</button><button class="btn sm ghost" type="button" data-pnotes="'+esc(p.id)+'">Notes</button></div></td></tr>';
+      '<td><div class="rowacts"><button class="btn sm ghost" type="button" data-preport="'+esc(p.id)+'">Report</button><button class="btn sm ghost" type="button" data-pedit="'+esc(p.id)+'">Edit</button><button class="btn sm ghost" type="button" data-ptoggle="'+esc(p.id)+'">'+(p.active?'Turn off':'Turn on')+'</button><button class="btn sm ghost" type="button" data-pcode="'+esc(p.id)+'">New code</button><button class="btn sm ghost" type="button" data-ptext="'+esc(p.id)+'">Text it</button><button class="btn sm ghost" type="button" data-pnotes="'+esc(p.id)+'">Notes</button></div></td></tr>';
   }).join('');
 }
 document.addEventListener('click',function(e){
@@ -1333,6 +1398,7 @@ document.addEventListener('click',function(e){
   if((t=e.target.closest('[data-pcode]'))){ var p2=playerById(t.getAttribute('data-pcode')); confirmBox('New code for '+p2.name+'?','The old code stops working everywhere, including on their phone. Send them the new one.','New code',function(){ api('new_code',{id:p2.id}).then(function(d){ if(d.error) return toast(errText(d),true); toast('New code: '+d.code); reload(); }); }); return; }
   if((t=e.target.closest('[data-ptext]'))){ var p3=playerById(t.getAttribute('data-ptext')); var msg=$('shareMsg').value.replace(/your code/i,'your code '+p3.code); location.href='sms:?&body='+encodeURIComponent(msg); return; }
   if((t=e.target.closest('[data-pedit]'))){ editPlayer(playerById(t.getAttribute('data-pedit'))); return; }
+  if((t=e.target.closest('[data-preport]'))){ reportModal(playerById(t.getAttribute('data-preport'))); return; }
 });
 $('copyCodesBtn').addEventListener('click',function(){ copy(players().map(function(p){ return p.name+(p.group?' ('+p.group+')':'')+': '+p.code; }).join('\n')); });
 $('copyMsgBtn').addEventListener('click',function(){ copy($('shareMsg').value); });
@@ -1345,6 +1411,42 @@ $('addPlayersBtn').addEventListener('click',function(){
     }]]);
   setTimeout(function(){ $('mNames').focus(); },50);
 });
+/* ── progress report: one page per player from what the playbook already knows ── */
+function canSeeLocal(play,p){ return !play.archived&&play.visible!==false&&(play.kind||'ours')==='ours'&&(!(play.groups||[]).length||(play.groups||[]).indexOf(p.group||'')>=0); }
+function reportData(p){
+  var visible=(S.data.plays||[]).filter(function(x){ return canSeeLocal(x,p); }), ids={}; visible.forEach(function(x){ ids[x.id]=1; });
+  var opened={}; (S.data.views||[]).forEach(function(v){ if(v.player_id===p.id&&ids[v.play_id]) opened[v.play_id]=1; });
+  var best={}; (S.data.quiz||[]).forEach(function(q){ if(q.player_id!==p.id) return; if(best[q.play_id]==null||q.pct>best[q.play_id]) best[q.play_id]=q.pct; });
+  var must=visible.filter(function(x){ return x.due; }), passed=must.filter(function(x){ return best[x.id]>=80; }).length;
+  var playQ=Object.keys(best).filter(function(k){ return ids[k]; }).map(function(k){ return best[k]; }), avg=playQ.length?Math.round(playQ.reduce(function(a,b){return a+b;},0)/playQ.length):null;
+  var qs=(S.data.questions||[]).filter(function(q){ return q.player_id===p.id; }).length;
+  var notes=(S.data.notes||[]).filter(function(n){ return n.player_id===p.id; }).sort(function(a,b){ return String(b.date).localeCompare(String(a.date)); });
+  var rows=seasonRows(), me=rows.find(function(r){ return r.player_id===p.id; }), ranked=rows.filter(function(r){return r.gp;}).sort(function(a,b){ return (b.pts/b.gp)-(a.pts/a.gp); });
+  return { visible:visible.length, opened:Object.keys(opened).length, must:must.length, passed:passed, avg:avg, signals:best.signals, terms:best.terms, questions:qs, notes:notes, stats:me, rank:me?ranked.indexOf(me)+1:0, ranked:ranked.length, last:p.last_seen||p.last_login||'' };
+}
+function reportHTML(p,comment){
+  var d=reportData(p), s=d.stats, a=function(k){ return s&&s.gp?(s[k]/s.gp).toFixed(1):'–'; };
+  var tiles=[['Plays opened',d.opened+' of '+d.visible],['Must know passed',d.must?d.passed+' of '+d.must:'–'],['Play quiz average',d.avg!=null?d.avg+'%':'–'],['Signals quiz',d.signals!=null?d.signals+'%':'–'],['Glossary quiz',d.terms!=null?d.terms+'%':'–'],['Questions asked',String(d.questions)],['Last opened',d.last?fmtDay(d.last.slice(0,10)):'Never']];
+  var kudos=d.notes.filter(function(n){ return n.kind==='kudos'; }), absent=d.notes.filter(function(n){return n.kind==='absent';}).length, late=d.notes.filter(function(n){return n.kind==='late';}).length, inj=d.notes.filter(function(n){return n.kind==='injury';});
+  return '<div class="rep-page"><div class="rep-head"><div><div class="k">Player progress report · '+esc(fmtDay(todayStr()))+'</div><h1>'+esc(p.name)+'</h1><div class="sub">'+[p.num?'#'+esc(p.num):'',esc(p.group||'')].filter(Boolean).join(' · ')+'</div></div><img src="/LM_Logo.png" alt=""></div>'+
+    '<div class="rep-grid"><div class="rep-box"><h3>Studying the playbook</h3><div class="rep-tiles">'+tiles.map(function(t){ return '<div><span>'+t[0]+'</span><b>'+esc(t[1])+'</b></div>'; }).join('')+'</div></div>'+
+    '<div class="rep-box"><h3>Season stats</h3>'+(s&&s.gp?'<div class="rep-tiles">'+[['Games',String(s.gp)],['Points',a('pts')+(d.rank?' <small>#'+d.rank+' of '+d.ranked+'</small>':'')],['Rebounds',a('reb')],['Assists',a('ast')],['Steals',a('stl')],['Blocks',a('blk')],['Turnovers',a('to')],['Minutes',a('min')],['FG',pct(s.fgm,s.fga)+'%'],['3PT',pct(s.tpm,s.tpa)+'%'],['FT',pct(s.ftm,s.fta)+'%']].map(function(t){ return '<div><span>'+t[0]+'</span><b>'+t[1]+'</b></div>'; }).join('')+'</div><div class="rep-note">Per game averages from the box scores loaded so far.</div>':'<div class="rep-note">No box score lines yet.</div>')+'</div></div>'+
+    (kudos.length?'<div class="rep-box"><h3>Kudos from the coaches</h3><ul>'+kudos.slice(0,8).map(function(n){ return '<li><b>'+esc(fmtDay(n.date))+'</b> '+esc(n.text||'')+'</li>'; }).join('')+'</ul></div>':'')+
+    '<div class="rep-box"><h3>Attendance</h3><div class="rep-tiles"><div><span>Absent</span><b>'+absent+'</b></div><div><span>Late</span><b>'+late+'</b></div><div><span>Injury notes</span><b>'+inj.length+'</b></div></div></div>'+
+    (comment?'<div class="rep-box"><h3>From coach</h3><p class="rep-comment">'+esc(comment)+'</p></div>':'')+
+    '<div class="rep-foot">Lower Merion Aces · built from the team playbook · for the player and his family</div></div>';
+}
+function reportModal(p){
+  modal('Progress report: '+p.name,'<div class="rep-screen" id="repPreview">'+reportHTML(p,p.report_note||'')+'</div><div class="fld" style="margin-top:14px"><label>From coach</label><textarea class="inp" id="repNote" rows="3" maxlength="600" placeholder="Two or three sentences for the player and his parents.">'+esc(p.report_note||'')+'</textarea><div class="help">Saved with the player, so it is there next time.</div></div>',
+    [['Close','',closeModal],['Save comment','',function(){ api('update_player',{id:p.id,report_note:$('repNote').value}).then(function(d){ if(d.error) return toast(errText(d),true); p.report_note=$('repNote').value; $('repPreview').innerHTML=reportHTML(p,p.report_note); toast('Saved'); }); }],['Print','primary',function(){ printReports([p],$('repNote').value); }]],true);
+  $('repNote').addEventListener('input',function(){ $('repPreview').innerHTML=reportHTML(p,this.value); });
+}
+function printReports(list,comment){
+  $('printPlan').innerHTML=''; $('printBench').innerHTML='';
+  $('printReport').innerHTML=list.map(function(p){ return reportHTML(p,comment!=null?comment:(p.report_note||'')); }).join('');
+  setTimeout(function(){ window.print(); },80);
+}
+$('reportAllBtn').addEventListener('click',function(){ var list=players().filter(function(p){ return p.active!==false; }); if(!list.length) return toast('No players yet.',true); printReports(list,null); });
 function editPlayer(p){
   modal('Edit '+p.name,'<div class="fld"><label>Name</label><input class="inp" id="mPName" value="'+esc(p.name)+'" maxlength="60"></div><div class="fld"><label>Jersey number</label><input class="inp" id="mPNum" value="'+esc(p.num||'')+'" maxlength="3" inputmode="numeric" style="width:120px"><div class="help">Used to match box scores from Hudl.</div></div><div class="fld"><label>Group</label><input class="inp" id="mPGroup" list="mGroups" value="'+esc(p.group||'')+'" maxlength="30" placeholder="Varsity"><datalist id="mGroups">'+groups().map(function(g){return '<option value="'+esc(g)+'">';}).join('')+'</datalist></div>',
     [['Remove player','danger',function(){ confirmBox('Remove '+p.name+'?','Their code stops working. Their views stay in the log.','Remove',function(){ api('remove_player',{id:p.id}).then(function(d){ if(d.error) return toast(errText(d),true); closeModal(); toast('Removed'); reload(); }); }); }],['Cancel','',closeModal],['Save','primary',function(){
@@ -1427,7 +1529,7 @@ function openEditor(id,kind){
   (play.frames||[]).forEach(function(f){ f.moves=f.moves||{}; f.pos=f.pos||{}; });
   E={ id:src?src.id:null, play:play, at:0, sel:'', bending:false, dirty:false };
   if(!src){ var set=PBCourt.SETS['Five out']; TOK.slice(0,5).forEach(function(k){ play.frames[0].pos[k]=set[k].slice(); }); play.frames[0].ball='O1'; }
-  $('edName').value=play.name; $('edNotes').value=play.notes||''; $('edTips').value=(play.tips||[]).join('\n'); $('edDue').value=play.due||''; if(!play.signal) play.signal={call:'',photo:''}; $('edSigCall').value=play.signal.call||''; renderSig(); if(!play.marks) play.marks=[]; $('edVisible').checked=!!play.visible; $('edOpp').value=play.opponent||'';
+  $('edName').value=play.name; $('edNotes').value=play.notes||''; $('edTips').value=(play.tips||[]).join('\n'); $('edDue').value=play.due||''; if(!play.signal) play.signal={call:'',photo:''}; $('edSigCall').value=play.signal.call||''; renderSig(); if(!play.situations) play.situations=[]; renderSitsChips(); if(!play.marks) play.marks=[]; $('edVisible').checked=!!play.visible; $('edOpp').value=play.opponent||'';
   $('edOppFld').classList.toggle('hide',!isScout());
   $('edKindTag').textContent=isScout()?'Scouting':'Our play';
   $('edCat').innerHTML=CATEGORIES.map(function(c){ return '<option'+(c===play.category?' selected':'')+'>'+c+'</option>'; }).join('');
@@ -1477,6 +1579,8 @@ $('edName').addEventListener('input',function(){ E.play.name=this.value; dirty()
 $('edOpp').addEventListener('input',function(){ E.play.opponent=this.value; dirty(); });
 $('edNotes').addEventListener('input',function(){ E.play.notes=this.value; dirty(); });
 $('edDue').addEventListener('change',function(){ E.play.due=this.value||''; dirty(); });
+function renderSitsChips(){ $('edSits').innerHTML=PBCourt.SITUATIONS.map(function(d){ return '<button class="fchip" type="button" data-sit="'+d.key+'" aria-pressed="'+(E.play.situations.indexOf(d.key)>=0)+'">'+esc(d.label)+'</button>'; }).join(''); }
+$('edSits').addEventListener('click',function(e){ var b=e.target.closest('[data-sit]'); if(!b) return; var k=b.getAttribute('data-sit'), i=E.play.situations.indexOf(k); if(i<0){ if(E.play.situations.length>=6) return toast('Six situations max on one play.',true); E.play.situations.push(k); } else E.play.situations.splice(i,1); dirty(); renderSitsChips(); });
 function sigOf(){ if(!E.play.signal) E.play.signal={call:'',photo:''}; return E.play.signal; }
 function renderSig(){ var sg=sigOf(); $('edSigPh').innerHTML=sg.photo?'<img src="'+esc(sg.photo)+'" alt="">':'Photo'; $('edSigRm').classList.toggle('hide',!sg.photo); }
 $('edSigCall').addEventListener('input',function(){ sigOf().call=this.value.slice(0,30); dirty(); });

@@ -96,6 +96,7 @@ async function fakeFetch(input, init) {
     else if (u.hostname === FS_HOST) r = firestore(entry, u);
     else if (u.hostname === 'api.stripe.com') r = stripeApi(entry, u);
     else if (u.hostname === 'api.sendgrid.com') r = sendgrid(entry, u);
+    else if (u.hostname === 'example.test' && u.pathname.endsWith('.ics')) { r = new Response('BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20990110T200000Z\r\nSUMMARY:Varsity practice\r\nEND:VEVENT\r\nEND:VCALENDAR', { status: 200, headers: { 'content-type': 'text/calendar' } }); r._body = 'ics'; }   // the playbook calendar feed
     else { state.unexpected.push(`${method} ${url}: no fake route`); entry.status = -1; throw new NoRoute('fetch failed: no fake route for ' + url); }
   } catch (e) {
     if (!(e instanceof NoRoute)) state.unexpected.push(`${method} ${url}: fake crashed: ${e.message}`);

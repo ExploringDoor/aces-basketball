@@ -238,6 +238,21 @@
       courtSVG(play.court) + '<g>' + (i + 1 < n ? arrowsSVG(play, i + 1) : '') + '</g><g>' + tokensSVG(stillState(play, i), vo) + '</g>' + watermark(uid, o.watermark, play.court) + '</svg>';
   }
 
+  /* ── situations (keep in step with api/_playbook.js) ── */
+  var SITUATIONS = [
+    { key: 'blob', label: 'Baseline out of bounds', group: 'Inbounds' }, { key: 'slob', label: 'Sideline out of bounds', group: 'Inbounds' },
+    { key: 'press_break', label: 'Press break', group: 'Inbounds' }, { key: 'full_court_short', label: 'Full court, short clock', group: 'Inbounds' }, { key: 'ato', label: 'After a timeout', group: 'Inbounds' },
+    { key: 'need3', label: 'Need a 3', group: 'Score and clock' }, { key: 'need2', label: 'Need a 2', group: 'Score and clock' }, { key: 'last_shot', label: 'Last shot, tied', group: 'Score and clock' },
+    { key: 'run_clock', label: 'Up late, run the clock', group: 'Score and clock' }, { key: 'ft_miss', label: 'Free throw, need the miss', group: 'Score and clock' },
+    { key: 'vs_zone', label: 'Against a zone', group: 'Against' }, { key: 'vs_press', label: 'Against a press', group: 'Against' }, { key: 'vs_switch', label: 'When they switch', group: 'Against' }, { key: 'tip', label: 'Jump ball', group: 'Against' }
+  ];
+  var ENDGAME_LEAVES = [
+    { key: 'ball_down3', side: 'ball', label: 'Down 3' }, { key: 'ball_down2', side: 'ball', label: 'Down 2' }, { key: 'ball_down1', side: 'ball', label: 'Down 1' },
+    { key: 'ball_tied', side: 'ball', label: 'Tied' }, { key: 'ball_up12', side: 'ball', label: 'Up 1 or 2' }, { key: 'ball_up3', side: 'ball', label: 'Up 3 or more' },
+    { key: 'def_down', side: 'def', label: 'We are down, need a stop' }, { key: 'def_tied', side: 'def', label: 'Tied' }, { key: 'def_up12', side: 'def', label: 'Up 1 or 2' }, { key: 'def_up3', side: 'def', label: 'Up 3' },
+    { key: 'inb_blob2', side: 'inb', label: 'Baseline, need a 2' }, { key: 'inb_blob3', side: 'inb', label: 'Baseline, need a 3' }, { key: 'inb_slob', side: 'inb', label: 'Sideline' }, { key: 'inb_full', side: 'inb', label: 'Full court, under 5 seconds' }
+  ];
+
   /* ── animated player ─────────────────────────────────────────────────── */
   // new PBCourt.Player(svgEl, play, {watermark:[line1,line2], onChange(at, playing)})
   // at = the frame being shown; play() animates through every remaining action.
@@ -364,6 +379,6 @@
   window.PBCourt = {
     C: C, R: R, OFF: OFF, DEF: DEF, ALL: ALL, dims: dims, courtSVG: courtSVG, action: action, stateAt: stateAt, stillState: stillState,
     arrowsSVG: arrowsSVG, tokensSVG: tokensSVG, viewOpts: viewOpts, shortName: shortName, tokenSVG: tokenSVG, ballSVG: ballSVG, ghostsSVG: ghostsSVG, watermark: watermark,
-    SETS: SETS, FULL_SETS: FULL_SETS, DEF_SETS: DEF_SETS, manD: manD, samples: samples, diagram: diagram, duration: duration, nearestRim: nearestRim, dist: dist, lerp: lerp, esc: esc, Player: Player
+    SITUATIONS: SITUATIONS, ENDGAME_LEAVES: ENDGAME_LEAVES, SETS: SETS, FULL_SETS: FULL_SETS, DEF_SETS: DEF_SETS, manD: manD, samples: samples, diagram: diagram, duration: duration, nearestRim: nearestRim, dist: dist, lerp: lerp, esc: esc, Player: Player
   };
 })();

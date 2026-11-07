@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import * as fake from './_fake.js';
 import { toFirestore } from '../api/_firestore.js';
 import { SITE_TAG } from '../api/_site.js';
-import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanPhoto, cleanDate, cleanFeeds, parseIcs, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
+import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanPhoto, cleanDate, cleanFeeds, parseIcs, cleanEndgame, cleanTerm, SITUATION_KEYS, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
 import playbook from '../api/playbook.js';
 
 fake.install();
@@ -133,6 +133,17 @@ await test('signals, calendar feeds and iCal parsing', () => {
   const ev = parseIcs(ics, Date.parse('2099-01-01T00:00:00Z'));
   assert.equal(ev.length, 2); assert.equal(ev[0].title, 'Phoenix tournament'); assert.equal(ev[0].allDay, true);
   assert.equal(ev[1].title, 'Varsity practice'); assert.equal(ev[1].where, 'Kobe Bryant Gym, Ardmore'); assert.equal(ev[1].at, '2099-01-12T20:30:00.000Z', 'EST wall clock 3:30pm = 20:30Z');
+});
+await test('situations, end of game tree and glossary terms', () => {
+  const r = cleanPlay(Object.assign({}, PLAY, { situations: ['blob', 'nope', 'blob', 'need3'] }));
+  assert.deepEqual(r.play.situations, ['blob', 'need3']);
+  assert.ok(SITUATION_KEYS.includes('press_break'));
+  const eg = cleanEndgame({ ball_down3: { play_ids: ['p1', 'bad id', 'p1', 'p2'], note: ' Flare for 1 x ' }, def_up3: { foul: 'yes' }, junk: { play_ids: ['z'] } });
+  assert.deepEqual(eg.ball_down3, { play_ids: ['p1', 'p2'], note: 'Flare for 1 x' });
+  assert.equal(eg.def_up3.foul, true); assert.equal(eg.ball_tied.play_ids.length, 0); assert.equal(eg.junk, undefined);
+  assert.equal(cleanTerm({ term: 'Ice', means: '' }).error, 'missing_meaning');
+  assert.deepEqual(cleanTerm({ term: ' Ice ', means: 'Force the ball handler to the baseline on a side screen', kind: 'defense', play_id: 'p9' }).term, { term: 'Ice', means: 'Force the ball handler to the baseline on a side screen', play_id: 'p9', kind: 'defense' });
+  assert.equal(cleanTerm({ term: 'X', means: 'y', kind: 'weird', play_id: 'bad id' }).term.kind, 'other');
 });
 await test('groups limit who can see a play', () => {
   const p = { visible: true, groups: ['Varsity'] };
@@ -295,6 +306,15 @@ await test('quiz results, game plan, practice and progress reach the player', as
   assert.equal((await call({ action: 'plays', token: tok })).body.plan, null, 'the hidden plan never shows');
   assert.equal((await call({ action: 'quiz_result', token: tok, id: 'signals', score: 4, total: 5 })).statusCode, 200);
   assert.equal((await call({ action: 'set_feeds', feeds: [{ group: 'Varsity', url: 'https://example.test/feed.ics' }] }, true)).statusCode, 200);
+  const term = await call({ action: 'save_term', term: { term: 'Fist', means: 'Horns Flare', play_id: playId } }, true);
+  assert.equal(term.statusCode, 200);
+  assert.equal((await call({ action: 'set_endgame', leaves: { ball_down3: { play_ids: [playId], note: 'Flare' } } }, true)).statusCode, 200);
+  const pl2 = await call({ action: 'plays', token: tok });
+  assert.equal(pl2.statusCode, 200, JSON.stringify(pl2.body));
+  assert.equal(pl2.body.terms.length, 1); assert.equal(pl2.body.terms[0].play_id, playId); assert.deepEqual(pl2.body.endgame.ball_down3.play_ids, [playId]); assert.equal(pl2.body.upcoming[0].title, 'Varsity practice');
+  assert.equal((await call({ action: 'quiz_result', token: tok, id: 'terms', score: 3, total: 4 })).statusCode, 200);
+  assert.equal((await call({ action: 'delete_term', id: term.body.id }, true)).statusCode, 200);
+  assert.equal((await call({ action: 'update_player', id: codes[0].id, report_note: 'Great first month' }, true)).statusCode, 200);
   assert.equal((await call({ action: 'scout_report', opponent: 'Radnor' }, true)).statusCode, 404);
   fake.state.docs.set('scouting_reports/' + SITE_TAG + '_radnor', { fields: toFirestore({ site: SITE_TAG, opp: 'Radnor', keys: ['Box out'], personnel: [{ num: '23', name: 'Smith' }], matchups: [], plan: 'Run them.' }), createTime: 'x', updateTime: 'x' });
   const sr = await call({ action: 'scout_report', opponent: 'Radnor' }, true);

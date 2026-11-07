@@ -90,13 +90,14 @@ export function cleanPlay(p) {
     .map((t) => clip(stripTags(String(t || '').replace(/^\s*[-•*]\s*/, '').trim()), LIMITS.tip)).filter(Boolean).slice(0, LIMITS.tips);
   const due = cleanDate(p.due);
   // Sideline signal: the call word and a photo of the hand signal (Blob playbook/photos/...).
+  const situations = [...new Set((Array.isArray(p.situations) ? p.situations : []).map(String).filter((k) => SITUATION_KEYS.includes(k)))].slice(0, 6);
   const signal = { call: cleanName(p.signal && p.signal.call, 30), photo: cleanPhoto(p.signal && p.signal.photo) };
   // Film moments: "2:14 5 was late on the screen". Seconds into the clip plus a note.
   const marks = (Array.isArray(p.marks) ? p.marks : []).map((m) => ({ t: Math.max(0, Math.min(36000, Math.round(Number(m && m.t) || 0))), text: clip(stripTags(String((m && m.text) || '').trim()), LIMITS.mark) }))
     .filter((m) => m.text).sort((a, b) => a.t - b.t).slice(0, LIMITS.marks);
   return {
     play: {
-      name, court, category, groups, kind, opponent, lineup, clip: video, clip_link, tips, due, marks, signal,
+      name, court, category, groups, kind, opponent, lineup, clip: video, clip_link, tips, due, marks, signal, situations,
       notes: clip(stripTags(String(p.notes || '').trim()), LIMITS.notes),
       visible: !!p.visible,
       frames: out,
@@ -214,6 +215,55 @@ export function cleanGame(g) {
     notes: clip(stripTags(String(g.notes || '').trim()), 300),
     lines,
   } };
+}
+
+// Situations a play can be tagged with (the Situations library groups plays by these).
+export const SITUATIONS = [
+  { key: 'blob', label: 'Baseline out of bounds', group: 'Inbounds' },
+  { key: 'slob', label: 'Sideline out of bounds', group: 'Inbounds' },
+  { key: 'press_break', label: 'Press break', group: 'Inbounds' },
+  { key: 'full_court_short', label: 'Full court, short clock', group: 'Inbounds' },
+  { key: 'ato', label: 'After a timeout', group: 'Inbounds' },
+  { key: 'need3', label: 'Need a 3', group: 'Score and clock' },
+  { key: 'need2', label: 'Need a 2', group: 'Score and clock' },
+  { key: 'last_shot', label: 'Last shot, tied', group: 'Score and clock' },
+  { key: 'run_clock', label: 'Up late, run the clock', group: 'Score and clock' },
+  { key: 'ft_miss', label: 'Free throw, need the miss', group: 'Score and clock' },
+  { key: 'vs_zone', label: 'Against a zone', group: 'Against' },
+  { key: 'vs_press', label: 'Against a press', group: 'Against' },
+  { key: 'vs_switch', label: 'When they switch', group: 'Against' },
+  { key: 'tip', label: 'Jump ball', group: 'Against' },
+];
+export const SITUATION_KEYS = SITUATIONS.map((s) => s.key);
+// End of game decision tree: fixed leaves, the coach fills in the play(s) and a note for each.
+export const ENDGAME_LEAVES = [
+  { key: 'ball_down3', side: 'ball', label: 'Down 3' }, { key: 'ball_down2', side: 'ball', label: 'Down 2' }, { key: 'ball_down1', side: 'ball', label: 'Down 1' },
+  { key: 'ball_tied', side: 'ball', label: 'Tied' }, { key: 'ball_up12', side: 'ball', label: 'Up 1 or 2' }, { key: 'ball_up3', side: 'ball', label: 'Up 3 or more' },
+  { key: 'def_down', side: 'def', label: 'We are down, need a stop' }, { key: 'def_tied', side: 'def', label: 'Tied' }, { key: 'def_up12', side: 'def', label: 'Up 1 or 2' }, { key: 'def_up3', side: 'def', label: 'Up 3' },
+  { key: 'inb_blob2', side: 'inb', label: 'Baseline, need a 2' }, { key: 'inb_blob3', side: 'inb', label: 'Baseline, need a 3' }, { key: 'inb_slob', side: 'inb', label: 'Sideline' }, { key: 'inb_full', side: 'inb', label: 'Full court, under 5 seconds' },
+];
+export function cleanEndgame(obj) {
+  const src = (obj && typeof obj === 'object') ? obj : {};
+  const leaves = {};
+  for (const l of ENDGAME_LEAVES) {
+    const v = src[l.key] || {};
+    const ids = [...new Set((Array.isArray(v.play_ids) ? v.play_ids : []).map(String).filter((id) => /^[A-Za-z0-9_-]{1,128}$/.test(id)))].slice(0, 4);
+    const leaf = { play_ids: ids, note: clip(stripTags(String(v.note || '').trim()), 300) };
+    if (l.key === 'def_up3') leaf.foul = v.foul === true || v.foul === 'yes';
+    leaves[l.key] = leaf;
+  }
+  return leaves;
+}
+export const TERM_KINDS = ['call', 'offense', 'defense', 'action', 'other'];
+// Glossary: one team word, what it means, optionally the play it points at.
+export function cleanTerm(t) {
+  if (!t || typeof t !== 'object') return { error: 'bad_term' };
+  const term = cleanName(t.term, 40);
+  const means = clip(stripTags(String(t.means || '').trim()), 300);
+  if (!term) return { error: 'missing_term' };
+  if (!means) return { error: 'missing_meaning' };
+  const play_id = /^[A-Za-z0-9_-]{1,128}$/.test(String(t.play_id || '')) ? String(t.play_id) : '';
+  return { term: { term, means, play_id, kind: TERM_KINDS.includes(t.kind) ? t.kind : 'other' } };
 }
 
 // Calendar feeds: one private iCal URL per group (Varsity, JV). Google's or our Apps Script feed.
