@@ -554,13 +554,14 @@ function catOf(p){ return kindOf(p)==='scout'?(p.opponent||'Opponent'):p.categor
 function inKind(p){ return kindOf(p)===S.kind; }
 function cats(){ var seen={}, out=['All']; S.plays.filter(inKind).forEach(function(p){ var c=catOf(p); if(!seen[c]){ seen[c]=1; out.push(c); } }); return out; }
 function renderSeg(){
-  var n={ours:0,scout:0,hustle:0}; S.plays.forEach(function(p){ n[kindOf(p)]++; });
-  $('segHustle').classList.toggle('hide',!S.attitude);
-  $('seg').classList.toggle('hide',!n.scout&&!S.attitude);
+  var n={ours:0,scout:0,hustle:0,stats:0}; S.plays.forEach(function(p){ n[kindOf(p)]++; });
+  $('segHustle').classList.toggle('hide',!S.attitude); $('segStats').classList.toggle('hide',!S.games.length);
+  $('seg').classList.toggle('hide',!n.scout&&!S.attitude&&!S.games.length);
   renderOpps();
-  var hustle=S.kind==='hustle'; $('hustleView').classList.toggle('hide',!hustle); $('grid').classList.toggle('hide',hustle); $('cats').classList.toggle('hide',hustle); $('q').classList.toggle('hide',hustle);
+  var hustle=S.kind==='hustle', stats=S.kind==='stats', other=hustle||stats; $('hustleView').classList.toggle('hide',!hustle); $('statsView').classList.toggle('hide',!stats); $('grid').classList.toggle('hide',other); $('cats').classList.toggle('hide',other); $('q').classList.toggle('hide',other);
   if(hustle&&S.attitude&&!$('hustleFrame').getAttribute('src')) $('hustleFrame').setAttribute('src','/attitude/?s='+encodeURIComponent(S.attitude));
-  Array.prototype.forEach.call($('seg').querySelectorAll('[data-kind]'),function(b){ var k=b.getAttribute('data-kind'); b.setAttribute('aria-pressed',String(k===S.kind)); if(k!=='hustle') b.innerHTML=(k==='ours'?'Our plays':'Scouting')+(n[k]?'<span class="cnt">'+n[k]+'</span>':''); });
+  if(stats) renderStats();
+  Array.prototype.forEach.call($('seg').querySelectorAll('[data-kind]'),function(b){ var k=b.getAttribute('data-kind'); b.setAttribute('aria-pressed',String(k===S.kind)); if(k==='ours'||k==='scout') b.innerHTML=(k==='ours'?'Our plays':'Scouting')+(n[k]?'<span class="cnt">'+n[k]+'</span>':''); });
 }
 function opponents(){
   var m={};
