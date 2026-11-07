@@ -272,6 +272,24 @@ tr:last-child td{border-bottom:0}
 .bl-ask{background:var(--gold-50);border:1px solid #efe2bd;border-radius:14px;padding:14px;margin:12px 0} .bl-ask h3{font-family:'Oswald',sans-serif;font-size:20px;margin:0 0 10px} .bl-res{display:grid;grid-template-columns:repeat(4,1fr);gap:8px} .bl-res button{font:700 15px/1 'Inter',sans-serif;padding:18px 6px;border-radius:12px;border:1.5px solid var(--line);background:#fff;cursor:pointer} .bl-res .score{background:#e9f6ee;border-color:#1f8a4c;color:#1f8a4c} .bl-res .miss{background:#fff5f4;border-color:#d99;color:#b42318} .bl-res .foul{background:var(--gold-50);border-color:#c9a44a;color:#7a5a10} .bl-res .to{background:#f1f1f4;color:var(--ink-2)}
 @media (max-width:520px){ .bl-res{grid-template-columns:1fr 1fr} .bl-top{grid-template-columns:1fr} }
 .bl-log{list-style:none;margin:12px 0 0;padding:0} .bl-log li{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:14px} .bl-log .r{font-weight:700;font-size:12px;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:999px} .bl-log .r.score{background:#e9f6ee;color:#1f8a4c} .bl-log .r.miss{background:#fdecea;color:#b42318} .bl-log .r.foul{background:var(--gold-50);color:#7a5a10} .bl-log .r.to{background:#f1f1f4;color:var(--ink-2)}
+/* the board: hold the iPad up, the play runs big on a loop */
+#board{position:fixed;inset:0;z-index:300;background:#111;color:#fff;display:flex;flex-direction:row}
+#board.hide{display:none}
+.bd-court{flex:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;background:#0e0e12;padding:10px}
+.bd-court svg{display:block;max-width:100%;max-height:100%;width:auto;height:auto;border-radius:10px;cursor:pointer}
+.bd-side{width:min(34vw,360px);display:flex;flex-direction:column;background:#1a1a20;padding:18px 20px;gap:14px;overflow:hidden}
+.bd-cat{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#c9a44a}
+.bd-side h1{font-family:'Oswald',sans-serif;font-size:clamp(28px,4.2vw,46px);line-height:1.02;margin:2px 0 0;color:#fff}
+.bd-call{display:inline-flex;align-items:center;gap:8px;margin-top:8px;font-family:'Oswald',sans-serif;font-size:22px;color:#111;background:#c9a44a;border-radius:999px;padding:4px 14px}
+.bd-call:empty{display:none} .bd-call img{width:34px;height:34px;border-radius:50%;object-fit:cover}
+.bd-step{flex:1;min-height:0;overflow:hidden} .bd-sn{font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:#9a9aa6} .bd-note{font-size:clamp(18px,2.4vw,28px);line-height:1.3;font-weight:600;margin-top:6px}
+.bd-ctl{display:grid;grid-template-columns:1fr 1fr;gap:8px} .bd-ctl button{font:700 16px/1 'Inter',sans-serif;padding:16px 10px;border-radius:12px;border:1px solid #3a3a44;background:#26262e;color:#fff;cursor:pointer;min-height:54px} .bd-ctl button.pri{background:#840036;border-color:#840036} .bd-ctl button.gold{background:#c9a44a;border-color:#c9a44a;color:#111}
+.bd-speed{grid-column:1/-1;display:flex;border:1px solid #3a3a44;border-radius:12px;overflow:hidden} .bd-speed button{flex:1;border:0;border-radius:0;min-height:46px;background:#1a1a20;font-weight:600} .bd-speed button[aria-pressed="true"]{background:#3a3a44}
+.bd-grid{position:absolute;inset:0;background:rgba(10,10,14,.96);padding:18px;overflow-y:auto;z-index:2} .bd-grid.hide{display:none}
+.bd-gh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px} .bd-gh h2{font-family:'Oswald',sans-serif;font-size:26px;margin:0;color:#fff} .bd-gh button{font:700 15px/1 'Inter',sans-serif;padding:12px 18px;border-radius:12px;border:1px solid #3a3a44;background:#26262e;color:#fff;cursor:pointer}
+.bd-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px} .bd-tile{background:#1a1a20;border:1px solid #3a3a44;border-radius:14px;overflow:hidden;cursor:pointer;padding:0;text-align:left;color:#fff;font:inherit} .bd-tile.on{border-color:#c9a44a;box-shadow:0 0 0 2px #c9a44a} .bd-tile .th{background:#d8c094} .bd-tile .nm{padding:10px 12px;font-family:'Oswald',sans-serif;font-size:19px} .bd-tile .nm small{display:block;font:500 12px/1.3 'Inter',sans-serif;color:#9a9aa6;margin-top:2px}
+.bd-tsec{grid-column:1/-1;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#c9a44a;margin-top:8px}
+@media (orientation:portrait),(max-width:720px){ #board{flex-direction:column} .bd-side{width:auto;flex:none;padding:14px 16px;gap:10px} .bd-side h1{font-size:30px} .bd-step{flex:none} .bd-note{font-size:18px} .bd-ctl button{min-height:48px;padding:12px 8px;font-size:15px} .bd-court{padding:6px} }
 .feedrow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed var(--line)}
 .feedrow .fr-url{grid-column:1/-1;min-width:0;font-size:13px}
 .prow .pe-ph{width:44px;height:44px;border-radius:50%;background:#e9e9ee;border:1px solid var(--line-2);cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0;font-size:11px;color:var(--ink-3)}
@@ -483,6 +501,7 @@ tr:last-child td{border-bottom:0}
       <a class="brand" href="/"><img src="/LM_Logo.png" alt=""><div><div class="t1">ACES PLAYBOOK</div><div class="t2">Coach's board</div></div></a>
       <div class="sp"></div>
       <div class="links">
+        <button class="btn ghost" type="button" id="boardBtn" title="Full screen plays on a loop for the huddle">Board</button>
         <a class="btn ghost" href="/playbook.html" target="_blank" rel="noopener">Player view</a>
         <a class="btn ghost" href="/attitude/">Attitude Board</a>
         <a class="btn ghost" href="/shootathon.html">Shoot-a-Thon</a>
@@ -755,6 +774,19 @@ tr:last-child td{border-bottom:0}
     <div class="run-list" id="runList"></div>
   </div>
 </div>
+<div id="board" class="hide" role="dialog" aria-label="The board">
+  <div class="bd-court"><svg id="bdSvg" xmlns="http://www.w3.org/2000/svg" aria-label="Play"></svg></div>
+  <div class="bd-side">
+    <div><div class="bd-cat" id="bdCat"></div><h1 id="bdName"></h1><div class="bd-call" id="bdCall"></div></div>
+    <div class="bd-step"><div class="bd-sn" id="bdSn"></div><div class="bd-note" id="bdNote"></div></div>
+    <div class="bd-ctl">
+      <button type="button" class="pri" id="bdPause">Pause</button><button type="button" id="bdRestart">From the top</button>
+      <div class="bd-speed" role="group" aria-label="Speed"><button type="button" data-bsp=".6">Slow</button><button type="button" data-bsp="1" aria-pressed="true">Normal</button><button type="button" data-bsp="1.5">Fast</button></div>
+      <button type="button" class="gold" id="bdPick">Plays</button><button type="button" id="bdExit">Exit</button>
+    </div>
+  </div>
+  <div class="bd-grid hide" id="bdGrid"><div class="bd-gh"><h2>Pick a play</h2><button type="button" id="bdGridX">Close</button></div><div class="bd-tiles" id="bdTiles"></div></div>
+</div>
 <div id="printPlan"></div>
 <div id="printBench"></div>
 <div id="printReport"></div>
@@ -842,6 +874,7 @@ function viewsFor(id){ return ((S.data&&S.data.views)||[]).filter(function(v){ r
 
 /* ── tabs ── */
 function go(tab){
+  if(tab==='board') return;
   if(!$('p-'+tab)) tab='plays';
   S.tab=tab;
   Array.prototype.forEach.call(document.querySelectorAll('.tab'),function(b){ b.setAttribute('aria-selected',String(b.getAttribute('data-tab')===tab)); });
@@ -928,6 +961,60 @@ $('termList').addEventListener('click',function(e){ var t;
   if((t=e.target.closest('[data-tedit]'))){ termEditor((S.data.terms||[]).find(function(x){return x.id===t.getAttribute('data-tedit');})); return; }
   if((t=e.target.closest('[data-tdel]'))){ var id=t.getAttribute('data-tdel'); confirmBox('Delete this word?','It comes off the players\' glossary.','Delete',function(){ api('delete_term',{id:id}).then(function(d){ if(d.error) return toast(errText(d),true); toast('Deleted'); reload(); }); }); }
 });
+/* ── the board: full screen play on a loop, for holding the iPad up in the huddle ── */
+var BD={P:null,p:null,paused:false,timer:null,lock:null,speed:1};
+function bdPlays(){ return plays('ours').filter(function(p){ return !p.archived&&(p.frames||[]).length; }); }
+function boardOpen(id){
+  var p=(S.data.plays||[]).find(function(x){ return x.id===id; }); if(!p) return boardPick();
+  var v=viewPlay(p); BD.p=p; BD.paused=false; clearTimeout(BD.timer);
+  var wasHidden=$('board').classList.contains('hide');
+  $('board').classList.remove('hide'); $('bdGrid').classList.add('hide'); document.body.style.overflow='hidden';
+  if(!BD.P) BD.P=new PBCourt.Player($('bdSvg'),v,{onChange:bdSync}); else BD.P.load(v);
+  BD.P.speed=BD.speed;
+  $('bdCat').textContent=((p.kind||'ours')==='scout'?p.opponent+' · ':'')+(p.category||''); $('bdName').textContent=p.name;
+  var sg=p.signal||{}; $('bdCall').innerHTML=(sg.photo?'<img src="'+esc(sg.photo)+'" alt="">':'')+(sg.call?esc(sg.call):'');
+  if(wasHidden){ try{ var el=$('board'); var rf=el.requestFullscreen||el.webkitRequestFullscreen; if(rf) rf.call(el).catch(function(){}); }catch(e){}
+    try{ if(navigator.wakeLock) navigator.wakeLock.request('screen').then(function(l){ BD.lock=l; }).catch(function(){}); }catch(e){}
+    history.pushState({board:1},'',location.pathname+location.search+'#board'); }
+  bdStart();
+}
+function bdStart(){ clearTimeout(BD.timer); BD.paused=false; BD.P.go(0); bdSync(0,false,true); BD.timer=setTimeout(function(){ if(!BD.paused) BD.P.playAll(); },900); }
+function bdSync(at,playing,noLoop){
+  if(!BD.P) return;   // the Player emits while it is still being built
+  var n=BD.P.n(), f=BD.P.play.frames[at]||{};
+  $('bdSn').textContent=at===0?'Setup':'Step '+at+' of '+(n-1); $('bdNote').textContent=f.note||(at===0?'Starting spots':'');
+  $('bdPause').textContent=BD.paused?'Play':'Pause';
+  if(!noLoop&&!playing&&!BD.paused&&at>=n-1){ clearTimeout(BD.timer); BD.timer=setTimeout(function(){ if(!BD.paused&&!$('board').classList.contains('hide')) bdStart(); },1800); }
+}
+function bdToggle(){ if(!BD.P) return; if(BD.paused){ BD.paused=false; if(BD.P.at>=BD.P.n()-1) bdStart(); else BD.P.playAll(); } else { BD.paused=true; clearTimeout(BD.timer); BD.P.pause(); } $('bdPause').textContent=BD.paused?'Play':'Pause'; }
+function boardClose(){
+  if($('board').classList.contains('hide')) return;
+  clearTimeout(BD.timer); if(BD.P) BD.P.pause(); $('board').classList.add('hide'); $('bdGrid').classList.add('hide'); document.body.style.overflow='';
+  try{ if(document.fullscreenElement||document.webkitFullscreenElement){ (document.exitFullscreen||document.webkitExitFullscreen).call(document).catch(function(){}); } }catch(e){}
+  try{ if(BD.lock){ BD.lock.release(); BD.lock=null; } }catch(e){}
+  if(history.state&&history.state.board) history.back();
+}
+function boardPick(){
+  var list=bdPlays(); if(!list.length) return toast('Draw a play first.',true);
+  var wasHidden=$('board').classList.contains('hide');
+  if(wasHidden){ $('board').classList.remove('hide'); document.body.style.overflow='hidden'; history.pushState({board:1},'',location.pathname+location.search+'#board'); if(!BD.p){ $('bdName').textContent='Pick a play'; } }
+  var next=(S.data.plans||[]).filter(function(x){ return x.date>=todayStr()&&x.visible!==undefined; }).sort(function(a,b){ return a.date.localeCompare(b.date); })[0], planIds=next?(next.our_plays||[]):[];
+  var first=list.filter(function(p){ return planIds.indexOf(p.id)>=0; }), rest=list.filter(function(p){ return planIds.indexOf(p.id)<0; });
+  var tile=function(p){ var sg=p.signal||{}; return '<button class="bd-tile'+(BD.p&&BD.p.id===p.id?' on':'')+'" type="button" data-bdopen="'+esc(p.id)+'"><div class="th">'+PBCourt.diagram(viewPlay(p),0,{noNames:true})+'</div><div class="nm">'+esc(p.name)+'<small>'+esc(p.category||'')+(sg.call?' · '+esc(sg.call):'')+'</small></div></button>'; };
+  $('bdTiles').innerHTML=(first.length?'<div class="bd-tsec">Tonight vs '+esc(next.opponent)+'</div>'+first.map(tile).join('')+'<div class="bd-tsec">Everything else</div>':'')+rest.map(tile).join('');
+  $('bdGrid').classList.remove('hide');
+}
+$('boardBtn').addEventListener('click',boardPick);
+$('bdPick').addEventListener('click',boardPick);
+$('bdGridX').addEventListener('click',function(){ if(BD.p) $('bdGrid').classList.add('hide'); else boardClose(); });
+$('bdTiles').addEventListener('click',function(e){ var b=e.target.closest('[data-bdopen]'); if(b) boardOpen(b.getAttribute('data-bdopen')); });
+$('bdPause').addEventListener('click',bdToggle);
+$('bdSvg').addEventListener('click',bdToggle);
+$('bdRestart').addEventListener('click',function(){ if(BD.P) bdStart(); });
+$('bdExit').addEventListener('click',boardClose);
+document.addEventListener('click',function(e){ var b=e.target.closest('[data-bsp]'); if(!b) return; BD.speed=+b.getAttribute('data-bsp'); if(BD.P) BD.P.speed=BD.speed; Array.prototype.forEach.call(document.querySelectorAll('[data-bsp]'),function(x){ x.setAttribute('aria-pressed',String(x===b)); }); });
+window.addEventListener('popstate',function(){ if(!(history.state&&history.state.board)&&!$('board').classList.contains('hide')){ clearTimeout(BD.timer); if(BD.P) BD.P.pause(); $('board').classList.add('hide'); $('bdGrid').classList.add('hide'); document.body.style.overflow=''; try{ if(BD.lock){ BD.lock.release(); BD.lock=null; } }catch(e){} } });
+document.addEventListener('keydown',function(e){ if($('board').classList.contains('hide')) return; if(e.key==='Escape') boardClose(); else if(e.key===' '){ e.preventDefault(); bdToggle(); } });
 /* ── bench call log: tap the play you called, tap what happened ── */
 var BL=null;
 function benchLog(plan){
@@ -940,7 +1027,8 @@ function benchLog(plan){
     '<div class="bl-ask hide" id="blAsk"></div><ul class="bl-log" id="blLog"></ul>',[['Done','primary',function(){ closeModal(); reload(); }]],true);
   $('blQ').addEventListener('click',function(e){ var b=e.target.closest('[data-q]'); if(!b) return; BL.quarter=b.getAttribute('data-q'); Array.prototype.forEach.call($('blQ').querySelectorAll('[data-q]'),function(x){ x.setAttribute('aria-pressed',String(x===b)); }); });
   $('blPlays').addEventListener('click',function(e){ var b=e.target.closest('[data-blp]'); if(!b) return; var p=ours.find(function(x){return x.id===b.getAttribute('data-blp');}); BL.play=p;
-    $('blAsk').classList.remove('hide'); $('blAsk').innerHTML='<h3>'+esc(p.name)+': what happened?</h3><div class="bl-res"><button type="button" class="score" data-res="score">Scored</button><button type="button" class="miss" data-res="miss">No score</button><button type="button" class="foul" data-res="foul">Fouled</button><button type="button" class="to" data-res="to">Turnover</button></div><div style="margin-top:8px"><button class="btn sm ghost" type="button" id="blCancel">Cancel</button></div>'; $('blAsk').scrollIntoView({block:'nearest'});
+    $('blAsk').classList.remove('hide'); $('blAsk').innerHTML='<h3>'+esc(p.name)+': what happened?</h3><div class="bl-res"><button type="button" class="score" data-res="score">Scored</button><button type="button" class="miss" data-res="miss">No score</button><button type="button" class="foul" data-res="foul">Fouled</button><button type="button" class="to" data-res="to">Turnover</button></div><div style="margin-top:8px;display:flex;gap:8px"><button class="btn sm" type="button" id="blShow">Show it on the board</button><button class="btn sm ghost" type="button" id="blCancel">Cancel</button></div>'; $('blAsk').scrollIntoView({block:'nearest'});
+    $('blShow').addEventListener('click',function(){ boardOpen(p.id); });
     $('blCancel').addEventListener('click',function(){ BL.play=null; $('blAsk').classList.add('hide'); }); });
   $('blAsk').addEventListener('click',function(e){ var b=e.target.closest('[data-res]'); if(!b||!BL.play) return; var opp=$('blOpp').value.trim(); if(!opp){ toast('Who are we playing?',true); $('blOpp').focus(); return; }
     var call={play_id:BL.play.id,result:b.getAttribute('data-res'),opponent:opp,date:$('blDate').value,quarter:BL.quarter}; var name=BL.play.name; BL.play=null; $('blAsk').classList.add('hide');
@@ -1410,12 +1498,13 @@ function card(p){
     '<span class="pill '+(p.archived?'':(p.visible?'live':'hidden'))+'">'+(p.archived?'Archived':(p.visible?'Live':'Draft'))+'</span></div>'+
     '<div class="meta"><div class="cat">'+esc(scout?(p.opponent+' · '+p.category):p.category)+(p.court==='full'?' · Full court':'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+steps+(steps===1?' step':' steps')+' · '+(p.groups&&p.groups.length?esc(p.groups.join(', ')):'Everyone')+' · '+views.length+(views.length===1?' view':' views')+(Object.keys(who).length?' by '+Object.keys(who).length:'')+(qOpen?' · <b style="color:var(--gold-d)">'+qOpen+(qOpen===1?' question':' questions')+'</b>':'')+'</div></div>'+
     '<div class="acts">'+(p.archived?'<button class="btn sm" type="button" data-restore="'+esc(p.id)+'">Restore</button>':
-      '<button class="btn sm" type="button" data-edit="'+esc(p.id)+'">'+svg('i-edit')+'Edit</button><button class="btn sm" type="button" data-vis="'+esc(p.id)+'" aria-pressed="'+!!p.visible+'">'+svg(p.visible?'i-eye':'i-eyeoff')+(p.visible?'Live':'Draft')+'</button><button class="btn sm ghost" type="button" data-dup="'+esc(p.id)+'">'+svg('i-copy')+'Copy</button><span class="sp"></span><button class="iconbtn" style="width:32px;height:32px" type="button" data-arch="'+esc(p.id)+'" title="Archive">'+svg('i-trash')+'</button>')+'</div></div>';
+      '<button class="btn sm" type="button" data-edit="'+esc(p.id)+'">'+svg('i-edit')+'Edit</button><button class="btn sm" type="button" data-vis="'+esc(p.id)+'" aria-pressed="'+!!p.visible+'">'+svg(p.visible?'i-eye':'i-eyeoff')+(p.visible?'Live':'Draft')+'</button><button class="btn sm ghost" type="button" data-dup="'+esc(p.id)+'">'+svg('i-copy')+'Copy</button><button class="btn sm ghost" type="button" data-board="'+esc(p.id)+'" title="Full screen, on a loop">'+svg('i-play')+'Board</button><span class="sp"></span><button class="iconbtn" style="width:32px;height:32px" type="button" data-arch="'+esc(p.id)+'" title="Archive">'+svg('i-trash')+'</button>')+'</div></div>';
 }
 document.addEventListener('click',function(e){
   var t;
   if((t=e.target.closest('[data-cat][data-key]'))){ S.cat[t.getAttribute('data-key')]=t.getAttribute('data-cat'); renderPlays(t.getAttribute('data-key')); return; }
   if((t=e.target.closest('[data-edit]'))){ openEditor(t.getAttribute('data-edit')); return; }
+  if((t=e.target.closest('[data-board]'))){ boardOpen(t.getAttribute('data-board')); return; }
   if((t=e.target.closest('[data-vis]'))){ var id=t.getAttribute('data-vis'), p=S.data.plays.find(function(x){return x.id===id;}); api('set_visible',{id:id,visible:!p.visible}).then(function(d){ if(d.error) return toast(errText(d),true); toast(p.visible?'Hidden from players':'Live for players'); reload(); }); return; }
   if((t=e.target.closest('[data-arch]'))){ var id2=t.getAttribute('data-arch'); confirmBox('Archive this play?','Players won\'t see it anymore. You can restore it later.','Archive',function(){ api('archive',{id:id2}).then(function(d){ if(d.error) return toast(errText(d),true); toast('Archived'); reload(); }); }); return; }
   if((t=e.target.closest('[data-restore]'))){ api('restore',{id:t.getAttribute('data-restore')}).then(function(){ toast('Restored as a draft'); reload(); }); return; }
