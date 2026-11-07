@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import * as fake from './_fake.js';
 import { toFirestore } from '../api/_firestore.js';
 import { SITE_TAG } from '../api/_site.js';
-import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanPhoto, cleanDate, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
+import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanPhoto, cleanDate, cleanFeeds, parseIcs, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
 import playbook from '../api/playbook.js';
 
 fake.install();
@@ -122,6 +122,17 @@ await test('box scores: stats clamp, points and rebounds fill in, headshots only
   const pl = cleanPlan({ opponent: 'Radnor', things: 'They press after makes\nLefty #4\nBox out #32\nFourth thing', personnel: [{ name: 'Smith', photo: 'https://abc.public.blob.vercel-storage.com/playbook/photos/p/s.jpg' }, { name: 'Jones', photo: 'https://evil.com/x.jpg' }] }).plan;
   assert.deepEqual(pl.things, ['They press after makes', 'Lefty #4', 'Box out #32']);
   assert.equal(pl.personnel[0].photo.indexOf('https://abc'), 0); assert.equal(pl.personnel[1].photo, '');
+});
+await test('signals, calendar feeds and iCal parsing', () => {
+  const r = cleanPlay(Object.assign({}, PLAY, { signal: { call: ' Fist ', photo: 'https://abc.public.blob.vercel-storage.com/playbook/photos/p/fist.jpg' } }));
+  assert.deepEqual(r.play.signal, { call: 'Fist', photo: 'https://abc.public.blob.vercel-storage.com/playbook/photos/p/fist.jpg' });
+  assert.deepEqual(cleanPlay(PLAY).play.signal, { call: '', photo: '' });
+  const f = cleanFeeds([{ group: 'Varsity', url: 'webcal://script.google.com/macros/s/abc/exec?t=varsity&k=key' }, { url: 'ftp://x' }, { url: 'nope' }]);
+  assert.equal(f.length, 1); assert.equal(f[0].url, 'https://script.google.com/macros/s/abc/exec?t=varsity&k=key'); assert.equal(f[0].group, 'Varsity');
+  const ics = 'BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;TZID=America/New_York:20990112T153000\r\nSUMMARY:Varsity practice\r\nLOCATION:Kobe Bryant Gym\\, Ardmore\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nDTSTART:20990110\r\nSUMMARY:Phoenix tournament\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nDTSTART:20000101T120000Z\r\nSUMMARY:Old\r\nEND:VEVENT\r\nEND:VCALENDAR';
+  const ev = parseIcs(ics, Date.parse('2099-01-01T00:00:00Z'));
+  assert.equal(ev.length, 2); assert.equal(ev[0].title, 'Phoenix tournament'); assert.equal(ev[0].allDay, true);
+  assert.equal(ev[1].title, 'Varsity practice'); assert.equal(ev[1].where, 'Kobe Bryant Gym, Ardmore'); assert.equal(ev[1].at, '2099-01-12T20:30:00.000Z', 'EST wall clock 3:30pm = 20:30Z');
 });
 await test('groups limit who can see a play', () => {
   const p = { visible: true, groups: ['Varsity'] };
@@ -282,6 +293,8 @@ await test('quiz results, game plan, practice and progress reach the player', as
   assert.equal((await call({ action: 'delete_plan', id: plan.body.id }, true)).statusCode, 200);
   assert.equal((await call({ action: 'admin_list' }, true)).body.notes.length, 0);
   assert.equal((await call({ action: 'plays', token: tok })).body.plan, null, 'the hidden plan never shows');
+  assert.equal((await call({ action: 'quiz_result', token: tok, id: 'signals', score: 4, total: 5 })).statusCode, 200);
+  assert.equal((await call({ action: 'set_feeds', feeds: [{ group: 'Varsity', url: 'https://example.test/feed.ics' }] }, true)).statusCode, 200);
   assert.equal((await call({ action: 'scout_report', opponent: 'Radnor' }, true)).statusCode, 404);
   fake.state.docs.set('scouting_reports/' + SITE_TAG + '_radnor', { fields: toFirestore({ site: SITE_TAG, opp: 'Radnor', keys: ['Box out'], personnel: [{ num: '23', name: 'Smith' }], matchups: [], plan: 'Run them.' }), createTime: 'x', updateTime: 'x' });
   const sr = await call({ action: 'scout_report', opponent: 'Radnor' }, true);

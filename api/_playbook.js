@@ -89,12 +89,14 @@ export function cleanPlay(p) {
   const tips = (Array.isArray(p.tips) ? p.tips : String(p.tips || '').split('\n'))
     .map((t) => clip(stripTags(String(t || '').replace(/^\s*[-•*]\s*/, '').trim()), LIMITS.tip)).filter(Boolean).slice(0, LIMITS.tips);
   const due = cleanDate(p.due);
+  // Sideline signal: the call word and a photo of the hand signal (Blob playbook/photos/...).
+  const signal = { call: cleanName(p.signal && p.signal.call, 30), photo: cleanPhoto(p.signal && p.signal.photo) };
   // Film moments: "2:14 5 was late on the screen". Seconds into the clip plus a note.
   const marks = (Array.isArray(p.marks) ? p.marks : []).map((m) => ({ t: Math.max(0, Math.min(36000, Math.round(Number(m && m.t) || 0))), text: clip(stripTags(String((m && m.text) || '').trim()), LIMITS.mark) }))
     .filter((m) => m.text).sort((a, b) => a.t - b.t).slice(0, LIMITS.marks);
   return {
     play: {
-      name, court, category, groups, kind, opponent, lineup, clip: video, clip_link, tips, due, marks,
+      name, court, category, groups, kind, opponent, lineup, clip: video, clip_link, tips, due, marks, signal,
       notes: clip(stripTags(String(p.notes || '').trim()), LIMITS.notes),
       visible: !!p.visible,
       frames: out,
@@ -212,6 +214,44 @@ export function cleanGame(g) {
     notes: clip(stripTags(String(g.notes || '').trim()), 300),
     lines,
   } };
+}
+
+// Calendar feeds: one private iCal URL per group (Varsity, JV). Google's or our Apps Script feed.
+export function cleanFeeds(list) {
+  return (Array.isArray(list) ? list : []).map((f) => {
+    let u; try { u = new URL(String((f && f.url) || '').trim().replace(/^webcal:/i, 'https:')); } catch (e) { return null; }
+    if (u.protocol !== 'https:') return null;
+    return { group: cleanGroup(f && f.group), url: clip(u.href, 600) };
+  }).filter(Boolean).slice(0, 6);
+}
+// Minimal iCal parse: VEVENT summary, location, start (date or datetime, with or without Z).
+export function parseIcs(text, now = Date.now(), limit = 8) {
+  const out = [];
+  const blocks = String(text || '').replace(/\r\n[ \t]/g, '').split('BEGIN:VEVENT').slice(1);
+  for (const b of blocks) {
+    const get = (k) => { const m = new RegExp('^' + k + '(?:;[^:\\n]*)?:(.*)$', 'm').exec(b); return m ? m[1].trim() : ''; };
+    const ds = get('DTSTART'); if (!ds) continue;
+    const allDay = /^\d{8}$/.test(ds);
+    const m = /^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})?(Z)?)?/.exec(ds); if (!m) continue;
+    const tzid = (/DTSTART;[^:]*TZID=([^:;]+)/.exec(b) || [])[1] || '';
+    // Floating/TZID times are read as US Eastern (the team's zone); Z times are UTC.
+    let t;
+    if (m[7]) t = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0));
+    else if (allDay) t = Date.UTC(+m[1], +m[2] - 1, +m[3], 12);
+    else { const local = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0)); t = local + easternOffsetMs(local); }
+    if (t < now - 3 * 36e5) continue;
+    out.push({ at: new Date(t).toISOString(), allDay, title: get('SUMMARY').replace(/\\,/g, ',').replace(/\\n/g, ' ').slice(0, 120), where: get('LOCATION').replace(/\\,/g, ',').slice(0, 160), tz: tzid });
+  }
+  return out.sort((a, b) => a.at.localeCompare(b.at)).slice(0, limit);
+}
+// How many ms to ADD to a naive Eastern wall-clock time to get UTC (EST +5h, EDT +4h).
+export function easternOffsetMs(utcGuess) {
+  const d = new Date(utcGuess);
+  const y = d.getUTCFullYear();
+  const second = (m, dow) => { const first = new Date(Date.UTC(y, m, 1)); const off = (dow - first.getUTCDay() + 7) % 7; return Date.UTC(y, m, 1 + off + 7, 7); };   // 2am local ≈ 7 UTC
+  const first = (m, dow) => { const f = new Date(Date.UTC(y, m, 1)); const off = (dow - f.getUTCDay() + 7) % 7; return Date.UTC(y, m, 1 + off, 6); };
+  const dstStart = second(2, 0), dstEnd = first(10, 0);
+  return (utcGuess >= dstStart && utcGuess < dstEnd) ? 4 * 36e5 : 5 * 36e5;
 }
 
 export const NOTE_KINDS = ['note', 'injury', 'absent', 'late', 'kudos'];
