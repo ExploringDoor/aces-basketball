@@ -66,12 +66,13 @@ function Board({ keyCode, user, onOpen, onAuthFail }) {
     catch (e) { setErr(ERR[e.message] || "Couldn't save the staff list."); return false; }
   };
   const shareText = () => staffRows.filter((c) => c.code).map((c) => `${c.name}: ${c.code}`).join("\n");
-  const copyCodes = async () => { try { await navigator.clipboard.writeText(`Aces scouting, aces-basketball.vercel.app/#scouting\n${shareText()}`); setErr(""); } catch { setErr("Couldn't copy. Select the list and copy it by hand."); } };
+  const copyCodes = async () => { try { await navigator.clipboard.writeText(`Aces scouting, aceshoops.com/scouting\n${shareText()}`); setErr(""); } catch { setErr("Couldn't copy. Select the list and copy it by hand."); } };
   const rows = opponents.filter((o) => !mine || [(data && data.assignments && data.assignments[o.slug]) || {}].some((a) => a.scout === user || a.helper === user));
   const counts = {};
   for (const o of opponents) { const a = data && data.assignments && data.assignments[o.slug]; if (a && a.scout) counts[a.scout] = (counts[a.scout] || 0) + 1; }
   return (
-    <div style={{ display: "grid", gap: 14 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 14 }}>
+      <style>{`@media (max-width: 600px) { .sc-ctl { grid-template-columns: 1fr 1fr 1fr !important; } .sc-ctl > button { grid-column: 1 / -1; } .sc-ctl select { padding: 10px 8px !important; font-size: 14px !important; } }`}</style>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
         {staff.map((s) => <span key={s} style={{ ...label, color: s === user ? "var(--gold)" : "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 999, padding: "6px 10px" }}>{s} · {counts[s] || 0}</span>)}
         {isAdmin && <button style={btn(false, true)} onClick={() => setEditStaff(!editStaff)}>{editStaff ? "Close" : "Staff and passwords"}</button>}
@@ -117,7 +118,7 @@ function Board({ keyCode, user, onOpen, onAuthFail }) {
                 {rep && rep.updated_at ? <div style={{ ...label, marginTop: 2 }}>{rep.pct}% · {rep.updated_by}</div> : null}
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 8, marginTop: 12, alignItems: "end" }}>
+            <div className="sc-ctl" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 8, marginTop: 12, alignItems: "end" }}>
               <label><div style={label}>Scout</div><select style={select} value={a.scout} onChange={(e) => assign(o.slug, { scout: e.target.value })}><option value="">Unassigned</option>{staff.map((s) => <option key={s} value={s}>{s}</option>)}</select></label>
               <label><div style={label}>Helper</div><select style={select} value={a.helper} onChange={(e) => assign(o.slug, { helper: e.target.value })}><option value="">None</option>{staff.map((s) => <option key={s} value={s}>{s}</option>)}</select></label>
               <label><div style={label}>Status</div><select style={select} value={a.status} onChange={(e) => assign(o.slug, { status: e.target.value })}>{STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}</select></label>
@@ -223,7 +224,8 @@ function Report({ keyCode, user, opp, onBack, onAuthFail }) {
   const pct = completeness(report);
   const textarea = { ...input, minHeight: 120, lineHeight: 1.5, resize: "vertical", fontFamily: SANS };
   return (
-    <div style={{ display: "grid", gap: 16 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 16 }}>
+      <style>{`@media (max-width: 600px) { .sc-mu { grid-template-columns: 1fr 1fr auto !important; } .sc-mu input { grid-column: 1 / 3; grid-row: 2; } }`}</style>
       <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
         <button style={btn(false, true)} onClick={() => { if (!dirty || window.confirm("Leave without saving?")) onBack(); }}>Back</button>
         <Logo opp={opp.opp} size={44} />
@@ -268,7 +270,7 @@ function Report({ keyCode, user, opp, onBack, onAuthFail }) {
         <div style={label}>Matchups</div>
         <div style={{ display: "grid", gap: 6, marginTop: 10 }}>
           {report.matchups.map((m, i) => (
-            <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1.4fr auto", gap: 6 }}>
+            <div key={i} className="sc-mu" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1.4fr auto", gap: 6 }}>
               <select style={select} value={m.ours} onChange={(e) => edit("matchups", report.matchups.map((x, j) => (j === i ? { ...x, ours: e.target.value } : x)))}><option value="">Aces</option>{roster.map((p) => <option key={p.number} value={`#${p.number} ${p.name}`}>#{p.number} {p.name}</option>)}</select>
               <select style={select} value={m.theirs} onChange={(e) => edit("matchups", report.matchups.map((x, j) => (j === i ? { ...x, theirs: e.target.value } : x)))}><option value="">Them</option>{report.personnel.filter((p) => p.name).map((p) => <option key={p.num + p.name} value={`#${p.num} ${p.name}`}>#{p.num} {p.name}</option>)}</select>
               <input style={input} value={m.note} maxLength={LIMITS.key} placeholder="Note" onChange={(e) => edit("matchups", report.matchups.map((x, j) => (j === i ? { ...x, note: e.target.value } : x)))} />
