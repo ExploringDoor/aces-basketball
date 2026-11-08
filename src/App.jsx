@@ -513,48 +513,25 @@ export default function App() {
       {/* Page content */}
       <div style={{ paddingTop:82, minHeight:"100vh", background:"#0a0005" }}>
         {page === "home" ? <HomePage goTo={goTo} /> : PageComponent && <PageComponent />}
-        <footer style={{ background:"#050003", borderTop:"1px solid rgba(132,0,54,0.28)", marginTop:40, position:"relative", overflow:"hidden" }}>
-          {/* Giant ghost wordmark */}
-          <div style={{ position:"absolute", bottom:10, left:"50%", transform:"translateX(-50%)", fontFamily:"'Anton',sans-serif", fontSize:"clamp(110px,17vw,220px)", lineHeight:1, letterSpacing:6, color:"transparent", WebkitTextStroke:"1px rgba(132,0,54,0.22)", pointerEvents:"none", userSelect:"none", whiteSpace:"nowrap" }}>ACES</div>
-
-          <div style={{ position:"relative", maxWidth:1100, margin:"0 auto", padding:"56px 6% 40px" }}>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(180px, 1fr))", gap:32, alignItems:"start" }}>
-              {/* Brand */}
-              <div style={{ gridColumn:"span 1", minWidth:220 }}>
-                <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-                  <img src="/Bulldog.png" alt="" style={{ height:52, width:"auto" }} />
-                  <div>
-                    <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:700, letterSpacing:4 }}>ACES</div>
-                    <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10, letterSpacing:2.5, color:"rgba(255,255,255,0.4)", textTransform:"uppercase" }}>Lower Merion Basketball</div>
-                  </div>
-                </div>
-                <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:12.5, color:"rgba(255,255,255,0.4)", marginTop:14, lineHeight:1.7 }}>
-                  7× PIAA State Champions<br />Est. 1911 · Ardmore, PA<br />Home of the Kobe Bryant Gymnasium
-                </div>
-              </div>
-              {/* Link columns */}
-              {[
-                { h:"Season", links:[["roster","Roster"],["schedule","Schedule"],["standings","Standings"],["records","Record Book"]] },
-                { h:"Program", links:[["history","History"],["championships","Championships"],["alumni","Alumni"],["hof","Hall of Fame"]] },
-                { h:"Aces Nation", links:[["news","News"],["clinics","Fall Clinics"],["store","Team Store"],["social","Follow Us"],["support","Support the Aces"]] },
-              ].map(col => (
-                <div key={col.h}>
-                  <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:11, letterSpacing:3, color:"var(--gold)", textTransform:"uppercase", marginBottom:14 }}>{col.h}</div>
-                  {col.links.map(([id, label]) => (
-                    <button key={id} onClick={() => goTo(id)} style={{ display:"block", background:"none", border:"none", padding:"0 0 10px", fontFamily:"'Source Sans 3',sans-serif", fontSize:13.5, color:"rgba(255,255,255,0.55)", cursor:"pointer", textAlign:"left", transition:"color 0.15s" }}
-                      onMouseEnter={e => e.currentTarget.style.color = "var(--gold)"}
-                      onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.55)"}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
+        <footer style={{ background:"#050003", borderTop:"1px solid rgba(132,0,54,0.28)", marginTop:40 }}>
+          <div style={{ maxWidth:1100, margin:"0 auto", padding:"18px 5% 16px", display:"flex", flexWrap:"wrap", alignItems:"center", justifyContent:"space-between", gap:"10px 24px" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+              <img src="/Bulldog.png" alt="" style={{ height:30, width:"auto" }} />
+              <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:13, fontWeight:700, letterSpacing:3 }}>ACES <span style={{ fontWeight:400, fontSize:10, letterSpacing:2, color:"rgba(255,255,255,0.4)" }}>LOWER MERION BASKETBALL</span></div>
+            </div>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:"4px 16px" }}>
+              {[["schedule","Schedule"],["roster","Roster"],["news","News"],["store","Store"],["support","Support"]].map(([id, label]) => (
+                <button key={id} onClick={() => goTo(id)} style={{ background:"none", border:"none", padding:"4px 0", fontFamily:"'Source Sans 3',sans-serif", fontSize:12.5, color:"rgba(255,255,255,0.55)", cursor:"pointer" }}
+                  onMouseEnter={e => e.currentTarget.style.color = "var(--gold)"}
+                  onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.55)"}>
+                  {label}
+                </button>
               ))}
             </div>
-
-            <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", marginTop:36, paddingTop:20, display:"flex", flexWrap:"wrap", gap:12, alignItems:"center", justifyContent:"space-between" }}>
-              <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:11, color:"rgba(255,255,255,0.3)" }}>245 E. Montgomery Avenue · Ardmore, PA 19003 · © {new Date().getFullYear()} Lower Merion Aces Basketball</div>
-              <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:"rgba(255,255,255,0.3)", textTransform:"uppercase" }}>Designed by <a href="https://mainline-webdesign.com/" target="_blank" rel="noopener noreferrer" style={{ color:"var(--gold)", textDecoration:"none" }} onMouseEnter={e => e.currentTarget.style.textDecoration="underline"} onMouseLeave={e => e.currentTarget.style.textDecoration="none"}>Main Line Web Design</a></div>
-            </div>
+          </div>
+          <div style={{ maxWidth:1100, margin:"0 auto", padding:"10px 5% 14px", borderTop:"1px solid rgba(255,255,255,0.06)", display:"flex", flexWrap:"wrap", gap:"6px 16px", alignItems:"center", justifyContent:"space-between" }}>
+            <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10.5, color:"rgba(255,255,255,0.3)" }}>© {new Date().getFullYear()} Lower Merion Aces Basketball · Ardmore, PA</div>
+            <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:9.5, letterSpacing:2, color:"rgba(255,255,255,0.3)", textTransform:"uppercase" }}>Designed by <a href="https://mainline-webdesign.com/" target="_blank" rel="noopener noreferrer" style={{ color:"var(--gold)", textDecoration:"none" }}>Main Line Web Design</a></div>
           </div>
         </footer>
       </div>
