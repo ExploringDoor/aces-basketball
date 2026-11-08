@@ -73,6 +73,14 @@ export default function SchedulePage() {
           </div>
         </FadeIn>
 
+        <style>{`
+          .sch-badge-m { display: none; }
+          @media (max-width: 600px) {
+            .sch-row { grid-template-columns: 54px 1fr auto !important; gap: 10px !important; padding: 12px 12px !important; }
+            .sch-badge-d { display: none !important; }
+            .sch-badge-m { display: inline-block; margin-top: 5px; }
+          }
+        `}</style>
         {/* Month-by-month schedule */}
         {schedule.map((m, mi) => (
           <FadeIn key={m.month} delay={0.1}>
@@ -84,7 +92,7 @@ export default function SchedulePage() {
                 const win = played && g.result.us > g.result.them;
                 const past = !played && Number.isFinite(gameTime(g)) && gameTime(g) + 3 * 3600000 < now && !g.multi;
                 return (
-                  <div key={i} style={{
+                  <div key={i} className="sch-row" style={{
                     display: "grid", gridTemplateColumns: "78px 1fr auto", gap: 14, alignItems: "center",
                     padding: "13px 18px",
                     background: isNext ? "rgba(201,164,74,0.08)" : (i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent"),
@@ -92,9 +100,17 @@ export default function SchedulePage() {
                     borderBottom: i < m.games.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
                     opacity: past ? 0.55 : 1,
                   }}>
-                    <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 13, color: isNext ? "var(--gold)" : "rgba(255,255,255,0.55)", letterSpacing: 0.5 }}>{g.date}</div>
+                    <div>
+                      <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 13, color: isNext ? "var(--gold)" : "rgba(255,255,255,0.55)", letterSpacing: 0.5 }}>{g.date}</div>
+                      <span className="sch-badge-m" style={{
+                        fontFamily: "'Oswald',sans-serif", fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase", padding: "2px 7px", borderRadius: 4, flexShrink: 0,
+                        color: g.home ? "var(--gold)" : "rgba(255,255,255,0.5)",
+                        background: g.home ? "rgba(201,164,74,0.14)" : "rgba(255,255,255,0.05)",
+                        border: `1px solid ${g.home ? "rgba(201,164,74,0.3)" : "rgba(255,255,255,0.1)"}`,
+                      }}>{g.home ? "Home" : g.neutral ? "Neutral" : "Away"}</span>
+                    </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-                      <span style={{
+                      <span className="sch-badge-d" style={{
                         fontFamily: "'Oswald',sans-serif", fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase", padding: "2px 7px", borderRadius: 4, flexShrink: 0,
                         color: g.home ? "var(--gold)" : "rgba(255,255,255,0.5)",
                         background: g.home ? "rgba(201,164,74,0.14)" : "rgba(255,255,255,0.05)",
@@ -102,7 +118,7 @@ export default function SchedulePage() {
                       }}>{g.home ? "Home" : g.neutral ? "Neutral" : "Away"}</span>
                       <OppBadge opp={g.opp} />
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 14.5, color: "#fff", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <div style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 14.5, color: "#fff", fontWeight: 600, lineHeight: 1.25, overflowWrap: "anywhere" }}>
                           {g.home || g.neutral ? "vs " : "@ "}{g.opp}
                           {g.conf && <span title="Central League" style={{ color: "var(--gold)", marginLeft: 7, fontSize: 11 }}>★</span>}
                         </div>
