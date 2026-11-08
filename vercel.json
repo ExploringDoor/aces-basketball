@@ -73,6 +73,11 @@
   ],
   "redirects": [
     {
+      "source": "/scouting",
+      "destination": "/#scouting",
+      "permanent": false
+    },
+    {
       "source": "/playbook",
       "destination": "/playbook.html",
       "permanent": false
