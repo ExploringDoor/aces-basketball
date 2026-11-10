@@ -209,6 +209,22 @@ tr:last-child td{border-bottom:0}
 .tokb[aria-pressed="true"]{background:var(--mrn-50);border-color:var(--mrn)}
 .tokb.off svg{opacity:.3}
 .lu{display:grid;grid-template-columns:34px 1fr;gap:6px 8px;align-items:center}
+.ed-lu{background:#fff;border-bottom:1px solid var(--line);padding:8px 14px 10px}
+.ed-lu-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:7px}
+.ed-lu-head .lbl{margin:0 4px 0 0;display:inline}
+.ed-lu-head .hlp{font-size:12.5px;color:var(--ink-3)}
+.lu-saved{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-left:auto}
+.lu-chip{display:inline-flex;align-items:center;border:1px solid var(--line-2);border-radius:999px;background:#fff;overflow:hidden}
+.lu-chip button{border:0;background:none;font:600 13px/1 'Inter',sans-serif;color:var(--ink);padding:7px 10px 7px 12px;cursor:pointer}
+.lu-chip button:hover{background:var(--mrn-50);color:var(--mrn)}
+.lu-chip .x{padding:7px 9px 7px 4px;color:var(--ink-3);font-size:15px}
+.lu-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.lu-spot{display:flex;align-items:center;gap:6px;min-width:0}
+.lu-spot .t{width:28px;height:28px;flex:none;border-radius:50%;background:var(--mrn);color:#fff;font-family:'Oswald',sans-serif;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px}
+.lu-spot .t.x{background:#fff;color:#1d3b72;border:2px solid #1d3b72}
+.lu-spot select{min-width:0;flex:1;padding:7px 26px 7px 8px;font-size:13.5px}
+.lu-spot.set select{border-color:var(--mrn);background-color:var(--mrn-50);font-weight:600}
+@media (max-width:900px){ .ed-lu{padding:6px 10px 8px} .ed-lu-head{margin-bottom:5px;flex-wrap:nowrap;overflow-x:auto} .ed-lu-head .hlp{display:none} .ed-lu-head .lbl{white-space:nowrap} .lu-saved{margin-left:0;flex-wrap:nowrap} .lu-saved>*{flex:none;white-space:nowrap} .lu-row{display:flex;overflow-x:auto;gap:8px;padding-bottom:2px} .lu-spot{flex:none;width:158px} }
 .lu .t{width:30px;height:30px;border-radius:50%;background:var(--mrn);color:#fff;font-family:'Oswald',sans-serif;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px}
 .lu .t.x{background:#fff;color:#1d3b72;border:2px solid #1d3b72}
 .lu select{padding:7px 30px 7px 10px;font-size:14px}
@@ -699,9 +715,6 @@ tr:last-child td{border-bottom:0}
       <div class="fld"><label>Who can see it</label><div class="chips" id="edGroups"></div><div class="help">Nobody picked means everyone.</div></div>
       <div class="fld"><label for="edDue">Must know by</label><input class="inp" id="edDue" type="date"><div class="help">Players see it in a Must Know list with a due date. Leave blank for no deadline.</div></div>
       <label class="switch" style="margin-bottom:14px"><input type="checkbox" id="edVisible"><span class="tr"></span><span class="tx"><b>Show to players</b><span>Off keeps it as a draft only you can see</span></span></label>
-      <div class="sec" id="edLineupH">Who plays where</div>
-      <div class="lu" id="edLineup"></div>
-      <div class="help" style="font-size:13px;color:var(--ink-3);margin-top:8px" id="edLineupHelp">Names show under the numbers. Each player sees a YOU ring on their spot.</div>
       <div class="sec" style="margin-top:16px">Video of the play</div>
       <div id="edClip"></div>
       <input type="file" id="edClipFile" accept="video/mp4,video/quicktime,video/webm,video/x-m4v,.mp4,.mov,.webm,.m4v" class="hide">
@@ -718,6 +731,11 @@ tr:last-child td{border-bottom:0}
         <span style="flex:1"></span>
         <select class="inp" id="edSet" style="width:auto;min-width:160px"><option value="">Start from a set…</option></select>
         <select class="inp" id="edDef" style="width:auto;min-width:150px"><option value="">Add defense…</option></select>
+      </div>
+      <div class="ed-lu" id="edLuBar">
+        <div class="ed-lu-head"><span class="lbl" id="edLineupH">Players on the spots</span><span class="hlp" id="edLineupHelp">Names show on the court. Each player sees a YOU ring on his spot.</span>
+          <div class="lu-saved" id="edLuSaved"></div></div>
+        <div class="lu-row" id="edLineup"></div>
       </div>
       <div class="ed-court" id="edCourtWrap">
         <svg id="edSvg" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -816,7 +834,7 @@ tr:last-child td{border-bottom:0}
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="/playbook-court.js"></script>
+<script src="/playbook-court.js?v=2"></script>
 <script src="/playbook-drills.js"></script>
 <script>
 (function(){
@@ -848,7 +866,7 @@ function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||'null'); }cat
 function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } }
 function keyHash(k){ if(!(window.crypto&&crypto.subtle)) return Promise.resolve(''); return crypto.subtle.digest('SHA-256',new TextEncoder().encode('aces-playbook:'+k)).then(function(b){ return Array.prototype.map.call(new Uint8Array(b),function(x){ return ('0'+x.toString(16)).slice(-2); }).join(''); }); }
 function saveSnapshot(d){
-  var keep=['plays','plans','practices','drills','games','terms','endgame','goals','settings'], out={};
+  var keep=['plays','plans','practices','drills','games','terms','endgame','goals','lineups','settings'], out={};
   keep.forEach(function(k){ out[k]=d[k]; });
   out.players=(d.players||[]).map(function(p){ return {id:p.id,name:p.name,group:p.group||'',num:p.num||'',active:p.active!==false,code:''}; });
   out.calls=(d.calls||[]).slice(0,300); out.views=[]; out.quiz=[]; out.questions=[]; out.notes=[]; out.vsum={};
@@ -927,6 +945,7 @@ function demoApi(action,b){
   else if(action==='send_digest') r.sent='coach@example.com';
   else if(action==='set_board'){}
   else if(action==='set_goals'){ demo.goals=b.goals; r.goals=b.goals; }
+  else if(action==='set_lineups'){ demo.lineups=b.lineups; r.lineups=b.lineups; }
   else if(action==='set_endgame'){ demo.endgame=b.leaves; r.leaves=b.leaves; }
   else if(action==='save_term'){ if(b.id){ var ti=demo.terms.findIndex(function(x){return x.id===b.id;}); demo.terms[ti]=Object.assign({},demo.terms[ti],b.term); r.id=b.id; } else { var tid='t'+Date.now(); demo.terms.push(Object.assign({id:tid},b.term)); r.id=tid; } }
   else if(action==='delete_term') demo.terms=demo.terms.filter(function(x){return x.id!==b.id;});
@@ -1807,8 +1826,10 @@ function openEditor(id,kind){
   $('edKindTag').textContent=isScout()?'Scouting':'Our play';
   $('edCat').innerHTML=CATEGORIES.map(function(c){ return '<option'+(c===play.category?' selected':'')+'>'+c+'</option>'; }).join('');
   $('oppList').innerHTML=opponents().map(function(o){ return '<option value="'+esc(o)+'">'; }).join('');
-  $('edLineupH').textContent=isScout()?'Our defenders (optional)':'Who plays where';
-  $('edLineupHelp').textContent=isScout()?'Put your guys on the X\'s so each player knows who he\'s guarding.':'Names show under the numbers. Each player sees a YOU ring on their spot.';
+  $('edLineupH').textContent=isScout()?'Our defenders':'Players on the spots';
+  $('edLineupHelp').textContent=isScout()?'Put your guys on the X\'s so each player knows who he\'s guarding.':'Names show on the court. Each player sees a YOU ring on his spot.';
+  // a brand new play starts with the first saved lineup already on it
+  if(!src&&savedLineups().length) applyLineup(savedLineups()[0],true);
   renderGroupsChips(); renderLineup(); renderCourtBtns(); renderSets(); renderClip();
   $('editor').classList.add('on'); document.body.style.overflow='hidden';
   drawAll();
@@ -1822,11 +1843,48 @@ function renderGroupsChips(){
   $('edGroups').innerHTML=g.length?g.map(function(x){ return '<button class="fchip" type="button" data-grp="'+esc(x)+'" aria-pressed="'+(E.play.groups.indexOf(x)>=0)+'">'+esc(x)+'</button>'; }).join(''):'<span class="muted" style="font-size:13.5px">Give players a group (Varsity, JV) and you can pick it here.</span>';
 }
 $('edGroups').addEventListener('click',function(e){ var b=e.target.closest('[data-grp]'); if(!b) return; var g=b.getAttribute('data-grp'), i=E.play.groups.indexOf(g); if(i<0) E.play.groups.push(g); else E.play.groups.splice(i,1); dirty(); renderGroupsChips(); });
-function renderLineup(){
-  var toks=isScout()?PBCourt.DEF:PBCourt.OFF, list=players().slice().sort(function(a,b){ return (a.group||'').localeCompare(b.group||'')||a.name.localeCompare(b.name); });
-  $('edLineup').innerHTML=toks.map(function(k){ var x=k.charAt(0)==='X'; return '<span class="t'+(x?' x':'')+'">'+k.charAt(1)+'</span><select class="inp" data-lu="'+k+'"><option value="">Nobody yet</option>'+list.map(function(p){ return '<option value="'+esc(p.id)+'"'+(E.play.lineup[k]===p.id?' selected':'')+'>'+esc(p.name)+(p.group?' ('+esc(p.group)+')':'')+'</option>'; }).join('')+'</select>'; }).join('');
+function savedLineups(){ return (S.data&&S.data.lineups)||[]; }
+function spotToks(){ return isScout()?PBCourt.DEF:PBCourt.OFF; }
+// a saved lineup is stored on the O spots; on a scouted play the same five guard the matching X
+function applyLineup(l,quiet){
+  var toks=spotToks(), ids={}; players().forEach(function(p){ ids[p.id]=1; });
+  E.play.lineup={}; var n=0;
+  PBCourt.OFF.forEach(function(k,i){ var v=l.spots[k]; if(v&&ids[v]){ E.play.lineup[toks[i]]=v; n++; } });
+  if(!quiet){ dirty(); toast(n?l.name+' is on the court.':'Nobody from '+l.name+' is still on the roster.',!n); }
+  renderLineup(); if(!quiet) drawAll();
 }
-$('edLineup').addEventListener('change',function(e){ var s=e.target.closest('[data-lu]'); if(!s) return; var k=s.getAttribute('data-lu'); if(s.value) E.play.lineup[k]=s.value; else delete E.play.lineup[k]; dirty(); drawAll(); });
+function renderLineup(){
+  var toks=spotToks(), onPlay={}; toks.forEach(function(k){ if(E.play.lineup[k]) onPlay[E.play.lineup[k]]=1; });
+  var list=players().filter(function(p){ return p.active!==false||onPlay[p.id]; }).sort(function(a,b){ return (a.group||'').localeCompare(b.group||'')||a.name.localeCompare(b.name); });
+  var taken={}; toks.forEach(function(k){ if(E.play.lineup[k]) taken[E.play.lineup[k]]=k; });
+  $('edLineup').innerHTML=toks.map(function(k){ var x=k.charAt(0)==='X', v=E.play.lineup[k]||'', grp='', opts='';
+    list.forEach(function(p){ if(p.group!==grp){ if(grp||opts) opts+='</optgroup>'; grp=p.group||''; opts+='<optgroup label="'+esc(grp||'No group')+'">'; }
+      var other=taken[p.id]&&taken[p.id]!==k; opts+='<option value="'+esc(p.id)+'"'+(v===p.id?' selected':'')+'>'+esc(p.name)+(p.num?' #'+esc(p.num):'')+(other?' (on '+taken[p.id].charAt(1)+')':'')+'</option>'; });
+    if(opts) opts+='</optgroup>';
+    return '<label class="lu-spot'+(v?' set':'')+'"><span class="t'+(x?' x':'')+'">'+k.charAt(1)+'</span><select class="inp" data-lu="'+k+'" aria-label="Who plays '+k.charAt(1)+'"><option value="">'+(list.length?'Pick a player':'Add players first')+'</option>'+opts+'</select></label>'; }).join('');
+  var any=toks.some(function(k){ return E.play.lineup[k]; });
+  $('edLuSaved').innerHTML=savedLineups().map(function(l,i){ return '<span class="lu-chip"><button type="button" data-luuse="'+i+'" title="Put '+esc(l.name)+' on the spots">'+esc(l.name)+'</button><button type="button" class="x" data-ludel="'+i+'" aria-label="Delete the saved lineup '+esc(l.name)+'">&times;</button></span>'; }).join('')+
+    (any?'<button class="btn sm" type="button" id="luSave">Save as a lineup</button><button class="btn sm" type="button" id="luClear">Clear</button>':'');
+}
+$('edLineup').addEventListener('change',function(e){ var s=e.target.closest('[data-lu]'); if(!s) return; var k=s.getAttribute('data-lu');
+  // one player can only stand in one spot: picking him here takes him off the other one
+  if(s.value){ Object.keys(E.play.lineup).forEach(function(o){ if(o!==k&&E.play.lineup[o]===s.value) delete E.play.lineup[o]; }); E.play.lineup[k]=s.value; } else delete E.play.lineup[k];
+  dirty(); renderLineup(); drawAll(); });
+$('edLuSaved').addEventListener('click',function(e){
+  var u=e.target.closest('[data-luuse]'), d=e.target.closest('[data-ludel]');
+  if(u){ applyLineup(savedLineups()[+u.getAttribute('data-luuse')]); return; }
+  if(d){ var l=savedLineups()[+d.getAttribute('data-ludel')]; if(!l||!window.confirm('Delete the saved lineup "'+l.name+'"? Plays that already use it keep their names.')) return;
+    saveLineups(savedLineups().filter(function(x){ return x!==l; }),'Deleted '+l.name+'.'); return; }
+  if(e.target.closest('#luClear')){ E.play.lineup={}; dirty(); renderLineup(); drawAll(); return; }
+  if(e.target.closest('#luSave')){
+    var toks=spotToks(), spots={}; PBCourt.OFF.forEach(function(k,i){ if(E.play.lineup[toks[i]]) spots[k]=E.play.lineup[toks[i]]; });
+    var name=(window.prompt('Name this lineup (like Starting five, Second unit, Big lineup)',savedLineups().length?'':'Starting five')||'').trim().slice(0,40); if(!name) return;
+    var list=savedLineups().filter(function(x){ return x.name.toLowerCase()!==name.toLowerCase(); }); list.push({name:name,spots:spots});
+    if(list.length>10) return toast('You can keep 10 saved lineups. Delete one first.',true);
+    saveLineups(list,'Saved '+name+'. Tap it on any play to fill the spots.');
+  }
+});
+function saveLineups(list,msg){ api('set_lineups',{lineups:list}).then(function(d){ if(d.error) return toast(errText(d),true); S.data.lineups=d.lineups||list; if(E) renderLineup(); toast(msg); }); }
 function renderCourtBtns(){ Array.prototype.forEach.call(document.querySelectorAll('[data-court]'),function(b){ b.setAttribute('aria-pressed',String(b.getAttribute('data-court')===E.play.court)); }); }
 document.addEventListener('click',function(e){ var b=e.target.closest('[data-court]'); if(!b||!E) return; var c=b.getAttribute('data-court'); if(c===E.play.court) return; E.play.court=c; dirty(); renderCourtBtns(); renderSets(); drawAll(); });
 function renderSets(){

@@ -17,7 +17,8 @@
 //            set_endgame { leaves } · save_term { id?, term } · delete_term { id }
 //            log_call { call } · delete_call { id } · send_digest {}   (cron: /api/playbook-digest)
 //            set_board { id, step, on }   (players poll `board { token }` and follow it)
-//            set_goals { goals }   · game plans carry a prep quiz, scored as quiz_result 'prep_<planId>'
+//            set_goals { goals }   · set_lineups { lineups }  (saved lineups for the editor)
+//              · game plans carry a prep quiz, scored as quiz_result 'prep_<planId>'
 //            remove_clip { id } · drop_clip { url }
 //            answer { id, answer } · hide_question { id } · unhide_question { id }
 //            save_plan { id?, plan } · delete_plan { id } · save_practice { id?, practice }
@@ -27,7 +28,7 @@
 //            save_game { id?, game } · delete_game { id }   (box scores, typed or from a Hudl export)
 
 import { fbAdminConfigured, fsGet, fsCreate, fsPatch, fsPatchVerified, fsList, fsQuery, fsDelete } from './_firestore.js';
-import { cleanPlay, cleanClip, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanFeeds, parseIcs, cleanEndgame, cleanTerm, cleanCall, cleanGoals, canSee, newCode, normCode, cleanName, cleanGroup, signSession, readSession, sessionMatches, LIMITS } from './_playbook.js';
+import { cleanPlay, cleanClip, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanFeeds, parseIcs, cleanEndgame, cleanTerm, cleanCall, cleanGoals, cleanLineups, canSee, newCode, normCode, cleanName, cleanGroup, signSession, readSession, sessionMatches, LIMITS } from './_playbook.js';
 import { SITE_TAG } from './_site.js';
 import { del as blobDel } from '@vercel/blob';
 import { sendMail, emailConfigured, ADMIN_EMAIL } from './_email.js';
@@ -319,10 +320,10 @@ export async function sendDigest() {
 
 // ── Coach side ───────────────────────────────────────────────────────────
 async function adminList() {
-  const [plays, players, vsumRows, settings, questions, quiz, plans, practices, notes, drills, games, terms, endgameRaw, calls, goalsRaw] = await Promise.all([
+  const [plays, players, vsumRows, settings, questions, quiz, plans, practices, notes, drills, games, terms, endgameRaw, calls, goalsRaw, lineupsRaw] = await Promise.all([
     loadPlays(), loadPlayers(), loadSite('playbook_vsum'), loadSettings(), loadQuestions(),
     loadSite('playbook_quiz'), loadSite('playbook_plans'), loadSite('playbook_practices'), loadSite('playbook_notes'), loadSite('playbook_drills'), loadSite('playbook_games'),
-    loadSite('playbook_terms'), fsGet('playbook_meta/endgame'), loadSite('playbook_calls'), fsGet('playbook_meta/goals'),
+    loadSite('playbook_terms'), fsGet('playbook_meta/endgame'), loadSite('playbook_calls'), fsGet('playbook_meta/goals'), fsGet('playbook_meta/lineups'),
   ]);
   games.sort((a, b) => String(b.date).localeCompare(String(a.date)));
   // views = the newest openings across the roster (for the log and this-week counts); vsum = totals per player
@@ -334,7 +335,7 @@ async function adminList() {
   plans.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
   practices.sort((a, b) => String(b.date).localeCompare(String(a.date)));
   notes.sort((a, b) => String(b.date + b.created).localeCompare(String(a.date + a.created)));
-  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views, vsum, questions, quiz: quiz.slice(0, 6000), plans, practices, notes, drills, games, terms: terms.sort((a, b) => String(a.term).localeCompare(String(b.term))), endgame: cleanEndgame(endgameRaw && endgameRaw.leaves), calls: calls.sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 2000), goals: cleanGoals(goalsRaw && goalsRaw.goals) } };
+  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views, vsum, questions, quiz: quiz.slice(0, 6000), plans, practices, notes, drills, games, terms: terms.sort((a, b) => String(a.term).localeCompare(String(b.term))), endgame: cleanEndgame(endgameRaw && endgameRaw.leaves), calls: calls.sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 2000), goals: cleanGoals(goalsRaw && goalsRaw.goals), lineups: cleanLineups(lineupsRaw && lineupsRaw.lineups) } };
 }
 
 async function adminAction(action, body) {
@@ -477,6 +478,12 @@ async function adminAction(action, body) {
       const cur = await fsGet('playbook_meta/goals');
       const w = cur ? await fsPatchVerified('playbook_meta/goals', { goals, updated: now }) : await fsCreate('playbook_meta', { site: SITE_TAG, goals, updated: now }, 'goals');
       return (w.ok || (!cur && !w.error)) ? { status: 200, body: { ok: true, goals } } : { status: 502, body: { error: 'save_failed' } };
+    }
+    case 'set_lineups': {   // saved lineups for the play editor, see cleanLineups
+      const lineups = cleanLineups(body.lineups);
+      const cur = await fsGet('playbook_meta/lineups');
+      const w = cur ? await fsPatchVerified('playbook_meta/lineups', { lineups, updated: now }) : await fsCreate('playbook_meta', { site: SITE_TAG, lineups, updated: now }, 'lineups');
+      return (w.ok || (!cur && !w.error)) ? { status: 200, body: { ok: true, lineups } } : { status: 502, body: { error: 'save_failed' } };
     }
     case 'send_digest': {   // the Sunday email, on demand
       const r = await sendDigest();

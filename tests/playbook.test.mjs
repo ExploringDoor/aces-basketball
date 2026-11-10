@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import * as fake from './_fake.js';
 import { toFirestore } from '../api/_firestore.js';
 import { SITE_TAG } from '../api/_site.js';
-import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanPhoto, cleanDate, cleanFeeds, parseIcs, cleanEndgame, cleanTerm, cleanCall, cleanAudio, cleanPrepQuiz, cleanGoals, goalValue, SITUATION_KEYS, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
+import { cleanPlay, cleanClip, cleanClipLink, cleanPlan, cleanPractice, cleanDrill, cleanNote, cleanGame, cleanPhoto, cleanDate, cleanFeeds, parseIcs, cleanEndgame, cleanTerm, cleanCall, cleanAudio, cleanPrepQuiz, cleanGoals, cleanLineups, goalValue, SITUATION_KEYS, canSee, signSession, readSession, sessionMatches, normCode, newCode } from '../api/_playbook.js';
 import playbook from '../api/playbook.js';
 
 fake.install();
@@ -368,6 +368,13 @@ await test('quiz results, game plan, practice and progress reach the player', as
   assert.ok((await call({ action: 'plays', token: tok })).body.done.viewed.includes(playId));
   assert.equal((await call({ action: 'board', token: tok })).body.on, false);
   assert.equal((await call({ action: 'set_goals', goals: [{ metric: 'ftp', target: 70 }] }, true)).statusCode, 200);
+  // saved lineups: cleaned, round trip through admin_list, junk dropped
+  assert.deepEqual(cleanLineups([{ name: ' Starting five ', spots: { O1: 'a1', O2: 'bad id!', X1: 'x', O9: 'z' } }, { name: 'starting FIVE', spots: { O1: 'b' } }, { name: 'Empty', spots: {} }, { name: '', spots: { O1: 'a' } }]),
+    [{ name: 'Starting five', spots: { O1: 'a1' } }]);
+  const sl = await call({ action: 'set_lineups', lineups: [{ name: 'Starting five', spots: { O1: codes[0].id } }] }, true);
+  assert.equal(sl.statusCode, 200, JSON.stringify(sl.body));
+  assert.deepEqual((await call({ action: 'admin_list' }, true)).body.lineups, [{ name: 'Starting five', spots: { O1: codes[0].id } }]);
+  assert.equal((await call({ action: 'set_lineups', lineups: [] }, false)).statusCode, 401, 'players cannot touch saved lineups');
   const sp = await call({ action: 'save_plan', plan: { opponent: 'Radnor', date: '2099-01-05', visible: true, quiz: [{ q: 'Who shoots?', options: ['23', '4'], answer: 0 }] } }, true);
   assert.equal(sp.statusCode, 200, JSON.stringify(sp.body));
   const pl3 = await call({ action: 'plays', token: tok });

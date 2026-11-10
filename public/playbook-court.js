@@ -192,7 +192,7 @@
       s += '<circle r="' + R + '" fill="' + circ + '" stroke="#fff" stroke-width="2.5"/>';
       s += '<text y="6.5" font-family="Oswald,Arial,sans-serif" font-weight="700" font-size="18" fill="#fff" text-anchor="middle">' + n + '</text>';
     }
-    if (o.name) s += '<text y="' + (R + 15) + '" font-family="Oswald,Arial,sans-serif" font-weight="600" font-size="11.5" fill="' + (o.me ? C.mrn : C.ink) + '" text-anchor="middle" stroke="#fff" stroke-width="3" paint-order="stroke" pointer-events="none">' + esc(o.me ? 'YOU' : shortName(o.name)) + '</text>';
+    if (o.name) s += '<text y="' + (R + 18) + '" font-family="Oswald,Arial,sans-serif" font-weight="700" font-size="15" fill="' + (o.me ? C.mrn : C.ink) + '" text-anchor="middle" stroke="#fff" stroke-width="4" paint-order="stroke" pointer-events="none">' + esc(o.me ? 'YOU' : shortName(o.name)) + '</text>';
     return s + '</g>';
   }
   function ballSVG(p, scale) {

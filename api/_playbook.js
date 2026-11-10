@@ -287,6 +287,25 @@ export function cleanPrepQuiz(list) {
     return { q: text, options, answer };
   }).filter(Boolean).slice(0, 6);
 }
+// Saved lineups: a name plus who plays each spot (O1..O5, token id → roster player id), so a
+// coach can drop the same five names onto every play he draws in one tap.
+export function cleanLineups(list) {
+  const seen = new Set();
+  return (Array.isArray(list) ? list : []).map((l) => {
+    if (!l || typeof l !== 'object') return null;
+    const name = clip(stripTags(String(l.name || '').trim()), 40);
+    if (!name || seen.has(name.toLowerCase())) return null;
+    const spots = {};
+    for (const id of TOKENS.slice(0, 5)) {
+      const v = l.spots && l.spots[id];
+      if (typeof v === 'string' && /^[A-Za-z0-9_-]{1,128}$/.test(v)) spots[id] = v;
+    }
+    if (!Object.keys(spots).length) return null;
+    seen.add(name.toLowerCase());
+    return { name, spots };
+  }).filter(Boolean).slice(0, 10);
+}
+
 // Season goals: a metric from the box scores and a target. `dir` says which way is good.
 export const GOAL_METRICS = {
   wins: { label: 'Wins', dir: 'over', fmt: 'int' }, ppg: { label: 'Points per game', dir: 'over', fmt: 'dec' }, allowed: { label: 'Points allowed per game', dir: 'under', fmt: 'dec' },
