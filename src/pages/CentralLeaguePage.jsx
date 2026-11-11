@@ -1,5 +1,6 @@
 // pages/CentralLeaguePage.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { FadeIn, Spade, centralLeagueTeams, centralLeagueChampions, teamLogos } from "../shared";
 
 // ── Derive title counts + years per school from the champions list ──
@@ -23,8 +24,22 @@ const TeamBadge = ({ team, size = 44 }) => {
     : <div style={{ width: size, height: size, borderRadius: "50%", background: "#fff", border: `2px solid ${team.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Oswald', sans-serif", fontSize: Math.round(size * 0.34), fontWeight: 800, color: team.color, flexShrink: 0 }}>{team.initials}</div>;
 };
 
+// Lower Merion title team photos, keyed by the year the season ended (2024-25 = 2025).
+// Files live in /public/central-league/<start>-<end>.jpg
+const TITLE_PHOTOS = [1995, 1996, 2002, 2006, 2009, 2012, 2013, 2014, 2017, 2018, 2019, 2022, 2024, 2025];
+const seasonLabel = (y) => `${y - 1}-${String(y).slice(-2)}`;
+const photoFor = (y) => (TITLE_PHOTOS.includes(y) ? `/central-league/${y - 1}-${y}.jpg` : null);
+
 export default function CentralLeaguePage() {
   const [selected, setSelected] = useState(null);
+  const [photoYear, setPhotoYear] = useState(null);
+  useEffect(() => {
+    if (!photoYear) return;
+    const onKey = (e) => { if (e.key === "Escape") setPhotoYear(null); };
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow; document.body.style.overflow = "hidden";
+    return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
+  }, [photoYear]);
   const selYears = selected ? (titleYears[selected.name] || []).slice().sort((a, b) => b - a) : [];
 
   return (
@@ -154,19 +169,42 @@ export default function CentralLeaguePage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))", gap: 8 }}>
           {centralLeagueChampions.map(({ year, teams }, i) => {
             const isLM = teams.includes("Lower Merion");
+            const photo = isLM && photoFor(year);
+            const Tag = photo ? "button" : "div";
             return (
-              <div key={year} style={{
-                display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 8,
+              <Tag key={year} {...(photo ? { onClick: () => setPhotoYear(year), "aria-label": `See the ${seasonLabel(year)} championship team photo` } : {})} style={{
+                display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 8, width: "100%", textAlign: "left", font: "inherit", color: "inherit",
                 background: isLM ? "rgba(132,0,54,0.16)" : "rgba(255,255,255,0.02)",
                 border: `1px solid ${isLM ? "rgba(201,164,74,0.25)" : "rgba(255,255,255,0.05)"}`,
-              }}>
+                cursor: photo ? "pointer" : "default", transition: "all 0.2s",
+              }}
+                onMouseEnter={photo ? (e => { e.currentTarget.style.borderColor = "rgba(201,164,74,0.7)"; e.currentTarget.style.background = "rgba(132,0,54,0.3)"; }) : undefined}
+                onMouseLeave={photo ? (e => { e.currentTarget.style.borderColor = "rgba(201,164,74,0.25)"; e.currentTarget.style.background = "rgba(132,0,54,0.16)"; }) : undefined}>
                 <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 15, fontWeight: 700, color: isLM ? "var(--gold)" : "rgba(255,255,255,0.55)", minWidth: 34 }}>{year}</span>
-                <span style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13, color: isLM ? "#fff" : "rgba(255,255,255,0.6)", lineHeight: 1.3 }}>{teams.join(" · ")}</span>
-              </div>
+                <span style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13, color: isLM ? "#fff" : "rgba(255,255,255,0.6)", lineHeight: 1.3, flex: 1 }}>{teams.join(" · ")}</span>
+                {photo && <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 1.5, color: "var(--gold)", textTransform: "uppercase", whiteSpace: "nowrap" }}>Photo ›</span>}
+              </Tag>
             );
           })}
         </div>
       </div>
+
+      {/* Title team photo */}
+      {photoYear && createPortal(
+        <div role="dialog" aria-modal="true" aria-label={`${seasonLabel(photoYear)} Central League Champions`} onClick={() => setPhotoYear(null)} style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(5,0,3,0.94)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "clamp(12px,3vw,32px)", cursor: "zoom-out" }}>
+          <div onClick={e => e.stopPropagation()} style={{ maxWidth: 1200, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, cursor: "default" }}>
+            <div style={{ display: "flex", alignItems: "center", width: "100%", gap: 12 }}>
+              <div style={{ fontFamily: "'Oswald', sans-serif", textTransform: "uppercase", letterSpacing: 2 }}>
+                <span style={{ color: "var(--gold)", fontSize: 13 }}>{seasonLabel(photoYear)}</span>
+                <span style={{ color: "#fff", fontSize: 18, marginLeft: 10 }}>Central League Champions</span>
+              </div>
+              <button onClick={() => setPhotoYear(null)} autoFocus style={{ marginLeft: "auto", fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1.5, textTransform: "uppercase", padding: "9px 18px", borderRadius: 6, cursor: "pointer", color: "var(--gold)", border: "1px solid rgba(201,164,74,0.55)", background: "rgba(132,0,54,0.25)" }}>✕ Close</button>
+            </div>
+            <img src={photoFor(photoYear)} alt={`Lower Merion, ${seasonLabel(photoYear)} Central League Champions`} style={{ maxWidth: "100%", maxHeight: "78vh", objectFit: "contain", borderRadius: 10, boxShadow: "0 30px 90px rgba(0,0,0,0.7)" }} />
+          </div>
+        </div>,
+        document.body
+      )}
     </section>
   );
 }
