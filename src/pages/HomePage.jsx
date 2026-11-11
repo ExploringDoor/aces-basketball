@@ -374,7 +374,13 @@ export default function HomePage({ goTo }) {
                 </a>
               ))}
             </div>
-            <p style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:14, color:"rgba(255,255,255,0.5)", margin:"24px 0 0" }}>Thank you for supporting Aces basketball. Stop in and tell them the Aces sent you.</p>
+            {sponsors.filter(sp => sp.owners).map(sp => (
+              <p key={sp.name} style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:16, color:"rgba(255,255,255,0.8)", lineHeight:1.6, margin:"24px auto 0", maxWidth:620 }}>
+                {sp.name} {sp.place} is proudly owned by <span style={{ color:"var(--gold)", fontWeight:600 }}>{sp.owners}</span>
+                {sp.ownerNames && <><br /><span style={{ fontSize:14, color:"rgba(255,255,255,0.6)" }}>{sp.ownerNames}</span></>}
+              </p>
+            ))}
+            <p style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:14, color:"rgba(255,255,255,0.5)", margin:"14px 0 0" }}>Thank you for supporting Aces basketball. Stop in and tell them the Aces sent you.</p>
           </div>
         </section>
       )}

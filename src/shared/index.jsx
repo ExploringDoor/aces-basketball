@@ -378,7 +378,8 @@ export const instagramPosts = [
 // Opponent logos (shared with the Central League page).
 // Season sponsors. Shown on the home page, in the footer of every page, and first on the Sponsors page.
 export const sponsors = [
-  { name: "Jersey Mike's Subs", place: "Ardmore", logo: "/sponsors/jersey-mikes-ardmore.webp", url: "https://www.jerseymikes.com/8103/ardmore-pa" },
+  { name: "Jersey Mike's Subs", place: "Ardmore", logo: "/sponsors/jersey-mikes-ardmore.webp", url: "https://www.jerseymikes.com/8103/ardmore-pa",
+    owners: "the Klevan Family", ownerNames: "Freddie, Sandy, Tori ’15 and Harrison ’18" },
 ];
 
 export const teamLogos = {
