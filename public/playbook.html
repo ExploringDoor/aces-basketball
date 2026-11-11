@@ -52,6 +52,9 @@ h1,h2,h3{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2px}
 .gnote svg{width:18px;height:18px;flex:none;color:var(--mrn);margin-top:1px}
 .back-site{display:inline-block;margin-top:18px;color:var(--ink-3);font-size:14px;text-decoration:none}
 .back-site:hover{color:var(--mrn)}
+.coach-in{display:block;margin:22px auto 0;padding:12px 18px;max-width:320px;border:1px solid var(--line,#e3dde0);border-radius:12px;color:var(--ink-2,#3a3438);font-size:15px;text-decoration:none;background:#fff}
+.coach-in b{color:var(--mrn)}
+.coach-in:hover{border-color:var(--mrn)}
 /* app */
 .top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
 .top-in{max-width:1240px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px}
@@ -407,6 +410,7 @@ body.shielded #app{filter:blur(22px)}
       <div class="gerr" id="gateErr" role="alert"></div>
       <div class="gnote"><svg><use href="#i-lock"/></svg><span>Players only. Your code is yours alone, and every play shows your name across it. Don't share your code or pictures of the plays.</span></div>
     </form>
+    <a class="coach-in" href="/playbook-admin">Coach? <b>Sign in with your coach passcode here</b></a>
     <a class="back-site" href="/">Back to the Aces site</a>
   </div>
 </div>
@@ -560,7 +564,7 @@ function api(body){
   return fetch('/api/playbook',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
     .then(function(r){ return r.json().catch(function(){ return {error:'server'}; }).then(function(d){ d._status=r.status; return d; }); });
 }
-var ERR={ bad_code:'That code didn\'t work. Check it with your coach.', access_off:'Your playbook access is turned off. Talk to your coach.', closed:'The playbook is closed right now. Your coach will open it again.', signed_out:'You were signed out. Enter your code again.', not_configured:'The playbook isn\'t set up yet.', server:'Something went wrong. Try again.' };
+var ERR={ bad_code:'That code didn\'t work. Player codes are the 6 characters your coach gave you. Coaches, use the coach sign in link below.', access_off:'Your playbook access is turned off. Talk to your coach.', closed:'The playbook is closed right now. Your coach will open it again.', signed_out:'You were signed out. Enter your code again.', not_configured:'The playbook isn\'t set up yet.', server:'Something went wrong. Try again.' };
 
 /* ── watermark text ── */
 function lsGetSafe(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
