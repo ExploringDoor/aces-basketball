@@ -171,6 +171,15 @@ export const leagueTitlePhoto = (year) => {
   const y = Number(year);
   return leagueTitlePhotoYears.includes(y) ? `/central-league/${y - 1}-${y}.jpg` : null;
 };
+// State and District 1 title team photos, keyed by the year the season ended.
+// Files: /public/titles/<kind>-<start>-<end>.jpg
+const titlePhotoYears = { state: [2013], district: [2021, 2022, 2024] };
+export const titlePhoto = (kind, year) => {
+  const y = Number(year);
+  if (kind === "league") return leagueTitlePhoto(y);
+  return (titlePhotoYears[kind] || []).includes(y) ? `/titles/${kind}-${y - 1}-${y}.jpg` : null;
+};
+export const titleName = { state: "PIAA State Champions", district: "District 1 Champions", league: "Central League Champions" };
 export const seasonLabel = (year) => `${Number(year) - 1}-${String(year).slice(-2)}`;
 
 export const championships = {
