@@ -628,11 +628,11 @@ export const coachingStaff = [
       "Reached 700 career wins in a 2025 victory at Haverford, all at Lower Merion across 35-plus seasons.",
     ] },
   { name: "Kevin Grugan", role: "Top Assistant Coach", since: "", photo: "/coaches/kevin-grugan.jpg", bio: "Widely regarded as one of the best assistant coaches in the state of Pennsylvania. Grugan is Coach Downer's right hand and a critical architect of the Aces' sustained success." },
-  { name: "John Gallman", role: "Assistant Coach", since: "", photo: "/coaches/john-gallman.jpg", bio: "Veteran assistant coach helping guide the Aces alongside Coach Downer." },
-  { name: "Mike Lachs", role: "Assistant Coach", since: "", photo: "/coaches/mike-lachs.jpg", bio: "Dedicated assistant contributing to player development and game preparation." },
   { name: "Adam Miller", role: "Assistant Coach", since: "", photo: "/coaches/adam-miller.jpg", bio: "Key staff member supporting the program's continued success." },
-  { name: "Eric Montanari", role: "Assistant Coach", since: "", photo: "/coaches/eric-montanari.jpg", bio: "Instrumental in daily operations and development of Lower Merion's talent." },
+  { name: "John Gallman", role: "Assistant Coach", since: "", photo: "/coaches/john-gallman.jpg", bio: "Veteran assistant coach helping guide the Aces alongside Coach Downer." },
   { name: "Matt Schwartz", role: "Assistant Coach", since: "", photo: "/coaches/matt-schwartz.jpg", bio: "Bringing energy and expertise to the Aces coaching staff." },
+  { name: "Eric Montanari", role: "Assistant Coach", since: "", photo: "/coaches/eric-montanari.jpg", bio: "Instrumental in daily operations and development of Lower Merion's talent." },
+  { name: "Mike Lachs", role: "Assistant Coach", since: "", photo: "/coaches/mike-lachs.jpg", bio: "Dedicated assistant contributing to player development and game preparation." },
 ];
 
 export const thousandPointClub = [
