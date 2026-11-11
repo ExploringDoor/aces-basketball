@@ -1,5 +1,6 @@
 // pages/SupportPage.jsx
 import { FadeIn, Spade, Icon } from "../shared";
+import ContactForm from "../shared/ContactForm";
 
 export default function SupportPage() {
   return (
@@ -82,7 +83,7 @@ export default function SupportPage() {
           }}>
             <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:20, letterSpacing:3, color:"var(--gold)", marginBottom:12, textTransform:"uppercase" }}>Get Involved</div>
             <p style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:14, color:"rgba(255,255,255,0.45)", lineHeight:1.8, maxWidth:500, margin:"0 auto 28px" }}>
-              Interested in supporting the program through a financial contribution or volunteering your time? Reach out and connect with the Aces.
+              Interested in supporting the program through a financial contribution or volunteering your time? Send us a message below and we will get back to you.
             </p>
             <a href="/donate.html" style={{
               display:"inline-block",
@@ -96,21 +97,12 @@ export default function SupportPage() {
             }}>
               Donate to the Shoot-a-Thon
             </a>
-            <a href="mailto:aceshoops@gmail.com?subject=Supporting%20Lower%20Merion%20Aces%20Basketball" style={{
-              display:"inline-block", margin:"0 8px 12px",
-              padding:"12px 32px",
-              background:"rgba(132,0,54,0.4)",
-              border:"1px solid rgba(201,164,74,0.4)",
-              borderRadius:6,
-              fontFamily:"'Oswald',sans-serif", fontSize:13, letterSpacing:2,
-              color:"var(--gold)", textDecoration:"none",
-              textTransform:"uppercase",
-              transition:"all 0.2s",
-            }}
-              onMouseEnter={e => { e.currentTarget.style.background="rgba(132,0,54,0.6)"; e.currentTarget.style.borderColor="rgba(201,164,74,0.7)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background="rgba(132,0,54,0.4)"; e.currentTarget.style.borderColor="rgba(201,164,74,0.4)"; }}>
-              Email the Aces
-            </a>
+          </div>
+        </FadeIn>
+
+        <FadeIn delay={0.4}>
+          <div style={{ marginTop: 24 }}>
+            <ContactForm title="Contact the Aces" blurb="Questions about donating, volunteering, sponsorship or anything else? Send it here and it goes straight to the Aces." />
           </div>
         </FadeIn>
       </div>

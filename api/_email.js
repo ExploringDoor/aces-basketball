@@ -34,7 +34,7 @@ export function emailConfigured() { return !!(SG_KEY && MAIL_FROM); }
 
 // Returns true if SendGrid accepted the message, false otherwise. Never throws —
 // a failed confirmation email must not fail the payment confirmation.
-export async function sendMail({ to, subject, html, text, bcc }) {
+export async function sendMail({ to, subject, html, text, bcc, replyTo, replyName }) {
   if (!emailConfigured() || !to) return false;
   const personalization = { to: [{ email: to }] };
   const bccList = [].concat(bcc || []).filter(Boolean).filter((e) => e !== to);
@@ -46,7 +46,7 @@ export async function sendMail({ to, subject, html, text, bcc }) {
       body: JSON.stringify({
         personalizations: [personalization],
         from: { email: MAIL_FROM, name: MAIL_FROM_NAME },
-        reply_to: { email: MAIL_REPLY_TO, name: MAIL_FROM_NAME },
+        reply_to: replyTo ? { email: replyTo, name: replyName || replyTo } : { email: MAIL_REPLY_TO, name: MAIL_FROM_NAME },
         subject: subject || 'Lower Merion Aces Basketball',
         content: [
           { type: 'text/plain', value: text || htmlToText(html) },
