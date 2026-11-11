@@ -82,3 +82,16 @@ export async function resolveAuth(req) {
 
 /** What a caller may see of the staff list: names always, codes only for the admin. */
 export const staffFor = (auth) => auth.staff.map((c) => (auth.role === 'admin' ? { name: c.name, code: c.code } : { name: c.name }));
+
+/** A coach's own staff code used somewhere other than scouting (the Team Playbook coach page).
+ *  Returns the coach's name, or '' (counting the miss against the same per-IP throttle). */
+export async function staffCodeName(req, key) {
+  if (throttled(req)) return '';
+  const code = normCode(key);
+  if (!code) return '';
+  const staff = await loadStaff().catch(() => []);
+  const hit = staff.find((c) => c.code && ctEq(codeKey(c.code), codeKey(code)));
+  if (hit) return hit.name;
+  await noteMiss(req);
+  return '';
+}

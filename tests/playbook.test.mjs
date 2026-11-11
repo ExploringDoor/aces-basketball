@@ -403,5 +403,14 @@ await test('a removed player can no longer sign in', async () => {
   assert.equal(r.body.players.length, 1);
 });
 
+await test('a coach own staff password opens the coach page; a wrong one does not', async () => {
+  fake.state.docs.set('scouting_meta/' + SITE_TAG + '_staff', { fields: toFirestore({ site: SITE_TAG, staff: [{ name: 'Test', code: 'Test42!' }] }), createTime: 'x', updateTime: 'x' });
+  const as = async (key) => { const res = mockRes(); await playbook({ method: 'POST', headers: { 'x-admin-key': key }, body: { action: 'admin_list' } }, res); return res; };
+  const ok = await as('Test42!');
+  assert.equal(ok.statusCode, 200); assert.equal(ok.body.role, 'coach');
+  assert.equal((await as('test42!')).statusCode, 200);   // same case rules as scouting
+  assert.equal((await as('Test43!')).statusCode, 401);
+});
+
 console.log(`\n${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);

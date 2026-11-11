@@ -32,6 +32,7 @@ import { cleanPlay, cleanClip, cleanPlan, cleanPractice, cleanDrill, cleanNote, 
 import { SITE_TAG } from './_site.js';
 import { del as blobDel } from '@vercel/blob';
 import { sendMail, emailConfigured, ADMIN_EMAIL } from './_email.js';
+import { staffCodeName } from './_staffauth.js';
 import { clip, stripTags } from './_clinic.js';
 import { slugOf as scoutSlug } from './_scouting.js';
 
@@ -51,7 +52,10 @@ async function roleOf(req) {
   const key = String(req.headers['x-admin-key'] || '');
   if (!key) return '';
   const s = await loadSettings();
-  return s.assistant_hash && ctEq(assistantHash(key), s.assistant_hash) ? 'assistant' : '';
+  if (s.assistant_hash && ctEq(assistantHash(key), s.assistant_hash)) return 'assistant';
+  // A coach's own password from the staff list (the one they use on scouting and practice plans)
+  // opens the coach page too, so each coach has one password for all three.
+  return (await staffCodeName(req, key)) ? 'coach' : '';
 }
 const ASSISTANT_ACTIONS = new Set(['admin_list', 'set_board', 'log_call', 'delete_call', 'add_note', 'save_game', 'answer', 'hide_question', 'unhide_question', 'set_tonight', 'save_practice', 'save_plan', 'scout_report']);
 function publicSettings(s) { const o = Object.assign({}, s); delete o.assistant_hash; o.assistant_set = !!s.assistant_hash; return o; }

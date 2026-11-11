@@ -7,6 +7,7 @@
 // The browser calls this with the admin passcode in x-admin-key (see playbook-admin.html).
 
 import { handleUpload } from '@vercel/blob/client';
+import { staffCodeName } from './_staffauth.js';
 
 function ctEq(a, b) {
   a = String(a || ''); b = String(b || '');
@@ -15,7 +16,12 @@ function ctEq(a, b) {
   for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return r === 0;
 }
-function authed(req) { const want = process.env.ADMIN_PASSWORD || ''; return !!want && ctEq(req.headers['x-admin-key'] || '', want); }
+async function authed(req) {
+  const key = String(req.headers['x-admin-key'] || '');
+  const want = process.env.ADMIN_PASSWORD || '';
+  if (want && ctEq(key, want)) return true;
+  return !!(key && await staffCodeName(req, key));   // a coach's own password (same list as scouting)
+}
 
 export const CLIP = { maxBytes: 250 * 1024 * 1024, types: ['video/mp4', 'video/quicktime', 'video/webm', 'video/x-m4v'] };
 export const AUDIO = { maxBytes: 8 * 1024 * 1024, types: ['audio/wav', 'audio/x-wav', 'audio/wave', 'audio/mpeg', 'audio/mp4', 'audio/webm'] };
@@ -24,7 +30,7 @@ export const PHOTO = { maxBytes: 10 * 1024 * 1024, types: ['image/jpeg', 'image/
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
-  if (!authed(req)) return res.status(401).json({ error: 'unauthorized' });
+  if (!(await authed(req))) return res.status(401).json({ error: 'unauthorized' });
   if (!process.env.BLOB_READ_WRITE_TOKEN) return res.status(503).json({ error: 'not_configured' });
   try {
     const json = await handleUpload({
