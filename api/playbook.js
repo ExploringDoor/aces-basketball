@@ -54,7 +54,7 @@ async function loadSettings() {
   if (settingsMemo && Date.now() - settingsMemo.at < 5000) return settingsMemo.v;
   const v = await loadSettingsNow(); settingsMemo = { at: Date.now(), v }; return v;
 }
-async function loadSettingsNow() { const s = await fsGet(SETTINGS); return { open: !s || s.open !== false, attitude_share: (s && typeof s.attitude_share === 'string' && /^[a-z0-9]{12,32}$/.test(s.attitude_share)) ? s.attitude_share : '', feeds: cleanFeeds(s && s.feeds) }; }
+async function loadSettingsNow() { const s = await fsGet(SETTINGS); return { open: !s || s.open !== false, attitude_share: (s && typeof s.attitude_share === 'string' && /^[a-z0-9]{12,32}$/.test(s.attitude_share)) ? s.attitude_share : '', feeds: cleanFeeds(s && s.feeds), feed_alerts: !!(s && s.feed_alerts), feed_last: (s && s.feed_last) || null }; }
 // Upcoming events from the group's calendar feed, cached per warm instance for 10 minutes.
 const feedCache = new Map();
 async function upcomingFor(feeds, group) {
@@ -193,7 +193,7 @@ async function playerAction(action, body, req) {
     const visiblePlans = plans.filter((p) => p.visible).map((p) => publicPlan(p, byId)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
     games.sort((a, b) => String(b.date).localeCompare(String(a.date)));
     const cal = await upcomingFor(settings.feeds, player.group || '');
-    return { status: 200, body: { player: who(player), plays, plan: plan ? publicPlan(plan, byId) : null, plans: visiblePlans, practice: practice ? publicPractice(practice) : null, games: games.map(publicGame), done, attitude_share: settings.attitude_share, upcoming: cal.events, calendar_url: cal.url, terms, endgame: egLeaves, goals: cleanGoals(goalsRaw && goalsRaw.goals) } };
+    return { status: 200, body: { player: who(player), plays, plan: plan ? publicPlan(plan, byId) : null, plans: visiblePlans, practice: practice ? publicPractice(practice) : null, games: games.map(publicGame), done, attitude_share: settings.attitude_share, notices: await recentNotices(), upcoming: cal.events, calendar_url: cal.url, terms, endgame: egLeaves, goals: cleanGoals(goalsRaw && goalsRaw.goals) } };
   }
   if (action === 'board') {   // what coach has on the Board right now (players' phones follow it)
     let b = boardMemo && Date.now() - boardMemo.at < 3000 ? boardMemo.v : null;
@@ -564,6 +564,15 @@ async function adminAction(action, body) {
       feedCache.clear(); settingsMemo = null;
       return w.ok ? { status: 200, body: { ok: true, feeds } } : { status: 502, body: { error: 'save_failed' } };
     }
+    case 'set_feed_alerts': {   // email alert subscribers when a feed changes (the home screen card is always on)
+      const w = await fsPatchVerified(SETTINGS, { feed_alerts: !!body.on, updated: now });
+      settingsMemo = null;
+      return w.ok ? { status: 200, body: { ok: true, on: !!body.on } } : { status: 502, body: { error: 'save_failed' } };
+    }
+    case 'feed_check': {   // run the watcher right now and report what it saw
+      const r = await runFeedWatch();
+      return { status: 200, body: r };
+    }
     case 'test_feed': {   // fetch a feed once so the coach sees it works
       const feeds = cleanFeeds([{ group: '', url: body.url }]);
       if (!feeds.length) return { status: 400, body: { error: 'bad_url' } };
@@ -600,4 +609,94 @@ export default async function handler(req, res) {
   } catch (e) {
     return res.status(500).json({ error: 'server_error' });
   }
+}
+
+
+/* ================================================================
+   Schedule change watch (cron api/playbook-feedwatch.js, admin action feed_check)
+   Snapshot of each feed's next 14 days in playbook_meta/feedsnap; changes become a
+   card on every player's home screen (playbook_meta/notices) and, when Settings has
+   "email schedule changes" on, an email to /api/alerts subscribers of that group.
+================================================================ */
+import { createHash as _fwHash, createHmac as _fwHmac } from 'node:crypto';
+import { windowEvents as fwWindow, diffEvents as fwDiff, hasChanges as fwHas, describeChanges as fwDescribe, teamsForGroup as fwTeams, changeEmail as fwEmail } from './_feedwatch.js';
+const FEEDSNAP = 'playbook_meta/feedsnap';
+const NOTICES = 'playbook_meta/notices';
+const FW_TEAMS = ['Varsity', 'JV', '9th Grade'];
+let noticesMemo = null;
+export async function recentNotices() {
+  if (noticesMemo && Date.now() - noticesMemo.at < 60000) return noticesMemo.v;
+  const d = await fsGet(NOTICES).catch(() => null);
+  const cut = Date.now() - 14 * 86400000;
+  const v = ((d && Array.isArray(d.list)) ? d.list : []).filter((n) => n && Date.parse(n.ts) > cut).slice(0, 5)
+    .map((n) => ({ id: String(n.id || ''), ts: String(n.ts || ''), group: String(n.group || ''), lines: (Array.isArray(n.lines) ? n.lines : []).map((l) => String(l).slice(0, 200)).slice(0, 12) }));
+  noticesMemo = { at: Date.now(), v };
+  return v;
+}
+async function fetchFeedText(url) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 6000);
+  try {
+    const r = await fetch(url, { signal: ctrl.signal, headers: { 'user-agent': 'playbook-feedwatch/1' } });
+    if (!r.ok) throw new Error('http_' + r.status);
+    const text = await r.text();
+    if (text.length > 2000000) throw new Error('too_big');
+    return text;
+  } finally { clearTimeout(t); }
+}
+function siteBase() {
+  if (process.env.SITE_URL) return String(process.env.SITE_URL).replace(/\/+$/, '');
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return 'https://' + process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  return 'https://aces-basketball.vercel.app';
+}
+function alertsKeyLocal() {
+  const base = process.env.NEWSLETTER_SECRET || process.env.SENDGRID_API_KEY || '';
+  return process.env.ALERTS_KEY || (base ? _fwHmac('sha256', base).update('aces-schedule-alerts-v1').digest('base64url').slice(0, 32) : '');
+}
+export async function runFeedWatch() {
+  const settings = await loadSettingsNow();
+  const feeds = settings.feeds || [];
+  const now = Date.now();
+  if (!feeds.length) return { ok: true, checked: 0, changes: [], note: 'no_feeds' };
+  const snap = (await fsGet(FEEDSNAP).catch(() => null)) || {};
+  const nextSnap = {};
+  const changes = [], errors = [];
+  for (const f of feeds) {
+    const key = 'f' + _fwHash('sha1').update(f.url).digest('hex').slice(0, 16);
+    let events;
+    try { events = fwWindow(parseIcs(await fetchFeedText(f.url)), now, 14); }
+    catch (e) { errors.push({ group: f.group, error: String(e && e.message || e).slice(0, 60) }); if (snap[key]) nextSnap[key] = snap[key]; continue; }
+    const prev = snap[key];
+    nextSnap[key] = { group: f.group, events, at: new Date(now).toISOString() };
+    if (!prev || !Array.isArray(prev.events)) continue; // first look: remember it, alert nobody
+    const diff = fwDiff(prev.events, events);
+    if (fwHas(diff)) changes.push({ group: f.group, lines: fwDescribe(diff) });
+  }
+  await fsPatchVerified(FEEDSNAP, nextSnap).catch(() => {});
+  let emailed = 0;
+  if (changes.length) {
+    const cur = (await fsGet(NOTICES).catch(() => null)) || {};
+    const list = (Array.isArray(cur.list) ? cur.list : []).slice(0, 11);
+    const fresh = changes.map((c, i) => ({ id: 'n' + now.toString(36) + i, ts: new Date(now).toISOString(), group: c.group, lines: c.lines }));
+    await fsPatchVerified(NOTICES, { list: fresh.concat(list), updated: now }).catch(() => {});
+    noticesMemo = null;
+    if (settings.feed_alerts) {
+      const key = alertsKeyLocal();
+      const base = siteBase();
+      for (const c of changes) {
+        const mail = fwEmail({ group: c.group, lines: c.lines, siteUrl: base, teamName: process.env.TEAM_NAME || 'Aces' });
+        const skip = [];
+        for (const team of fwTeams(c.group, FW_TEAMS)) {
+          try {
+            const r = await fetch(base + '/api/alerts', { method: 'POST', headers: { 'content-type': 'application/json', 'x-alerts-key': key }, body: JSON.stringify({ action: 'notify', team, subject: mail.subject, html: mail.html, text: mail.text, skip }) });
+            const j = await r.json().catch(() => ({}));
+            if (r.ok) { emailed += Number(j.sent || 0); (j.to || []).forEach((e) => skip.push(e)); }
+          } catch (e) { /* mail is best effort; the home screen card already went out */ }
+        }
+      }
+    }
+  }
+  await fsPatchVerified(SETTINGS, { feed_last: { at: new Date(now).toISOString(), checked: feeds.length, changes: changes.length, emailed, errors } }).catch(() => {});
+  settingsMemo = null;
+  return { ok: true, checked: feeds.length, changes, emailed, errors };
 }
