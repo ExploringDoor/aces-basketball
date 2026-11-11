@@ -502,6 +502,168 @@ const PACKS = [
   { key: 'shooter-pack', name: 'Get the shooter open', blurb: 'Six actions built for your best shooter: Floppy, Zipper, Elevator, Hammer, Horns Stagger, Chicago.', plays: ['floppy', 'zipper', 'elevator-doors', 'hammer', 'horns-stagger', 'chicago'] },
 ];
 
+
+/* ================================================================
+   WAVE TWO: quick hitters, transition, more inbounds, more zone, more
+   defense, situational plays, specials
+================================================================ */
+play('Drag Screen', 'Offense', { notes: 'Transition ball screen from the trailing big before the defense is set. The first thing we look for after a rebound.', tips: ['5: sprint to the ball and screen on the run. No standing screens in transition.', '1: use the screen by the 3 point line, not inside it, so the defense has to decide early.'], sits: ['transition', 'quick'], mirror: ['Drag Screen (right)', 'Drag Screen (left)'], first: '1 pushes it up the right side. 5 trails. 2 and 3 run wide, 4 runs to the rim.' }, { O1: 'rSlot', O5: 'topDeep', O2: 'rCorner', O3: 'lCorner', O4: 'lBlock' }, [
+  { n: '5 drags into a screen on the run. 1 comes off middle.', m: { O5: [[300, 330], 'screen'], O1: ['nail', 'dribble', [280, 310]] } },
+  { n: '5 rolls, 4 lifts out of the dunker spot to the wing. Read the low man.', m: { O5: ['rBlock', 'cut', [330, 200]], O4: ['lWing', 'cut'] } },
+  { n: 'Finish, roll, or kick to a corner.', b: 'rim' }]);
+play('Secondary Break: Pitch and Post', 'Offense', { notes: 'Numbered break into early offense. Pitch ahead to the wing, the first big posts, the second big screens the wing.', tips: ['Run lanes, not toward the ball. The wings touch the sideline.', 'First big to the rim every time. He posts or he gets fouled.'], sits: ['transition'], mirror: ['Pitch and Post (right)', 'Pitch and Post (left)'], first: 'Numbered break: 1 middle, 2 and 3 wide, 4 rim runs, 5 trails.' }, { O1: 'topDeep', O2: 'rWing', O3: 'lWing', O4: 'rBlock', O5: [250, 400] }, [
+  { n: '1 pitches ahead to 2 on the wing.', b: 'O2' },
+  { n: '4 posts on the ball side block. 5 trails to the top.', m: { O5: ['top', 'cut'] } },
+  { n: 'Post feed, or 5 reverses to 3 and screens for 1.', b: 'O4' }, { n: 'Score inside.', b: 'rim' }]);
+play('Elbow Get', 'Offense', { notes: 'Quick hitter: pass to the elbow, get it right back with a handoff and a screen in one motion.', tips: ['Get action: catch the handoff going downhill. The big is already screening when you get there.'], sits: ['quick', 'need2'], mirror: ['Elbow Get (right)', 'Elbow Get (left)'], first: '1 at the top, 5 at the right elbow, shooters spaced.' }, { O1: 'top', O5: 'rElbow', O2: 'rCorner', O3: 'lWing', O4: 'lCorner' }, [
+  { n: '1 passes to 5 and sprints to get it back.', b: 'O5', m: { O1: [[345, 225], 'cut', [310, 290]] }, pf: true },
+  { n: 'Handoff and screen. 1 attacks the lane, 5 rolls.', b: 'O1', m: { O5: [[335, 230], 'screen'], O1: ['rLane', 'dribble'] } },
+  { n: 'Layup, roll, or corner.', b: 'rim', m: { O5: ['rBlock', 'cut'] } }]);
+play('Wide Pin Down', 'Offense', { notes: 'Quick hitter for a shooter: a big pins down on the wing and the shooter comes off for a catch and shoot or a curl.', tips: ['Shooter: read the trailer. Over the top means curl, under means pop.'], sits: ['quick', 'need3'], mirror: ['Wide Pin Down (right)', 'Wide Pin Down (left)'], first: '1 at the top with the ball. 2 in the right corner, 5 at the right elbow.' }, { O1: 'top', O2: 'rCorner', O5: 'rElbow', O3: 'lWing', O4: 'lBlock' }, [
+  { n: '5 pins down on 2\'s man. 2 comes up to the wing.', m: { O5: [[430, 150], 'screen'], O2: ['rWing', 'cut', [470, 150]] } },
+  { n: '1 hits 2. 5 rolls to the block.', b: 'O2', m: { O5: ['rBlock', 'cut'] } }, { n: 'Shot, or drive if he runs at you.', b: 'rim' }]);
+play('Ram Screen', 'Offense', { notes: 'Screen the screener before a ball screen. The big\'s defender is late, so the ball screen gets a clean switch or a free roll.', tips: ['3: screen the big\'s man first. That is the whole trick.'], sits: ['quick', 'vs_switch'], mirror: ['Ram (right)', 'Ram (left)'], first: '1 at the top, 5 on the right block, 3 on the right wing.' }, { O1: 'top', O5: 'rBlock', O3: 'rWing', O2: 'lCorner', O4: 'lWing' }, [
+  { n: '3 back screens for 5. 5 sprints up to ball screen.', m: { O3: [[320, 130], 'screen'], O5: [[295, 318], 'cut', [300, 220]] } },
+  { n: '1 comes off the ball screen. 5 rolls, 3 pops to the wing.', m: { O1: [[350, 290], 'dribble'], O5: ['rim', 'cut', [300, 190]], O3: ['rWing', 'cut'] } },
+  { n: 'Finish or roll.', b: 'rim' }]);
+play('Stagger Away', 'Offense', { notes: 'Pass to the wing, then two players stagger screen for the corner shooter on the weak side.', tips: ['Staggers only work shoulder to shoulder. Close the gap.'], sits: ['quick', 'need3'], mirror: ['Stagger Away (right)', 'Stagger Away (left)'], first: '1 at the top, 2 on the right wing, 3 in the left corner, 4 and 5 at the elbows.' }, { O1: 'top', O2: 'rWing', O3: 'lCorner', O4: 'lElbow', O5: 'rElbow' }, [
+  { n: '1 passes to 2. 4 and 5 go set a stagger for 3.', b: 'O2', m: { O4: [[110, 170], 'screen'], O5: [[150, 230], 'screen'] }, pf: true },
+  { n: '3 comes off both screens to the top.', m: { O3: ['lTop', 'cut', [80, 290]] } },
+  { n: '2 swings to 1, 1 to 3. Shot.', b: 'O3' }, { n: 'Three.', b: 'rim' }]);
+play('Post Split', 'Offense', { notes: 'Feed the post, then the two perimeter players split off each other. A read, not a play: the cutter or the shooter.', tips: ['Passer screens away, screener comes to the ball. Big reads it late.'], sits: ['post_entry'], mirror: ['Post Split (right)', 'Post Split (left)'], first: '2 on the right wing with the ball, 5 on the block, 1 at the top.' }, { O2: 'rWing', O5: 'rBlock', O1: 'top', O3: 'lWing', O4: 'lBlock' }, [
+  { n: '2 feeds 5 on the block.', b: 'O5' },
+  { n: '2 screens for 1. 1 curls to the wing.', m: { O2: [[340, 300], 'screen'], O1: ['rWing', 'cut', [380, 320]] } },
+  { n: '2 pops back to the top. 5 reads the cutter, then the popper.', m: { O2: ['top', 'cut'] } },
+  { n: '5 scores, or kicks to whoever is open.', b: 'rim' }]);
+play('High Low', 'Offense', { notes: 'Two bigs: one at the high post, one sealing low. The simplest way to get the ball inside against size.', tips: ['Low man seals on the catch high, not before. Hands up, target hand.'], sits: ['post_entry', 'need2'], mirror: ['High Low (right)', 'High Low (left)'], first: '4 at the right elbow, 5 on the left block, guards spaced.' }, { O1: 'top', O4: 'rElbow', O5: 'lBlock', O2: 'rCorner', O3: 'lWing' }, [
+  { n: '1 hits 4 at the elbow. 5 seals his man high side.', b: 'O4', m: { O5: ['lLow', 'cut'] } },
+  { n: '4 drops it to 5 over the top.', b: 'O5' }, { n: 'Power finish.', b: 'rim' }]);
+play('Spread Pick and Roll', 'Offense', { notes: 'Four shooters, one screener, the whole lane open. Late clock offense that always produces a shot.', tips: ['Shooters: stay on the three point line until the ball is below the free throw line, then relocate.'], sits: ['short_clock', 'bonus'], mirror: ['Spread PNR (right)', 'Spread PNR (left)'], first: '1 at the top, 5 on the nail, shooters in both corners and the left wing.' }, { O1: 'topDeep', O5: 'nail', O2: 'rCorner', O3: 'lCorner', O4: 'lWing' }, [
+  { n: '5 screens. 1 attacks right.', m: { O5: [[290, 350], 'screen'], O1: [[345, 300], 'dribble'] } },
+  { n: '5 rolls. 4 lifts, 3 slides to the corner.', m: { O5: ['rim', 'cut', [300, 210]], O4: ['lSlot', 'cut'], O3: ['lCorner', 'cut'] } },
+  { n: 'Finish, roll, or skip.', b: 'rim' }]);
+play('Attack the Bonus', 'Offense', { notes: 'They are in the bonus. No jumpers for two minutes: drive, post, and get fouled.', tips: ['Drive to the body of the help defender. Contact wins free throws.'], sits: ['bonus'], first: 'Four out, best driver with the ball, big on the block.' }, { O1: 'top', O2: 'rWing', O3: 'lWing', O4: 'lCorner', O5: 'rBlock' }, [
+  { n: '1 drives the left gap hard. Everyone stays spaced.', m: { O1: ['lLane', 'dribble'] } },
+  { n: 'Jump stop in the lane. Score through contact or hit 5 if his man helps.', b: 'rim' }]);
+play('Star Sits: Five Out Motion', 'Offense', { notes: 'When your best player is on the bench in foul trouble. Nobody has to make a play: pass, cut, fill, repeat until a layup comes.', tips: ['No dribbles except to the rim. Three passes before anyone shoots.'], sits: ['foul_trouble', 'run_clock'], first: 'Five out, the four remaining starters and a sub.' }, FIVE_OUT, [
+  { n: 'Pass and cut. Fill behind.', b: 'O2', m: { O1: ['rim', 'cut', [290, 230]] }, pf: true },
+  { n: '1 fills the far corner, everyone slides up one spot.', m: { O1: ['lCorner', 'cut'], O3: ['top', 'cut'], O5: ['lWing', 'cut'] } },
+  { n: 'Backdoor the first man who overplays.', b: 'rim', m: { O4: ['rim', 'cut', [430, 120]] } }]);
+play('Two for One', 'Offense', { notes: 'Under 40 seconds in a quarter: shoot in the first 8 so you get the ball back for the last shot.', tips: ['Push it. A decent shot now beats a good shot that gives them the last one.'], sits: ['two_for_one', 'end_quarter'], first: 'We rebound with 38 seconds left in the quarter.' }, { O1: 'topDeep', O2: 'rWing', O3: 'lWing', O4: 'rCorner', O5: 'lBlock' }, [
+  { n: '1 pushes it. 5 drags into a quick screen.', m: { O5: [[290, 350], 'screen'], O1: [[340, 300], 'dribble'] } },
+  { n: 'First open look, inside 8 seconds. Then get back and defend.', b: 'rim' }]);
+play('Hold for the Quarter', 'Offense', { notes: 'Last 30 seconds of a quarter, we have the ball. Spread, hold to 8, attack at 6.', tips: ['No turnover is worth any shot here. Take care of it until 8.'], sits: ['end_quarter'], first: '1 holds at the top, four spread wide.' }, { O1: 'topDeep', O2: 'rCorner', O3: 'lCorner', O4: 'rWing', O5: 'lWing' }, [
+  { n: 'At 8, 5 steps up and screens. 1 attacks at 6.', m: { O5: [[215, 350], 'screen'], O1: [[160, 300], 'dribble'] } },
+  { n: 'Shot by 2 seconds. Two rebounders crash, three back.', b: 'rim' }]);
+play('Down Big: Push and Three', 'Offense', { notes: 'Down 12 with four minutes. Every rebound is a sprint, every open three goes up, and we press after every make.', tips: ['Shoot threes early in the clock, not late. A quick three is worth it, a slow three is not.'], sits: ['down_big'], first: 'Rebound and go. Wings sprint to the corners.' }, { O1: 'topDeep', O2: 'rCorner', O3: 'lCorner', O4: 'rWing', O5: [250, 405] }, [
+  { n: '1 pushes to the wing and kicks to the corner.', b: 'O2', m: { O1: ['rWing', 'dribble'] } },
+  { n: 'Corner three, or drive and kick again. 5 crashes.', b: 'rim', m: { O5: ['rBlock', 'cut'] } }]);
+play('Against Box and One: Screen for the Chased', 'Offense', { notes: 'When one defender face guards our shooter. Screen the chaser constantly and let the other four play four on four.', tips: ['Shooter: keep moving even when you are not getting it. You are taking a defender out of the game.'], sits: ['vs_box1'], mirror: ['Vs Box and One (right)', 'Vs Box and One (left)'], d: { X2: [440, 230], X1: [250, 290], X3: [190, 210], X4: [180, 95], X5: [320, 95] }, first: 'Their X2 is face guarding our 2 on the right wing.' }, { O1: 'top', O2: 'rWing', O3: 'lWing', O4: 'lBlock', O5: 'rBlock' }, [
+  { n: '5 back screens the chaser. 2 cuts to the rim.', m: { O5: [[420, 200], 'screen'], O2: ['rim', 'cut', [400, 130]] } },
+  { n: 'If 2 isn\'t open, 4 and 1 play two man game on the other side.', m: { O2: ['lCorner', 'cut'], O4: [[215, 300], 'screen'], O1: ['lLane', 'dribble'] } },
+  { n: 'Score four on four, or 2 pops up for the skip.', b: 'rim' }]);
+play('Against the Half Court Trap', 'Offense', { notes: 'When they trap the first pass past half court. Reverse before the trap sets, and flash the middle.', tips: ['Pass out of the trap over the top to the middle flash, not around it to the sideline.'], sits: ['vs_trap', 'vs_press'], d: { X1: [250, 300], X2: [110, 200], X3: [390, 200], X4: [250, 185], X5: [250, 75] }, first: 'They are in a 1-3-1 trap. 1 crosses half court on the right.' }, { O1: 'rSlot', O2: 'rWing', O3: 'lWing', O4: 'rCorner', O5: 'nail' }, [
+  { n: 'Trap comes at 1. 5 flashes to the ball side elbow, 3 lifts to the top.', m: { X1: [[320, 300], 'cut'], X3: [[380, 270], 'cut'], O5: ['rElbow', 'cut'], O3: ['top', 'cut'] } },
+  { n: '1 hits 5 in the middle over the trap.', b: 'O5' },
+  { n: '5 turns: 4 in the corner, 2 on the baseline, or his own shot.', b: 'O4' }, { n: 'Corner three.', b: 'rim' }]);
+play('Against the Pack Line: Skip and Drive', 'Offense', { notes: 'When they pack the paint and dare you to shoot. Move the ball side to side twice, then drive the closeout.', tips: ['Drive the closeout, not the set defender. The pass makes the drive.'], sits: ['vs_pack'], first: 'Five out, defense packed inside the arc.' }, FIVE_OUT, [
+  { n: '1 swings to 2, 2 skips to 3.', b: 'O3' },
+  { n: '3 drives the closeout. 5 cuts to the rim from the corner.', m: { O3: ['lLane', 'dribble'], O5: ['rim', 'cut', [120, 110]] } },
+  { n: 'Finish, dump, or kick to 4.', b: 'rim' }]);
+play('Against Pressure: Backdoor Series', 'Offense', { notes: 'When they deny every pass. Three backdoor reads in a row off the same look.', tips: ['Two steps to the ball, plant, go. The passer throws it where you are going.'], sits: ['vs_pressure', 'vs_switch'], first: 'Four out, denial on both wings.' }, { O1: 'top', O2: 'rWing', O3: 'lWing', O4: 'lCorner', O5: 'rLow' }, [
+  { n: '2 steps up and goes backdoor. 1 bounce passes.', b: 'O2', m: { O2: ['rBlock', 'cut', [450, 170]] } },
+  { n: 'Not there: 2 clears to the corner. 3 does the same on the left.', m: { O2: ['rCorner', 'cut'], O3: ['lBlock', 'cut', [50, 170]] } },
+  { n: 'Not there: 5 flashes to the elbow and 1 goes backdoor off him.', b: 'O5', m: { O5: ['rElbow', 'cut'], O1: ['rim', 'cut', [200, 260]] } }, { n: 'Layup.', b: 'rim' }]);
+/* zone, wave two */
+play('1-2-2 Zone Attack', 'Offense', { notes: 'Against any even front zone. Point, two wings, two short corners: the gaps are always filled.', tips: ['Short corners: step in behind the bottom defenders the moment the ball is on the wing.'], sits: ['vs_zone'], d: Z23, first: '1 at the top, wings high, 4 and 5 in the short corners against a 2-3.' }, { O1: 'top', O2: 'rWing', O3: 'lWing', O4: 'lShort', O5: 'rShort' }, [
+  { n: '1 passes to 2. 5 steps in behind the zone.', b: 'O2', m: { O5: ['rLane', 'cut'] } },
+  { n: '2 feeds 5 inside, or skips to 3.', b: 'O5' }, { n: 'Score, or 5 finds 4 flashing to the elbow.', b: 'rim', m: { O4: ['lElbow', 'cut'] } }]);
+play('Runner Through the Zone', 'Offense', { notes: 'Against a 2-3. One player runs baseline corner to corner behind the zone. Every pass, he runs.', tips: ['Runner: you arrive as the ball arrives. Late is useless, early is covered.'], sits: ['vs_zone'], d: Z23, first: '1 up top, 2 and 3 on the wings, 4 at the high post, 5 is the runner in the right corner.' }, { O1: 'top', O2: 'rWing', O3: 'lWing', O4: 'ft', O5: 'rCorner' }, [
+  { n: '1 passes to 3 on the left. 5 runs the baseline to the left corner.', b: 'O3', m: { O5: ['lCorner', 'cut', [250, 40]] } },
+  { n: '3 hits 5 in the corner, or 4 steps in to the block.', b: 'O5', m: { O4: ['lLow', 'cut'] } }, { n: 'Three, or feed 4 inside.', b: 'rim' }]);
+play('Zone: Dribble Push', 'Offense', { notes: 'Against a 2-3. Dribble at the top guard to drag him, the wing he leaves is open.', tips: ['Dribble at a defender, never between two.'], sits: ['vs_zone'], d: Z23, mirror: ['Dribble Push (right)', 'Dribble Push (left)'], first: '1 up top, wings, 5 at the high post, 4 in the short corner.' }, { O1: 'top', O2: 'rWing', O3: 'lWing', O5: 'ft', O4: 'rShort' }, [
+  { n: '1 dribbles right at the top guard. 2 slides to the corner.', m: { O1: ['rSlot', 'dribble'], O2: ['rCorner', 'cut'], X2: [[350, 250], 'cut'] } },
+  { n: 'The wing is open. 1 hits 2 in the corner as the bottom man runs out.', b: 'O2', m: { X4: [[430, 90], 'cut'] } },
+  { n: '2 shoots, or feeds 4 in the short corner behind him.', b: 'rim' }]);
+play('Zone BLOB: Line', 'Baseline out', { notes: 'Baseline out against a zone. Four in a line, the bottom of the zone can\'t match up.', tips: ['Against a zone the inbounder is open: step in after the pass.'], sits: ['blob', 'blob_zone', 'vs_zone'], d: { X1: [200, 250], X2: [300, 250], X3: [110, 110], X4: [390, 110], X5: [250, 80] }, first: 'Four in a line on the ball side lane line, 3 inbounds.' }, { O3: 'inbMid', O5: [300, 100], O4: [300, 145], O2: [300, 190], O1: [300, 235] }, [
+  { n: '5 steps to the short corner, 4 to the block, 2 to the corner, 1 to the top.', m: { O5: ['rShort', 'cut'], O4: ['rBlock', 'cut'], O2: ['rCorner', 'cut'], O1: ['top', 'cut'] } },
+  { n: '3 hits 2 in the corner or 5 in the short corner, then steps in.', b: 'O5', m: { O3: ['rLow', 'cut'] } }, { n: 'Score.', b: 'rim' }]);
+/* inbounds, wave two */
+play('Zipper BLOB', 'Baseline out', { notes: 'Baseline out. A guard zips up the lane off a down screen to the top, then the big dives.', tips: ['Safety first: the zipper cut gets the ball in. The dive is the score.'], sits: ['blob'], first: '3 inbounds. 1 on the ball side block, 5 at the ball side elbow, 2 and 4 weak side.' }, { O3: 'inbMid', O1: 'rBlock', O5: 'rElbow', O2: 'lWing', O4: 'lBlock' }, [
+  { n: '5 screens down. 1 zips to the top.', m: { O5: [[300, 150], 'screen'], O1: ['top', 'cut', [300, 230]] } },
+  { n: '3 hits 1. 5 dives to the rim, 4 lifts.', b: 'O1', m: { O5: ['rim', 'cut'], O4: ['lWing', 'cut'] } },
+  { n: '1 hits 5 on the dive or runs offense.', b: 'O5' }, { n: 'Layup.', b: 'rim' }]);
+play('Triangle BLOB', 'Baseline out', { notes: 'Three in a triangle under the rim, one safety. Two screens happen at once, the inbounder has three looks.', tips: ['Triangle players: everybody screens, everybody cuts. Decide who scores before the slap.'], sits: ['blob', 'need2'], first: '3 inbounds. 4 and 5 on the blocks, 2 at the foul line, 1 at the top.' }, { O3: 'inbMid', O4: 'lBlock', O5: 'rBlock', O2: 'ft', O1: 'top' }, [
+  { n: '2 screens for 4. 4 cuts under it to the ball side.', m: { O2: [[215, 110], 'screen'], O4: ['rLow', 'cut', [250, 70]] } },
+  { n: '5 steps up and screens for 2. 2 pops to the wing.', m: { O5: [[260, 150], 'screen'], O2: ['rWing', 'cut', [300, 180]] } },
+  { n: '3 hits 4 at the rim, 2 on the wing, or 1 for safety.', b: 'O4' }, { n: 'Layup.', b: 'rim' }]);
+play('Box Screen Away', 'Baseline out', { notes: 'Baseline out. The weak side screens away and the ball side opens for a layup off a single screen.', tips: ['The first cutter is the decoy. Sell it.'], sits: ['blob'], first: 'Box set, 3 inbounds.' }, BOX_BLOB, [
+  { n: '1 screens away for 2. 2 comes to the ball side elbow.', m: { O1: [[280, 190], 'screen'], O2: [[340, 200], 'cut', [330, 230]] } },
+  { n: '4 screens down for 1. 1 pops to the far corner. 5 seals to the rim.', m: { O4: [[200, 150], 'screen'], O1: ['lCorner', 'cut'], O5: ['rim', 'cut'] } },
+  { n: '3 hits 5 at the rim or 2 at the elbow.', b: 'O5' }, { n: 'Layup.', b: 'rim' }]);
+play('Stack vs Man: Pop and Dive', 'Baseline out', { notes: 'Baseline out against man. Stack of three on the ball side, the top pops, the bottom dives, the middle screens both.', tips: ['Middle man sets two screens with one body. Face the inbounder.'], sits: ['blob'], first: '3 inbounds. Stack of 1, 4, 5 on the ball side lane line, 2 at the top.' }, { O3: 'inbMid', O1: [305, 100], O4: [305, 145], O5: [305, 190], O2: 'top' }, [
+  { n: '1 dives under 4 to the far block. 5 pops to the corner. 4 holds.', m: { O1: ['lBlock', 'cut', [250, 70]], O5: ['rCorner', 'cut'] } },
+  { n: '4 steps to the ball side. 3 hits 4 or 5.', b: 'O4', m: { O4: ['rLow', 'cut'] } }, { n: 'Score.', b: 'rim' }]);
+play('Sideline Stagger Shooter', 'Sideline out', { notes: 'Sideline out in the front court. Two screens on the weak side for the shooter coming to the top.', tips: ['Inbounder passes to the top as the shooter arrives, not after.'], sits: ['slob', 'need3'], first: '3 inbounds from the left. 2 is the shooter on the right block.' }, { O3: 'sideL', O1: 'lSlot', O2: 'rBlock', O4: 'rElbow', O5: 'rWing' }, [
+  { n: '4 and 5 stagger for 2. 2 comes to the top. 1 drifts to the corner.', m: { O4: [[330, 180], 'screen'], O5: [[320, 260], 'screen'], O2: ['top', 'cut', [380, 230]], O1: ['lCorner', 'cut'] } },
+  { n: '3 hits 2.', b: 'O2' }, { n: 'Three.', b: 'rim' }]);
+play('Sideline Backcourt Safe', 'Sideline out', { notes: 'Sideline out in the back court against pressure. Two options short, one long, and the inbounder gets it back.', tips: ['Get it in, then get it back to the inbounder stepping in behind the play. He is the only one nobody guards.'], sits: ['slob', 'slob_backcourt', 'vs_press'], court: 'full', first: '3 inbounds from the left sideline in the back court.' }, { O3: 'sideLow', O1: [120, 640], O2: [220, 700], O4: [120, 780], O5: 'half' }, [
+  { n: '4 screens for 1. 1 comes back to the ball. 2 clears to the middle.', m: { O4: [[150, 690], 'screen'], O1: [[70, 720], 'cut', [120, 700]], O2: ['centerLow', 'cut'] } },
+  { n: '3 hits 1 and steps in. 1 returns it to 3 in the middle.', b: 'O3', m: { O3: [[150, 650], 'cut'] } },
+  { n: '3 pushes it up. 5 comes back to help if trapped.', m: { O3: ['halfL', 'dribble'], O5: [[250, 520], 'cut'] } }]);
+play('Up Late: Inbound and Get Fouled', 'Sideline out', { notes: 'Up two, under 20 seconds, they must foul. Get the ball to your best free throw shooter and let them.', tips: ['Shooter breaks to the ball late and hard. Catch it with two hands and get fouled, don\'t dribble into a trap.'], sits: ['up_inbound', 'run_clock', 'slob'], court: 'full', first: '3 inbounds under their basket. 1 is our best free throw shooter.' }, { O3: 'inb', O1: [250, 720], O2: [110, 640], O4: [390, 640], O5: 'half' }, [
+  { n: '4 screens for 1. 1 breaks to the corner for the catch. 2 and 5 clear deep.', m: { O4: [[300, 740], 'screen'], O1: [[430, 760], 'cut', [330, 700]], O2: ['highL', 'cut'], O5: ['upTop', 'cut'] } },
+  { n: '3 hits 1. 1 catches, pivots away, and takes the foul.', b: 'O1' }]);
+/* defense and presses, wave two */
+play('Full Court Man Principles', 'Defense', { notes: 'Picking up full court. Turn the ball handler twice before half court, no reaching, sprint back on any pass over your head.', tips: ['Force the dribbler to change direction. Every turn costs them two seconds.'], sits: ['vs_press'], court: 'full', first: 'They inbound, we pick up man to man full court.' }, { O4: 'inb', O1: [330, 720], O2: [120, 640], O3: [390, 480], O5: 'half', X1: [330, 680], X2: [140, 600], X3: [370, 440], X5: [250, 400], X4: [300, 820] }, [
+  { n: 'X1 turns the ball handler toward the sideline.', m: { O1: [[420, 620], 'dribble'], X1: [[400, 590], 'cut'] } },
+  { n: 'And turns him again at half court. Everyone else denies one pass away, help side sees the ball.', m: { O1: [[330, 470], 'dribble'], X1: [[320, 440], 'cut'], X3: [[380, 400], 'cut'] } }]);
+play('Deny the Post', 'Defense', { notes: 'How we guard a dominant post: three quarter front from the top side, help from the weak side on the lob.', tips: ['Post defender: arm bar, hand in the passing lane, never behind him.', 'Weak side: you are the lob help. See it coming.'], sits: ['post_entry'], d: { X5: [280, 95], X1: [250, 300], X2: [405, 225], X3: [150, 190], X4: [200, 110] }, first: 'Ball on the right wing, their 5 posting on the right block.' }, { O2: 'rWing', O5: 'rBlock', O1: 'top', O3: 'lWing', O4: 'lBlock' }, [
+  { n: 'X5 three quarter fronts from the high side. X3 drops to the lane for lob help.', m: { X5: [[295, 70], 'cut'], X3: [[220, 120], 'cut'] } },
+  { n: 'They lob. X3 takes it away, X5 recovers behind.', m: { O2: ['rWing', 'cut'], X3: [[265, 85], 'cut'] } }]);
+play('2-3 Trap the Corner', 'Defense', { notes: 'Out of the 2-3 zone: when the ball goes to the corner, trap it with the bottom man and the guard, and rotate behind.', tips: ['Trap after the catch with hands high. The skip pass is the one steal we want.'], sits: ['vs_zone'], d: Z23, first: 'Base 2-3. The ball goes to the right corner.' }, { O1: 'top', O2: 'rWing', O3: 'lWing', O4: 'rCorner', O5: 'lLow' }, [
+  { n: 'X4 and X2 trap the corner. X5 fronts the block, X1 takes the wing, X3 the middle.', b: 'O4', m: { X4: [[440, 75], 'cut'], X2: [[420, 110], 'cut'], X5: [[320, 80], 'cut'], X1: [[380, 220], 'cut'], X3: [[230, 120], 'cut'] } },
+  { n: 'Skip pass: X3 sprints to it, X1 drops, everyone recovers.', b: 'O3', m: { X3: [[85, 225], 'cut'], X1: [[200, 262], 'cut'], X2: [[300, 262], 'cut'], X4: [[400, 130], 'cut'], X5: [[250, 92], 'cut'] } }]);
+play('1-2-2 Three Quarter Press', 'Press', { notes: 'Picks up at the top of their key, not the baseline. Funnels to the sideline and traps at half court with two.', tips: ['Front man: no steals, just steer. The trap is at the line.'], sits: ['vs_press'], court: 'full', first: 'X1 at the foul line extended, X2 and X3 at the hash marks, X4 and X5 back.' }, { ...THEM_INB, X1: [250, 620], X2: [120, 500], X3: [380, 500], X4: [150, 300], X5: [350, 300] }, [
+  { n: 'They bring it up the right. X1 steers to the sideline, X3 waits at the line.', b: 'O1', m: { O1: [[400, 540], 'dribble'], X1: [[340, 560], 'cut'] } },
+  { n: 'Trap at half court with X1 and X3. X5 takes the sideline pass, X2 the middle, X4 deep.', m: { O1: [[420, 440], 'dribble'], X3: [[430, 470], 'cut'], X1: [[380, 470], 'cut'], X5: [[400, 300], 'cut'], X2: [[250, 440], 'cut'], X4: [[250, 200], 'cut'] } },
+  { n: 'Steal or a five count. If they beat it, sprint back.', b: 'O1' }]);
+play('Press After a Made Free Throw', 'Press', { notes: 'The best time to press: after we make a free throw, our shooter is already back and their inbounder is slow.', tips: ['Shooter: you are the safety. Everyone else picks up on the make.'], sits: ['ft_make', 'vs_press'], court: 'full', first: 'We just made the free throw. They inbound under their basket.' }, { ...THEM_INB, X1: [300, 800], X2: [140, 690], X3: [380, 690], X4: [250, 520], X5: [250, 300] }, [
+  { n: 'X1 on the inbounder. X2 and X3 deny the guards.', m: { X2: [[160, 710], 'cut'], X3: [[350, 710], 'cut'] } },
+  { n: 'Inbound to the right. X3 and X1 trap. X4 reads the sideline.', b: 'O1', m: { O1: [[400, 730], 'cut'], X1: [[370, 760], 'cut'], X3: [[420, 690], 'cut'], X4: [[380, 520], 'cut'] } }]);
+/* late game and specials, wave two */
+play('Seven Seconds: Drag to a Shot', 'Late game', { notes: 'Seven seconds or less, no timeout. Push, drag screen at the arc, shot by two.', tips: ['Do not call timeout. The defense is worse now than it will be after one.'], sits: ['short_clock', 'need2', 'last_shot'], court: 'full', first: 'We rebound with 7 seconds left. 1 pushes.' }, { O1: 'centerLow', O5: 'ftLow', O2: 'hashL', O3: 'hashR', O4: 'upLWing' }, [
+  { n: '1 sprints it up the middle. 5 trails.', m: { O1: ['half', 'dribble'], O5: [[250, 520], 'cut'], O2: ['upLCorner', 'cut'], O3: ['upRCorner', 'cut'] } },
+  { n: '5 drags into a screen at the arc. 1 turns the corner.', m: { O5: [[290, 350], 'screen'], O1: [[330, 290], 'dribble', [260, 400]] } },
+  { n: 'Pull up or layup. Shot by 2.', b: 'rim', m: { O1: ['upFt', 'dribble'] } }]);
+play('Technical Foul Free Throws', 'Special', { notes: 'Who shoots, who stays back, and what we run after. Decide now, not when the ref hands over the ball.', tips: ['Best free throw shooter shoots both. Everyone else lines up at half court, no rebound to fight for.'], sits: ['tech_ft'], first: '1 at the line alone. Four at half court, ready to run the next play.' }, { O1: 'ft', O2: 'lHalf', O3: 'midHalf', O4: 'rHalf', O5: [330, 410] }, [
+  { n: '1 shoots both. The others walk to our end for the inbound.', b: 'rim' },
+  { n: 'Then we run the sideline play we called in the huddle.', b: 'O1' }]);
+play('Held Ball: Arrow Set', 'Special', { notes: 'When the possession arrow gives us a sideline inbound. The same quick set every time, so nobody has to think.', tips: ['Know the arrow before the whistle. The bench calls it out.'], sits: ['slob', 'quick'], first: 'Arrow is ours. 3 inbounds from the left sideline.' }, SLOB, [
+  { n: '4 screens for 1 coming to the ball. 5 back screens for 2 to the rim.', m: { O4: [[205, 300], 'screen'], O1: [[120, 290], 'cut', [200, 345]], O5: [[140, 150], 'screen'], O2: ['rim', 'cut', [170, 90]] } },
+  { n: '3 hits 2 at the rim or 1 for safety.', b: 'O1' }, { n: 'Run offense.', b: 'O4', m: { O4: ['top', 'cut'] } }]);
+play('Last Second Heave', 'Special', { notes: 'Under two seconds, full court. Long inbound to half court, catch and shoot in one motion.', tips: ['Inbounder: throw it to the top of the key, chest high. Receiver: catch and shoot, no dribble.'], sits: ['full_court_short', 'need3', 'need2'], court: 'full', first: '4 inbounds under their basket. 1 is our best shooter at half court, 5 screens his man.' }, { O4: 'inb', O1: 'half', O5: [250, 470], O2: 'highL', O3: 'highR' }, [
+  { n: '5 screens for 1. 1 flashes to the top of our key.', m: { O5: [[270, 450], 'screen'], O1: ['upTop', 'cut'] } },
+  { n: '4 throws it the length of the floor.', b: 'O1' }, { n: 'Catch and shoot.', b: 'rim' }]);
+play('Fake Timeout Backdoor', 'Special', { notes: 'A trick for once a season. The point guard walks toward the bench like he is calling timeout, and the wing goes backdoor.', tips: ['Sell it with your voice. Say "time" without saying "timeout".'], sits: ['quick'], first: 'Dead ball situation is over, 1 has the ball at the top, defense relaxed.' }, { O1: 'topDeep', O2: 'rWing', O3: 'lWing', O4: 'lBlock', O5: 'rBlock' }, [
+  { n: '1 turns toward the bench. 2 goes backdoor behind a relaxed defender.', m: { O1: ['lSlot', 'dribble'], O2: ['rim', 'cut', [450, 170]] } },
+  { n: '1 whips the pass.', b: 'O2' }, { n: 'Layup.', b: 'rim' }]);
+
+PACKS.push(
+  { key: 'quick-hitters', name: 'Quick hitters', blurb: 'Eight one action plays for the first six seconds of a possession: get, pin down, ram, stagger away, drag.', plays: ['elbow-get', 'elbow-get-left', 'wide-pin-down', 'ram-screen', 'stagger-away', 'drag-screen', 'spread-pick-and-roll', 'held-ball-arrow-set'] },
+  { key: 'transition', name: 'Transition and early offense', blurb: 'Numbered break into early offense, the drag screen, and the two for one.', plays: ['secondary-break-pitch-and-post', 'secondary-break-pitch-and-post-left', 'drag-screen', 'drag-screen-left', 'two-for-one'] },
+  { key: 'end-of-quarter', name: 'End of quarter', blurb: 'Two for one, hold for the last shot, and the seven second play with no timeout.', plays: ['two-for-one', 'hold-for-the-quarter', 'seven-seconds-drag-to-a-shot'] },
+  { key: 'star-in-foul-trouble', name: 'Star in foul trouble', blurb: 'Offense that needs nobody special: five out motion, the backdoor series, high low, and attacking the bonus.', plays: ['star-sits-five-out-motion', 'against-pressure-backdoor-series', 'high-low', 'attack-the-bonus', 'five-out-cut-and-fill'] },
+  { key: 'junk-defenses', name: 'Against junk defenses and traps', blurb: 'Box and one on your shooter, half court traps, and the pack line that dares you to shoot.', plays: ['against-box-and-one-screen-for-the-chased', 'against-box-and-one-screen-for-the-chased-left', 'against-the-half-court-trap', 'against-the-pack-line-skip-and-drive', 'against-pressure-backdoor-series'] },
+  { key: 'zone-blob', name: 'Zone offense, wave two', blurb: 'The 1-2-2 attack, the baseline runner, the dribble push, and a baseline out against a zone.', plays: ['1-2-2-zone-attack', 'runner-through-the-zone', 'zone-dribble-push', 'zone-dribble-push-left', 'zone-blob-line'] },
+  { key: 'inbounds-two', name: 'Inbounds, wave two', blurb: 'Zipper, Triangle, Box screen away, Stack pop and dive, the sideline stagger, and the back court safe play.', plays: ['zipper-blob', 'triangle-blob', 'box-screen-away', 'stack-vs-man-pop-and-dive', 'sideline-stagger-shooter', 'sideline-backcourt-safe'] },
+  { key: 'close-it-out', name: 'Close it out', blurb: 'Up late with the ball: inbound and get fouled, the delay game, four corners, and the up three foul rule.', plays: ['up-late-inbound-and-get-fouled', 'up-late-spread-delay', 'up-late-four-corners', 'up-three-foul-before-the-shot', 'press-after-a-made-free-throw'],
+    endgame: { ball_up12: { play_keys: ['up-late-inbound-and-get-fouled', 'up-late-spread-delay'], note: 'Best free throw shooter gets it. Let them foul.' }, ball_up3: { play_keys: ['up-late-four-corners'], note: '' }, def_up3: { play_keys: ['up-three-foul-before-the-shot'], note: 'Foul under 5 seconds, before the shot.', foul: true } } },
+  { key: 'down-big', name: 'Down big', blurb: 'Speed it up: push and three, press after every make, trap, and the quick hitters that get a shot in six seconds.', plays: ['down-big-push-and-three', 'press-after-a-made-free-throw', 'diamond-press-1-2-1-1', 'drag-screen', 'spread-pick-and-roll'] },
+  { key: 'defense-two', name: 'Defense, wave two', blurb: 'Full court man rules, post denial, the corner trap out of the 2-3, and the three quarter 1-2-2 press.', plays: ['full-court-man-principles', 'deny-the-post', '2-3-trap-the-corner', '1-2-2-three-quarter-press'] },
+  { key: 'specials', name: 'Specials', blurb: 'Technical foul free throws, the held ball set, the last second heave, the fake timeout, and the two jump ball plays.', plays: ['technical-foul-free-throws', 'held-ball-arrow-set', 'last-second-heave', 'fake-timeout-backdoor', 'jump-ball-tip-to-the-wing', 'jump-ball-safe'] }
+);
+
 /* ---------- validate and write ---------- */
 const keys = new Set();
 const out = [];
