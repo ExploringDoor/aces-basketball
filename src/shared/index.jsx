@@ -621,18 +621,18 @@ export const centralLeagueChampions = [
 ];
 
 export const coachingStaff = [
-  { name: "Gregg Downer", role: "Head Coach", since: "1990", photo: "/coaches/gregg-downer.jpg", bio: "3× PA Coach of the Year. 700+ career victories, 3 state championships (1996, 2006, 2013), 17+ league titles, roughly a 70% winning percentage. Coached Kobe Bryant. Inductee in 3 PA sports halls of fame. Named 'Best Basketball Coach in Pennsylvania' by USA Today.",
+  { name: "Gregg Downer", role: "Head Coach", since: "1990", photo: "/coaches/gregg-downer-head.jpg", bio: "3× PA Coach of the Year. 700+ career victories, 3 state championships (1996, 2006, 2013), 17+ league titles, roughly a 70% winning percentage. Coached Kobe Bryant. Inductee in 3 PA sports halls of fame. Named 'Best Basketball Coach in Pennsylvania' by USA Today.",
     funFacts: [
       "Coached Kobe Bryant, who credited Downer with shaping his development as a player and a person.",
       "More than 70 of his players have gone on to play basketball at the college or professional level.",
       "Reached 700 career wins in a 2025 victory at Haverford, all at Lower Merion across 35-plus seasons.",
     ] },
   { name: "Kevin Grugan", role: "Top Assistant Coach", since: "", bio: "Widely regarded as one of the best assistant coaches in the state of Pennsylvania. Grugan is Coach Downer's right hand and a critical architect of the Aces' sustained success." },
-  { name: "John Gallman", role: "Assistant Coach", since: "", bio: "Veteran assistant coach helping guide the Aces alongside Coach Downer." },
-  { name: "Mike Lachs", role: "Assistant Coach", since: "", bio: "Dedicated assistant contributing to player development and game preparation." },
-  { name: "Adam Miller", role: "Assistant Coach", since: "", bio: "Key staff member supporting the program's continued success." },
-  { name: "Eric Montanari", role: "Assistant Coach", since: "", bio: "Instrumental in daily operations and development of Lower Merion's talent." },
-  { name: "Matt Schwartz", role: "Assistant Coach", since: "", bio: "Bringing energy and expertise to the Aces coaching staff." },
+  { name: "John Gallman", role: "Assistant Coach", since: "", photo: "/coaches/john-gallman.jpg", bio: "Veteran assistant coach helping guide the Aces alongside Coach Downer." },
+  { name: "Mike Lachs", role: "Assistant Coach", since: "", photo: "/coaches/mike-lachs.jpg", bio: "Dedicated assistant contributing to player development and game preparation." },
+  { name: "Adam Miller", role: "Assistant Coach", since: "", photo: "/coaches/adam-miller.jpg", bio: "Key staff member supporting the program's continued success." },
+  { name: "Eric Montanari", role: "Assistant Coach", since: "", photo: "/coaches/eric-montanari.jpg", bio: "Instrumental in daily operations and development of Lower Merion's talent." },
+  { name: "Matt Schwartz", role: "Assistant Coach", since: "", photo: "/coaches/matt-schwartz.jpg", bio: "Bringing energy and expertise to the Aces coaching staff." },
 ];
 
 export const thousandPointClub = [

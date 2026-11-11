@@ -47,7 +47,7 @@ export default function CoachingPage() {
                 }}
                   onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = head ? "rgba(201,164,74,0.5)" : "rgba(132,0,54,0.45)"; e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.35)"; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = head ? "rgba(132,0,54,0.4)" : "rgba(255,255,255,0.06)"; e.currentTarget.style.boxShadow = "none"; }}>
-                  <Avatar name={c.name} photo={c.photo || photoFor(c.name)} size={head ? 74 : 56} highlight={head} rounded="12px" />
+                  <Avatar name={c.name} photo={c.photo || photoFor(c.name)} size={head ? 110 : 84} highlight={head} rounded="12px" />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: head ? 22 : 18, fontWeight: 500, letterSpacing: 1 }}>{c.name}</div>
                     <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 12, color: "var(--gold)", letterSpacing: 2, textTransform: "uppercase", marginTop: 4 }}>
