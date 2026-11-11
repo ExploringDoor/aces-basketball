@@ -297,6 +297,17 @@ h1,h2,h3{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2px}
 .qz .lab{font-family:'Oswald',sans-serif;font-size:11.5px;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold-d,#9c7a2a)}
 .qz .tx{font-size:18px;font-weight:700;line-height:1.3}
 .qz .sub{font-size:14px;color:var(--ink-2);margin-top:2px}
+.qz .ropts{display:grid;gap:8px;margin-top:12px} .qz .ropts button{font:inherit;font-weight:600;font-size:15px;line-height:1.3;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line-2);background:#fff;cursor:pointer;text-align:left;color:var(--ink)} .qz .ropts button.ok{border-color:#1f8a4c;background:#e9f7ee} .qz .ropts button.bad{border-color:#b42318;background:#fdecea} .qz .ropts button:disabled{cursor:default}
+.tips.reads li{display:flex;gap:8px;align-items:baseline} .tips.reads li b{color:#7a5c12;white-space:nowrap}
+#listView.gd .gdhide{display:none!important}
+.gday{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--sh);overflow:hidden;margin-bottom:18px}
+.gday .gh{background:linear-gradient(135deg,#840036 0%,#5c0026 100%);color:#fff;padding:18px 22px;display:flex;gap:14px;align-items:center;flex-wrap:wrap} .gday .gh .k{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.85} .gday .gh h2{margin:2px 0 0;font-family:'Anton',sans-serif;font-size:30px;letter-spacing:.5px;line-height:1} .gday .gh .d{opacity:.9;font-size:14px;margin-top:4px} .gday .gh .sp{flex:1} .gday .gh .btn{background:#fff;color:#840036;border-color:#fff}
+.gday .gb{padding:16px 22px 18px;display:grid;gap:16px} .gday h4{margin:0 0 8px;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:1.8px;text-transform:uppercase;color:#840036}
+.gday .things{margin:0;padding:0;list-style:none;display:grid;gap:6px} .gday .things li{display:flex;gap:10px;align-items:baseline;font-size:16px;font-weight:600} .gday .things li i{font-family:'Anton',sans-serif;font-style:normal;color:#c9a44a;font-size:20px;min-width:18px}
+.gday .guys{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px} .gday .guy{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px 10px} .gday .guy img,.gday .guy .av{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#e8d6ae;display:flex;align-items:center;justify-content:center;font-weight:700;color:#5c0026;flex:none} .gday .guy b{display:block;font-size:14px} .gday .guy span{font-size:12.5px;color:var(--ink-2)}
+.gday .sigs{display:flex;gap:8px;flex-wrap:wrap} .gday .sigs span{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 6px;font-size:13.5px;font-weight:600} .gday .sigs img{width:26px;height:26px;border-radius:50%;object-fit:cover} .gday .sigs small{color:var(--ink-3);font-weight:400}
+.gday .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px} .gday .pcard h3{font-size:14px} .gday .pcard .meta{padding:8px 10px 10px}
+.gday .gf{display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);padding:12px 22px;background:var(--bg)}
 .qz .row{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
 .qz .score{margin-left:auto;font-family:'Oswald',sans-serif;font-size:15px;color:var(--ink-2)}
 .qz.right{background:#e8f6ee}.qz.right .qn,.qz.right .lab{color:#1f8a4c}
@@ -410,19 +421,21 @@ body.shielded #app{filter:blur(22px)}
 
   <main class="wrap" id="listView">
     <div class="hello"><div><h2 id="hiTitle">Playbook</h2><p id="hiSub"></p></div></div>
-    <button class="plan-card hide" type="button" id="planCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v13H4zM8 21h8M12 17v4M8 8l3 3 5-5"/></svg></span><span><span class="k" id="planK">This week</span><span class="vs" id="planVs"></span><span class="d" id="planD"></span><span class="pqtag hide" id="planPq"></span></span><span class="go">Game plan</span></button>
-    <div class="prac hide" id="pracCard"><div style="flex:1;min-width:0"><div class="t" id="pracT">Practice</div><b id="pracB"></b><div class="blocks" id="pracBlocks"></div></div></div>
+    <div class="gday hide" id="gdayBox"></div>
+    <button class="plan-card hide gdhide" type="button" id="planCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v13H4zM8 21h8M12 17v4M8 8l3 3 5-5"/></svg></span><span><span class="k" id="planK">This week</span><span class="vs" id="planVs"></span><span class="d" id="planD"></span><span class="pqtag hide" id="planPq"></span></span><span class="go">Game plan</span></button>
+    <div class="prac hide gdhide" id="pracCard"><div style="flex:1;min-width:0"><div class="t" id="pracT">Practice</div><b id="pracB"></b><div class="blocks" id="pracBlocks"></div></div></div>
     <div class="upc chg hide" id="chgCard"><div class="uh"><h3>Schedule change</h3><button class="btn ghost" type="button" id="chgOk">Got it</button></div><ul id="chgList"></ul></div>
-    <div class="upc hide" id="upcCard"><div class="uh"><h3>Upcoming</h3><a class="addcal hide" id="addCal" href="#" rel="noopener">Subscribe on my phone</a></div><ul id="upcList"></ul><div class="calnote hide" id="calNote">Subscribing puts this calendar on your phone and it updates itself, usually within a few hours. The list above is always current.</div></div>
-    <button class="sigcard hide" type="button" id="sigCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12m0-6.5a1.5 1.5 0 0 1 3 0V12m0-5a1.5 1.5 0 0 1 3 0v7a6 6 0 0 1-6 6h-1.5a5 5 0 0 1-4.3-2.4L3 14.2a1.5 1.5 0 0 1 2.5-1.6L8 15"/></svg></span><span><b>Sideline signals</b><span class="sub" id="sigCardSub"></span></span><span class="go">Learn them</span></button>
+    <div class="upc hide gdhide" id="upcCard"><div class="uh"><h3>Upcoming</h3><a class="addcal hide" id="addCal" href="#" rel="noopener">Subscribe on my phone</a></div><ul id="upcList"></ul><div class="calnote hide" id="calNote">Subscribing puts this calendar on your phone and it updates itself, usually within a few hours. The list above is always current.</div></div>
+    <button class="sigcard hide gdhide" type="button" id="sigCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12m0-6.5a1.5 1.5 0 0 1 3 0V12m0-5a1.5 1.5 0 0 1 3 0v7a6 6 0 0 1-6 6h-1.5a5 5 0 0 1-4.3-2.4L3 14.2a1.5 1.5 0 0 1 2.5-1.6L8 15"/></svg></span><span><b>Sideline signals</b><span class="sub" id="sigCardSub"></span></span><span class="go">Learn them</span></button>
     <div class="bb hide" id="boardBanner"><span class="dot"></span><div style="min-width:0"><b id="bbName">Coach is on the Board</b><span>Follow along and your phone shows what's on the iPad.</span></div><button class="btn" type="button" id="bbFollow">Follow coach</button></div>
-    <div class="inst hide" id="installCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 7v8m-3-3 3 3 3-3"/></svg></span><div style="min-width:0"><b>Put it on your home screen</b><span id="installSub">Opens like an app, and you get a badge when coach posts something new.</span></div><button class="btn hide" type="button" id="installBtn">Add</button><button class="x" type="button" id="installX" aria-label="Not now">×</button></div>
-    <div class="goalsbox hide" id="goalsBox"><h3>Season goals</h3><div id="goalsList"></div></div>
-    <button class="sigcard hide" type="button" id="whereCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/></svg></span><span><b>Where am I?</b><span class="sub" id="whereCardSub"></span></span><span class="go">Drill</span></button>
-    <button class="sigcard hide" type="button" id="sitCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><b>Situations</b><span class="sub" id="sitCardSub"></span></span><span class="go">Open</span></button>
-    <button class="sigcard hide" type="button" id="termCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v12H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></span><span><b>Team language</b><span class="sub" id="termCardSub"></span></span><span class="go">Learn it</span></button>
-    <div class="must hide" id="mustBox"><h3><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#840036" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Must know<span class="pct" id="mustPct"></span></h3><ul id="mustList"></ul></div>
-    <div class="tonight hide" id="tonightBox"><div class="th"><h3>Tonight's plays</h3><span id="tonightSub"></span></div><div class="grid" id="tonightGrid"></div></div>
+    <div class="inst hide gdhide" id="installCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 7v8m-3-3 3 3 3-3"/></svg></span><div style="min-width:0"><b>Put it on your home screen</b><span id="installSub">Opens like an app, and you get a badge when coach posts something new.</span></div><button class="btn hide" type="button" id="installBtn">Add</button><button class="x" type="button" id="installX" aria-label="Not now">×</button></div>
+    <div class="goalsbox hide gdhide" id="goalsBox"><h3>Season goals</h3><div id="goalsList"></div></div>
+    <button class="sigcard hide gdhide" type="button" id="whereCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/></svg></span><span><b>Where am I?</b><span class="sub" id="whereCardSub"></span></span><span class="go">Drill</span></button>
+    <button class="sigcard hide gdhide" type="button" id="sitCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><b>Situations</b><span class="sub" id="sitCardSub"></span></span><span class="go">Open</span></button>
+    <button class="sigcard hide gdhide" type="button" id="readsCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span><b>Read the defense</b><span class="sub" id="readsCardSub"></span></span><span class="go">Quiz</span></button>
+    <button class="sigcard hide gdhide" type="button" id="termCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v12H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></span><span><b>Team language</b><span class="sub" id="termCardSub"></span></span><span class="go">Learn it</span></button>
+    <div class="must hide gdhide" id="mustBox"><h3><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#840036" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Must know<span class="pct" id="mustPct"></span></h3><ul id="mustList"></ul></div>
+    <div class="tonight hide gdhide" id="tonightBox"><div class="th"><h3>Tonight's plays</h3><span id="tonightSub"></span></div><div class="grid" id="tonightGrid"></div></div>
     <div class="seg" id="seg" role="tablist"><button type="button" data-kind="ours" aria-pressed="true">Our plays</button><button type="button" data-kind="scout">Scouting</button><button type="button" data-kind="stats" class="hide" id="segStats">Stats</button><button type="button" data-kind="hustle" class="hide" id="segHustle">Hustle board</button></div>
     <div class="hide" id="statsView"></div>
     <div class="hide" id="hustleView"><div class="prac" style="display:block;margin-bottom:12px"><div class="t">Attitude board</div><b>Hustle stats from the bench: rebounds, deflections, charges, floor burns. Attitude per minute.</b></div><iframe id="hustleFrame" title="Attitude Board" style="width:100%;height:78vh;border:0;border-radius:16px;background:#fff;box-shadow:var(--sh)" loading="lazy"></iframe></div>
@@ -445,7 +458,7 @@ body.shielded #app{filter:blur(22px)}
           <button class="ib" type="button" id="nextBtn" aria-label="Next step"><svg><use href="#i-next"/></svg></button>
           <div class="prog" id="prog"></div>
           <div class="speed" role="group" aria-label="Speed"><button type="button" data-sp=".5">Slow</button><button type="button" data-sp="1" aria-pressed="true">Normal</button><button type="button" data-sp="1.7">Fast</button></div>
-          <button class="quizbtn" type="button" id="quizBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/><circle cx="12" cy="12" r="9.5"/></svg>Quiz me</button>
+          <button class="quizbtn hide" type="button" id="readsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Read the defense</button><button class="quizbtn" type="button" id="quizBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/><circle cx="12" cy="12" r="9.5"/></svg>Quiz me</button>
         </div>
         <div class="qz hide" id="qz"></div>
         <div class="now"><div class="n" id="nowN"></div><div><div class="lab" id="nowLab"></div><div class="tx" id="nowTx"></div></div></div>
@@ -455,6 +468,7 @@ body.shielded #app{filter:blur(22px)}
         <div class="box"><div class="scoutbar hide" id="pvScout"></div><div class="cat" id="pvCat"></div><h2 id="pvName"></h2><div class="notes" id="pvNotes"></div></div>
         <div class="vn hide" id="pvVn"><button class="vnbtn" type="button" id="vnBtn" aria-label="Listen"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z"/></svg></button><div style="flex:1;min-width:0"><b>Coach talks it through</b><span id="vnDur"></span><div class="bar"><i id="vnBar"></i></div></div></div>
         <div class="tips hide" id="pvTips"><h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.6 1 1.2 1 2.5h6c0-1.3.3-1.9 1-2.5A6 6 0 0 0 12 3z"/></svg>Coach's tips</h4><ol id="pvTipsList"></ol></div>
+        <div class="tips reads hide" id="pvReads"><h4>Reads</h4><ul id="pvReadsList"></ul></div>
         <div class="sits hide" id="pvSits"></div>
         <div class="tips hide" id="pvSig"><h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12m0-6.5a1.5 1.5 0 0 1 3 0V12m0-5a1.5 1.5 0 0 1 3 0v7a6 6 0 0 1-6 6h-1.5a5 5 0 0 1-4.3-2.4L3 14.2a1.5 1.5 0 0 1 2.5-1.6L8 15"/></svg>Sideline signal</h4><div class="sigrow"><div class="ph hide" id="pvSigPh"><img id="pvSigImg" alt="Hand signal"></div><div><div class="call" id="pvSigCall"></div><div class="sub">See it or hear it, run this.</div></div></div></div>
         <div class="box hide" id="pvLineupBox"><h4 id="pvLineupH">Who's where</h4><ul class="lineup" id="pvLineup"></ul></div>
@@ -573,7 +587,7 @@ $('gateForm').addEventListener('submit',function(e){
 });
 function showGate(msg){ if(typeof stopVoice==='function') stopVoice(); $('app').classList.add('hide'); $('gate').classList.remove('hide'); $('gateErr').textContent=msg||''; document.body.classList.remove('shielded'); if(S.player) S.player.pause(); }
 function fetchPlays(){
-  if(DEMO){ S.me={id:'demo_me',name:'Demo Player',group:''}; S.plays=PBCourt.samples(); S.plays[0].signal={call:'Fist',photo:''}; S.plays[1].signal={call:'Thumbs up',photo:''}; if(S.plays[2]) S.plays[2].signal={call:'Chop',photo:''}; S.upcoming=[{at:new Date(Date.now()+864e5).toISOString().replace(/T.*/,'T20:30:00.000Z'),allDay:false,title:'Varsity practice',where:'Kobe Bryant Gym'},{at:new Date(Date.now()+3*864e5).toISOString().replace(/T.*/,'T23:00:00.000Z'),allDay:false,title:'vs Radnor',where:'Radnor HS'}]; S.calUrl='https://example.com/aces.ics'; S.notices=[{id:'n1',ts:new Date(Date.now()-36e5).toISOString(),group:'Varsity',lines:['Varsity practice on Thu moved from 3:30 pm to 4:15 pm at the main gym']}]; S.goals=[{metric:'ftp',target:70,label:'Free throw %'},{metric:'to',target:12,label:'Turnovers per game'},{metric:'wins',target:18,label:'Wins'}]; S.plays[0].situations=['need3','ato']; S.plays[1].situations=['blob','need2']; if(S.plays[2]) S.plays[2].situations=['vs_zone']; S.terms=[{id:'t1',term:'Fist',means:'Horns Flare. Our go to set against man.',kind:'call',play_id:S.plays[0].id},{id:'t2',term:'Ice',means:'Force the ball handler to the baseline on a side ball screen. Big stays low.',kind:'defense'},{id:'t3',term:'Weak',means:'Push the ball handler to his weak hand and keep him there.',kind:'defense'},{id:'t4',term:'Red',means:'Full court man press after a made free throw.',kind:'call'},{id:'t5',term:'Chop',means:'Our 2-3 zone slides.',kind:'call',play_id:S.plays[2]?S.plays[2].id:''}]; S.endgame={ball_down3:{play_ids:[S.plays[0].id],note:'Flare for 1. If they switch it, 5 seals and we throw it in.'},ball_down2:{play_ids:[S.plays[1].id],note:''},def_up3:{play_ids:[],note:'Foul before the shot goes up, under 5 seconds only. Hands up, no reach.',foul:true},inb_blob2:{play_ids:[S.plays[1].id],note:''}}; S.plays[0].due=new Date(Date.now()+3*864e5).toISOString().slice(0,10); S.plays[1].due=new Date(Date.now()-864e5).toISOString().slice(0,10); S.tonight={on:true,play_ids:[S.plays[0].id,S.plays[1].id],label:'vs Radnor',date:new Date(Date.now()+3*864e5).toISOString().slice(0,10)}; S.plays[0].marks=[{t:12,text:'Watch 5 set the screen on the top shoulder'},{t:31,text:'1 gets his feet set before the catch'}];
+  if(DEMO){ S.me={id:'demo_me',name:'Demo Player',group:''}; S.plays=PBCourt.samples(); S.plays[0].signal={call:'Fist',photo:''}; S.plays[1].signal={call:'Thumbs up',photo:''}; if(S.plays[2]) S.plays[2].signal={call:'Chop',photo:''}; S.upcoming=[{at:new Date(Date.now()+864e5).toISOString().replace(/T.*/,'T20:30:00.000Z'),allDay:false,title:'Varsity practice',where:'Kobe Bryant Gym'},{at:new Date(Date.now()+3*864e5).toISOString().replace(/T.*/,'T23:00:00.000Z'),allDay:false,title:'vs Radnor',where:'Radnor HS'}]; S.calUrl='https://example.com/aces.ics'; S.notices=[{id:'n1',ts:new Date(Date.now()-36e5).toISOString(),group:'Varsity',lines:['Varsity practice on Thu moved from 3:30 pm to 4:15 pm at the main gym']}]; S.goals=[{metric:'ftp',target:70,label:'Free throw %'},{metric:'to',target:12,label:'Turnovers per game'},{metric:'wins',target:18,label:'Wins'}]; S.plays[0].situations=['need3','ato']; S.plays[1].situations=['blob','need2']; if(S.plays[2]) S.plays[2].situations=['vs_zone']; S.terms=[{id:'t1',term:'Fist',means:'Horns Flare. Our go to set against man.',kind:'call',play_id:S.plays[0].id},{id:'t2',term:'Ice',means:'Force the ball handler to the baseline on a side ball screen. Big stays low.',kind:'defense'},{id:'t3',term:'Weak',means:'Push the ball handler to his weak hand and keep him there.',kind:'defense'},{id:'t4',term:'Red',means:'Full court man press after a made free throw.',kind:'call'},{id:'t5',term:'Chop',means:'Our 2-3 zone slides.',kind:'call',play_id:S.plays[2]?S.plays[2].id:''}]; S.endgame={ball_down3:{play_ids:[S.plays[0].id],note:'Flare for 1. If they switch it, 5 seals and we throw it in.'},ball_down2:{play_ids:[S.plays[1].id],note:''},def_up3:{play_ids:[],note:'Foul before the shot goes up, under 5 seconds only. Hands up, no reach.',foul:true},inb_blob2:{play_ids:[S.plays[1].id],note:''}}; S.plays[0].due=new Date(Date.now()+3*864e5).toISOString().slice(0,10); S.plays[1].due=new Date(Date.now()-864e5).toISOString().slice(0,10); S.tonight={on:true,play_ids:[S.plays[0].id,S.plays[1].id],label:'vs Radnor',date:new Date(Date.now()+3*864e5).toISOString().slice(0,10)}; S.plays[0].reads=[{when:'they switch the flare screen',then:'5 slips to the rim and 4 hits him on the dive',frame:2},{when:'1\'s man goes under the flare',then:'1 curls to the elbow instead of fading',frame:2}]; S.plays[1].reads=[{when:'they switch the screen',then:'The screener seals and we throw it in',frame:1}]; if(S.plays[2]) S.plays[2].reads=[{when:'the bottom man runs out to the corner',then:'Feed the short corner behind him',frame:1}]; if(/[?&]gameday=1/.test(location.search)) S.tonight.date=todayStr(); S.plays[0].marks=[{t:12,text:'Watch 5 set the screen on the top shoulder'},{t:31,text:'1 gets his feet set before the catch'}];
     S.done={viewed:['demo1','demo2'],quiz:{demo1:100}}; S.attitude='';
     S.plan={id:'plan1',opponent:'Radnor',date:new Date(Date.now()+3*864e5).toISOString().slice(0,10),where:'away',keys:['Box out. They crash three guys every shot.','Make them play in the half court. No run outs.','Deny #23 the ball on the wing.','Free throws win this one.'],our_plays:['demo1','demo2'],their_plays:['demo5'],matchups:[{us:{id:'demo_me',name:'Demo Player'},them:'#23 Smith',note:'Deny the wing, go under on screens'},{us:{id:'d2',name:'Chris Lee'},them:'#4 Rivera',note:'Lefty, force right'}],personnel:[{num:'23',name:'Smith',pos:'G',notes:'Best player. Shoots off the dribble going left.',guard:'Deny the catch, go under ball screens'},{num:'4',name:'Rivera',pos:'G',notes:'Lefty, drives left every time.',guard:'Force right'},{num:'32',name:'Okafor',pos:'C',notes:'Crashes the glass. No range.',guard:'Box out first, sag off'}],notes:'Bus leaves 4:15. Bring both jerseys.'};
     S.games=[{id:'g1',date:new Date(Date.now()-3*864e5).toISOString().slice(0,10),opponent:'Conestoga',where:'home',us:61,them:55,lines:[{player_id:'demo_me',name:'Demo Player',num:'5',min:28,pts:19,fgm:7,fga:12,tpm:2,tpa:5,ftm:3,fta:4,oreb:1,dreb:6,reb:7,ast:4,stl:2,blk:0,to:3,pf:2},{player_id:'d2',name:'Chris Lee',num:'24',min:30,pts:14,fgm:5,fga:11,tpm:1,tpa:3,ftm:3,fta:3,oreb:2,dreb:5,reb:7,ast:2,stl:1,blk:1,to:2,pf:3},{player_id:'d5',name:'Sam Oduya',num:'35',min:22,pts:9,fgm:4,fga:6,tpm:0,tpa:0,ftm:1,fta:2,oreb:4,dreb:6,reb:10,ast:0,stl:0,blk:3,to:2,pf:4}]},{id:'g2',date:new Date(Date.now()-7*864e5).toISOString().slice(0,10),opponent:'Harriton',where:'away',us:48,them:52,lines:[{player_id:'demo_me',name:'Demo Player',num:'5',min:30,pts:12,fgm:4,fga:14,tpm:1,tpa:6,ftm:3,fta:4,oreb:0,dreb:4,reb:4,ast:6,stl:1,blk:0,to:4,pf:3},{player_id:'d2',name:'Chris Lee',num:'24',min:29,pts:16,fgm:6,fga:12,tpm:2,tpa:4,ftm:2,fta:2,oreb:1,dreb:4,reb:5,ast:1,stl:2,blk:0,to:1,pf:2}]}];
@@ -590,6 +604,7 @@ $('outBtn').addEventListener('click',function(){ save(null); S.token=''; S.me=nu
 
 /* ── list ── */
 function start(){
+  if(DEMO&&S.plan&&/[?&]gameday=1/.test(location.search)) S.plan.date=todayStr();
   $('gate').classList.add('hide'); $('app').classList.remove('hide');
   $('meName').textContent=S.me.name; $('meAv').textContent=initials(S.me.name);
   pageWatermark();
@@ -618,6 +633,8 @@ function renderTop(){
     $('addCal').classList.toggle('hide',!cal); if(cal){ var wc=cal.replace(/^https?:/,'webcal:'); $('addCal').href=/android/i.test(navigator.userAgent)?'https://calendar.google.com/calendar/r?cid='+encodeURIComponent(wc):wc; } }
   var nSit=S.plays.filter(function(p){ return kindOf(p)!=='scout'&&(p.situations||[]).length; }).length, egN=Object.keys(S.endgame||{}).filter(function(k){ var l=S.endgame[k]; return l&&((l.play_ids||[]).length||l.note); }).length;
   $('sitCard').classList.toggle('hide',!nSit&&!egN); $('sitCardSub').textContent=[nSit?nSit+(nSit===1?' play tagged':' plays tagged'):'',egN?'end of game plan':''].filter(Boolean).join(' · ');
+  var ra=readsAll(); $('readsCard').classList.toggle('hide',ra.length<2); if(ra.length>=2){ var br=(S.done.quiz||{}).reads; $('readsCardSub').textContent=ra.length+' reads on '+S.plays.filter(function(p){ return kindOf(p)!=='scout'&&(p.reads||[]).length; }).length+' plays'+(br>=80?' · passed '+br+'%':br!=null?' · best '+br+'%':' · they do this, we do what?'); }
+  renderGameDay();
   var nT=(S.terms||[]).length; $('termCard').classList.toggle('hide',!nT);
   if(nT){ var bt=(S.done.quiz||{}).terms; $('termCardSub').textContent=nT+(nT===1?' word':' words')+(bt>=80?' · passed '+bt+'%':bt!=null?' · best '+bt+'%':' · take the quiz'); }
   var goals=S.goals||[]; $('goalsBox').classList.toggle('hide',!goals.length);
@@ -843,6 +860,79 @@ function pqFinish(){
   if(!DEMO) api({action:'quiz_result',token:S.token,id:'prep_'+P.id,score:PQ.score,total:PQ.qs.length}).catch(function(){});
   PQ=null;
 }
+/* ── read the defense: "they do X, what do we do?" from the reads coach pinned to each play ── */
+var RQ=null;
+function theyLess(t){ return String(t||'').replace(/^\s*(if|when)\s+/i,'').replace(/^\s*they\s+/i,''); }
+function shuffleArr(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function readsAll(){ var out=[]; S.plays.forEach(function(p){ if(kindOf(p)==='scout') return; (p.reads||[]).forEach(function(r){ out.push({p:p,r:r}); }); }); return out; }
+function makeReads(p){
+  var all=readsAll(), mine=all.filter(function(x){ return !p||x.p.id===p.id; }); if(!mine.length) return [];
+  var pool={}; all.forEach(function(x){ pool[x.r.then]=1; });
+  return shuffleArr(mine).slice(0,p?8:10).map(function(x){ var wrong=shuffleArr(Object.keys(pool).filter(function(t){ return t!==x.r.then; })).slice(0,3); var opts=shuffleArr([x.r.then].concat(wrong)); return {p:x.p,r:x.r,opts:opts,answer:opts.indexOf(x.r.then)}; });
+}
+function startReads(p){
+  var qs=makeReads(p); if(qs.length<1||(qs[0].opts.length<2)){ toast('Not enough reads to quiz on yet.'); return; }
+  RQ={p:p,qs:qs,k:0,score:0,busy:false,switching:false}; askR();
+}
+function askR(){
+  var q=RQ.qs[RQ.k];
+  if(S.open!==q.p){ RQ.switching=true; openPlay(q.p.id,true); RQ.switching=false; }
+  S.quiz={reads:true,busy:true}; S.player.pause(); S.player.go(q.r.frame||0); S.player.gA.innerHTML='';
+  $('quizBtn').classList.add('hide'); $('readsBtn').classList.add('hide'); $('court').classList.remove('quizzing');
+  var el=$('qz'); el.className='qz';
+  el.innerHTML='<div class="qq"><div class="qn">'+(RQ.k+1)+'</div><div style="flex:1"><div class="lab">Read the defense · '+(RQ.k+1)+' of '+RQ.qs.length+'</div><div class="tx">They '+esc(theyLess(q.r.when))+'. What do we do?</div><div class="sub">'+esc(q.p.name)+(q.r.frame?' · step '+q.r.frame:'')+'</div></div></div><div class="ropts">'+q.opts.map(function(o,i){ return '<button type="button" data-ra="'+i+'">'+esc(o)+'</button>'; }).join('')+'</div><div class="row"><button class="btn ghost" type="button" id="rqQuit">Quit</button><span class="score">'+RQ.score+' right so far</span></div>';
+  $('rqQuit').addEventListener('click',function(){ endReads(); });
+  $('nowLab').textContent='Read the defense'; $('nowN').textContent=''; $('nowTx').textContent='They '+theyLess(q.r.when)+'.';
+}
+$('qz').addEventListener('click',function(e){
+  var b=e.target.closest('[data-ra]'); if(!b||!RQ||RQ.busy) return; RQ.busy=true;
+  var q=RQ.qs[RQ.k], ok=+b.getAttribute('data-ra')===q.answer; if(ok) RQ.score++;
+  Array.prototype.forEach.call($('qz').querySelectorAll('[data-ra]'),function(x){ var i=+x.getAttribute('data-ra'); if(i===q.answer) x.classList.add('ok'); else if(x===b) x.classList.add('bad'); x.disabled=true; });
+  $('qz').className='qz '+(ok?'right':'wrong');
+  var row=$('qz').querySelector('.row'); row.innerHTML='<span class="score">'+(ok?'Right.':'Not that one.')+'</span><button class="btn primary" type="button" id="rqNext">'+(RQ.k+1<RQ.qs.length?'Next':'See my score')+'</button>';
+  S.player.gA.innerHTML=PBCourt.arrowsSVG(q.p,Math.min(q.p.frames.length-1,(q.r.frame||0)+1)||1);
+  $('rqNext').addEventListener('click',function(){ RQ.busy=false; RQ.k++; if(RQ.k<RQ.qs.length) askR(); else finishReads(); });
+});
+function finishReads(){
+  var pct=Math.round(RQ.score/RQ.qs.length*100), passed=pct>=80, id=RQ.p?'reads_'+RQ.p.id:'reads', n=RQ.qs.length, sc=RQ.score;
+  var el=$('qz'); el.className='qz'+(passed?' right':'');
+  el.innerHTML='<div class="result"><div class="big'+(passed?' ok':'')+'">'+pct+'%</div><p>'+sc+' of '+n+' right. '+(passed?'You read the game.':pct>=50?'Close. Read the reads once more and go again.':'Open the plays, read the reads under the court, and try again.')+'</p><div class="row" style="justify-content:center"><button class="btn primary" type="button" id="rqAgain">Try again</button><button class="btn" type="button" id="rqDone">Done</button></div></div>';
+  var p=RQ.p; $('rqAgain').addEventListener('click',function(){ startReads(p); }); $('rqDone').addEventListener('click',function(){ endReads(); });
+  var cur=(S.done.quiz||{})[id]||0; if(pct>cur){ S.done.quiz=S.done.quiz||{}; S.done.quiz[id]=pct; renderTop(); }
+  if(!DEMO) api({action:'quiz_result',token:S.token,id:id,score:sc,total:n}).catch(function(){});
+  RQ=null; S.quiz=null; $('quizBtn').classList.remove('hide'); $('readsBtn').classList.remove('hide'); $('nowLab').textContent='Quiz done'; $('nowTx').textContent=pct+'%';
+}
+function endReads(silent){ RQ=null; S.quiz=null; $('qz').className='qz hide'; $('qz').innerHTML=''; $('quizBtn').classList.remove('hide'); if(S.open&&(S.open.reads||[]).length) $('readsBtn').classList.remove('hide'); if(!silent&&S.player){ S.player.go(0); } }
+$('readsBtn').addEventListener('click',function(){ if(S.open) startReads(S.open); });
+$('readsCard').addEventListener('click',function(){ var all=readsAll(); if(!all.length) return; openPlay(all[0].p.id); startReads(null); });
+/* ── game day: one card on top, everything else drops below the fold ── */
+function gameDay(){
+  var t=todayStr(), P=S.plan&&S.plan.date===t?S.plan:null, T=S.tonight&&S.tonight.on&&S.tonight.date===t?S.tonight:null;
+  var td=new Date().toDateString(), ev=(S.upcoming||[]).find(function(x){ return new Date(x.at).toDateString()===td&&/(^|\s)(vs\.?|at|@|game)(\s|$)/i.test(x.title||''); })||null;
+  if(!P&&!T&&!ev) return null;
+  return {P:P,T:T,ev:ev,opp:P?P.opponent:(T&&T.label?T.label.replace(/^(vs\.?|at)\s+/i,''):ev?ev.title:'')};
+}
+function renderGameDay(){
+  var g=gameDay(), box=$('gdayBox'), lv=$('listView');
+  if(!g){ box.classList.add('hide'); lv.classList.remove('gd'); return; }
+  var P=g.P, byId={}; S.plays.forEach(function(p){ byId[p.id]=p; });
+  var plays=(g.T?g.T.play_ids:P?P.our_plays:[]).map(function(id){ return byId[id]; }).filter(Boolean).slice(0,8);
+  var things=P?((P.things||[]).length?P.things:(P.keys||[]).slice(0,3)):[];
+  var guys=P?(P.personnel||[]).slice(0,6):[];
+  var sigs=plays.filter(function(p){ return p.signal&&(p.signal.call||p.signal.photo); });
+  var when=g.ev?fmtEv(g.ev).time:'', where=P?(P.where==='home'?'Home':P.where==='away'?'Away':P.where==='neutral'?'Neutral site':''):(g.ev&&g.ev.where)||'';
+  var h='<div class="gh"><div><div class="k">Game day</div><h2>'+(g.opp?(/^(vs|at)\b/i.test(g.opp)?'':'vs ')+esc(g.opp):'Tonight')+'</h2><div class="d">'+[when,where].filter(Boolean).join(' · ')+'</div></div><div class="sp"></div>'+(P?'<button class="btn" type="button" id="gdPlan">Game plan</button>':'')+'</div><div class="gb">';
+  if(plays.length) h+='<div><h4>'+(g.T?'Tonight\'s plays':'Our calls tonight')+'</h4><div class="grid">'+cards(plays)+'</div></div>';
+  if(things.length) h+='<div><h4>Three things</h4><ol class="things">'+things.map(function(t,i){ return '<li><i>'+(i+1)+'</i><span>'+esc(t)+'</span></li>'; }).join('')+'</ol></div>';
+  if(guys.length) h+='<div><h4>Their guys</h4><div class="guys">'+guys.map(function(x){ return '<div class="guy">'+(x.photo?'<img src="'+esc(x.photo)+'" alt="">':'<span class="av">'+esc(x.num||'?')+'</span>')+'<div><b>'+(x.num?'#'+esc(x.num)+' ':'')+esc(x.name||'')+(x.pos?' <small class="muted">'+esc(x.pos)+'</small>':'')+'</b><span>'+esc(x.guard||x.notes||'')+'</span></div></div>'; }).join('')+'</div></div>';
+  if(sigs.length) h+='<div><h4>Signals we\'ll use</h4><div class="sigs">'+sigs.map(function(p){ var sg=p.signal; return '<span>'+(sg.photo?'<img src="'+esc(sg.photo)+'" alt="">':'')+esc(sg.call||'')+'<small>'+esc(p.name)+'</small></span>'; }).join('')+'</div></div>';
+  h+='</div><div class="gf">'+(P&&(P.quiz||[]).length?'<button class="quizbtn" type="button" id="gdQuiz">60 second prep quiz</button>':'')+'<span class="sp" style="flex:1"></span><button class="btn ghost" type="button" id="gdMore">Everything else</button></div>';
+  box.innerHTML=h; box.classList.remove('hide'); lv.classList.add('gd');
+  if($('gdPlan')) $('gdPlan').onclick=function(){ history.pushState({plan:1},'','#opp='+encodeURIComponent(P.opponent)); showOpp(P.opponent); };
+  if($('gdQuiz')) $('gdQuiz').onclick=function(){ history.pushState({plan:1},'','#opp='+encodeURIComponent(P.opponent)); showOpp(P.opponent); setTimeout(function(){ var el=$('gpPq'); if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); var b=$('pqStart'); if(b) b.click(); } },250); };
+  $('gdMore').onclick=function(){ var on=lv.classList.toggle('gd'); this.textContent=on?'Everything else':'Just the game'; };
+}
+$('gdayBox').addEventListener('click',function(e){ var b=e.target.closest('[data-open]'); if(b) openPlay(b.getAttribute('data-open')); });
 /* ── sideline signals ── */
 function showSig(){
   var sigs=sigPlays(); if(!sigs.length){ closePlan(); return; }
@@ -1003,11 +1093,11 @@ $('grid').addEventListener('click',function(e){ var b=e.target.closest('[data-op
 /* ── play view ── */
 function openPlay(id,fromRoute){
   var p=S.plays.find(function(x){ return x.id===id; }); if(!p){ closePlay(); return; }
-  S.open=p; endQuiz(true);
+  S.open=p; endQuiz(true); if(RQ&&!RQ.switching) endReads(true);
   if(!fromRoute) history.pushState({play:id},'','#play='+encodeURIComponent(id));
   if((S.done.viewed||[]).indexOf(p.id)<0){ S.done.viewed=(S.done.viewed||[]).concat([p.id]); renderTop(); }
   $('listView').classList.add('hide'); $('planView').classList.add('hide'); $('playView').classList.remove('hide'); window.scrollTo(0,0);
-  $('quizBtn').classList.toggle('hide',p.frames.length<2);
+  $('quizBtn').classList.toggle('hide',p.frames.length<2); var rds=p.reads||[]; $('readsBtn').classList.toggle('hide',!rds.length); $('pvReads').classList.toggle('hide',!rds.length); $('pvReadsList').innerHTML=rds.map(function(r){ return '<li><b>If they '+esc(theyLess(r.when))+':</b><span>'+esc(r.then)+(r.frame?' <small class="muted">(step '+r.frame+')</small>':'')+'</span></li>'; }).join('');
   $('pvCat').textContent=(kindOf(p)==='scout'?p.opponent+' · ':'')+p.category; $('pvName').textContent=p.name; $('pvNotes').textContent=p.notes||''; $('pvNotes').classList.toggle('hide',!p.notes);
   $('pvScout').classList.toggle('hide',kindOf(p)!=='scout'); $('pvScout').innerHTML='<b>Scouting</b><span>This is <strong>'+esc(p.opponent)+'</strong>\'s play. The grey numbers are them, the X\'s are us.</span>';
   var tips=p.tips||[]; $('pvTips').classList.toggle('hide',!tips.length); $('pvTipsList').innerHTML=tips.map(function(t,i){ return '<li><span class="n">'+(i+1)+'</span><span>'+esc(t)+'</span></li>'; }).join('');

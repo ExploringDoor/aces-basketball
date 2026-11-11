@@ -706,6 +706,85 @@ const WIZARD = {
   endgame_from: ['late-down3', 'late-down12', 'late-tied', 'protect-lead', 'close-it-out'],
 };
 
+
+/* ================================================================
+   READS: "if they do X, we do Y", pinned to a step. Players get quizzed on them.
+   Keyed by play key; the mirrored (-left) copy gets the same reads with left and right swapped.
+================================================================ */
+const READS = {
+  'horns-flare': [{ when: 'They switch the flare screen', then: '5 slips to the rim and 4 hits him on the dive', frame: 2 }, { when: '1\'s man goes under the flare', then: '1 curls to the elbow instead of fading, 4 hits him there', frame: 2 }],
+  'horns-twist': [{ when: 'The big hedges hard on the first screen', then: '1 turns back and uses 4\'s re-screen going the other way', frame: 1 }, { when: 'They switch the second screen', then: '5 slips to the rim before the switch settles', frame: 2 }],
+  'horns-dive-and-pop': [{ when: 'The low man steps up to stop the roll', then: 'Kick to the corner shooter he left', frame: 2 }, { when: 'They switch the ball screen', then: '5 seals the smaller man on the roll and we throw it in', frame: 2 }],
+  'horns-split': [{ when: 'They deny the cut through the elbows', then: '1 clears to the corner and 4 drives the open lane', frame: 2 }],
+  'horns-stagger': [{ when: 'They chase 2 over both screens', then: '2 curls to the rim and 5 pops to the top', frame: 2 }, { when: 'They switch the stagger', then: '5 seals the little man and we post him', frame: 2 }],
+  'horns-punch': [{ when: 'They front the post', then: '4 throws the lob over the top from the elbow', frame: 2 }, { when: 'They double the post', then: '5 kicks to 2 lifting on the wing', frame: 3 }],
+  'horns-elbow-handoff': [{ when: 'They jump the handoff', then: '1 fakes the handoff and 5 drives the lane', frame: 1 }],
+  'four-out-post-entry': [{ when: 'They deny the wing entry', then: '2 goes backdoor and 1 hits him', frame: 1 }, { when: 'Help comes from the corner on the post', then: '5 kicks to 2 in the corner he just cleared to', frame: 2 }],
+  'four-out-drive-and-kick': [{ when: 'The low man helps on the drive', then: 'Dump it to 5 in the dunker spot', frame: 1 }, { when: 'The wing defender helps off 4', then: 'Kick to 4 for the lift three', frame: 1 }],
+  'five-out-cut-and-fill': [{ when: 'Your man turns his head on your cut', then: 'Cut all the way to the rim with your hands ready', frame: 1 }, { when: 'They deny the fill pass', then: 'Backdoor the first man who overplays', frame: 2 }],
+  'five-out-dribble-handoff': [{ when: 'The defender goes under the handoff', then: 'The receiver keeps it and shoots or drives, no handoff', frame: 1 }, { when: 'They switch the handoff', then: 'The handoff man slips to the rim', frame: 1 }],
+  'five-out-backdoor': [{ when: 'They deny the wing with a foot in the lane', then: 'Two hard steps to the ball, plant, and go backdoor', frame: 1 }],
+  'ucla-cut': [{ when: 'They switch the UCLA screen', then: '5 seals the guard on his back and we throw it in', frame: 2 }, { when: 'They deny the wing entry', then: '2 backdoors and 1 hits him', frame: 1 }],
+  'floppy': [{ when: 'They chase the shooter over the single', then: 'Shooter curls to the lane, big pops', frame: 2 }, { when: 'They go under the staggered screens', then: 'Shooter stops short for the catch and shoot', frame: 2 }],
+  'zipper': [{ when: 'They deny the zipper cut', then: 'The cutter backdoors off the screen to the rim', frame: 1 }],
+  'pistol': [{ when: 'They switch the handoff', then: 'The big slips to the rim before the switch settles', frame: 2 }, { when: 'The handoff defender jumps it', then: 'Fake the handoff and drive the lane', frame: 1 }],
+  'spain-pick-and-roll': [{ when: 'The low man steps up to the roller', then: 'The back screener pops to the top for three', frame: 2 }, { when: 'They switch the back screen', then: 'The roller gets a smaller man, throw it to him at the rim', frame: 2 }],
+  'chicago': [{ when: 'They go under the pin down', then: 'The guard pops short for the catch and shoot', frame: 1 }, { when: 'They switch the handoff', then: 'The big slips to the rim', frame: 2 }],
+  'flex': [{ when: 'They switch the flex screen', then: 'The screener seals the guard and we throw it in', frame: 2 }, { when: 'They deny the top', then: 'The screener slips the down screen to the rim', frame: 2 }],
+  'motion-weak': [{ when: 'They chase over the pin down', then: 'Curl it to the rim', frame: 2 }],
+  'iverson-cut': [{ when: 'They top lock the Iverson cut', then: 'Go backdoor off the second elbow', frame: 1 }],
+  'elevator-doors': [{ when: 'They fight through the doors', then: 'The shooter fades to the corner and the bigs seal', frame: 2 }, { when: 'They switch onto the shooter', then: 'A big slips to the rim', frame: 2 }],
+  'hammer': [{ when: 'The low man helps on the baseline drive', then: 'Skip it to the corner shooter coming off the hammer screen', frame: 2 }],
+  'box-double-cross': [{ when: 'They switch the cross screens', then: 'Both bigs seal and the guard feeds the mismatch', frame: 1 }],
+  '1-4-high-backdoor': [{ when: 'They deny the wing', then: 'The wing goes backdoor and the elbow big hits him', frame: 1 }],
+  '1-4-high-post-entry': [{ when: 'They front the high post', then: 'Reverse it and feed the other elbow', frame: 1 }],
+  'princeton-chin': [{ when: 'They deny the wing', then: 'Backdoor, the big at the elbow throws it', frame: 1 }, { when: 'They switch the back screen', then: 'The screener pops to the top', frame: 2 }],
+  'stack-curl': [{ when: 'They chase the curl', then: 'Curl all the way to the rim', frame: 1 }, { when: 'They go under', then: 'Stop short and shoot', frame: 1 }],
+  'dribble-drive-loop': [{ when: 'The help defender steps in on the drive', then: 'Drop it to the dunker or kick to the corner he left', frame: 1 }],
+  'zone-overload': [{ when: 'The bottom man runs out to the corner', then: 'Feed the short corner behind him', frame: 2 }, { when: 'The guard drops to the short corner', then: 'Reverse to the top for the open three', frame: 2 }],
+  'zone-high-low': [{ when: 'The middle man steps up on the high post', then: 'Drop it to the low post sealing behind him', frame: 2 }],
+  'zone-short-corner': [{ when: 'The bottom defender takes the short corner', then: 'The ball side block is open, dive to it', frame: 1 }],
+  'zone-skip-and-drive': [{ when: 'The zone is slow on the skip', then: 'Drive the closeout, don\'t shoot over a set man', frame: 2 }],
+  'screen-the-zone': [{ when: 'The screened defender fights over', then: 'Flare to the corner instead of the wing', frame: 1 }],
+  'box-up': [{ when: 'They switch the screen', then: 'The screener seals and we throw it in', frame: 1 }, { when: 'They face guard the first cutter', then: 'Hit the second option popping to the top', frame: 1 }],
+  'line-lob': [{ when: 'They front the lob', then: 'The second man in line pops to the corner for three', frame: 1 }],
+  'stack-diagonal': [{ when: 'They switch the diagonal screen', then: 'The screener seals on the block', frame: 1 }],
+  'box-corner-three': [{ when: 'They chase the shooter to the corner', then: 'The shooter curls and the big pops', frame: 1 }],
+  'flat-backdoor': [{ when: 'They deny the top', then: 'Backdoor from the flat, right now', frame: 1 }],
+  'sideline-box': [{ when: 'They deny the first cut', then: 'Hit the safety at the top and run offense', frame: 1 }],
+  'sideline-stack': [{ when: 'They switch the stack', then: 'The screener seals the smaller man', frame: 1 }],
+  'press-break-four-across': [{ when: 'They trap the first pass', then: 'Pass back to the inbounder stepping in', frame: 1 }, { when: 'They deny the sideline', then: 'The middle flashes to the ball', frame: 1 }],
+  'press-break-sideline-trap-escape': [{ when: 'The trap comes at the sideline', then: 'Reverse to the middle flash, never to the sideline', frame: 1 }],
+  'press-break-middle-flash': [{ when: 'They take away the middle', then: 'Throw over the top to the long man', frame: 1 }],
+  'need-three-flare-ato': [{ when: 'They switch the flare', then: 'Slip to the rim for the two and the foul if no three is there', frame: 2 }],
+  'need-two-high-ball-screen': [{ when: 'They trap the ball screen', then: 'Roller to the rim, short pass over the trap', frame: 1 }, { when: 'They switch it', then: 'Attack the big on the switch', frame: 1 }],
+  'last-shot-tied-spread': [{ when: 'They help off the corner', then: 'Kick to the corner shooter', frame: 1 }],
+  'up-late-four-corners': [{ when: 'They trap the ball', then: 'Pass out of it to the middle man, no dribble', frame: 1 }],
+  'drag-screen': [{ when: 'The big is late to the drag', then: 'Attack downhill before the screen, no waiting', frame: 1 }, { when: 'They switch the drag', then: 'Roll and seal the guard at the rim', frame: 2 }],
+  'elbow-get': [{ when: 'They jump the get', then: 'Fake it, 5 keeps it and drives', frame: 1 }],
+  'wide-pin-down': [{ when: 'They chase over the pin down', then: 'Curl it to the lane', frame: 1 }, { when: 'They go under', then: 'Pop short and shoot', frame: 1 }],
+  'ram-screen': [{ when: 'They switch the ram screen', then: 'The big slips before the ball screen', frame: 1 }],
+  'stagger-away': [{ when: 'They lock and trail the shooter', then: 'Curl to the rim, the second screener pops', frame: 1 }],
+  'post-split': [{ when: 'They switch the split', then: 'The screener seals and the post hits him', frame: 2 }],
+  'high-low': [{ when: 'They front the low post', then: 'Throw the lob from the elbow over the top', frame: 1 }],
+  'spread-pick-and-roll': [{ when: 'The low man tags the roller', then: 'Kick to the corner he left', frame: 2 }, { when: 'They go under the ball screen', then: 'Pull up behind the screen', frame: 1 }],
+  'against-box-and-one-screen-for-the-chased': [{ when: 'The chaser fights over the back screen', then: 'Curl to the rim and the screener pops', frame: 1 }],
+  'against-the-half-court-trap': [{ when: 'The trap comes at the sideline', then: 'Over the top to the middle flash', frame: 1 }],
+  'against-pressure-backdoor-series': [{ when: 'They deny the wing', then: 'Backdoor, bounce pass', frame: 1 }, { when: 'They deny the backdoor too', then: 'The big flashes to the elbow and the guard cuts off him', frame: 3 }],
+  'two-for-one': [{ when: 'No open look in the first 8 seconds', then: 'Take the best shot available, get the ball back for the last one', frame: 2 }],
+  'zone-blob-line': [{ when: 'The bottom man takes the short corner', then: 'Hit the corner shooter', frame: 1 }],
+  'zipper-blob': [{ when: 'They deny the zipper', then: 'The cutter backdoors and the big pops to the top', frame: 1 }],
+  'triangle-blob': [{ when: 'They switch the first screen', then: 'The screener seals and we throw it in', frame: 1 }],
+};
+const swapLR = (t) => t.replace(/\bright\b/g, '\u0000').replace(/\bleft\b/g, 'right').replace(/\u0000/g, 'left');
+for (const p of PLAYS) {
+  const base = p.key.replace(/-left$/, '');
+  const rs = READS[p.key] || READS[base];
+  if (!rs) continue;
+  p.reads = rs.map((r) => ({ when: p.side === 'left' ? swapLR(r.when) : r.when, then: p.side === 'left' ? swapLR(r.then) : r.then, frame: Math.min(r.frame, p.frames.length - 1) }));
+}
+for (const k of Object.keys(READS)) if (!PLAYS.find((p) => p.key === k)) throw new Error('reads name unknown play ' + k);
+
 /* ---------- validate and write ---------- */
 const keys = new Set();
 const out = [];
@@ -716,7 +795,7 @@ for (const p of PLAYS) {
   if (r.error) throw new Error(p.name + ': ' + r.error);
   const clean = r.play;
   // keep what the editor saves, plus the library key and side
-  out.push({ key: p.key, side: p.side, name: clean.name, category: clean.category, court: clean.court, notes: clean.notes, tips: clean.tips, situations: clean.situations, frames: clean.frames, steps: clean.frames.length - 1 });
+  out.push({ key: p.key, side: p.side, name: clean.name, category: clean.category, court: clean.court, notes: clean.notes, tips: clean.tips, situations: clean.situations, reads: clean.reads, frames: clean.frames, steps: clean.frames.length - 1 });
 }
 for (const pk of PACKS) for (const k of pk.plays) if (!keys.has(k)) throw new Error('pack ' + pk.key + ' names unknown play ' + k);
 for (const pk of PACKS) for (const leaf of Object.values(pk.endgame || {})) for (const k of leaf.play_keys) if (!keys.has(k)) throw new Error('pack ' + pk.key + ' endgame names unknown play ' + k);
@@ -729,4 +808,4 @@ window.PB_LIBRARY = ${JSON.stringify({ plays: out, packs: PACKS, wizard: WIZARD 
 `;
 writeFileSync(new URL('../public/playbook-library.js', import.meta.url), js);
 const byCat = {}; out.forEach((p) => (byCat[p.category] = (byCat[p.category] || 0) + 1));
-console.log(out.length, 'plays', byCat, PACKS.length, 'packs', Math.round(js.length / 1024) + 'KB');
+console.log(out.length, 'plays', byCat, PACKS.length, 'packs', out.filter((p) => p.reads.length).length + ' with reads', Math.round(js.length / 1024) + 'KB');

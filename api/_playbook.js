@@ -11,7 +11,7 @@ import { clip, stripTags } from './_clinic.js';
 export const CATEGORIES = ['Offense', 'Defense', 'Baseline out', 'Sideline out', 'Press break', 'Press', 'Late game', 'Special'];
 export const TOKENS = ['O1', 'O2', 'O3', 'O4', 'O5', 'X1', 'X2', 'X3', 'X4', 'X5'];
 export const MOVE_TYPES = ['cut', 'dribble', 'screen'];
-export const LIMITS = { frames: 30, name: 60, notes: 1500, frameNote: 300, groups: 12, group: 30, playerName: 60, opponent: 60, tips: 12, tip: 200, marks: 20, mark: 160, keys: 10, key: 200, matchups: 12, personnel: 15, blocks: 24, note: 600, points: 6, point: 160, stations: 4 };
+export const LIMITS = { frames: 30, name: 60, notes: 1500, frameNote: 300, groups: 12, group: 30, playerName: 60, opponent: 60, tips: 12, tip: 200, marks: 20, mark: 160, keys: 10, key: 200, matchups: 12, personnel: 15, blocks: 24, note: 600, points: 6, point: 160, stations: 4, reads: 8, read: 160 };
 export const DRILL_CATEGORIES = ['Warmup', 'Ballhandling', 'Passing', 'Shooting', 'Finishing', 'Defense', 'Rebounding', 'Transition', 'Press', 'Plays', 'Special situations', 'Competitive', 'Conditioning', 'Team', 'Other'];
 export const KINDS = ['ours', 'scout'];   // our play, or an opponent's play we are scouting
 // Court units are tenths of a foot. Half court 50 x 42 ft (high school), full 50 x 84.
@@ -96,9 +96,15 @@ export function cleanPlay(p) {
   // Film moments: "2:14 5 was late on the screen". Seconds into the clip plus a note.
   const marks = (Array.isArray(p.marks) ? p.marks : []).map((m) => ({ t: Math.max(0, Math.min(36000, Math.round(Number(m && m.t) || 0))), text: clip(stripTags(String((m && m.text) || '').trim()), LIMITS.mark) }))
     .filter((m) => m.text).sort((a, b) => a.t - b.t).slice(0, LIMITS.marks);
+  // Reads: "if they do X, we do Y", pinned to a step. Players get quizzed on them (Read the defense).
+  const reads = (Array.isArray(p.reads) ? p.reads : []).map((r) => ({
+    when: clip(stripTags(String((r && r.when) || '').trim()), LIMITS.read),
+    then: clip(stripTags(String((r && r.then) || '').trim()), LIMITS.read),
+    frame: Math.max(0, Math.min(out.length - 1, Math.round(Number(r && r.frame) || 0))),
+  })).filter((r) => r.when && r.then).slice(0, LIMITS.reads);
   return {
     play: {
-      name, court, category, groups, kind, opponent, lineup, clip: video, clip_link, tips, due, marks, signal, situations, audio,
+      name, court, category, groups, kind, opponent, lineup, clip: video, clip_link, tips, due, marks, signal, situations, audio, reads,
       notes: clip(stripTags(String(p.notes || '').trim()), LIMITS.notes),
       visible: !!p.visible,
       frames: out,
@@ -144,7 +150,7 @@ export function cleanPlan(p) {
   const opponent = cleanName(p.opponent, LIMITS.opponent);
   if (!opponent) return { error: 'missing_opponent' };
   return { plan: {
-    opponent, date: cleanDate(p.date), title: cleanName(p.title, 80),
+    opponent, date: cleanDate(p.date), title: cleanName(p.title, 80), group: cleanGroup(p.group),
     where: ['home', 'away', 'neutral'].includes(p.where) ? p.where : '',
     keys: lines(p.keys, LIMITS.key, LIMITS.keys),
     our_plays: [...new Set((Array.isArray(p.our_plays) ? p.our_plays : []).filter(idOk))].slice(0, 30),
@@ -175,7 +181,7 @@ export function cleanPractice(p) {
     stations: (Array.isArray(b && b.stations) ? b.stations : []).map((st) => ({ name: cleanName(st && st.name, 40), drill: cleanName(st && st.drill, 80), notes: clip(stripTags(String((st && st.notes) || '').trim()), 200) })).filter((st) => st.name || st.drill).slice(0, LIMITS.stations),
   })).filter((b) => b.name).slice(0, LIMITS.blocks);
   return { practice: {
-    date, title: cleanName(p.title, 80), start: /^\d{2}:\d{2}$/.test(String(p.start || '')) ? String(p.start) : '',
+    date, title: cleanName(p.title, 80), group: cleanGroup(p.group), start: /^\d{2}:\d{2}$/.test(String(p.start || '')) ? String(p.start) : '',
     focus: clip(stripTags(String(p.focus || '').trim()), 300),
     blocks, notes: clip(stripTags(String(p.notes || '').trim()), LIMITS.notes),
     show_players: !!p.show_players,
@@ -217,7 +223,7 @@ export function cleanGame(g) {
     return row;
   }).filter((l) => l.name || l.player_id).slice(0, 20);
   return { game: {
-    date, opponent, where: ['home', 'away', 'neutral'].includes(g.where) ? g.where : '',
+    date, opponent, group: cleanGroup(g.group), where: ['home', 'away', 'neutral'].includes(g.where) ? g.where : '',
     us: statInt(g.us, 200), them: statInt(g.them, 200),
     kind: ['game', 'scrimmage', 'tournament'].includes(g.kind) ? g.kind : 'game',
     source: ['hudl', 'manual', 'maxpreps', 'other'].includes(g.source) ? g.source : 'manual',

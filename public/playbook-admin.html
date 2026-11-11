@@ -513,6 +513,11 @@ tr:last-child td{border-bottom:0}
 .tonight .k{font-family:Oswald,sans-serif;letter-spacing:1.4px;text-transform:uppercase;font-size:13px;color:var(--gold-d)} .tonight .list{display:flex;gap:6px;flex-wrap:wrap;flex:1;min-width:200px} .tonight .list span{background:var(--gold-50);border:1px solid #efe2bd;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:600;display:inline-flex;gap:6px;align-items:center} .tonight .list span button{border:0;background:none;cursor:pointer;color:var(--ink-3);font-size:15px;padding:0;line-height:1}
 .tonight .inp{padding:7px 10px} .tonight .inp.lab{width:190px} .tonight .inp.date{width:150px}
 .pc .acts [data-star][aria-pressed="true"]{background:var(--gold-50);border-color:#e6d49a;color:var(--gold-d)}
+.teamsw{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-2)} .teamsw .inp{padding:6px 28px 6px 10px;font-size:13.5px;max-width:180px}
+.rolechip{background:var(--gold-50);border:1px solid #e6d49a;color:var(--gold-d);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;letter-spacing:.4px}
+.asst{background:var(--gold-50);border:1px solid #efe2bd;border-radius:12px;padding:10px 14px;margin:-4px 0 14px;font-size:14px;color:var(--ink-2)}
+body.assistant .coach-only,body.assistant [data-edit].btn,body.assistant [data-arch],body.assistant [data-dup],body.assistant [data-vis],body.assistant [data-restore],body.assistant [data-remove],body.assistant [data-newcode]{display:none!important}
+.team-row{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:14px} .team-row b{flex:1} .team-row small{color:var(--ink-3)}
 .lib-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 380px}
 .lib-main{overflow-y:auto;padding:16px 18px 40px}
 .lib-side{overflow-y:auto;border-left:1px solid var(--line);background:#fff;padding:16px}
@@ -571,6 +576,7 @@ tr:last-child td{border-bottom:0}
       <a class="brand" href="/"><img src="/LM_Logo.png" alt=""><div><div class="t1">ACES PLAYBOOK</div><div class="t2">Coach's board</div></div></a>
       <div class="sp"></div>
       <div class="links">
+        <label class="teamsw hide" id="teamSw"><span>Team</span><select class="inp" id="teamSel" aria-label="Team"></select></label><span class="rolechip hide" id="roleChip">Assistant</span>
         <button class="btn ghost" type="button" id="boardBtn" title="Full screen plays on a loop for the huddle">Board</button>
         <a class="btn ghost" href="/playbook.html" target="_blank" rel="noopener">Player view</a>
         <a class="btn ghost" href="/attitude/">Attitude Board</a>
@@ -589,7 +595,7 @@ tr:last-child td{border-bottom:0}
       <button class="tab" role="tab" data-tab="stats">Stats<span class="cnt" id="cStats">0</span></button>
       <button class="tab" role="tab" data-tab="questions">Questions<span class="cnt" id="cQ">0</span></button>
       <button class="tab" role="tab" data-tab="activity">Who's studying</button>
-      <button class="tab" role="tab" data-tab="settings">Settings</button>
+      <button class="tab coach-only" role="tab" data-tab="settings">Settings</button>
     </nav>
   </header>
 
@@ -597,8 +603,9 @@ tr:last-child td{border-bottom:0}
     <section class="panel" id="p-plays">
       <div class="hero"><div class="row">
         <div><div class="k">Team playbook</div><div class="big" id="heroN">0 plays</div><div class="of" id="heroSub"></div></div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="chip" id="openChip"><span class="dot"></span><span></span></span><button class="btn" type="button" id="printCardsBtn">Print play cards</button><button class="btn lg" type="button" id="plibBtn">Add from the library</button><button class="btn gold lg" type="button" id="newPlayBtn">Draw a new play</button></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="chip" id="openChip"><span class="dot"></span><span></span></span><button class="btn" type="button" id="printCardsBtn">Print play cards</button><button class="btn lg coach-only" type="button" id="plibBtn">Add from the library</button><button class="btn gold lg coach-only" type="button" id="newPlayBtn">Draw a new play</button></div>
       </div></div>
+      <div class="asst hide" id="asstNote"><b>Signed in as an assistant.</b> The Board, bench log, box scores, player notes, game plans, practices and tonight's plays are yours. Drawing or editing plays, players and settings is for the head coach.</div>
       <div class="filters"><div class="chips" id="playCats"></div><input class="search" id="playQ" type="search" placeholder="Search plays" aria-label="Search plays"></div>
       <div class="tonight hide" id="tonightBar"></div>
       <div class="pgrid" id="playGrid"></div>
@@ -608,7 +615,7 @@ tr:last-child td{border-bottom:0}
     <section class="panel" id="p-scout">
       <div class="hero" style="background:linear-gradient(135deg,#33333d 0%,#1d1d24 100%)"><div class="row">
         <div><div class="k" style="color:#c9c9d2">Scouting</div><div class="big" id="scoutN">0 opponent plays</div><div class="of" style="color:#c9c9d2">Draw up what the other team runs. Players study it before the game.</div></div>
-        <button class="btn lg" type="button" id="slibBtn">Add from the library</button><button class="btn gold lg" type="button" id="newScoutBtn">Draw an opponent play</button>
+        <button class="btn lg coach-only" type="button" id="slibBtn">Add from the library</button><button class="btn gold lg coach-only" type="button" id="newScoutBtn">Draw an opponent play</button>
       </div></div>
       <div class="filters"><div class="chips" id="scoutCats"></div><input class="search" id="scoutQ" type="search" placeholder="Search" aria-label="Search scouting plays"></div>
       <div class="pgrid" id="scoutGrid"></div>
@@ -653,11 +660,11 @@ tr:last-child td{border-bottom:0}
       <div class="hero"><div class="row">
         <div><div class="k">Situations and team language</div><div class="big">End of game, special situations, our words</div><div class="of">Tag plays with the moment they are for, fill in the end of game tree once, and give the guys a glossary of what you yell. Players get a Situations page, a tap through end of game plan, and a glossary quiz.</div></div>
       </div></div>
-      <div class="card"><div class="card-head"><div><h2>End of game</h2><div class="sub">Who has the ball, what's the score, what do we run. Players tap through it; it also prints on the bench card.</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="pocketBtn">Print the pocket card</button><button class="btn primary" type="button" id="egSave">Save end of game</button></div></div>
+      <div class="card"><div class="card-head"><div><h2>End of game</h2><div class="sub">Who has the ball, what's the score, what do we run. Players tap through it; it also prints on the bench card.</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="pocketBtn">Print the pocket card</button><button class="btn primary coach-only" type="button" id="egSave">Save end of game</button></div></div>
         <div class="eg-ed" id="egEd"></div></div>
       <div class="grid2">
         <div class="card"><div class="card-head"><div><h2>Situations library</h2><div class="sub">Which plays are tagged for what. Tag a play in the editor under Situations.</div></div></div><div id="sitOverview"></div></div>
-        <div class="card"><div class="card-head"><div><h2>Glossary</h2><div class="sub">Team words and what they mean. Players get the list and a quiz.</div></div><button class="btn primary sm" type="button" id="termAdd">Add a word</button></div><div id="termList"></div></div>
+        <div class="card"><div class="card-head"><div><h2>Glossary</h2><div class="sub">Team words and what they mean. Players get the list and a quiz.</div></div><button class="btn primary sm coach-only" type="button" id="termAdd">Add a word</button></div><div id="termList"></div></div>
       </div>
     </section>
     <section class="panel" id="p-practice">
@@ -714,11 +721,19 @@ tr:last-child td{border-bottom:0}
         <div class="card"><h2>Playbook access</h2><div class="sub">Close it between seasons, or any time you want every player locked out at once.</div>
           <label class="switch"><input type="checkbox" id="openSw"><span class="tr"></span><span class="tx"><b id="openSwT">Open</b><span>Players with a code can sign in and view plays</span></span></label>
           <div class="status" id="openStatus"></div>
-          <div class="fld" style="margin-top:18px"><label for="abShare">Attitude Board share link</label><div style="display:flex;gap:8px"><input class="inp" id="abShare" placeholder="Paste the share link or its code" maxlength="200"><button class="btn" type="button" id="abSave">Save</button></div><div class="help">From the Attitude Board: Settings, Share. Players get a Hustle board tab in their playbook that shows the read only board.</div></div>
+          <div class="fld" style="margin-top:18px"><label for="abShare">Attitude Board share link</label><div style="display:flex;gap:8px;flex-wrap:wrap"><select class="inp" id="abTeam" style="max-width:170px" aria-label="Team"></select><input class="inp" id="abShare" placeholder="Paste the share link or its code" maxlength="200"><button class="btn" type="button" id="abSave">Save</button></div><div class="help">From the Attitude Board: Settings, Share. Players get a Hustle board tab in their playbook that shows the read only board.</div></div>
           <div class="fld" style="margin-top:18px"><label>Team calendar</label><div id="feedRows"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button class="btn sm" type="button" id="feedAdd">Add a calendar</button><button class="btn sm primary" type="button" id="feedSave">Save calendars</button></div>
           <label style="display:flex;gap:9px;align-items:flex-start;margin-top:12px;font-size:14.5px;cursor:pointer"><input type="checkbox" id="feedAlerts" style="margin-top:3px"><span>Email schedule changes to the players, parents and coaches who signed up for alerts</span></label>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px"><button class="btn sm" type="button" id="feedCheck">Check the calendars now</button><div class="status" id="feedCheckStatus"></div></div>
           <div class="help">The site re-reads every calendar every 15 minutes. A change shows up as a card on every player's home screen either way. Turn the email on unless something else already emails this team about changes.</div><div class="help">Paste a calendar's private iCal address. Google Calendar: Settings, pick the calendar, Integrate calendar, Secret address in iCal format. Or the Aces team calendar feed link. Pick a group so Varsity and JV each get their own, or leave it on Everyone. Players get an Upcoming list and an Add to my phone button.</div><div class="status" id="feedStatus"></div></div></div>
+        <div class="card"><h2>Teams</h2><div class="sub">One program, several teams. Each team has its own roster, plans, practices, box scores and Attitude Board; plays and the glossary are shared unless you limit a play to a team. Pick a team at the top of the board to work on just that one.</div>
+          <div id="teamRows" style="display:flex;flex-direction:column;gap:6px;margin:10px 0"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp" id="teamNew" placeholder="Add a team: JV, 14U, Freshman" maxlength="30" style="max-width:260px"><button class="btn sm primary" type="button" id="teamAddBtn">Add team</button></div>
+          <div class="help">Players use the same team name as their group. A play limited to a team only shows to that team.</div></div>
+        <div class="card"><h2>Assistant code</h2><div class="sub">A second passcode for assistants and managers. They can run the Board, log bench calls, keep box scores, write player notes, make game plans and practices, and set tonight's plays. They cannot draw or edit plays, change players, or touch settings.</div>
+          <div class="status" id="asstStatus" style="margin:8px 0"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp" id="asstCode" placeholder="New assistant code, 6+ characters" maxlength="60" autocomplete="off" style="max-width:280px"><button class="btn sm primary" type="button" id="asstSave">Set the code</button><button class="btn sm ghost" type="button" id="asstClear">Turn it off</button></div>
+          <div class="help">Assistants sign in on this same page with their code. Change it any time; the old one stops working right away.</div><div class="help hide" id="asstDemo"><a href="?demo=1&amp;role=assistant">See the board as an assistant</a> (demo only).</div></div>
         <div class="card"><h2>Sunday night email</h2><div class="sub">Every Sunday around 8pm you get one email: who studied this week and who didn't, quiz average, what's due with who still owes it, questions waiting, box scores added, bench calls, and the week's calendar.</div>
           <button class="btn" type="button" id="digestBtn">Send me this week's email now</button><div class="status" id="digestStatus"></div>
           <div class="help" style="margin-top:8px">Goes to the coach email on file for the site.</div></div>
@@ -752,6 +767,7 @@ tr:last-child td{border-bottom:0}
       <div class="fld"><label>Court</label><div class="seg" style="display:flex"><button type="button" data-court="half" style="flex:1">Half</button><button type="button" data-court="full" style="flex:1">Full</button></div></div>
       <div class="fld"><label for="edNotes">About the play</label><textarea class="inp" id="edNotes" rows="3" placeholder="When we run it, who it's for"></textarea></div>
       <div class="fld"><label for="edTips">Coach's tips</label><textarea class="inp" id="edTips" rows="5" placeholder="One tip per line&#10;Sprint the first cut, don't jog it&#10;Fake the pass before you throw it"></textarea><div class="help">Shows in a gold box next to the play. One tip per line, up to 12.</div></div>
+      <div class="fld"><label for="edReads">Reads: if they do this, we do that</label><textarea class="inp" id="edReads" rows="4" placeholder="One per line: what they do | what we do | step&#10;They switch the screen | 5 slips to the rim | 2&#10;They go under | pop back and shoot"></textarea><div class="help">Players get quizzed on these under Read the defense. The step number is where it happens (optional). Up to 8.</div></div>
       <div class="fld"><label for="edSigCall">Sideline signal</label><div style="display:flex;gap:10px;align-items:center"><button class="pe-ph sig-ph" type="button" id="edSigPh" title="Photo of the hand signal">Photo</button><input class="inp" id="edSigCall" maxlength="30" placeholder="Call word, like Fist or Thumbs up"><button class="iconbtn hide" style="width:32px;height:32px;flex:none" type="button" id="edSigRm" title="Remove the photo"><svg><use href="#i-x"/></svg></button></div><div class="help">A photo of the hand signal plus what the coach calls out. Players learn every signal in the Signals quiz.</div></div>
       <div class="fld"><label>Situations</label><div class="chips" id="edSits"></div><div class="help">What moment this play is for. Players find it under Situations, and it feeds the end of game tree.</div></div>
       <div class="fld"><label>Voice note</label><div class="vn" id="edVn"></div><div class="help">Talk the play through, up to 90 seconds. Players hear you while the animation runs. Record right here, or upload a voice memo.</div></div>
@@ -828,6 +844,7 @@ tr:last-child td{border-bottom:0}
       </div>
       <div class="sec">Attendance <span class="muted" style="font-weight:400;letter-spacing:0;text-transform:none;font-size:13px">Tap a name: once for absent, twice for late. Saved to his notes right away.</span></div>
       <div class="att" id="peAtt"></div>
+      <div class="fld" style="margin-top:14px"><label for="peTeam">Team</label><select class="inp" id="peTeam"></select><div class="help">Which team this practice is for. Everyone means every player sees it.</div></div>
       <label class="switch" style="margin-top:18px"><input type="checkbox" id="peShow"><span class="tr"></span><span class="tx"><b>Show to players</b><span>They see the focus and the blocks at the top of their playbook that day</span></span></label>
     </div>
     <aside class="pe-lib" id="peLib">
@@ -893,12 +910,13 @@ tr:last-child td{border-bottom:0}
 </div>
 <script src="/playbook-court.js?v=2"></script>
 <script src="/playbook-drills.js"></script>
-<script src="/playbook-library.js?v=3"></script>
+<script src="/playbook-library.js?v=4"></script>
 <script>
 (function(){
 var KEY_STORE='dba_admin_key', DEMO=/[?&]demo=1/.test(location.search);
 var CATEGORIES=['Offense','Defense','Baseline out','Sideline out','Press break','Press','Late game','Special'];
-var S={ key:'', data:null, tab:'plays', q:{plays:'',scout:''}, cat:{plays:'All',scout:'All'} };
+var S={ key:'', data:null, raw:null, role:'coach', team:'', tab:'plays', q:{plays:'',scout:''}, cat:{plays:'All',scout:'All'} };
+try{ S.team=sessionStorage.getItem('pb_admin_team')||''; }catch(e){}
 function $(id){ return document.getElementById(id); }
 var esc=PBCourt.esc;
 function svg(id){ return '<svg><use href="#'+id+'"/></svg>'; }
@@ -906,7 +924,7 @@ var toastT; function toast(msg,err){ var t=$('toast'); t.textContent=msg; t.clas
 function fmtDate(iso,withTime){ if(!iso) return ''; var d=new Date(iso); if(isNaN(d)) return ''; var o={month:'short',day:'numeric'}; if(d.getFullYear()!==new Date().getFullYear()) o.year='numeric'; var s=d.toLocaleDateString('en-US',o); if(withTime) s+=' '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); return s; }
 function ago(iso){ if(!iso) return 'Never'; var m=Math.round((Date.now()-Date.parse(iso))/6e4); if(m<1) return 'Just now'; if(m<60) return m+' min ago'; var h=Math.round(m/60); if(h<24) return h+(h===1?' hour ago':' hours ago'); var d=Math.round(h/24); if(d<14) return d+(d===1?' day ago':' days ago'); return fmtDate(iso); }
 function copy(t){ return (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){ toast('Copied'); },function(){ window.prompt('Copy this:',t); }); }
-var ERRORS={ offline_first:'No connection, and this device has not opened the board online yet. Connect once, then it works offline.', offline:'You are offline. This needs a connection; the Board, bench card and bench log still work.', unauthorized:'Wrong passcode.', empty_answer:'Type an answer first.', bad_game:'Something is off in that box score.', missing_date:'Pick the date.', empty_note:'Type the note.', no_report:'No scouting report for that opponent yet.', missing_name:'Give the play a name.', missing_opponent:'Which opponent is this?', no_frames:'The play needs at least one step.', empty_court:'Put some players on the court first.', not_found:'That one isn\'t there anymore. Reload the page.', save_failed:'Couldn\'t save. Try again.', not_configured:'The playbook isn\'t set up on the server yet.', server_error:'Something went wrong. Try again.' };
+var ERRORS={ offline_first:'No connection, and this device has not opened the board online yet. Connect once, then it works offline.', offline:'You are offline. This needs a connection; the Board, bench card and bench log still work.', unauthorized:'Wrong passcode.', empty_answer:'Type an answer first.', bad_game:'Something is off in that box score.', missing_date:'Pick the date.', empty_note:'Type the note.', no_report:'No scouting report for that opponent yet.', missing_name:'Give the play a name.', missing_opponent:'Which opponent is this?', no_frames:'The play needs at least one step.', empty_court:'Put some players on the court first.', not_found:'That one isn\'t there anymore. Reload the page.', save_failed:'Couldn\'t save. Try again.', not_configured:'The playbook isn\'t set up on the server yet.', server_error:'Something went wrong. Try again.', coaches_only:'That part is for the head coach.', short_code:'Make the assistant code at least 6 characters.', same_code:'Pick something different from the coach passcode.' };
 function errText(d){ return (d&&ERRORS[d.error])||'Something went wrong.'; }
 
 function api(action,body){
@@ -970,14 +988,14 @@ function flushOutbox(){
 setInterval(function(){ if(DEMO||!S.key) return; var waiting=(lsGet(OUTBOX_KEY)||[]).length; if(!S.offline&&!waiting) return;
   fetch('/api/playbook',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':S.key},body:JSON.stringify({action:'admin_list'})}).then(function(r){ if(r.ok) window.dispatchEvent(new Event('online')); }).catch(function(){}); },60000);
 window.addEventListener('online',function(){ if(!S.key||DEMO) return; flushOutbox().then(function(n){ return reload().then(function(){ if(n) toast(n+' bench call'+(n===1?'':'s')+' sent.'); }); }).catch(function(){}); });
-function reload(){ return api('admin_list').then(function(d){ if(d.error) throw d; S.data=d;
+function reload(){ return api('admin_list').then(function(d){ if(d.error) throw d; S.raw=d; S.role=d.role||'coach'; S.data=teamView(d); applyRole();
   if(!DEMO&&!S.offline){ saveSnapshot(d); keyHash(S.key).then(function(h){ if(h) lsSet(HASH_KEY,h); }); flushOutbox(); }
   render(); }).catch(function(e){ if(e&&e.error==='offline_nodata') throw {error:'offline_first'}; throw e; }); }
 
 /* ── demo backend ── */
 var demo=null;
 function demoApi(action,b){
-  if(!demo){ demo={ settings:{open:true}, plays:PBCourt.samples().map(function(p,i){ p=JSON.parse(JSON.stringify(p)); p.visible=true; p.archived=false; p.situations=i===0?['need3','ato']:i===1?['blob','need2']:i===2?['vs_zone']:[]; if(i<2) p.due=new Date(Date.now()+(i?-1:3)*864e5).toISOString().slice(0,10); p.updated=new Date(Date.now()-864e5*2).toISOString(); var L={}; Object.keys(p.lineup||{}).forEach(function(k){ L[k]=p.lineup[k].id; }); p.lineup=L; return p; }),
+  if(!demo){ demo={ settings:{open:true,teams:['Varsity','JV'],attitude_shares:{},assistant_set:true}, plays:PBCourt.samples().map(function(p,i){ p=JSON.parse(JSON.stringify(p)); p.visible=true; p.archived=false; p.situations=i===0?['need3','ato']:i===1?['blob','need2']:i===2?['vs_zone']:[]; if(i<2) p.due=new Date(Date.now()+(i?-1:3)*864e5).toISOString().slice(0,10); p.updated=new Date(Date.now()-864e5*2).toISOString(); var L={}; Object.keys(p.lineup||{}).forEach(function(k){ L[k]=p.lineup[k].id; }); p.lineup=L; return p; }),
     players:[{id:'demo_me',name:'Demo Player',group:'Varsity',code:'ABC234',active:true,last_seen:new Date().toISOString(),last_login:new Date().toISOString()},{id:'d2',name:'Chris Lee',group:'Varsity',code:'KM7PQ2',active:true,last_seen:new Date(Date.now()-864e5).toISOString()},{id:'d3',name:'Marcus Hall',group:'Varsity',code:'Z4RT8N',active:true},{id:'d4',name:'Jaden Price',group:'JV',code:'P9WX3H',active:false},{id:'d5',name:'Sam Oduya',group:'JV',code:'QD6V2K',active:true,last_seen:new Date(Date.now()-3*864e5).toISOString()}],
     quiz:[{player_id:'demo_me',player_name:'Demo Player',play_id:'demo1',play_name:'Horns Flare',score:4,total:4,pct:100,at:new Date().toISOString()},{player_id:'d2',player_name:'Chris Lee',play_id:'demo1',play_name:'Horns Flare',score:2,total:4,pct:50,at:new Date().toISOString()}],
     plans:[{id:'plan1',opponent:'Radnor',date:new Date(Date.now()+3*864e5).toISOString().slice(0,10),where:'away',keys:['Box out. They crash three guys every shot.','Make them play in the half court.','Deny #23 the ball on the wing.'],our_plays:['demo1','demo2'],their_plays:['demo5'],matchups:[{us:'demo_me',them:'#23 Smith',note:'Deny the wing'}],personnel:[{num:'23',name:'Smith',pos:'G',notes:'Best player. Shoots going left.',guard:'Deny the catch'}],notes:'Bus leaves 4:15.',visible:true}],
@@ -993,7 +1011,7 @@ function demoApi(action,b){
     questions:[{id:'q1',play_id:'demo1',play_name:'Horns Flare',player_id:'d2',player_name:'Chris Lee',group:'Varsity',text:'If my guy goes under the flare screen do I still fade?',answer:'No. If he goes under, curl it and 4 hits you at the elbow. Only fade when he chases.',answered_at:new Date(Date.now()-7e5).toISOString(),hidden:false,created:new Date(Date.now()-864e5).toISOString()},{id:'q2',play_id:'demo2',play_name:'Box Up',player_id:'d5',player_name:'Sam Oduya',group:'JV',text:'Who inbounds if 3 is on the bench?',answer:'',hidden:false,created:new Date(Date.now()-36e5).toISOString()}],
     views:[{player_id:'demo_me',player_name:'Demo Player',play_id:'demo1',play_name:'Horns Flare',at:new Date(Date.now()-3e5).toISOString(),device:'iPhone'},{player_id:'demo_me',player_name:'Demo Player',play_id:'demo5',play_name:'Radnor: Flex',at:new Date(Date.now()-9e5).toISOString(),device:'iPhone'},{player_id:'d2',player_name:'Chris Lee',play_id:'demo1',play_name:'Horns Flare',at:new Date(Date.now()-864e5).toISOString(),device:'Android'},{player_id:'d5',player_name:'Sam Oduya',play_id:'demo2',play_name:'Box Up',at:new Date(Date.now()-3*864e5).toISOString(),device:'iPhone'}] }; }
   var r={ok:true};
-  if(action==='admin_list') r=JSON.parse(JSON.stringify(demo));
+  if(action==='admin_list'){ r=JSON.parse(JSON.stringify(demo)); r.role=/[?&]role=assistant/.test(location.search)?'assistant':'coach'; }
   else if(action==='save_play'){ if(b.id){ var i=demo.plays.findIndex(function(p){return p.id===b.id;}); demo.plays[i]=Object.assign({},demo.plays[i],b.play,{updated:new Date().toISOString()}); r.id=b.id; } else { var id='demo'+Date.now(); demo.plays.push(Object.assign({id:id,archived:false,updated:new Date().toISOString()},b.play)); r.id=id; } }
   else if(action==='set_visible'||action==='archive'||action==='restore'){ var p=demo.plays.find(function(x){return x.id===b.id;}); if(action==='set_visible') p.visible=!!b.visible; if(action==='archive'){ p.archived=true; p.visible=false; } if(action==='restore') p.archived=false; }
   else if(action==='add_players'){ r.added=b.players.map(function(p){ var x={id:'dp'+Math.random().toString(36).slice(2,7),name:p.name,group:p.group||'',code:'DEMO'+Math.floor(Math.random()*90+10),active:true}; demo.players.push(x); return x; }); }
@@ -1004,6 +1022,8 @@ function demoApi(action,b){
   else if(action==='send_digest') r.sent='coach@example.com';
   else if(action==='set_board'){}
   else if(action==='set_tonight'){ demo.tonight=b.tonight; r.tonight=b.tonight; }
+  else if(action==='set_assistant'){ demo.settings.assistant_set=!!b.code; r.set=!!b.code; }
+  else if(action==='set_teams'){ demo.settings.teams=b.teams; r.teams=b.teams; }
   else if(action==='set_goals'){ demo.goals=b.goals; r.goals=b.goals; }
   else if(action==='set_lineups'){ demo.lineups=b.lineups; r.lineups=b.lineups; }
   else if(action==='set_endgame'){ demo.endgame=b.leaves; r.leaves=b.leaves; }
@@ -1030,6 +1050,40 @@ function playerById(id){ return players().find(function(p){ return p.id===id; })
 function plays(kind){ return ((S.data&&S.data.plays)||[]).filter(function(p){ return (p.kind||'ours')===kind; }); }
 function groups(){ var g={}; players().forEach(function(p){ if(p.group) g[p.group]=1; }); ((S.data&&S.data.plays)||[]).forEach(function(p){ (p.groups||[]).forEach(function(x){ g[x]=1; }); }); return Object.keys(g).sort(); }
 function opponents(){ var g={}; plays('scout').forEach(function(p){ if(p.opponent) g[p.opponent]=1; }); return Object.keys(g).sort(); }
+/* ── teams: one program, several teams. The board shows one team at a time (or everyone). ── */
+function teamNames(){ var raw=S.raw||S.data||{}, g={}; ((raw.settings&&raw.settings.teams)||[]).forEach(function(t){ g[t]=1; }); (raw.players||[]).forEach(function(p){ if(p.group) g[p.group]=1; }); (raw.plays||[]).forEach(function(p){ (p.groups||[]).forEach(function(x){ g[x]=1; }); }); return Object.keys(g).sort(); }
+function teamOptions(sel){ return '<option value="">Everyone</option>'+teamNames().map(function(t){ return '<option value="'+esc(t)+'"'+(t===sel?' selected':'')+'>'+esc(t)+'</option>'; }).join(''); }
+function teamView(d){
+  var t=S.team; if(!t||!d) return d;
+  var v=Object.assign({},d), pid={};
+  v.players=(d.players||[]).filter(function(p){ return (p.group||'')===t; }); v.players.forEach(function(p){ pid[p.id]=1; });
+  v.plays=(d.plays||[]).filter(function(p){ return (p.kind||'ours')==='scout'||!(p.groups||[]).length||p.groups.indexOf(t)>=0; });
+  var mine=function(x){ return !x.group||x.group===t; };
+  v.plans=(d.plans||[]).filter(mine); v.practices=(d.practices||[]).filter(mine); v.games=(d.games||[]).filter(mine);
+  var byP=function(x){ return pid[x.player_id]; };
+  v.views=(d.views||[]).filter(byP); v.quiz=(d.quiz||[]).filter(byP); v.notes=(d.notes||[]).filter(byP); v.questions=(d.questions||[]).filter(function(q){ return pid[q.player_id]||q.group===t; });
+  return v;
+}
+function renderTeamSw(){
+  var names=teamNames(), sw=$('teamSw'); sw.classList.toggle('hide',!names.length); if(!names.length){ if(S.team){ S.team=''; } return; }
+  if(S.team&&names.indexOf(S.team)<0) S.team='';
+  $('teamSel').innerHTML='<option value="">All teams</option>'+names.map(function(t){ return '<option value="'+esc(t)+'"'+(t===S.team?' selected':'')+'>'+esc(t)+'</option>'; }).join('');
+}
+$('teamSel').addEventListener('change',function(){ S.team=this.value; try{ sessionStorage.setItem('pb_admin_team',S.team); }catch(e){} S.data=teamView(S.raw||S.data); EG=null; render(); toast(S.team?'Showing '+S.team+' only.':'Showing every team.'); });
+function renderTeamsCard(){
+  var st=(S.raw&&S.raw.settings)||{}, names=teamNames(), saved=st.teams||[];
+  $('teamRows').innerHTML=names.length?names.map(function(t){ var n=((S.raw&&S.raw.players)||[]).filter(function(p){ return p.group===t; }).length; return '<div class="team-row"><b>'+esc(t)+'</b><small>'+n+(n===1?' player':' players')+'</small>'+(saved.indexOf(t)>=0?'<button class="btn sm ghost" type="button" data-teamdel="'+esc(t)+'">Remove</button>':'<small>from the roster</small>')+'</div>'; }).join(''):'<div class="muted" style="font-size:14px">No teams yet. One team programs don\'t need any.</div>';
+}
+function saveTeams(list,msg){ api('set_teams',{teams:list}).then(function(d){ if(d.error) return toast(errText(d),true); toast(msg); reload(); }); }
+$('teamAddBtn').addEventListener('click',function(){ var v=$('teamNew').value.trim(); if(!v) return; var st=(S.raw&&S.raw.settings)||{}; var list=(st.teams||[]).slice(); if(list.indexOf(v)<0) list.push(v); $('teamNew').value=''; saveTeams(list,v+' added. Put players on it under Players.'); });
+$('teamRows').addEventListener('click',function(e){ var b=e.target.closest('[data-teamdel]'); if(!b) return; var t=b.getAttribute('data-teamdel'), st=(S.raw&&S.raw.settings)||{}; saveTeams((st.teams||[]).filter(function(x){ return x!==t; }),t+' removed from the list. Players on it keep their group.'); });
+/* ── assistant role: the server already refuses what they can't do; the board hides it ── */
+function applyRole(){ var a=S.role==='assistant'; document.body.classList.toggle('assistant',a); $('roleChip').classList.toggle('hide',!a); $('asstNote').classList.toggle('hide',!a); if(a&&S.tab==='settings') go('plays'); }
+function renderAssistantCard(){ var st=(S.raw&&S.raw.settings)||{}; $('asstStatus').textContent=st.assistant_set?'An assistant code is set.':'No assistant code yet.'; $('asstStatus').className='status'+(st.assistant_set?' ok':''); $('asstDemo').classList.toggle('hide',!DEMO); }
+$('asstSave').addEventListener('click',function(){ var v=$('asstCode').value.trim(); if(v.length<6) return toast(ERRORS.short_code,true); api('set_assistant',{code:v}).then(function(d){ if(d.error) return toast(errText(d),true); $('asstCode').value=''; toast('Assistant code set. Give it to your assistants.'); reload(); }); });
+$('asstClear').addEventListener('click',function(){ confirmBox('Turn off the assistant code?','Assistants are signed out the next time their page talks to the server.','Turn it off',function(){ api('set_assistant',{code:''}).then(function(d){ if(d.error) return toast(errText(d),true); toast('Assistant code turned off.'); reload(); }); }); });
+function renderAbShare(){ var st=(S.raw&&S.raw.settings)||{}, sel=$('abTeam'), cur=sel.value; sel.innerHTML='<option value="">Everyone</option>'+teamNames().map(function(t){ return '<option value="'+esc(t)+'"'+(t===cur?' selected':'')+'>'+esc(t)+(((st.attitude_shares||{})[t])?' (set)':'')+'</option>'; }).join(''); if(document.activeElement!==$('abShare')) $('abShare').value=(sel.value?(st.attitude_shares||{})[sel.value]:st.attitude_share)||''; }
+$('abTeam').addEventListener('change',renderAbShare);
 // a play the way the court library wants it (lineup as names)
 function viewPlay(p){ var v=Object.assign({},p,{lineup:{}}); Object.keys(p.lineup||{}).forEach(function(k){ var pl=playerById(p.lineup[k]); if(pl) v.lineup[k]={id:pl.id,name:pl.name}; }); return v; }
 function viewsFor(id){ return ((S.data&&S.data.views)||[]).filter(function(v){ return v.play_id===id; }); }
@@ -1048,6 +1102,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest('[data-tab
 
 /* ── render ── */
 function render(){
+  renderTeamSw(); renderTeamsCard(); renderAssistantCard();
   var d=S.data, ours=plays('ours').filter(function(p){return !p.archived;}), scout=plays('scout').filter(function(p){return !p.archived;});
   $('cPlays').textContent=ours.length; $('cScout').textContent=scout.length; $('cPlayers').textContent=players().length;
   $('heroN').textContent=ours.length+(ours.length===1?' play':' plays');
@@ -1057,7 +1112,7 @@ function render(){
   var open=!d.settings||d.settings.open!==false;
   $('openChip').className='chip '+(open?'open':'closed'); $('openChip').lastElementChild.textContent=open?'Open to players':'Closed';
   $('openSw').checked=open; $('openSwT').textContent=open?'Open':'Closed';
-  if(document.activeElement!==$('abShare')) $('abShare').value=(d.settings&&d.settings.attitude_share)||'';
+  renderAbShare();
   if(!$('feedRows').contains(document.activeElement)) renderFeeds((d.settings&&d.settings.feeds)||[]);
   $('feedAlerts').checked=!!(d.settings&&d.settings.feed_alerts); var fl=d.settings&&d.settings.feed_last; $('feedCheckStatus').textContent=fl&&fl.at?('Last check '+new Date(fl.at).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+(fl.changes?', '+fl.changes+(fl.changes===1?' change':' changes'):', no changes')+(fl.emailed?', '+fl.emailed+' emailed':'')):'';
   $('playerUrl').textContent=location.origin+'/playbook.html';
@@ -1313,7 +1368,7 @@ function benchCard(p){
   setTimeout(function(){ window.print(); },80);
 }
 function planEditor(src,isCopy){
-  PL=src?JSON.parse(JSON.stringify(src)):{opponent:'',date:'',title:'',where:'',keys:[],our_plays:[],their_plays:[],matchups:[],personnel:[],notes:'',visible:false};
+  PL=src?JSON.parse(JSON.stringify(src)):{opponent:'',date:'',title:'',where:'',group:S.team,keys:[],our_plays:[],their_plays:[],matchups:[],personnel:[],notes:'',visible:false};
   ['keys','things','our_plays','their_plays','matchups','personnel'].forEach(function(k){ if(!PL[k]) PL[k]=[]; });
   var ours=plays('ours').filter(function(p){return !p.archived;}), theirs=plays('scout').filter(function(p){return !p.archived;});
   var roster=players();
@@ -1326,10 +1381,11 @@ function planEditor(src,isCopy){
     '<div class="fld"><label>Matchups</label><div id="plMu"></div><button class="btn sm" type="button" id="plMuAdd">Add matchup</button></div>'+
     '<div class="fld"><label>Know their guys</label><div id="plPers"></div><button class="btn sm" type="button" id="plPersAdd">Add player</button></div>'+
     '<div class="fld"><label>Prep quiz</label><div class="help" style="margin:-2px 0 8px">Two to six questions the guys must pass before tip off. Fill it from what you typed above, then fix anything.</div><div id="plPq"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" type="button" id="plPqGen">Fill from the plan</button><button class="btn sm ghost" type="button" id="plPqAdd">Add a question</button></div></div>'+
+    '<div class="fld"><label>Team</label><select class="inp" id="plTeam">'+teamOptions(PL.group||'')+'</select><div class="help">Which team gets this plan. Everyone means every player.</div></div>'+
     '<div class="fld"><label>From coach</label><textarea class="inp" id="plNotes" rows="3" placeholder="Bus leaves 4:15. Bring both jerseys.">'+esc(PL.notes||'')+'</textarea></div>'+
     '<label class="switch"><input type="checkbox" id="plVis"'+(PL.visible?' checked':'')+'><span class="tr"></span><span class="tx"><b>Show to players</b><span>They see it at the top of their playbook</span></span></label>';
   modal(src&&!isCopy?'Game plan vs '+src.opponent:'New game plan',body,[['Cancel','',closeModal],['Save game plan','primary',function(){
-    var plan={ opponent:$('plOpp').value, date:$('plDate').value, where:$('plWhere').value, title:'', keys:$('plKeys').value, things:$('plThings').value, our_plays:Array.prototype.map.call($('plOurs').querySelectorAll('input:checked'),function(i){return i.value;}), their_plays:Array.prototype.map.call($('plTheirs').querySelectorAll('input:checked'),function(i){return i.value;}), matchups:readMu(), personnel:readPers(), notes:$('plNotes').value, visible:$('plVis').checked, quiz:readPq() };
+    var plan={ opponent:$('plOpp').value, date:$('plDate').value, where:$('plWhere').value, group:$('plTeam').value, title:'', keys:$('plKeys').value, things:$('plThings').value, our_plays:Array.prototype.map.call($('plOurs').querySelectorAll('input:checked'),function(i){return i.value;}), their_plays:Array.prototype.map.call($('plTheirs').querySelectorAll('input:checked'),function(i){return i.value;}), matchups:readMu(), personnel:readPers(), notes:$('plNotes').value, visible:$('plVis').checked, quiz:readPq() };
     if(!plan.opponent.trim()) return toast('Which opponent?',true);
     api('save_plan',{id:src&&!isCopy?src.id:null,plan:plan}).then(function(d){ if(d.error) return toast(errText(d),true); closeModal(); toast(plan.visible?'Saved. Players can see it.':'Saved as a draft.'); reload(); });
   }]],true);
@@ -1427,16 +1483,16 @@ $('stExport').addEventListener('click',function(){
 });
 /* box score editor (manual or after import) */
 function boxScoreEditor(src,imported){
-  var g=src?JSON.parse(JSON.stringify(src)):{date:todayStr(),opponent:'',where:'home',us:0,them:0,kind:'game',source:'manual',lines:[]};
+  var g=src?JSON.parse(JSON.stringify(src)):{date:todayStr(),opponent:'',where:'home',group:S.team,us:0,them:0,kind:'game',source:'manual',lines:[]};
   if(!src&&!imported){ g.lines=players().map(function(p){ var l={player_id:p.id,name:p.name,num:p.num||''}; STAT_KEYS.forEach(function(k){ l[k]=0; }); return l; }); }
   var roster=players();
   function row(l,i){ return '<tr data-i="'+i+'"><td><select class="inp" style="padding:5px 24px 5px 8px;font-size:13px;width:170px" data-f="player_id"><option value="">Not on roster</option>'+roster.map(function(p){ return '<option value="'+esc(p.id)+'"'+(l.player_id===p.id?' selected':'')+'>'+esc(p.name)+'</option>'; }).join('')+'</select><input class="nm" value="'+esc(l.name||'')+'" placeholder="Name" data-f="name" style="margin-top:3px;display:'+(l.player_id?'none':'block')+'"></td><td><input value="'+esc(l.num||'')+'" data-f="num" style="width:44px"></td>'+STAT_KEYS.map(function(k){ return '<td><input value="'+(l[k]||0)+'" data-f="'+k+'" inputmode="numeric"></td>'; }).join('')+'<td><button class="iconbtn" style="width:28px;height:28px" type="button" data-lrm="'+i+'">'+svg('i-x')+'</button></td></tr>'; }
-  var body='<div class="row"><div class="fld"><label>Date</label><input class="inp" id="bxDate" type="date" value="'+esc(g.date)+'"></div><div class="fld"><label>Opponent</label><input class="inp" id="bxOpp" value="'+esc(g.opponent)+'" maxlength="60"></div><div class="fld" style="flex:0;min-width:120px"><label>Where</label><select class="inp" id="bxWhere"><option value="home"'+(g.where==='home'?' selected':'')+'>Home</option><option value="away"'+(g.where==='away'?' selected':'')+'>Away</option><option value="neutral"'+(g.where==='neutral'?' selected':'')+'>Neutral</option></select></div><div class="fld" style="flex:0;min-width:90px"><label>Us</label><input class="inp" id="bxUs" value="'+g.us+'" inputmode="numeric"></div><div class="fld" style="flex:0;min-width:90px"><label>Them</label><input class="inp" id="bxThem" value="'+g.them+'" inputmode="numeric"></div></div>'+
+  var body='<div class="row"><div class="fld"><label>Date</label><input class="inp" id="bxDate" type="date" value="'+esc(g.date)+'"></div><div class="fld"><label>Opponent</label><input class="inp" id="bxOpp" value="'+esc(g.opponent)+'" maxlength="60"></div><div class="fld" style="flex:0;min-width:150px"><label>Team</label><select class="inp" id="bxTeam">'+teamOptions(g.group||'')+'</select></div><div class="fld" style="flex:0;min-width:120px"><label>Where</label><select class="inp" id="bxWhere"><option value="home"'+(g.where==='home'?' selected':'')+'>Home</option><option value="away"'+(g.where==='away'?' selected':'')+'>Away</option><option value="neutral"'+(g.where==='neutral'?' selected':'')+'>Neutral</option></select></div><div class="fld" style="flex:0;min-width:90px"><label>Us</label><input class="inp" id="bxUs" value="'+g.us+'" inputmode="numeric"></div><div class="fld" style="flex:0;min-width:90px"><label>Them</label><input class="inp" id="bxThem" value="'+g.them+'" inputmode="numeric"></div></div>'+
     '<div style="overflow-x:auto;margin:0 -22px;padding:0 22px"><table class="stt" id="bxT"><thead><tr><th>Player</th><th>#</th>'+STAT_KEYS.map(function(k){return '<th>'+STAT_LAB[k]+'</th>';}).join('')+'<th></th></tr></thead><tbody>'+g.lines.map(row).join('')+'</tbody></table></div>'+
     '<div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn sm" type="button" id="bxAdd">Add a line</button><span class="muted" style="font-size:13px">Points and rebounds fill in from the makes and the boards if you leave them 0.</span></div>';
   modal(src?'Box score: '+(g.where==='away'?'at ':'vs ')+g.opponent:(imported?'Check the import':'Enter a box score'),body,[['Cancel','',closeModal],['Save game','primary',function(){
     var lines=Array.prototype.map.call($('bxT').querySelectorAll('tbody tr'),function(tr){ var l={}; Array.prototype.forEach.call(tr.querySelectorAll('[data-f]'),function(inp){ l[inp.getAttribute('data-f')]=inp.value; }); var p=playerById(l.player_id); if(p) l.name=p.name; return l; }).filter(function(l){ return l.name||l.player_id; });
-    var game={date:$('bxDate').value,opponent:$('bxOpp').value,where:$('bxWhere').value,us:$('bxUs').value,them:$('bxThem').value,kind:g.kind,source:g.source,lines:lines};
+    var game={date:$('bxDate').value,opponent:$('bxOpp').value,where:$('bxWhere').value,group:$('bxTeam').value,us:$('bxUs').value,them:$('bxThem').value,kind:g.kind,source:g.source,lines:lines};
     if(!game.date) return toast('Pick the date.',true); if(!game.opponent.trim()) return toast('Who did we play?',true);
     api('save_game',{id:src&&src.id?src.id:null,game:game}).then(function(d){ if(d.error) return toast(errText(d),true); closeModal(); toast('Saved'); reload(); });
   }]],true);
@@ -1524,10 +1580,10 @@ var PR=null, peLibCat='All';
 function blankBlock(){ return {name:'',minutes:10,notes:'',play_ids:[],drill:'',category:'Other',points:[],stations:[]}; }
 function blockFromDrill(d,min){ return {name:d.name,minutes:min||d.min,notes:'',play_ids:[],drill:d.key,category:d.cat,points:(d.points||[]).slice(0,6),stations:[]}; }
 function pracEditor(src,isCopy){
-  PR=src?JSON.parse(JSON.stringify(src)):{date:todayStr(),title:'',start:'15:30',focus:'',blocks:[],notes:'',show_players:false};
+  PR=src?JSON.parse(JSON.stringify(src)):{date:todayStr(),title:'',start:'15:30',focus:'',group:S.team,blocks:[],notes:'',show_players:false};
   PR._id=src&&!isCopy?src.id:null; PR._dirty=false;
   (PR.blocks||[]).forEach(function(b){ b.points=b.points||[]; b.stations=b.stations||[]; b.play_ids=b.play_ids||[]; b.category=b.category||'Other'; });
-  $('peTitle').value=PR.title||''; $('peDate').value=PR.date||todayStr(); $('peStart').value=PR.start||''; $('peFocus').value=PR.focus||''; $('peNotes').value=PR.notes||''; $('peShow').checked=!!PR.show_players;
+  $('peTitle').value=PR.title||''; $('peDate').value=PR.date||todayStr(); $('peStart').value=PR.start||''; $('peFocus').value=PR.focus||''; $('peNotes').value=PR.notes||''; $('peShow').checked=!!PR.show_players; $('peTeam').innerHTML=teamOptions(PR.group||'');
   $('peTpl').innerHTML='<option value="">Pick one…</option>'+TEMPLATES.map(function(t){ return '<option value="'+esc(t.key)+'">'+esc(t.name)+'</option>'; }).join('')+((S.data.practices||[]).length?'<optgroup label="Copy a past practice">'+(S.data.practices||[]).slice(0,10).map(function(p){ return '<option value="past:'+esc(p.id)+'">'+esc(fmtDay(p.date))+(p.title?' · '+esc(p.title):'')+'</option>'; }).join('')+'</optgroup>':'');
   $('peLibCats').innerHTML=['All'].concat(DCATS.filter(function(c){ return allDrills().some(function(d){return d.cat===c;}); })).map(function(c){ return '<button type="button" data-lc="'+esc(c)+'" aria-pressed="'+(c===peLibCat)+'">'+esc(c)+'</button>'; }).join('');
   $('pracEd').classList.add('on'); document.body.style.overflow='hidden';
@@ -1628,7 +1684,7 @@ $('peAtt').addEventListener('click',function(e){
 });
 /* save, print, run */
 $('peSave').addEventListener('click',function(){
-  var pr={ date:$('peDate').value, start:$('peStart').value, title:$('peTitle').value, focus:$('peFocus').value, blocks:PR.blocks.map(function(b){ var c=Object.assign({},b); delete c._editPts; return c; }), notes:$('peNotes').value, show_players:$('peShow').checked };
+  var pr={ date:$('peDate').value, start:$('peStart').value, title:$('peTitle').value, focus:$('peFocus').value, blocks:PR.blocks.map(function(b){ var c=Object.assign({},b); delete c._editPts; return c; }), notes:$('peNotes').value, group:$('peTeam').value, show_players:$('peShow').checked };
   if(!pr.date) return toast('Pick the date.',true); if(!pr.blocks.length) return toast('Add at least one block.',true);
   var btn=$('peSave'); btn.disabled=true; btn.textContent='Saving...';
   api('save_practice',{id:PR._id,practice:pr}).then(function(d){ btn.disabled=false; btn.textContent='Save'; if(d.error) return toast(errText(d),true); PR._id=d.id; PR._dirty=false; toast(pr.show_players?'Saved. Players see it.':'Saved.'); reload(); }).catch(function(){ btn.disabled=false; btn.textContent='Save'; toast('Couldn\'t save.',true); });
@@ -1897,7 +1953,7 @@ $('feedSave').addEventListener('click',function(){ var l=readFeeds(); api('set_f
 $('feedAlerts').addEventListener('change',function(){ var on=this.checked; api('set_feed_alerts',{on:on}).then(function(d){ if(d.error){ toast(errText(d),true); $('feedAlerts').checked=!on; return; } toast(on?'Players, parents and coaches get an email when the calendar changes.':'Email off. The home screen card still shows changes.'); }); });
 $('feedCheck').addEventListener('click',function(){ var b=$('feedCheck'); b.disabled=true; b.textContent='Checking...'; api('feed_check',{}).then(function(d){ b.disabled=false; b.textContent='Check the calendars now'; if(d.error) return toast(errText(d),true); if(d.note==='no_feeds') return toast('Add a calendar above first.',true); var n=(d.changes||[]).reduce(function(x,c){return x+c.lines.length;},0); $('feedCheckStatus').textContent='Checked '+d.checked+(d.checked===1?' calendar':' calendars')+(n?', '+n+(n===1?' change':' changes')+(d.emailed?', '+d.emailed+' emailed':''):', no changes since the last look')+((d.errors||[]).length?', '+d.errors.length+' could not be read':''); if(n) toast(d.changes.map(function(c){return c.lines[0];}).join(' · ')); }); });
 $('digestBtn').addEventListener('click',function(){ var b=$('digestBtn'); b.disabled=true; b.textContent='Sending...'; api('send_digest',{}).then(function(d){ b.disabled=false; b.textContent='Send me this week\'s email now'; if(d.error) return toast(d.error==='email_not_configured'?'Email is not set up on the site yet.':errText(d),true); $('digestStatus').textContent='Sent to '+d.sent+'.'; }); });
-$('abSave').addEventListener('click',function(){ var v=$('abShare').value.trim(); var m=/[?&]s=([a-z0-9]{12,32})/i.exec(v); v=(m?m[1]:v).toLowerCase(); api('set_attitude',{share:v}).then(function(d){ if(d.error) return toast(d.error==='bad_share'?'That doesn\'t look like a share link.':errText(d),true); toast(v?'Players now have a Hustle board tab':'Hustle board tab turned off'); reload(); }); });
+$('abSave').addEventListener('click',function(){ var v=$('abShare').value.trim(); var m=/[?&]s=([a-z0-9]{12,32})/i.exec(v); v=(m?m[1]:v).toLowerCase(); api('set_attitude',{share:v,group:$('abTeam').value}).then(function(d){ if(d.error) return toast(d.error==='bad_share'?'That doesn\'t look like a share link.':errText(d),true); toast(v?'Players now have a Hustle board tab':'Hustle board tab turned off'); reload(); }); });
 $('openSw').addEventListener('change',function(){ var on=this.checked; api('set_open',{open:on}).then(function(d){ if(d.error){ toast(errText(d),true); return; } toast(on?'Playbook open':'Playbook closed. Every player is locked out.'); reload(); }); });
 
 /* ── modal ── */
@@ -1930,7 +1986,7 @@ function openEditor(id,kind){
   (play.frames||[]).forEach(function(f){ f.moves=f.moves||{}; f.pos=f.pos||{}; });
   E={ id:src?src.id:null, play:play, at:0, sel:'', bending:false, dirty:false };
   if(!src){ var set=PBCourt.SETS['Five out']; TOK.slice(0,5).forEach(function(k){ play.frames[0].pos[k]=set[k].slice(); }); play.frames[0].ball='O1'; }
-  $('edName').value=play.name; $('edNotes').value=play.notes||''; $('edTips').value=(play.tips||[]).join('\n'); $('edDue').value=play.due||''; if(!play.signal) play.signal={call:'',photo:''}; $('edSigCall').value=play.signal.call||''; renderSig(); if(!play.situations) play.situations=[]; renderSitsChips(); renderVn(); if(!play.marks) play.marks=[]; $('edVisible').checked=!!play.visible; $('edOpp').value=play.opponent||'';
+  $('edName').value=play.name; $('edNotes').value=play.notes||''; $('edTips').value=(play.tips||[]).join('\n'); $('edReads').value=(play.reads||[]).map(function(r){ return r.when+' | '+r.then+(r.frame?' | '+r.frame:''); }).join('\n'); $('edDue').value=play.due||''; if(!play.signal) play.signal={call:'',photo:''}; $('edSigCall').value=play.signal.call||''; renderSig(); if(!play.situations) play.situations=[]; renderSitsChips(); renderVn(); if(!play.marks) play.marks=[]; $('edVisible').checked=!!play.visible; $('edOpp').value=play.opponent||'';
   $('edOppFld').classList.toggle('hide',!isScout());
   $('edKindTag').textContent=isScout()?'Scouting':'Our play';
   $('edCat').innerHTML=CATEGORIES.map(function(c){ return '<option'+(c===play.category?' selected':'')+'>'+c+'</option>'; }).join('');
@@ -2078,6 +2134,7 @@ function renderMarks(){
 $('mkAdd').addEventListener('click',function(){ var t=parseT($('mkT').value), tx=$('mkText').value.trim(); if(t==null) return toast('Time like 2:14',true); if(!tx) return toast('What happens at that moment?',true); E.play.marks=(E.play.marks||[]).concat([{t:t,text:tx}]).sort(function(a,b){return a.t-b.t;}).slice(0,20); $('mkT').value=''; $('mkText').value=''; dirty(); renderMarks(); });
 $('edMarks').addEventListener('click',function(e){ var b=e.target.closest('[data-mkrm]'); if(!b) return; E.play.marks.splice(+b.getAttribute('data-mkrm'),1); dirty(); renderMarks(); });
 $('edTips').addEventListener('input',function(){ E.play.tips=this.value.split('\n').map(function(t){ return t.replace(/^\s*[-•*]\s*/,'').trim(); }).filter(Boolean).slice(0,12); dirty(); });
+$('edReads').addEventListener('input',function(){ E.play.reads=this.value.split('\n').map(function(l){ var a=l.split('|').map(function(x){ return x.trim(); }); return {when:(a[0]||'').replace(/^(if|when)\s+/i,''),then:a[1]||'',frame:Math.max(0,parseInt(a[2],10)||0)}; }).filter(function(r){ return r.when&&r.then; }).slice(0,8); dirty(); });
 $('edCat').addEventListener('change',function(){ E.play.category=this.value; dirty(); });
 $('edVisible').addEventListener('change',function(){ E.play.visible=this.checked; dirty(); });
 $('edFrNote').addEventListener('input',function(){ cur().note=this.value; dirty(); renderStrip(); });
@@ -2288,7 +2345,7 @@ if(window.PB_LIBRARY)(function(){
   var st={cat:'All',q:'',sel:{},cur:null,player:null,timer:0,mode:'ours',opp:'',wiz:null};
   var SIT={}; PBCourt.SITUATIONS.forEach(function(s){ SIT[s.key]=s.label; });
   function haveNames(){ var h={}; (S.data.plays||[]).forEach(function(p){ if(p.archived) return; if(st.mode==='scout'){ if(p.kind==='scout'&&p.opponent===st.opp) h[p.name.toLowerCase()]=p.id; } else if((p.kind||'ours')==='ours') h[p.name.toLowerCase()]=p.id; }); return h; }
-  function toPlay(l){ var p={ name:l.name, category:l.category, court:l.court, notes:l.notes, tips:l.tips, situations:l.situations, frames:l.frames, kind:'ours', groups:[], visible:false }; if(st.mode==='scout'){ p.kind='scout'; p.opponent=st.opp; } return p; }
+  function toPlay(l){ var p={ name:l.name, category:l.category, court:l.court, notes:l.notes, tips:l.tips, situations:l.situations, reads:l.reads||[], frames:l.frames, kind:'ours', groups:S.team?[S.team]:[], visible:false }; if(st.mode==='scout'){ p.kind='scout'; p.opponent=st.opp; } return p; }
   // mode 'ours' adds to Our plays; mode 'scout' adds the same diagrams as an opponent's sets under Scouting
   function openLib(mode){ st.mode=mode==='scout'?'scout':'ours'; st.sel={}; st.cur=null; st.wiz=null; $('libWiz').classList.add('hide');
     $('libOppWrap').classList.toggle('hide',st.mode!=='scout'); $('libWizBtn').classList.toggle('hide',st.mode==='scout'); $('libPackWrap').classList.toggle('hide',st.mode==='scout');

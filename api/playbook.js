@@ -43,6 +43,18 @@ function ctEq(a, b) {
   return r === 0;
 }
 function authed(req) { const want = process.env.ADMIN_PASSWORD || ''; return !!want && ctEq(req.headers['x-admin-key'] || '', want); }
+// Who is on the coach board: the head coach (ADMIN_PASSWORD) or an assistant (a second code the
+// coach sets under Settings, stored hashed). Assistants run the bench, they don't edit the book.
+const assistantHash = (code) => _fwHash('sha256').update('aces-playbook-assistant:' + String(code || '')).digest('hex');
+async function roleOf(req) {
+  if (authed(req)) return 'coach';
+  const key = String(req.headers['x-admin-key'] || '');
+  if (!key) return '';
+  const s = await loadSettings();
+  return s.assistant_hash && ctEq(assistantHash(key), s.assistant_hash) ? 'assistant' : '';
+}
+const ASSISTANT_ACTIONS = new Set(['admin_list', 'set_board', 'log_call', 'delete_call', 'add_note', 'save_game', 'answer', 'hide_question', 'unhide_question', 'set_tonight', 'save_practice', 'save_plan', 'scout_report']);
+function publicSettings(s) { const o = Object.assign({}, s); delete o.assistant_hash; o.assistant_set = !!s.assistant_hash; return o; }
 function safeId(id) { return /^[A-Za-z0-9_-]{1,128}$/.test(String(id || '')); }
 function rid(prefix) { return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 const SETTINGS = 'playbook_meta/settings';
@@ -54,7 +66,12 @@ async function loadSettings() {
   if (settingsMemo && Date.now() - settingsMemo.at < 5000) return settingsMemo.v;
   const v = await loadSettingsNow(); settingsMemo = { at: Date.now(), v }; return v;
 }
-async function loadSettingsNow() { const s = await fsGet(SETTINGS); return { open: !s || s.open !== false, attitude_share: (s && typeof s.attitude_share === 'string' && /^[a-z0-9]{12,32}$/.test(s.attitude_share)) ? s.attitude_share : '', feeds: cleanFeeds(s && s.feeds), feed_alerts: !!(s && s.feed_alerts), feed_last: (s && s.feed_last) || null }; }
+const shareOk = (v) => typeof v === 'string' && /^[a-z0-9]{12,32}$/.test(v);
+async function loadSettingsNow() { const s = await fsGet(SETTINGS);
+  const shares = {}; for (const [g, v] of Object.entries((s && s.attitude_shares) || {})) if (cleanGroup(g) && shareOk(v)) shares[cleanGroup(g)] = v;
+  return { open: !s || s.open !== false, attitude_share: shareOk(s && s.attitude_share) ? s.attitude_share : '', attitude_shares: shares, feeds: cleanFeeds(s && s.feeds), feed_alerts: !!(s && s.feed_alerts), feed_last: (s && s.feed_last) || null,
+    assistant_hash: (s && typeof s.assistant_hash === 'string' && /^[a-f0-9]{64}$/.test(s.assistant_hash)) ? s.assistant_hash : '',
+    teams: [...new Set((Array.isArray(s && s.teams) ? s.teams : []).map(cleanGroup).filter(Boolean))].slice(0, 12) }; }
 // Upcoming events from the group's calendar feed, cached per warm instance for 10 minutes.
 const feedCache = new Map();
 async function upcomingFor(feeds, group) {
@@ -88,12 +105,12 @@ function currentPractice(list) {
   return list.filter((p) => p.show_players && p.date >= t).sort((a, b) => a.date.localeCompare(b.date))[0] || null;
 }
 function publicPlan(p, byId) {
-  return { id: p.id, opponent: p.opponent, date: p.date || '', title: p.title || '', where: p.where || '', keys: p.keys || [], things: p.things || [], our_plays: p.our_plays || [], their_plays: p.their_plays || [],
+  return { id: p.id, opponent: p.opponent, date: p.date || '', title: p.title || '', group: p.group || '', where: p.where || '', keys: p.keys || [], things: p.things || [], our_plays: p.our_plays || [], their_plays: p.their_plays || [],
     matchups: (p.matchups || []).map((m) => ({ us: m.us && byId[m.us] ? { id: m.us, name: byId[m.us].name } : null, them: m.them, note: m.note })),
     personnel: p.personnel || [], notes: p.notes || '', quiz: p.quiz || [] };
 }
-function publicGame(g) { return { id: g.id, date: g.date, opponent: g.opponent, where: g.where || '', us: g.us || 0, them: g.them || 0, kind: g.kind || 'game', lines: g.lines || [] }; }
-function publicPractice(p) { return { id: p.id, date: p.date, title: p.title || '', start: p.start || '', focus: p.focus || '', blocks: (p.blocks || []).map((b) => ({ name: b.name, minutes: b.minutes, category: b.category || '', play_ids: b.play_ids || [], stations: b.stations || [] })) }; }
+function publicGame(g) { return { id: g.id, date: g.date, opponent: g.opponent, group: g.group || '', where: g.where || '', us: g.us || 0, them: g.them || 0, kind: g.kind || 'game', lines: g.lines || [] }; }
+function publicPractice(p) { return { id: p.id, date: p.date, title: p.title || '', group: p.group || '', start: p.start || '', focus: p.focus || '', blocks: (p.blocks || []).map((b) => ({ name: b.name, minutes: b.minutes, category: b.category || '', play_ids: b.play_ids || [], stations: b.stations || [] })) }; }
 async function loadQuestions() { return (await fsList('playbook_questions')).filter((q) => q.site === SITE_TAG); }
 // What a player may see of a question: their own, or a teammate's once the coach answered it.
 function questionFor(q, player) {
@@ -115,11 +132,11 @@ async function notifyCoach(player, play, text, base) {
 function publicPlay(p, byId) {
   const lineup = {};
   for (const [tok, pid] of Object.entries(p.lineup || {})) { const pl = byId[pid]; if (pl) lineup[tok] = { id: pl.id, name: pl.name }; }
-  return { id: p.id, name: p.name, kind: p.kind || 'ours', opponent: p.opponent || '', category: p.category, court: p.court, notes: p.notes || '', tips: p.tips || [], due: p.due || '', marks: p.marks || [], signal: p.signal || { call: '', photo: '' }, situations: p.situations || [], audio: p.audio || null, lineup, clip: p.clip || null, clip_link: p.clip_link || '', frames: p.frames || [], updated: p.updated || p.created || '' };
+  return { id: p.id, name: p.name, kind: p.kind || 'ours', opponent: p.opponent || '', category: p.category, court: p.court, notes: p.notes || '', tips: p.tips || [], due: p.due || '', marks: p.marks || [], signal: p.signal || { call: '', photo: '' }, situations: p.situations || [], reads: p.reads || [], audio: p.audio || null, lineup, clip: p.clip || null, clip_link: p.clip_link || '', frames: p.frames || [], updated: p.updated || p.created || '' };
 }
 let boardMemo = null; const playMemo = new Map();   // per warm instance, for the Board polling
 // Quizzes that are not about one play: scored under a fixed id in playbook_quiz.
-const SPECIAL_QUIZ = { signals: 'Sideline signals', terms: 'Team glossary', whereami: 'Where am I drill' };
+const SPECIAL_QUIZ = { signals: 'Sideline signals', terms: 'Team glossary', whereami: 'Where am I drill', reads: 'Read the defense' };
 // Tonight's plays: the coach stars a handful before a game, players see them on top.
 function cleanTonight(t) {
   t = t && typeof t === 'object' ? t : {};
@@ -180,7 +197,7 @@ async function playerAction(action, body, req) {
     const byId = {}; roster.forEach((r) => { byId[r.id] = r; });
     const plays = (await loadPlays()).filter((p) => canSee(p, player)).sort(sortPlays).map((p) => publicPlay(p, byId));
     const ids = new Set(plays.map((p) => p.id));
-    const [plans, practices, vsum, quiz, games, termsRaw, endgameRaw, goalsRaw] = await Promise.all([
+    let [plans, practices, vsum, quiz, games, termsRaw, endgameRaw, goalsRaw] = await Promise.all([
       loadSite('playbook_plans'), loadSite('playbook_practices'),
       fsGet(`playbook_vsum/${player.id}`), fsQuery('playbook_quiz', 'player_id', 'EQUAL', player.id),
       loadSite('playbook_games'),
@@ -189,6 +206,9 @@ async function playerAction(action, body, req) {
     const tonightRaw = cleanTonight(await fsGet('playbook_meta/tonight'));
     const tonight = tonightRaw.on ? Object.assign({}, tonightRaw, { play_ids: tonightRaw.play_ids.filter((id) => ids.has(id)) }) : null;
     // glossary + end of game tree, with play links limited to plays this player can see
+    // a team's plans, practices and games go to that team; untagged ones go to everyone
+    const forTeam = (x) => !x.group || x.group === (player.group || '');
+    plans = plans.filter(forTeam); practices = practices.filter(forTeam); games = games.filter(forTeam);
     const terms = termsRaw.map((t) => ({ id: t.id, term: t.term, means: t.means, kind: t.kind || 'other', play_id: ids.has(t.play_id) ? t.play_id : '' })).sort((a, b) => a.term.localeCompare(b.term));
     const egLeaves = cleanEndgame(endgameRaw && endgameRaw.leaves);
     for (const k of Object.keys(egLeaves)) egLeaves[k].play_ids = egLeaves[k].play_ids.filter((id) => ids.has(id));
@@ -196,13 +216,13 @@ async function playerAction(action, body, req) {
     const practice = currentPractice(practices);
     const best = {};
     const planIds = new Set(plans.filter((x) => x.visible).map((x) => 'prep_' + x.id));
-    quiz.forEach((q) => { if ((ids.has(q.play_id) || Object.hasOwn(SPECIAL_QUIZ, String(q.play_id)) || planIds.has(q.play_id)) && (best[q.play_id] == null || q.pct > best[q.play_id])) best[q.play_id] = q.pct; });
+    quiz.forEach((q) => { if ((ids.has(q.play_id) || Object.hasOwn(SPECIAL_QUIZ, String(q.play_id)) || planIds.has(q.play_id) || (/^reads_/.test(String(q.play_id)) && ids.has(String(q.play_id).slice(6)))) && (best[q.play_id] == null || q.pct > best[q.play_id])) best[q.play_id] = q.pct; });
     const done = { viewed: Object.keys((vsum && vsum.plays) || {}).filter((id) => ids.has(id)), quiz: best };
     const settings = await loadSettings();
     const visiblePlans = plans.filter((p) => p.visible).map((p) => publicPlan(p, byId)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
     games.sort((a, b) => String(b.date).localeCompare(String(a.date)));
     const cal = await upcomingFor(settings.feeds, player.group || '');
-    return { status: 200, body: { player: who(player), plays, plan: plan ? publicPlan(plan, byId) : null, plans: visiblePlans, practice: practice ? publicPractice(practice) : null, games: games.map(publicGame), done, attitude_share: settings.attitude_share, notices: await recentNotices(), upcoming: cal.events, calendar_url: cal.url, terms, endgame: egLeaves, goals: cleanGoals(goalsRaw && goalsRaw.goals), tonight } };
+    return { status: 200, body: { player: who(player), plays, plan: plan ? publicPlan(plan, byId) : null, plans: visiblePlans, practice: practice ? publicPractice(practice) : null, games: games.map(publicGame), done, attitude_share: (settings.attitude_shares || {})[player.group || ''] || settings.attitude_share, notices: await recentNotices(), upcoming: cal.events, calendar_url: cal.url, terms, endgame: egLeaves, goals: cleanGoals(goalsRaw && goalsRaw.goals), tonight } };
   }
   if (action === 'board') {   // what coach has on the Board right now (players' phones follow it)
     let b = boardMemo && Date.now() - boardMemo.at < 3000 ? boardMemo.v : null;
@@ -247,6 +267,10 @@ async function playerAction(action, body, req) {
       const plan = await fsGet(`playbook_plans/${body.id.slice(5)}`);
       if (!plan || plan.site !== SITE_TAG || !plan.visible) return { status: 404, body: { error: 'not_found' } };
       play = { id: body.id, name: 'Prep: vs ' + plan.opponent };
+    } else if (/^reads_[A-Za-z0-9_-]{1,128}$/.test(body.id)) {   // "read the defense" on one play
+      const base = await fsGet(`playbook_plays/${body.id.slice(6)}`);
+      if (!base || base.site !== SITE_TAG || !canSee(base, player)) return { status: 404, body: { error: 'not_found' } };
+      play = { id: body.id, name: 'Reads: ' + base.name };
     } else {
       play = await fsGet(`playbook_plays/${body.id}`);
       if (!play || play.site !== SITE_TAG || !canSee(play, player)) return { status: 404, body: { error: 'not_found' } };
@@ -344,7 +368,7 @@ async function adminList() {
   plans.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
   practices.sort((a, b) => String(b.date).localeCompare(String(a.date)));
   notes.sort((a, b) => String(b.date + b.created).localeCompare(String(a.date + a.created)));
-  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views, vsum, questions, quiz: quiz.slice(0, 6000), plans, practices, notes, drills, games, terms: terms.sort((a, b) => String(a.term).localeCompare(String(b.term))), endgame: cleanEndgame(endgameRaw && endgameRaw.leaves), calls: calls.sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 2000), goals: cleanGoals(goalsRaw && goalsRaw.goals), lineups: cleanLineups(lineupsRaw && lineupsRaw.lineups), tonight: cleanTonight(await fsGet('playbook_meta/tonight')) } };
+  return { status: 200, body: { settings: publicSettings(settings), plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views, vsum, questions, quiz: quiz.slice(0, 6000), plans, practices, notes, drills, games, terms: terms.sort((a, b) => String(a.term).localeCompare(String(b.term))), endgame: cleanEndgame(endgameRaw && endgameRaw.leaves), calls: calls.sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 2000), goals: cleanGoals(goalsRaw && goalsRaw.goals), lineups: cleanLineups(lineupsRaw && lineupsRaw.lineups), tonight: cleanTonight(await fsGet('playbook_meta/tonight')) } };
 }
 
 async function adminAction(action, body) {
@@ -596,11 +620,26 @@ async function adminAction(action, body) {
       const cal = await upcomingFor(feeds, '');
       return { status: 200, body: { events: cal.events } };
     }
-    case 'set_attitude': { settingsMemo = null;   // the Attitude Board read-only share id, shown to players as the Hustle tab
+    case 'set_attitude': { settingsMemo = null;   // the Attitude Board read-only share id, shown to players as the Hustle tab (one per team, or one for all)
       const v = String(body.share || '').trim().toLowerCase();
       if (v && !/^[a-z0-9]{12,32}$/.test(v)) return { status: 400, body: { error: 'bad_share' } };
-      const w = await fsPatchVerified(SETTINGS, { attitude_share: v, updated: now });
+      const group = cleanGroup(body.group);
+      let patch = { attitude_share: v, updated: now };
+      if (group) { const cur = await loadSettingsNow(); const shares = Object.assign({}, cur.attitude_shares); if (v) shares[group] = v; else delete shares[group]; patch = { attitude_shares: shares, updated: now }; }
+      const w = await fsPatchVerified(SETTINGS, patch);
       return w.ok ? { status: 200, body: { ok: true } } : { status: 502, body: { error: 'save_failed' } };
+    }
+    case 'set_assistant': { settingsMemo = null;   // a second code for assistants (bench, scorer, notes; no editing the book). Empty clears it.
+      const code = String(body.code || '').trim();
+      if (code && code.length < 6) return { status: 400, body: { error: 'short_code' } };
+      if (code && ctEq(code, process.env.ADMIN_PASSWORD || '')) return { status: 400, body: { error: 'same_code' } };
+      const w = await fsPatchVerified(SETTINGS, { assistant_hash: code ? assistantHash(code) : '', updated: now });
+      return w.ok ? { status: 200, body: { ok: true, set: !!code } } : { status: 502, body: { error: 'save_failed' } };
+    }
+    case 'set_teams': { settingsMemo = null;   // the program's teams (Varsity, JV, 14U...). Players' groups and play visibility use the same names.
+      const teams = [...new Set((Array.isArray(body.teams) ? body.teams : []).map(cleanGroup).filter(Boolean))].slice(0, 12);
+      const w = await fsPatchVerified(SETTINGS, { teams, updated: now });
+      return w.ok ? { status: 200, body: { ok: true, teams } } : { status: 502, body: { error: 'save_failed' } };
     }
     case 'set_open': { settingsMemo = null;
       const w = await fsPatchVerified(SETTINGS, { open: !!body.open, updated: now });
@@ -619,8 +658,12 @@ export default async function handler(req, res) {
   try {
     let r;
     if (PLAYER_ACTIONS.has(action)) r = await playerAction(action, body, req);
-    else if (!authed(req)) r = { status: 401, body: { error: 'unauthorized' } };
-    else r = await adminAction(action, body);
+    else {
+      const role = await roleOf(req);
+      if (!role) r = { status: 401, body: { error: 'unauthorized' } };
+      else if (role === 'assistant' && !ASSISTANT_ACTIONS.has(action)) r = { status: 403, body: { error: 'coaches_only' } };
+      else { r = await adminAction(action, body); if (action === 'admin_list' && r.body) r.body.role = role; }
+    }
     return res.status(r.status).json(r.body);
   } catch (e) {
     return res.status(500).json({ error: 'server_error' });
