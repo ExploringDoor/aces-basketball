@@ -120,7 +120,29 @@ select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns
 .search{min-width:200px;border:1px solid var(--line-2);border-radius:10px;padding:8px 12px;font:inherit;outline:none;background:#fff;margin-left:auto}
 .search:focus{border-color:var(--mrn)}
 /* play cards */
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:12px}
+.pc .th svg{max-height:172px;width:auto!important;max-width:100%}
+.vtog{display:inline-flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;background:#fff}
+.vtog button{border:0;background:transparent;padding:7px 13px;font:inherit;font-weight:600;font-size:13.5px;color:var(--ink-2);cursor:pointer}
+.vtog button[aria-pressed="true"]{background:var(--mrn);color:#fff}
+/* list view: one row per play, grouped by category */
+.pgrid.plist{display:block}
+.plist .pcat-h{font-family:'Oswald',sans-serif;font-size:12.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--mrn);margin:16px 2px 6px;display:flex;gap:8px;align-items:baseline}
+.plist .pcat-h:first-child{margin-top:2px}.plist .pcat-h small{color:var(--ink-3);letter-spacing:.5px;font-family:inherit;text-transform:none;font-size:12.5px}
+.plrow{display:grid;grid-template-columns:64px minmax(0,1fr) auto auto;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:6px 10px 6px 6px;margin-bottom:6px}
+.plrow:hover{border-color:var(--line-2)}
+.plrow .th{width:64px;height:54px;border-radius:8px;overflow:hidden;background:#d8c094;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.plrow .th svg{width:64px!important;height:auto!important;display:block}
+.plrow .th.full svg{width:auto!important;height:54px!important}
+.plrow .nm{font-weight:700;font-size:15.5px;line-height:1.2;cursor:pointer;color:var(--ink);background:none;border:0;padding:0;text-align:left;font-family:inherit}
+.plrow .nm:hover{color:var(--mrn)}
+.plrow .sub{font-size:12.5px;color:var(--ink-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plrow .pill{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--bg);color:var(--ink-2);white-space:nowrap}
+.plrow .pill.live{background:var(--ok-50);color:var(--ok)}.plrow .pill.hidden{background:var(--warn-50);color:var(--warn)}
+.plrow .acts{display:flex;gap:4px;align-items:center}
+.plrow .acts .iconbtn{width:32px;height:32px}
+.plrow .acts [aria-pressed="true"][data-star]{background:var(--gold-50);border-color:#e6d49a;color:var(--gold-d)}
+@media (max-width:640px){ .plrow{grid-template-columns:56px minmax(0,1fr) auto} .plrow .acts{grid-column:1/-1;justify-content:flex-end} .plrow .th{width:56px;height:48px} .plrow .th svg{width:56px!important} }
 .pc{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--sh);display:flex;flex-direction:column}
 .pc .th{background:#d8c094;cursor:pointer;position:relative;display:flex;justify-content:center}
 .pc .th.full svg{height:260px!important;width:auto!important}
@@ -524,7 +546,23 @@ body.assistant .coach-only,body.assistant [data-edit].btn,body.assistant [data-a
 .lib-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 380px}
 .lib-main{overflow-y:auto;padding:16px 18px 40px}
 .lib-side{overflow-y:auto;border-left:1px solid var(--line);background:#fff;padding:16px}
-.lib-packgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.lib-packgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.lib-pack p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lib-packgrid.strip{grid-auto-flow:column;grid-auto-columns:minmax(210px,230px);grid-template-columns:none;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x proximity}.lib-packgrid.strip .lib-pack{scroll-snap-align:start}
+.lib-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.lib-grid .pc .th svg{max-height:138px}
+.lib-grid .pc .meta{padding:8px 10px 10px}.lib-grid .pc h3{font-size:15px}.lib-grid .pc .sub{font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lib-grid .pc{cursor:pointer}
+/* library list rows */
+.lrow{display:grid;grid-template-columns:22px 56px minmax(0,1fr) auto;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:5px 10px 5px 8px;margin-bottom:5px;cursor:pointer}
+.lrow:hover{border-color:var(--line-2)} .lrow.on{outline:2px solid var(--mrn);border-color:var(--mrn)}
+.lrow.lib-card .pick{position:static;left:auto;top:auto;width:18px;height:18px;accent-color:var(--mrn);margin:0}
+.lrow .th{width:56px;height:46px;border-radius:7px;overflow:hidden;background:#d8c094;display:flex;align-items:center;justify-content:center}
+.lrow .th svg{width:56px!important;height:auto!important;display:block}.lrow .th.full svg{width:auto!important;height:46px!important}
+.lrow .nm{font-weight:700;font-size:14.5px;line-height:1.2}
+.lrow .sub{font-size:12px;color:var(--ink-3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrow .have{font-size:11px;font-weight:700;color:#7a5a10;background:var(--gold-50);border:1px solid var(--gold);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.lib-grid.plist{display:block}
 .lib-pack{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--sh)}
 .lib-pack b{font-family:'Oswald',sans-serif;font-size:16px}.lib-pack p{font-size:13px;color:var(--ink-2);margin:0;flex:1}
 .lib-pack .row2{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:4px}.lib-pack .n{font-size:12px;color:var(--ink-3)}
@@ -609,7 +647,7 @@ body.assistant .coach-only,body.assistant [data-edit].btn,body.assistant [data-a
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="chip" id="openChip"><span class="dot"></span><span></span></span><button class="btn" type="button" id="printCardsBtn">Print play cards</button><button class="btn lg coach-only" type="button" id="plibBtn">Add from the library</button><button class="btn gold lg coach-only" type="button" id="newPlayBtn">Draw a new play</button></div>
       </div></div>
       <div class="asst hide" id="asstNote"><b>Signed in as an assistant.</b> The Board, bench log, box scores, player notes, game plans, practices and tonight's plays are yours. Drawing or editing plays, players and settings is for the head coach.</div>
-      <div class="filters"><div class="chips" id="playCats"></div><input class="search" id="playQ" type="search" placeholder="Search plays" aria-label="Search plays"></div>
+      <div class="filters"><div class="chips" id="playCats"></div><input class="search" id="playQ" type="search" placeholder="Search plays" aria-label="Search plays"><div class="vtog" role="group" aria-label="How to show the plays"><button type="button" data-view="grid">Cards</button><button type="button" data-view="list">List</button></div></div>
       <div class="tonight hide" id="tonightBar"></div>
       <div class="pgrid" id="playGrid"></div>
       <div id="archivedWrap" class="hide" style="margin-top:28px"><div class="sec">Archived plays</div><div class="pgrid" id="archGrid"></div></div>
@@ -620,7 +658,7 @@ body.assistant .coach-only,body.assistant [data-edit].btn,body.assistant [data-a
         <div><div class="k" style="color:#c9c9d2">Scouting</div><div class="big" id="scoutN">0 opponent plays</div><div class="of" style="color:#c9c9d2">Draw up what the other team runs. Players study it before the game.</div></div>
         <button class="btn lg coach-only" type="button" id="slibBtn">Add from the library</button><button class="btn gold lg coach-only" type="button" id="newScoutBtn">Draw an opponent play</button>
       </div></div>
-      <div class="filters"><div class="chips" id="scoutCats"></div><input class="search" id="scoutQ" type="search" placeholder="Search" aria-label="Search scouting plays"></div>
+      <div class="filters"><div class="chips" id="scoutCats"></div><input class="search" id="scoutQ" type="search" placeholder="Search" aria-label="Search scouting plays"><div class="vtog" role="group" aria-label="How to show the plays"><button type="button" data-view="grid">Cards</button><button type="button" data-view="list">List</button></div></div>
       <div class="pgrid" id="scoutGrid"></div>
       <div id="scoutArchWrap" class="hide" style="margin-top:28px"><div class="sec">Archived</div><div class="pgrid" id="scoutArchGrid"></div></div>
     </section>
@@ -907,9 +945,9 @@ body.assistant .coach-only,body.assistant [data-edit].btn,body.assistant [data-a
   <div class="lib-body">
     <div class="lib-main">
       <div class="lib-wiz hide" id="libWiz"></div>
-      <div class="lib-packs" id="libPackWrap"><div class="k" style="margin-bottom:8px">Scenario packs</div><p class="help" style="margin:0 0 10px">A pack adds a set of plays as drafts and fills in the end of game tree for those situations. You can edit or delete any of it afterward.</p><div class="lib-packgrid" id="libPacks"></div></div>
-      <div class="filters" style="margin-top:18px"><div class="chips" id="libCats"></div><input class="search" id="libQ" type="search" placeholder="Search the library" aria-label="Search the library"></div>
-      <div class="grid" id="libGrid"></div>
+      <div class="lib-packs" id="libPackWrap"><div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px"><div class="k" style="margin:0">Scenario packs</div><span class="help" style="margin:0;font-size:13px">A pack adds a set of plays as drafts and fills in the end of game tree. Edit or delete any of it after.</span><span style="flex:1"></span><button class="btn sm ghost" type="button" id="libPackMore"></button></div><div class="lib-packgrid" id="libPacks"></div></div>
+      <div class="filters" style="margin-top:18px"><div class="chips" id="libCats"></div><input class="search" id="libQ" type="search" placeholder="Search the library" aria-label="Search the library"><div class="vtog" role="group" aria-label="How to show the plays"><button type="button" data-view="grid">Cards</button><button type="button" data-view="list">List</button></div></div>
+      <div class="pgrid lib-grid" id="libGrid"></div>
     </div>
     <aside class="lib-side" id="libSide"><div class="empty"><h3>Pick a play</h3><p>Tap any play to watch it run, read the coaching points, and add it to your playbook.</p></div></aside>
   </div>
@@ -1808,11 +1846,28 @@ function renderPlays(kind){
   var grid=$(key==='plays'?'playGrid':'scoutGrid');
   if(!live.length) grid.innerHTML='<div class="empty" style="grid-column:1/-1"><h3>'+(k==='scout'?'No opponent plays yet':'No plays yet')+'</h3><p>'+(k==='scout'?'Draw up what the next opponent runs and your players can study it.':'Draw your first play. Start from a set, drag players where they go, add steps.')+'</p></div>';
   else if(!list.length) grid.innerHTML='<div class="empty" style="grid-column:1/-1"><h3>No matches</h3></div>';
-  else grid.innerHTML=list.map(card).join('');
+  else grid.innerHTML=S.view==='list'?listHtml(list.slice().sort(function(a,b){ return String(catOf(a)).localeCompare(String(catOf(b)))||String(a.name).localeCompare(String(b.name)); }),catOf):list.map(card).join('');
+  var isList=S.view==='list'&&!!list.length; grid.classList.toggle('plist',isList); renderVtog();
   var aw=$(key==='plays'?'archivedWrap':'scoutArchWrap'); aw.classList.toggle('hide',!arch.length);
-  $(key==='plays'?'archGrid':'scoutArchGrid').innerHTML=arch.map(card).join('');
+  var ag=$(key==='plays'?'archGrid':'scoutArchGrid'); ag.innerHTML=S.view==='list'?arch.map(row).join(''):arch.map(card).join(''); ag.classList.toggle('plist',S.view==='list');
   if(key==='plays') renderTonightBar();
 }
+S.view=(function(){ try{ return localStorage.getItem('pb_play_view')||'grid'; }catch(e){ return 'grid'; } })();
+function renderVtog(){ Array.prototype.forEach.call(document.querySelectorAll('.vtog [data-view]'),function(b){ b.setAttribute('aria-pressed',String(b.getAttribute('data-view')===S.view)); }); }
+document.addEventListener('click',function(e){ var b=e.target.closest('.vtog [data-view]'); if(!b) return; S.view=b.getAttribute('data-view'); try{ localStorage.setItem('pb_play_view',S.view); }catch(x){} renderPlays('plays'); renderPlays('scout'); });
+function playSub(p){ var steps=Math.max(0,(p.frames||[]).length-1), views=viewsFor(p.id), who={}; views.forEach(function(x){ who[x.player_id]=1; }); var qOpen=(S.data.questions||[]).filter(function(q){ return q.play_id===p.id&&!q.answer; }).length;
+  return steps+(steps===1?' step':' steps')+(p.court==='full'?' · full court':'')+' · '+(p.groups&&p.groups.length?esc(p.groups.join(', ')):'Everyone')+' · '+views.length+(views.length===1?' view':' views')+(Object.keys(who).length?' by '+Object.keys(who).length:'')+(qOpen?' · <b style="color:var(--gold-d)">'+qOpen+(qOpen===1?' question':' questions')+'</b>':''); }
+function row(p){
+  var scout=(p.kind||'ours')==='scout', st=p.archived?'Archived':(p.visible?'Live':'Draft');
+  return '<div class="plrow" data-id="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+'" data-edit="'+esc(p.id)+'" title="Edit">'+PBCourt.diagram(viewPlay(p),0,{noNames:true})+'</div>'+
+    '<div style="min-width:0"><button class="nm" type="button" data-edit="'+esc(p.id)+'">'+esc(p.name)+'</button><div class="sub">'+playSub(p)+'</div></div>'+
+    '<span class="pill '+(p.archived?'':(p.visible?'live':'hidden'))+'">'+st+'</span>'+
+    '<div class="acts">'+(p.archived?'<button class="btn sm" type="button" data-restore="'+esc(p.id)+'">Restore</button>':
+      '<button class="iconbtn" type="button" data-edit="'+esc(p.id)+'" title="Edit">'+svg('i-edit')+'</button><button class="iconbtn" type="button" data-vis="'+esc(p.id)+'" aria-pressed="'+!!p.visible+'" title="'+(p.visible?'Live for players. Tap to hide':'Draft. Tap to make it live')+'">'+svg(p.visible?'i-eye':'i-eyeoff')+'</button><button class="iconbtn" type="button" data-dup="'+esc(p.id)+'" title="Copy">'+svg('i-copy')+'</button><button class="iconbtn" type="button" data-board="'+esc(p.id)+'" title="Board: full screen, on a loop">'+svg('i-play')+'</button>'+(scout?'':'<button class="iconbtn" type="button" data-star="'+esc(p.id)+'" aria-pressed="'+(tonightState().play_ids.indexOf(p.id)>=0)+'" title="Tonight\'s plays">'+svg('i-star')+'</button>')+'<button class="iconbtn" type="button" data-arch="'+esc(p.id)+'" title="Archive">'+svg('i-trash')+'</button>')+'</div></div>';
+}
+// list view: grouped under a header per category (or opponent), in the same order as the cards
+function listHtml(list,catOf){ var out='', last=null, counts={}; list.forEach(function(p){ var c=catOf(p); counts[c]=(counts[c]||0)+1; });
+  list.forEach(function(p){ var c=catOf(p); if(c!==last){ out+='<div class="pcat-h">'+esc(c)+'<small>'+counts[c]+(counts[c]===1?' play':' plays')+'</small></div>'; last=c; } out+=row(p); }); return out; }
 function card(p){
   var v=viewPlay(p), steps=Math.max(0,(p.frames||[]).length-1), views=viewsFor(p.id), who={}; views.forEach(function(x){ who[x.player_id]=1; });
   var qOpen=(S.data.questions||[]).filter(function(q){ return q.play_id===p.id&&!q.answer; }).length;
@@ -1821,7 +1876,7 @@ function card(p){
     '<span class="pill '+(p.archived?'':(p.visible?'live':'hidden'))+'">'+(p.archived?'Archived':(p.visible?'Live':'Draft'))+'</span></div>'+
     '<div class="meta"><div class="cat">'+esc(scout?(p.opponent+' · '+p.category):p.category)+(p.court==='full'?' · Full court':'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+steps+(steps===1?' step':' steps')+' · '+(p.groups&&p.groups.length?esc(p.groups.join(', ')):'Everyone')+' · '+views.length+(views.length===1?' view':' views')+(Object.keys(who).length?' by '+Object.keys(who).length:'')+(qOpen?' · <b style="color:var(--gold-d)">'+qOpen+(qOpen===1?' question':' questions')+'</b>':'')+'</div></div>'+
     '<div class="acts">'+(p.archived?'<button class="btn sm" type="button" data-restore="'+esc(p.id)+'">Restore</button>':
-      '<button class="btn sm" type="button" data-edit="'+esc(p.id)+'">'+svg('i-edit')+'Edit</button><button class="btn sm" type="button" data-vis="'+esc(p.id)+'" aria-pressed="'+!!p.visible+'">'+svg(p.visible?'i-eye':'i-eyeoff')+(p.visible?'Live':'Draft')+'</button><button class="btn sm ghost" type="button" data-dup="'+esc(p.id)+'">'+svg('i-copy')+'Copy</button><button class="btn sm ghost" type="button" data-board="'+esc(p.id)+'" title="Full screen, on a loop">'+svg('i-play')+'Board</button>'+(scout?'':'<button class="btn sm ghost" type="button" data-star="'+esc(p.id)+'" aria-pressed="'+(tonightState().play_ids.indexOf(p.id)>=0)+'" title="Tonight\'s plays: players see these on top">'+svg('i-star')+'Tonight</button>')+'<span class="sp"></span><button class="iconbtn" style="width:32px;height:32px" type="button" data-arch="'+esc(p.id)+'" title="Archive">'+svg('i-trash')+'</button>')+'</div></div>';
+      '<button class="btn sm" type="button" data-edit="'+esc(p.id)+'">'+svg('i-edit')+'Edit</button><button class="btn sm" type="button" data-vis="'+esc(p.id)+'" aria-pressed="'+!!p.visible+'">'+svg(p.visible?'i-eye':'i-eyeoff')+(p.visible?'Live':'Draft')+'</button><span class="sp"></span><button class="iconbtn" style="width:32px;height:32px" type="button" data-dup="'+esc(p.id)+'" title="Copy">'+svg('i-copy')+'</button><button class="iconbtn" style="width:32px;height:32px" type="button" data-board="'+esc(p.id)+'" title="Board: full screen, on a loop">'+svg('i-play')+'</button>'+(scout?'':'<button class="iconbtn" style="width:32px;height:32px" type="button" data-star="'+esc(p.id)+'" aria-pressed="'+(tonightState().play_ids.indexOf(p.id)>=0)+'" title="Tonight\'s plays: players see these on top">'+svg('i-star')+'</button>')+'<button class="iconbtn" style="width:32px;height:32px" type="button" data-arch="'+esc(p.id)+'" title="Archive">'+svg('i-trash')+'</button>')+'</div></div>';
 }
 document.addEventListener('click',function(e){
   var t;
@@ -2459,8 +2514,16 @@ window.addEventListener('hashchange',function(){ if(!$('app').classList.contains
     var cats=['All']; LIB.plays.forEach(function(p){ if(cats.indexOf(p.category)<0) cats.push(p.category); });
     $('libCats').innerHTML=cats.map(function(c){ return '<button class="fchip" type="button" data-lc="'+esc(c)+'" aria-pressed="'+(c===st.cat)+'">'+esc(c)+(c==='All'?' ('+LIB.plays.length+')':'')+'</button>'; }).join('');
     var list=LIB.plays.filter(function(p){ return (st.cat==='All'||p.category===st.cat)&&(!st.q||(p.name+' '+p.category+' '+p.notes+' '+(p.situations||[]).map(function(k){return SIT[k]||k;}).join(' ')).toLowerCase().indexOf(st.q)>=0); });
-    $('libGrid').innerHTML=list.length?list.map(function(p){ var had=have[p.name.toLowerCase()]; return '<div class="pc lib-card'+(st.cur===p.key?' on':'')+'" data-lk="'+esc(p.key)+'"><input class="pick" type="checkbox" data-lsel="'+esc(p.key)+'"'+(st.sel[p.key]?' checked':'')+' aria-label="Select '+esc(p.name)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{noNames:true})+(had?'<span class="pill have">In your playbook</span>':'')+'</div><div class="meta"><div class="cat">'+esc(p.category)+(p.court==='full'?' · Full court':'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+p.steps+(p.steps===1?' step':' steps')+(p.situations&&p.situations.length?' · '+p.situations.map(function(k){return SIT[k]||k;}).join(', '):'')+'</div></div></div>'; }).join(''):'<div class="empty" style="grid-column:1/-1"><h3>No matches</h3></div>';
-    $('libPacks').innerHTML=LIB.packs.map(function(pk){ var n=pk.plays.length, got=pk.plays.filter(function(k){ var l=LIB.plays.find(function(x){return x.key===k;}); return l&&have[l.name.toLowerCase()]; }).length; return '<div class="lib-pack"><b>'+esc(pk.name)+'</b><p>'+esc(pk.blurb)+'</p><div class="row2"><span class="n">'+n+' plays'+(pk.endgame?' · fills '+Object.keys(pk.endgame).length+' end of game spots':'')+(got?' · '+got+' already in':'')+'</span><button class="btn sm primary" type="button" data-lpack="'+esc(pk.key)+'">Add pack</button></div></div>'; }).join('');
+    var isList=S.view==='list'; $('libGrid').classList.toggle('plist',isList&&!!list.length); if(typeof renderVtog==='function') renderVtog();
+    if(isList){ var ord={}; cats.forEach(function(c,i){ ord[c]=i; }); list=list.map(function(p,i){ return [p,i]; }).sort(function(a,b){ return (ord[a[0].category]-ord[b[0].category])||(a[1]-b[1]); }).map(function(x){ return x[0]; }); }
+    var sub=function(p){ return p.steps+(p.steps===1?' step':' steps')+(p.situations&&p.situations.length?' · '+p.situations.map(function(k){return SIT[k]||k;}).join(', '):''); };
+    var lastCat=null, counts={}; if(isList) list.forEach(function(p){ counts[p.category]=(counts[p.category]||0)+1; });
+    $('libGrid').innerHTML=list.length?list.map(function(p){ var had=have[p.name.toLowerCase()];
+      if(isList){ var h=''; if(st.cat==='All'&&p.category!==lastCat){ h='<div class="pcat-h">'+esc(p.category)+'<small>'+counts[p.category]+(counts[p.category]===1?' play':' plays')+'</small></div>'; lastCat=p.category; }
+        return h+'<div class="lrow lib-card'+(st.cur===p.key?' on':'')+'" data-lk="'+esc(p.key)+'"><input class="pick" type="checkbox" data-lsel="'+esc(p.key)+'"'+(st.sel[p.key]?' checked':'')+' aria-label="Select '+esc(p.name)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{noNames:true})+'</div><div style="min-width:0"><div class="nm">'+esc(p.name)+'</div><div class="sub">'+esc(p.category)+' · '+sub(p)+'</div></div>'+(had?'<span class="have">In your playbook</span>':'<span></span>')+'</div>'; }
+      return '<div class="pc lib-card'+(st.cur===p.key?' on':'')+'" data-lk="'+esc(p.key)+'"><input class="pick" type="checkbox" data-lsel="'+esc(p.key)+'"'+(st.sel[p.key]?' checked':'')+' aria-label="Select '+esc(p.name)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{noNames:true})+(had?'<span class="pill have">In your playbook</span>':'')+'</div><div class="meta"><div class="cat">'+esc(p.category)+(p.court==='full'?' · Full court':'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+sub(p)+'</div></div></div>'; }).join(''):'<div class="empty" style="grid-column:1/-1"><h3>No matches</h3></div>';
+    var packs=LIB.packs; $('libPacks').classList.toggle('strip',!st.allPacks); $('libPackMore').textContent=st.allPacks?'One row':'Show all '+LIB.packs.length+' packs';
+    $('libPacks').innerHTML=packs.map(function(pk){ var n=pk.plays.length, got=pk.plays.filter(function(k){ var l=LIB.plays.find(function(x){return x.key===k;}); return l&&have[l.name.toLowerCase()]; }).length; return '<div class="lib-pack"><b>'+esc(pk.name)+'</b><p>'+esc(pk.blurb)+'</p><div class="row2"><span class="n">'+n+' plays'+(pk.endgame?' · fills '+Object.keys(pk.endgame).length+' end of game spots':'')+(got?' · '+got+' already in':'')+'</span><button class="btn sm primary" type="button" data-lpack="'+esc(pk.key)+'">Add pack</button></div></div>'; }).join('');
     var n=Object.keys(st.sel).length; $('libAddSel').classList.toggle('hide',!n); $('libAddSel').textContent='Add selected ('+n+')'; $('libCount').textContent=LIB.plays.length+' plays · '+LIB.packs.length+' packs';
   }
   function stopPrev(){ clearTimeout(st.timer); if(st.player){ st.player.pause(); st.player=null; } }
@@ -2570,6 +2633,9 @@ window.addEventListener('hashchange',function(){ if(!$('app').classList.contains
   $('slibBtn').addEventListener('click',function(){ loadLib(function(){ openLib('scout'); }); });
   $('libClose').addEventListener('click',closeLib);
   $('libQ').addEventListener('input',function(){ st.q=this.value.trim().toLowerCase(); renderLib(); });
+  $('libPackMore').addEventListener('click',function(){ st.allPacks=!st.allPacks; renderLib(); });
+  // the same Cards / List choice as the plays tab, remembered on this device
+  $('libView').addEventListener('click',function(e){ var b=e.target.closest('.vtog [data-view]'); if(!b) return; S.view=b.getAttribute('data-view'); try{ localStorage.setItem('pb_play_view',S.view); }catch(x){} renderLib(); });
   $('libView').addEventListener('click',function(e){ var t;
     if((t=e.target.closest('[data-lc]'))){ st.cat=t.getAttribute('data-lc'); renderLib(); return; }
     if((t=e.target.closest('[data-lsel]'))){ var k=t.getAttribute('data-lsel'); if(t.checked) st.sel[k]=1; else delete st.sel[k]; var n=Object.keys(st.sel).length; $('libAddSel').classList.toggle('hide',!n); $('libAddSel').textContent='Add selected ('+n+')'; return; }
