@@ -27,6 +27,13 @@ export default function CoachingPage() {
           <p style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.5)", marginTop: 16, lineHeight: 1.8 }}>Click any coach for their full bio.</p>
         </FadeIn>
 
+        {/* Staff photo */}
+        <FadeIn delay={0.05}>
+          <figure style={{ margin: "34px 0 0", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(201,164,74,0.3)", boxShadow: "0 18px 50px rgba(0,0,0,0.5)", background: "#120008" }}>
+            <img src="/coaches/staff-2026.jpg" alt="The Lower Merion Aces coaching staff" width="1800" height="973" style={{ width: "100%", height: "auto", display: "block" }} />
+          </figure>
+        </FadeIn>
+
         <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 40 }}>
           {coachingStaff.map((c, i) => {
             const head = c.name === "Gregg Downer";
