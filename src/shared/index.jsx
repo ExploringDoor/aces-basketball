@@ -164,6 +164,15 @@ export const PlayerModal = ({ person, onClose }) => {
 };
 
 // ─── Data ─────────────────────────────────────────────────────
+// Lower Merion Central League title team photos, keyed by the year the season ended
+// (2024-25 = 2025). Files: /public/central-league/<start>-<end>.jpg
+export const leagueTitlePhotoYears = [1995, 1996, 2002, 2006, 2009, 2012, 2013, 2014, 2017, 2018, 2019, 2022, 2024, 2025];
+export const leagueTitlePhoto = (year) => {
+  const y = Number(year);
+  return leagueTitlePhotoYears.includes(y) ? `/central-league/${y - 1}-${y}.jpg` : null;
+};
+export const seasonLabel = (year) => `${Number(year) - 1}-${String(year).slice(-2)}`;
+
 export const championships = {
   state: [
     { year: "1933", details: "AAA State Champions" },

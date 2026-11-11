@@ -1,7 +1,7 @@
 // pages/CentralLeaguePage.jsx
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { FadeIn, Spade, centralLeagueTeams, centralLeagueChampions, teamLogos } from "../shared";
+import { FadeIn, Spade, centralLeagueTeams, centralLeagueChampions, teamLogos, leagueTitlePhoto, seasonLabel } from "../shared";
 
 // ── Derive title counts + years per school from the champions list ──
 const titleCount = {};
@@ -24,11 +24,7 @@ const TeamBadge = ({ team, size = 44 }) => {
     : <div style={{ width: size, height: size, borderRadius: "50%", background: "#fff", border: `2px solid ${team.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Oswald', sans-serif", fontSize: Math.round(size * 0.34), fontWeight: 800, color: team.color, flexShrink: 0 }}>{team.initials}</div>;
 };
 
-// Lower Merion title team photos, keyed by the year the season ended (2024-25 = 2025).
-// Files live in /public/central-league/<start>-<end>.jpg
-const TITLE_PHOTOS = [1995, 1996, 2002, 2006, 2009, 2012, 2013, 2014, 2017, 2018, 2019, 2022, 2024, 2025];
-const seasonLabel = (y) => `${y - 1}-${String(y).slice(-2)}`;
-const photoFor = (y) => (TITLE_PHOTOS.includes(y) ? `/central-league/${y - 1}-${y}.jpg` : null);
+const photoFor = leagueTitlePhoto;
 
 export default function CentralLeaguePage() {
   const [selected, setSelected] = useState(null);
