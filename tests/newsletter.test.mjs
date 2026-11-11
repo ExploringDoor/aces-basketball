@@ -1,4 +1,4 @@
-// Aces Weekly: the pure email builder and the /api/newsletter handler against
+// Aces Newsletter: the pure email builder and the /api/newsletter handler against
 // the in-memory Firestore and SendGrid fakes. Zero network.
 // Run: npm test   (or: node tests/newsletter.test.mjs)
 import assert from 'node:assert/strict';
@@ -48,7 +48,7 @@ const full = {
 
 await test('the builder renders every section, table based, with absolute images and the unsubscribe placeholder', () => {
   const h = buildNewsletterHtml(full);
-  for (const s of ['Aces Weekly', 'Dec 1 to Dec 7, 2026', 'What a week.<br>See you Tuesday.', 'Results', 'This week', 'Player of the game', 'Shoot-a-Thon', 'From the team store']) assert.ok(h.includes(s), 'missing ' + s);
+  for (const s of ['Aces Newsletter', 'Dec 1 to Dec 7, 2026', 'What a week.<br>See you Tuesday.', 'Results', 'Coming up', 'Player of the game', 'Shoot-a-Thon', 'From the team store']) assert.ok(h.includes(s), 'missing ' + s);
   assert.ok(h.includes(`${ORIGIN}/LM_Logo.png`) && h.includes(`${ORIGIN}/Bulldog.png`) && h.includes(`${ORIGIN}/logos/chester.png`) && h.includes(`${ORIGIN}/players/jimmy-d.jpg`));
   assert.ok(!/src="\/(?!\/)/.test(h), 'a relative image slipped through');
   // The win shows the Aces score in gold; the loss does not.
@@ -70,15 +70,15 @@ await test('the builder renders every section, table based, with absolute images
 
 await test('empty sections are left out and the subject follows the week', () => {
   const h = buildNewsletterHtml({ origin: ORIGIN, weekLabel: 'Dec 1 to Dec 7, 2026', intro: 'Just a note.' });
-  for (const s of ['Results', 'This week', 'Player of the game', 'Shoot-a-Thon', 'From the team store']) assert.ok(!h.includes(`>${s}<`), 'should omit ' + s);
+  for (const s of ['Results', 'Coming up', 'Player of the game', 'Shoot-a-Thon', 'From the team store']) assert.ok(!h.includes(`>${s}<`), 'should omit ' + s);
   assert.ok(h.includes('Just a note.'));
   // A player card without a name, a fundraiser with no numbers, a store with no items: all omitted.
   const h2 = buildNewsletterHtml({ origin: ORIGIN, playerOfGame: { name: '', line: 'x' }, fundraiser: { raisedCents: 0, goalCents: 0 }, store: { items: [] }, upcoming: [games[2]] });
-  assert.ok(!h2.includes('Player of the game') && !h2.includes('Shoot-a-Thon') && !h2.includes('From the team store') && h2.includes('This week'));
-  assert.equal(subjectFor({ weekLabel: 'Dec 1 to Dec 7, 2026', results: [games[0]] }), 'Aces Weekly, Dec 1 to Dec 7, 2026: Aces beat Chester 61 to 55');
-  assert.equal(subjectFor({ weekLabel: 'Dec 1 to Dec 7, 2026', results: games.slice(0, 2) }), 'Aces Weekly, Dec 1 to Dec 7, 2026: 1 and 1 on the week');
-  assert.equal(subjectFor({ weekLabel: '', upcoming: [games[2]] }), 'Aces Weekly: at Haverford Tuesday');
-  assert.equal(subjectFor({ results: [{ ...games[1] }] }), 'Aces Weekly: Aces fall to Conestoga 52 to 48');
+  assert.ok(!h2.includes('Player of the game') && !h2.includes('Shoot-a-Thon') && !h2.includes('From the team store') && h2.includes('Coming up'));
+  assert.equal(subjectFor({ weekLabel: 'Dec 1 to Dec 7, 2026', results: [games[0]] }), 'Aces Newsletter, Dec 1 to Dec 7, 2026: Aces beat Chester 61 to 55');
+  assert.equal(subjectFor({ weekLabel: 'Dec 1 to Dec 7, 2026', results: games.slice(0, 2) }), 'Aces Newsletter, Dec 1 to Dec 7, 2026: 1 and 1 on the week');
+  assert.equal(subjectFor({ weekLabel: '', upcoming: [games[2]] }), 'Aces Newsletter: at Haverford Tuesday');
+  assert.equal(subjectFor({ results: [{ ...games[1] }] }), 'Aces Newsletter: Aces fall to Conestoga 52 to 48');
   assert.equal(weekLabelFor('2026-12-01', '2026-12-07'), 'Dec 1 to Dec 7, 2026');
   assert.equal(weekLabelFor('2026-12-07', '2026-12-07'), 'Dec 7, 2026');
 });
@@ -203,12 +203,12 @@ await test('preview: the fundraiser bar comes from the live pledges and the stor
   fake.seed('pledges/p2', { event_id: SHOOTATHON.eventId, site: SITE_TAG, kind: 'flat', target_type: 'org', status: 'canceled', amount_cents: 99900, donor_name: 'No', created: '2026-11-01T00:00:00Z' });
   let r = await call({ body: { action: 'preview', from: '2026-12-01', to: '2026-12-07', intro: 'Hi all', games, playerOfGame: { name: 'Jimmy D', line: 'Big night' }, sections: { store: true } } });
   assert.equal(r.status, 200);
-  assert.equal(r.body.subject, 'Aces Weekly, Dec 1 to Dec 7, 2026: 1 and 1 on the week');
+  assert.equal(r.body.subject, 'Aces Newsletter, Dec 1 to Dec 7, 2026: 1 and 1 on the week');
   const h = r.body.html;
   assert.ok(h.includes('Shoot-a-Thon') && h.includes('$100') && h.includes('of $30,000 raised') && h.includes('40 free throws made') && h.includes(`${ORIGIN}/donate.html`));
   assert.ok(h.includes('From the team store') && h.includes('Aces Hoodie') && h.includes('$45') && h.includes(`${ORIGIN}/#store`));
   assert.ok(!h.includes(UNSUB_TAG) && h.includes('/api/newsletter?u=family%40example.com&amp;t='));
-  assert.ok(h.includes('Jimmy D') && h.includes('Results') && h.includes('This week'));
+  assert.ok(h.includes('Jimmy D') && h.includes('Results') && h.includes('Coming up'));
   // Event closed: the fundraiser section goes away on its own.
   fake.seed(`shootathon/${SHOOTATHON.eventId}`, { open: false, org_goal_cents: 3000000, players: [] });
   r = await call({ body: { action: 'preview', intro: 'Hi all', games } });
@@ -233,10 +233,10 @@ await test('send: one email per active subscriber with its own unsubscribe link,
   const mails = fake.mails();
   assert.deepEqual(mails.map((m) => m.to[0]).sort(), ['a@x.com', 'b@x.com']);
   for (const m of mails) {
-    assert.equal(m.subject, 'Aces Weekly, Dec 1 to Dec 7, 2026: 1 and 1 on the week');
+    assert.equal(m.subject, 'Aces Newsletter, Dec 1 to Dec 7, 2026: 1 and 1 on the week');
     assert.ok(!m.html.includes(UNSUB_TAG));
     assert.ok(m.html.includes(`/api/newsletter?u=${encodeURIComponent(m.to[0])}&amp;t=${tokenFor(m.to[0])}`));
-    assert.ok(m.text.includes('Aces Weekly') && !m.text.includes('<'));
+    assert.ok(m.text.includes('Aces Newsletter') && !m.text.includes('<'));
   }
   const sends = fake.docs('newsletter_sends').filter((d) => !d.lock);
   assert.equal(sends.length, 1);
@@ -246,7 +246,7 @@ await test('send: one email per active subscriber with its own unsubscribe link,
   assert.equal(sends[0].site, SITE_TAG);
   assert.equal(sends[0].sent, 2);
   assert.equal(sends[0].by, 'admin');
-  assert.ok(sends[0].at && sends[0].subject.startsWith('Aces Weekly'));
+  assert.ok(sends[0].at && sends[0].subject.startsWith('Aces Newsletter'));
   assert.equal(r.body.sends[0].sent, 2);
   // A failed SendGrid call is counted, not hidden.
   fake.state.opts.fail.sendgrid = 500;
@@ -265,7 +265,7 @@ await test('a test send goes to one address only, marked [TEST], and leaves no s
   const mails = fake.mails();
   assert.equal(mails.length, 1);
   assert.deepEqual(mails[0].to, ['adam@example.com']);
-  assert.ok(mails[0].subject.startsWith('[TEST] Aces Weekly'));
+  assert.ok(mails[0].subject.startsWith('[TEST] Aces Newsletter'));
   assert.ok(mails[0].html.includes(`/api/newsletter?u=adam%40example.com&amp;t=${tokenFor('adam@example.com')}`));
   assert.equal(fake.docs('newsletter_sends').length, 0);
   const bad = await call({ body: { action: 'send', intro: 'Draft', games, testTo: 'nope' } });

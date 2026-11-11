@@ -1,6 +1,6 @@
 // pages/NewsletterPage.jsx
 // Admin tool (not in the menu): open /#newsletter, enter the admin password
-// once, and write this week's Aces Weekly: pick the week, the games come in
+// once, and write the Aces Newsletter: pick the week, the games come in
 // from the schedule with any live scores, add a note and a player of the game,
 // switch sections on or off, watch the preview, send a test to yourself, then
 // send to every family. The subscriber list lives on the same page.
@@ -196,7 +196,7 @@ function Composer({ keyCode, data, setData, onAuthFail }) {
         <div style={hint}>The Shoot-a-Thon bar uses the live totals and only shows while the event is open. The store tiles link to the shop page.</div>
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
           {toggleRow("results", "Results")}
-          {toggleRow("upcoming", "This week")}
+          {toggleRow("upcoming", "Coming up")}
           {toggleRow("player", "Player of the game")}
           {toggleRow("fundraiser", "Shoot-a-Thon")}
           {toggleRow("store", "Team store")}
@@ -210,7 +210,7 @@ function Composer({ keyCode, data, setData, onAuthFail }) {
         </div>
         {previewErr && <div style={{ fontFamily: SANS, fontSize: 13, color: "#f87171", marginTop: 6 }}>{previewErr}</div>}
         <div style={{ marginTop: 10, borderRadius: 10, overflow: "hidden", background: "#f4f1ec", border: "1px solid rgba(255,255,255,0.1)" }}>
-          <iframe title="Aces Weekly preview" srcDoc={preview ? preview.html : "<p style='font-family:Arial;color:#888;padding:20px'>Building the preview</p>"} sandbox="" style={{ width: "100%", height: 720, border: 0, display: "block", background: "#f4f1ec" }} />
+          <iframe title="Aces Newsletter preview" srcDoc={preview ? preview.html : "<p style='font-family:Arial;color:#888;padding:20px'>Building the preview</p>"} sandbox="" style={{ width: "100%", height: 720, border: 0, display: "block", background: "#f4f1ec" }} />
         </div>
       </div>
 
@@ -264,7 +264,7 @@ export default function NewsletterPage() {
     <section id="newsletter" style={{ background: "#0a0005", padding: "110px 5% 120px", minHeight: "100vh" }}>
       <div style={{ maxWidth: 760, margin: "0 auto" }}>
         <div className="section-label"><Spade size={14} color="#840036" /> Admin Tools</div>
-        <h2 className="section-title" style={{ fontSize: "clamp(40px,9vw,64px)" }}>Aces<br /><span style={{ color: "var(--gold)" }}>Weekly</span></h2>
+        <h2 className="section-title" style={{ fontSize: "clamp(40px,9vw,64px)" }}>Aces<br /><span style={{ color: "var(--gold)" }}>Newsletter</span></h2>
         <div className="divider" />
         {!keyCode ? (
           <form onSubmit={unlock} style={{ marginTop: 26, display: "grid", gap: 12, maxWidth: 420 }}>

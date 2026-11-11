@@ -294,7 +294,6 @@ export default function HomePage({ goTo }) {
                 onMouseLeave={e => { const im=e.currentTarget.querySelector('img'); if(im) im.style.transform="scale(1)"; const ov=e.currentTarget.querySelector('.mz-ov'); if(ov) ov.style.opacity="0.32"; }}>
                 <img src={m.src} alt={m.cap} loading="lazy" style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center 30%", display:"block", transition:"transform 0.5s ease" }} />
                 <div className="mz-ov" style={{ position:"absolute", inset:0, background:"linear-gradient(155deg, rgba(132,0,54,0.55), rgba(10,0,5,0.25))", mixBlendMode:"multiply", opacity:0.32, transition:"opacity 0.3s", pointerEvents:"none" }} />
-                <div style={{ position:"absolute", left:12, bottom:10, fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:"rgba(255,255,255,0.85)", textTransform:"uppercase", textShadow:"0 2px 8px rgba(0,0,0,0.8)" }}>{m.cap}</div>
               </div>
             ))}
           </div>

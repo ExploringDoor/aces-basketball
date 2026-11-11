@@ -4,12 +4,12 @@ import { FadeIn, Spade, Icon, news } from "../shared";
 
 const ordered = [...news].sort((a, b) => (b.sortKey || 0) - (a.sortKey || 0));
 
-// Aces Weekly sign-up. Posts to /api/newsletter; the hidden "website" field is
+// Aces Newsletter sign-up. Posts to /api/newsletter; the hidden "website" field is
 // a honeypot that people never see and bots fill in.
 const OSW = "'Oswald',sans-serif";
 const SANS = "'Source Sans 3',sans-serif";
 const field = { width: "100%", boxSizing: "border-box", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 10, color: "#fff", padding: "12px 14px", fontFamily: SANS, fontSize: 15, outline: "none" };
-function WeeklySignup() {
+function NewsletterSignup() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [hp, setHp] = useState("");
@@ -34,15 +34,15 @@ function WeeklySignup() {
       <div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
           <img src="/LM_Logo.png" alt="" style={{ width: 44, height: 44, objectFit: "contain" }} />
-          <span style={{ fontFamily: OSW, fontSize: 10, letterSpacing: 3, color: "var(--gold)", textTransform: "uppercase" }}>Aces Weekly</span>
+          <span style={{ fontFamily: OSW, fontSize: 10, letterSpacing: 3, color: "var(--gold)", textTransform: "uppercase" }}>Aces Newsletter</span>
         </div>
-        <h3 style={{ fontFamily: OSW, fontWeight: 700, fontSize: "clamp(22px,2.6vw,28px)", lineHeight: 1.15, textTransform: "uppercase", margin: "0 0 10px" }}>Aces Weekly, the family newsletter</h3>
-        <p style={{ fontFamily: SANS, fontSize: 15, color: "rgba(255,255,255,0.62)", lineHeight: 1.7, margin: 0 }}>Results, the week ahead, a player of the game and program news, in your inbox once a week during the season. One email, no spam, unsubscribe any time.</p>
+        <h3 style={{ fontFamily: OSW, fontWeight: 700, fontSize: "clamp(22px,2.6vw,28px)", lineHeight: 1.15, textTransform: "uppercase", margin: "0 0 10px" }}>The Aces family newsletter</h3>
+        <p style={{ fontFamily: SANS, fontSize: 15, color: "rgba(255,255,255,0.62)", lineHeight: 1.7, margin: 0 }}>Results, upcoming games, a player of the game and program news, right in your inbox during the season. No spam, unsubscribe any time.</p>
       </div>
       {state === "done" ? (
         <div style={{ fontFamily: SANS, fontSize: 16, color: "#fff", lineHeight: 1.6 }}>
           <div style={{ fontFamily: OSW, fontSize: 20, textTransform: "uppercase", letterSpacing: 1, color: "var(--gold)", marginBottom: 6 }}>You are on the list</div>
-          Look for Aces Weekly from Lower Merion Aces Basketball. If it lands in a promotions or spam folder, drag it to your inbox once and it will stay there.
+          Look for the Aces Newsletter from Lower Merion Aces Basketball. If it lands in a promotions or spam folder, drag it to your inbox once and it will stay there.
         </div>
       ) : (
         <form onSubmit={submit} style={{ display: "grid", gap: 10 }}>
@@ -116,7 +116,7 @@ export default function NewsPage() {
           <div className="divider" />
         </FadeIn>
 
-        <FadeIn delay={0.08}><WeeklySignup /></FadeIn>
+        <FadeIn delay={0.08}><NewsletterSignup /></FadeIn>
 
         {/* Featured */}
         {featured && (

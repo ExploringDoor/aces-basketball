@@ -48,7 +48,7 @@ export default function StandingsPage() {
               return (
                 <div key={t.team} style={{
                   display: "grid", gridTemplateColumns: "34px 1fr 64px 64px 46px 52px", gap: 6, alignItems: "center",
-                  padding: "10px 16px",
+                  padding: "8px 16px",
                   background: isLM ? "rgba(132,0,54,0.18)" : i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
                   borderLeft: isLM ? "3px solid var(--gold)" : "3px solid transparent",
                   borderBottom: "1px solid rgba(255,255,255,0.04)",
@@ -56,8 +56,8 @@ export default function StandingsPage() {
                   <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 13, color: i < 1 ? "var(--gold)" : "rgba(255,255,255,0.35)", fontWeight: i < 1 ? 700 : 400 }}>{i + 1}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 11, minWidth: 0 }}>
                     {logo && (
-                      <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#fff", border: "1px solid rgba(255,255,255,0.2)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                        <img src={logo} alt="" style={{ width: "86%", height: "86%", objectFit: "contain" }} />
+                      <div style={{ width: "clamp(40px, 7vw, 56px)", height: "clamp(40px, 7vw, 56px)", borderRadius: "50%", background: "#fff", border: "2px solid rgba(201,164,74,0.35)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                        <img src={logo} alt="" style={{ width: "90%", height: "90%", objectFit: "contain" }} />
                       </div>
                     )}
                     <span style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 14, fontWeight: isLM ? 700 : 500, color: isLM ? "var(--gold)" : "rgba(255,255,255,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.team}</span>

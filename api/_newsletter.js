@@ -1,4 +1,4 @@
-// Aces Weekly, the family newsletter: subscriber tidying and the email itself.
+// Aces Newsletter, the family newsletter: subscriber tidying and the email itself.
 //
 // Pure: no network, no env, no node imports. api/newsletter.js sends what this
 // builds, and the hidden /#newsletter page imports the same limits and the
@@ -269,14 +269,14 @@ export function buildNewsletterHtml(o) {
   const parts = [];
   if (intro) parts.push(`<tr><td style="padding:26px 24px 0 24px;font-family:${FONT};font-size:16px;line-height:1.7;color:${TEXT}">${esc(intro).replace(/\r?\n/g, '<br>')}</td></tr>`);
   if (results.length) parts.push(section('Results', results.map((g) => resultCard(origin, g)).join('')));
-  if (upcoming.length) parts.push(section('This week', upcoming.map((g) => upcomingRow(origin, g)).join('')));
+  if (upcoming.length) parts.push(section('Coming up', upcoming.map((g) => upcomingRow(origin, g)).join('')));
   if (pog) parts.push(section('Player of the game', playerCard(origin, pog)));
   if (fund) parts.push(section('Shoot-a-Thon', fundraiserBlock(fund)));
   if (storeItems.length) parts.push(section('From the team store', storeTiles(storeItems)));
 
-  const preheader = intro ? esc(intro.slice(0, 140)) : (results.length ? `Results, this week's games and more from the Aces` : 'This week with the Aces');
+  const preheader = intro ? esc(intro.slice(0, 140)) : (results.length ? `Results, upcoming games and more from the Aces` : 'News from the Aces');
   return `<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Aces Weekly</title></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Aces Newsletter</title></head>
 <body style="margin:0;padding:0;background:${PAPER}">
 <div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:${PAPER}">${preheader}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${PAPER}"><tr><td align="center" style="padding:24px 10px">
@@ -286,7 +286,7 @@ export function buildNewsletterHtml(o) {
       <td width="72" style="width:72px;vertical-align:middle"><a href="${esc(site)}" style="text-decoration:none"><img src="${esc(logo)}" alt="Lower Merion" width="72" height="72" style="display:block;width:72px;height:72px;border:0"></a></td>
       <td style="padding-left:18px;vertical-align:middle">
         <div style="font-family:${FONT};font-size:11px;letter-spacing:4px;text-transform:uppercase;color:${GOLD};font-weight:bold">Lower Merion Aces Basketball</div>
-        <div style="font-family:${FONT};font-size:34px;line-height:1.05;font-weight:bold;color:#ffffff;text-transform:uppercase;letter-spacing:1px;padding-top:4px">Aces Weekly</div>
+        <div style="font-family:${FONT};font-size:34px;line-height:1.05;font-weight:bold;color:#ffffff;text-transform:uppercase;letter-spacing:1px;padding-top:4px">Aces Newsletter</div>
         ${weekLabel ? `<div style="font-family:${FONT};font-size:13px;color:#f0d0d6;padding-top:6px">${esc(weekLabel)}</div>` : ''}
       </td>
     </tr></table>
@@ -296,7 +296,7 @@ export function buildNewsletterHtml(o) {
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #e3ddd6"><tr><td style="padding-top:16px;font-family:${FONT};font-size:12px;line-height:1.7;color:${MUTED}">
       Lower Merion Aces Basketball, Ardmore, PA<br>
       <a href="${esc(site)}" style="color:${MAROON};text-decoration:none">${SITE_HOST}</a><br>
-      You are getting Aces Weekly because you signed up for it on the Aces site. <a href="${unsub}" style="color:${MUTED};text-decoration:underline">Unsubscribe</a>
+      You are getting the Aces Newsletter because you signed up for it on the Aces site. <a href="${unsub}" style="color:${MUTED};text-decoration:underline">Unsubscribe</a>
     </td></tr></table>
   </td></tr>
 </table>
@@ -319,18 +319,18 @@ export function subjectFor(o) {
     const g = upcoming[0];
     tail = `${whereWord(g)} ${g.opp} ${g.iso ? fmtDay(g.iso, { weekday: 'long' }) : g.date}`;
   }
-  return `Aces Weekly${weekLabel ? `, ${weekLabel}` : ''}${tail ? `: ${tail}` : ''}`;
+  return `Aces Newsletter${weekLabel ? `, ${weekLabel}` : ''}${tail ? `: ${tail}` : ''}`;
 }
 
 /** The page behind an unsubscribe link. GET shows the button; the button
  *  POSTs. `state` is 'ask', 'done' or 'bad'. */
 export function unsubscribePageHtml({ email, token, state }) {
   const inner = state === 'done'
-    ? `<h1 style="font-family:${FONT};font-size:24px;color:${MAROON};margin:0 0 10px">You are unsubscribed</h1><p style="font-family:${FONT};font-size:15px;line-height:1.6;color:${TEXT};margin:0">${esc(email)} will not get Aces Weekly any more. You can sign up again any time on the site.</p>`
+    ? `<h1 style="font-family:${FONT};font-size:24px;color:${MAROON};margin:0 0 10px">You are unsubscribed</h1><p style="font-family:${FONT};font-size:15px;line-height:1.6;color:${TEXT};margin:0">${esc(email)} will not get the Aces Newsletter any more. You can sign up again any time on the site.</p>`
     : state === 'bad'
-      ? `<h1 style="font-family:${FONT};font-size:24px;color:${MAROON};margin:0 0 10px">That link did not work</h1><p style="font-family:${FONT};font-size:15px;line-height:1.6;color:${TEXT};margin:0">Open the newest Aces Weekly and use the unsubscribe link at the bottom, or reply to the email and we will take you off the list.</p>`
-      : `<h1 style="font-family:${FONT};font-size:24px;color:${MAROON};margin:0 0 10px">Stop Aces Weekly?</h1><p style="font-family:${FONT};font-size:15px;line-height:1.6;color:${TEXT};margin:0 0 18px">${esc(email)} gets the family newsletter. Press the button and it stops.</p>
+      ? `<h1 style="font-family:${FONT};font-size:24px;color:${MAROON};margin:0 0 10px">That link did not work</h1><p style="font-family:${FONT};font-size:15px;line-height:1.6;color:${TEXT};margin:0">Open the newest Aces Newsletter and use the unsubscribe link at the bottom, or reply to the email and we will take you off the list.</p>`
+      : `<h1 style="font-family:${FONT};font-size:24px;color:${MAROON};margin:0 0 10px">Stop the Aces Newsletter?</h1><p style="font-family:${FONT};font-size:15px;line-height:1.6;color:${TEXT};margin:0 0 18px">${esc(email)} gets the family newsletter. Press the button and it stops.</p>
         <form method="post" action="/api/newsletter"><input type="hidden" name="action" value="unsubscribe"><input type="hidden" name="email" value="${esc(email)}"><input type="hidden" name="token" value="${esc(token)}"><button type="submit" style="font-family:${FONT};font-size:13px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;color:#ffffff;background:${MAROON};border:0;border-radius:999px;padding:12px 24px;cursor:pointer">Stop these emails</button></form>`;
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Aces Weekly</title></head>
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Aces Newsletter</title></head>
 <body style="margin:0;background:${PAPER}"><div style="max-width:520px;margin:40px auto;padding:0 16px"><div style="background:#fbfaf8;border-radius:16px;padding:28px"><div style="font-family:${FONT};font-size:11px;letter-spacing:4px;text-transform:uppercase;color:${GOLD};font-weight:bold;margin-bottom:14px">Lower Merion Aces Basketball</div>${inner}<p style="font-family:${FONT};font-size:12px;color:${MUTED};margin:22px 0 0"><a href="https://${SITE_HOST}/" style="color:${MAROON};text-decoration:none">${SITE_HOST}</a></p></div></div></body></html>`;
 }

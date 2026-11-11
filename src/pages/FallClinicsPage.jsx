@@ -33,13 +33,14 @@ export default function FallClinicsPage() {
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label"><Spade size={14} color="#840036" /> Train With the Aces</div>
-          <h2 className="section-title">Fall<br /><span style={{ color: "var(--gold)" }}>Clinics</span></h2>
+          <h2 className="section-title">{open ? "Fall" : "Aces"}<br /><span style={{ color: "var(--gold)" }}>Clinics</span></h2>
           <div className="divider" />
-          <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 15, color: "rgba(255,255,255,0.6)", marginTop: 20, lineHeight: 1.8, maxWidth: 680 }}>
+          {open && <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 15, color: "rgba(255,255,255,0.6)", marginTop: 20, lineHeight: 1.8, maxWidth: 680 }}>
             Train in the Kobe Bryant Gymnasium with Lower Merion coaches and players. Our Fall Clinic Series builds fundamentals, confidence, and a love for the game for boys and girls ages 6 to 14. Pick individual Sundays or save with the full series.
-          </p>
+          </p>}
         </FadeIn>
 
+        {open && <>
         {/* Pricing */}
         <FadeIn delay={0.1}>
           <div style={{ marginTop: 40, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
@@ -72,14 +73,16 @@ export default function FallClinicsPage() {
           </div>
         </FadeIn>
 
+        </>}
+
         {/* Register CTA -> real registration + payment page */}
         <FadeIn delay={0.22}>
           <div style={{ marginTop: 40, textAlign: "center", background: "rgba(132,0,54,0.12)", border: "1px solid rgba(201,164,74,0.25)", borderRadius: 16, padding: "clamp(32px, 6vw, 52px)" }}>
-            <h3 style={{ fontFamily: "'Anton',sans-serif", fontSize: "clamp(28px,4.5vw,44px)", textTransform: "uppercase", margin: "0 0 10px", letterSpacing: 0.5 }}>{open ? "Ready to Hoop?" : "Fall Series Complete"}</h3>
+            <h3 style={{ fontFamily: "'Anton',sans-serif", fontSize: "clamp(28px,4.5vw,44px)", textTransform: "uppercase", margin: "0 0 10px", letterSpacing: 0.5 }}>{open ? "Ready to Hoop?" : "Fall Clinics Are a Wrap"}</h3>
             <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 15, color: "rgba(255,255,255,0.6)", margin: "0 auto 28px", maxWidth: 520, lineHeight: 1.7 }}>
               {open
                 ? "Sign up in a couple of minutes. Pick your Sundays, add your player, and check out securely. A receipt is emailed right away."
-                : "Thanks to every family who joined us this fall. Spring clinic dates are coming soon, and registration will open right here."}
+                : "Thanks to every family who came out this fall! Spring clinics are coming in the spring. Dates and sign ups will be posted right here."}
             </p>
             {open && <a href="/register.html" style={cta}
               onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 10px 30px rgba(132,0,54,0.55)"; }}

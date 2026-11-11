@@ -1,5 +1,5 @@
 // Vercel Serverless Function: /api/newsletter
-// Aces Weekly, the family newsletter. Families sign up on /#news, the admin
+// Aces Newsletter, the family newsletter. Families sign up on /#news, the admin
 // writes and sends it from the hidden /#newsletter page.
 //
 // Storage: Firestore through the server login (api/_firestore.js).

@@ -44,7 +44,7 @@ const PAGES = {
   scores: ScoresPage, // coach tool, not in the menu: post scores from a phone
   scouting: ScoutingPage, // coach tool, not in the menu: who scouts whom, and the opponent reports
   practice: PracticePage, // coach tool, not in the menu: practice plans built from the drill library
-  newsletter: NewsletterPage, // admin tool, not in the menu: write and send Aces Weekly to the families
+  newsletter: NewsletterPage, // admin tool, not in the menu: write and send the Aces Newsletter to the families
 };
 
 // Menu ids that open a standalone page instead of an in-app page.

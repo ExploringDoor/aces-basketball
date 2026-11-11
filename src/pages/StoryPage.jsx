@@ -4,6 +4,7 @@
 // slideshow) OR a hosted flip-book ({url}, opened in a viewer iframe). Add chapters as
 // the season produces them.
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { FadeIn, Spade, Icon } from "../shared";
 
 // ── Seasons, newest first ────────────────────────────────────────────────────
@@ -226,7 +227,8 @@ export default function StoryPage() {
       </div>
 
       {/* ── Chapter viewer ─────────────────────────── */}
-      {active && (
+      {/* Portaled to <body>: the section's isolation would otherwise trap it under the fixed site menu */}
+      {active && createPortal(
         <div role="dialog" aria-modal="true" aria-label={`${active.season.label} Chapter ${active.chapter.ch}`} onClick={() => setActive(null)} style={{
           position: "fixed", inset: 0, zIndex: 5000, background: "rgba(5,0,3,0.95)",
           backdropFilter: "blur(4px)", display: "flex", flexDirection: "column", padding: "clamp(10px,2vw,26px)",
@@ -270,7 +272,8 @@ export default function StoryPage() {
               <iframe key={active.chapter.url} src={active.chapter.url} title={`${active.season.label} Chapter ${active.chapter.ch}`} allowFullScreen style={{ width: "100%", height: "100%", border: 0, display: "block" }} />
             </div>
           )}
-        </div>
+        </div>,
+        document.body
       )}
 
       <style>{`@keyframes storyFade{from{opacity:0;transform:scale(0.99)}to{opacity:1;transform:none}}`}</style>
