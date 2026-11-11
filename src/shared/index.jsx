@@ -417,7 +417,7 @@ export const schedule = [
     { date: "Dec 26–31", opp: "Cactus Jam",   home: false, time: "3 Games", iso: "2026-12-26T12:00:00-05:00", venue: "Phoenix, AZ", multi: true, tag: "Tournament · Phoenix, AZ", result: null },
   ]},
   { month: "January 2027", games: [
-    { date: "Jan 2",  opp: "Coatesville",     home: false, neutral: true, time: "7:00 PM", iso: "2027-01-02T19:00:00-05:00", venue: "West Chester University", tag: "Neutral Site · West Chester University", result: null },
+    { date: "Jan 3",  opp: "Coatesville",     home: false, neutral: true, time: "7:00 PM", iso: "2027-01-03T19:00:00-05:00", venue: "West Chester University", tag: "Neutral Site · West Chester University", result: null },
     { date: "Jan 5",  opp: "Strath Haven",    home: true,  time: "7:00 PM", iso: "2027-01-05T19:00:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, result: null },
     { date: "Jan 7",  opp: "Penncrest",       home: false, time: "7:00 PM", iso: "2027-01-07T19:00:00-05:00", venue: "Penncrest HS · Kaufman Gym", conf: true, result: null },
     { date: "Jan 9",  opp: "Radnor",          home: true,  time: "1:30 PM", iso: "2027-01-09T13:30:00-05:00", venue: "Kobe Bryant Gymnasium", conf: true, tag: "Rescheduled", result: null },
