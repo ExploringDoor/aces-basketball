@@ -120,6 +120,13 @@ function publicPlay(p, byId) {
 let boardMemo = null; const playMemo = new Map();   // per warm instance, for the Board polling
 // Quizzes that are not about one play: scored under a fixed id in playbook_quiz.
 const SPECIAL_QUIZ = { signals: 'Sideline signals', terms: 'Team glossary', whereami: 'Where am I drill' };
+// Tonight's plays: the coach stars a handful before a game, players see them on top.
+function cleanTonight(t) {
+  t = t && typeof t === 'object' ? t : {};
+  const play_ids = [...new Set((Array.isArray(t.play_ids) ? t.play_ids : []).filter(safeId))].slice(0, 12);
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(String(t.date || '')) ? String(t.date) : '';
+  return { on: !!t.on && play_ids.length > 0, play_ids, label: String(t.label || '').replace(/<[^>]*>/g, '').trim().slice(0, 80), date };
+}
 function sortPlays(a, b) { return String(a.kind || 'ours').localeCompare(String(b.kind || 'ours')) || String(a.opponent || '').localeCompare(String(b.opponent || '')) || String(a.category).localeCompare(String(b.category)) || String(a.name).localeCompare(String(b.name)); }
 
 async function dropClip(c) { try { if (c && c.url && process.env.BLOB_READ_WRITE_TOKEN) await blobDel(c.url); } catch (e) { /* best effort: the play no longer points at it */ } }
@@ -179,6 +186,8 @@ async function playerAction(action, body, req) {
       loadSite('playbook_games'),
       loadSite('playbook_terms'), fsGet('playbook_meta/endgame'), fsGet('playbook_meta/goals'),
     ]);
+    const tonightRaw = cleanTonight(await fsGet('playbook_meta/tonight'));
+    const tonight = tonightRaw.on ? Object.assign({}, tonightRaw, { play_ids: tonightRaw.play_ids.filter((id) => ids.has(id)) }) : null;
     // glossary + end of game tree, with play links limited to plays this player can see
     const terms = termsRaw.map((t) => ({ id: t.id, term: t.term, means: t.means, kind: t.kind || 'other', play_id: ids.has(t.play_id) ? t.play_id : '' })).sort((a, b) => a.term.localeCompare(b.term));
     const egLeaves = cleanEndgame(endgameRaw && endgameRaw.leaves);
@@ -193,7 +202,7 @@ async function playerAction(action, body, req) {
     const visiblePlans = plans.filter((p) => p.visible).map((p) => publicPlan(p, byId)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
     games.sort((a, b) => String(b.date).localeCompare(String(a.date)));
     const cal = await upcomingFor(settings.feeds, player.group || '');
-    return { status: 200, body: { player: who(player), plays, plan: plan ? publicPlan(plan, byId) : null, plans: visiblePlans, practice: practice ? publicPractice(practice) : null, games: games.map(publicGame), done, attitude_share: settings.attitude_share, notices: await recentNotices(), upcoming: cal.events, calendar_url: cal.url, terms, endgame: egLeaves, goals: cleanGoals(goalsRaw && goalsRaw.goals) } };
+    return { status: 200, body: { player: who(player), plays, plan: plan ? publicPlan(plan, byId) : null, plans: visiblePlans, practice: practice ? publicPractice(practice) : null, games: games.map(publicGame), done, attitude_share: settings.attitude_share, notices: await recentNotices(), upcoming: cal.events, calendar_url: cal.url, terms, endgame: egLeaves, goals: cleanGoals(goalsRaw && goalsRaw.goals), tonight } };
   }
   if (action === 'board') {   // what coach has on the Board right now (players' phones follow it)
     let b = boardMemo && Date.now() - boardMemo.at < 3000 ? boardMemo.v : null;
@@ -335,7 +344,7 @@ async function adminList() {
   plans.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
   practices.sort((a, b) => String(b.date).localeCompare(String(a.date)));
   notes.sort((a, b) => String(b.date + b.created).localeCompare(String(a.date + a.created)));
-  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views, vsum, questions, quiz: quiz.slice(0, 6000), plans, practices, notes, drills, games, terms: terms.sort((a, b) => String(a.term).localeCompare(String(b.term))), endgame: cleanEndgame(endgameRaw && endgameRaw.leaves), calls: calls.sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 2000), goals: cleanGoals(goalsRaw && goalsRaw.goals), lineups: cleanLineups(lineupsRaw && lineupsRaw.lineups) } };
+  return { status: 200, body: { settings, plays: plays.sort(sortPlays), players: players.sort((a, b) => String(a.name).localeCompare(String(b.name))), views, vsum, questions, quiz: quiz.slice(0, 6000), plans, practices, notes, drills, games, terms: terms.sort((a, b) => String(a.term).localeCompare(String(b.term))), endgame: cleanEndgame(endgameRaw && endgameRaw.leaves), calls: calls.sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 2000), goals: cleanGoals(goalsRaw && goalsRaw.goals), lineups: cleanLineups(lineupsRaw && lineupsRaw.lineups), tonight: cleanTonight(await fsGet('playbook_meta/tonight')) } };
 }
 
 async function adminAction(action, body) {
@@ -461,6 +470,13 @@ async function adminAction(action, body) {
       const id = rid('call');
       const w = await fsCreate('playbook_calls', Object.assign({}, r.call, { play_name: play.name, site: SITE_TAG, at: now }), id);
       return w.error ? { status: 502, body: { error: 'save_failed' } } : { status: 200, body: { ok: true, id } };
+    }
+    case 'set_tonight': {   // tonight's plays: the starred list players see on top of the playbook
+      const t = cleanTonight(body.tonight);
+      const cur = await fsGet('playbook_meta/tonight');
+      const doc = Object.assign({}, t, { updated: now });
+      const w = cur ? await fsPatchVerified('playbook_meta/tonight', doc) : await fsCreate('playbook_meta', Object.assign({ site: SITE_TAG }, doc), 'tonight');
+      return (w.ok || (!cur && !w.error)) ? { status: 200, body: { ok: true, tonight: t } } : { status: 502, body: { error: 'save_failed' } };
     }
     case 'set_board': {   // the Board: which play is up, and the step it is held on (null = looping)
       const on = body.on !== false;

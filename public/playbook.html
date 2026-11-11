@@ -100,6 +100,9 @@ h1,h2,h3{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2px}
 .scoutbar b{font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase;font-size:13px;color:var(--gold)}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{border:1px solid var(--line-2);background:#fff;border-radius:999px;padding:7px 14px;font-weight:600;font-size:14px;cursor:pointer;color:var(--ink-2)}
+.sitchips{display:flex;gap:6px;flex-wrap:wrap;margin:-8px 0 16px;align-items:center} .sitchips .k{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink-3);margin-right:4px} .sitchips .chip{padding:5px 11px;font-size:13px} .sitchips .chip[aria-pressed="true"]{background:#fbf5e4;border-color:#e6d49a;color:#7a5c12}
+.tonight{background:#fff;border:1px solid var(--line);border-left:5px solid #c9a44a;border-radius:16px;padding:14px 16px 16px;margin-bottom:16px;box-shadow:var(--sh)} .tonight .th{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px} .tonight h3{margin:0;font-family:'Oswald',sans-serif;font-size:15px;letter-spacing:1.6px;text-transform:uppercase;color:#7a5c12} .tonight .th span{color:var(--ink-3);font-size:13.5px}
+.tonight .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px} .tonight .pcard h3{font-size:14px} .tonight .pcard .meta{padding:8px 10px 10px}
 .chip[aria-pressed="true"]{background:var(--mrn);border-color:var(--mrn);color:#fff}
 .search{flex:1;min-width:200px;max-width:320px;margin-left:auto;border:1px solid var(--line-2);border-radius:10px;padding:9px 12px;font:inherit;outline:none;background:#fff}
 .search:focus{border-color:var(--mrn);box-shadow:0 0 0 3px var(--mrn-100)}
@@ -419,11 +422,13 @@ body.shielded #app{filter:blur(22px)}
     <button class="sigcard hide" type="button" id="sitCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><b>Situations</b><span class="sub" id="sitCardSub"></span></span><span class="go">Open</span></button>
     <button class="sigcard hide" type="button" id="termCard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v12H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></span><span><b>Team language</b><span class="sub" id="termCardSub"></span></span><span class="go">Learn it</span></button>
     <div class="must hide" id="mustBox"><h3><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#840036" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Must know<span class="pct" id="mustPct"></span></h3><ul id="mustList"></ul></div>
+    <div class="tonight hide" id="tonightBox"><div class="th"><h3>Tonight's plays</h3><span id="tonightSub"></span></div><div class="grid" id="tonightGrid"></div></div>
     <div class="seg" id="seg" role="tablist"><button type="button" data-kind="ours" aria-pressed="true">Our plays</button><button type="button" data-kind="scout">Scouting</button><button type="button" data-kind="stats" class="hide" id="segStats">Stats</button><button type="button" data-kind="hustle" class="hide" id="segHustle">Hustle board</button></div>
     <div class="hide" id="statsView"></div>
     <div class="hide" id="hustleView"><div class="prac" style="display:block;margin-bottom:12px"><div class="t">Attitude board</div><b>Hustle stats from the bench: rebounds, deflections, charges, floor burns. Attitude per minute.</b></div><iframe id="hustleFrame" title="Attitude Board" style="width:100%;height:78vh;border:0;border-radius:16px;background:#fff;box-shadow:var(--sh)" loading="lazy"></iframe></div>
     <div class="opps hide" id="opps"></div>
     <div class="filters"><div class="chips" id="cats"></div><input class="search" id="q" type="search" placeholder="Search plays" aria-label="Search plays"></div>
+    <div class="sitchips hide" id="sitChips"></div>
     <div class="grid" id="grid"></div>
   </main>
 
@@ -507,6 +512,7 @@ body.shielded #app{filter:blur(22px)}
     <button class="crumb" type="button" id="sitBack"><svg><use href="#i-back"/></svg>All plays</button>
     <div class="gp-head"><div class="k">Special situations</div><h2>Situations</h2><div class="d">What we run when the moment calls for it, and the end of game plan.</div></div>
     <div class="box hide" id="egBox"><h4>End of game</h4><div class="eg" id="eg"></div></div>
+    <div class="chips hide" id="sitGroups" style="margin-top:18px"></div>
     <div id="sitList"></div>
   </main>
   <main class="wrap hide" id="termView">
@@ -567,7 +573,7 @@ $('gateForm').addEventListener('submit',function(e){
 });
 function showGate(msg){ if(typeof stopVoice==='function') stopVoice(); $('app').classList.add('hide'); $('gate').classList.remove('hide'); $('gateErr').textContent=msg||''; document.body.classList.remove('shielded'); if(S.player) S.player.pause(); }
 function fetchPlays(){
-  if(DEMO){ S.me={id:'demo_me',name:'Demo Player',group:''}; S.plays=PBCourt.samples(); S.plays[0].signal={call:'Fist',photo:''}; S.plays[1].signal={call:'Thumbs up',photo:''}; if(S.plays[2]) S.plays[2].signal={call:'Chop',photo:''}; S.upcoming=[{at:new Date(Date.now()+864e5).toISOString().replace(/T.*/,'T20:30:00.000Z'),allDay:false,title:'Varsity practice',where:'Kobe Bryant Gym'},{at:new Date(Date.now()+3*864e5).toISOString().replace(/T.*/,'T23:00:00.000Z'),allDay:false,title:'vs Radnor',where:'Radnor HS'}]; S.calUrl='https://example.com/aces.ics'; S.notices=[{id:'n1',ts:new Date(Date.now()-36e5).toISOString(),group:'Varsity',lines:['Varsity practice on Thu moved from 3:30 pm to 4:15 pm at the main gym']}]; S.goals=[{metric:'ftp',target:70,label:'Free throw %'},{metric:'to',target:12,label:'Turnovers per game'},{metric:'wins',target:18,label:'Wins'}]; S.plays[0].situations=['need3','ato']; S.plays[1].situations=['blob','need2']; if(S.plays[2]) S.plays[2].situations=['vs_zone']; S.terms=[{id:'t1',term:'Fist',means:'Horns Flare. Our go to set against man.',kind:'call',play_id:S.plays[0].id},{id:'t2',term:'Ice',means:'Force the ball handler to the baseline on a side ball screen. Big stays low.',kind:'defense'},{id:'t3',term:'Weak',means:'Push the ball handler to his weak hand and keep him there.',kind:'defense'},{id:'t4',term:'Red',means:'Full court man press after a made free throw.',kind:'call'},{id:'t5',term:'Chop',means:'Our 2-3 zone slides.',kind:'call',play_id:S.plays[2]?S.plays[2].id:''}]; S.endgame={ball_down3:{play_ids:[S.plays[0].id],note:'Flare for 1. If they switch it, 5 seals and we throw it in.'},ball_down2:{play_ids:[S.plays[1].id],note:''},def_up3:{play_ids:[],note:'Foul before the shot goes up, under 5 seconds only. Hands up, no reach.',foul:true},inb_blob2:{play_ids:[S.plays[1].id],note:''}}; S.plays[0].due=new Date(Date.now()+3*864e5).toISOString().slice(0,10); S.plays[1].due=new Date(Date.now()-864e5).toISOString().slice(0,10); S.plays[0].marks=[{t:12,text:'Watch 5 set the screen on the top shoulder'},{t:31,text:'1 gets his feet set before the catch'}];
+  if(DEMO){ S.me={id:'demo_me',name:'Demo Player',group:''}; S.plays=PBCourt.samples(); S.plays[0].signal={call:'Fist',photo:''}; S.plays[1].signal={call:'Thumbs up',photo:''}; if(S.plays[2]) S.plays[2].signal={call:'Chop',photo:''}; S.upcoming=[{at:new Date(Date.now()+864e5).toISOString().replace(/T.*/,'T20:30:00.000Z'),allDay:false,title:'Varsity practice',where:'Kobe Bryant Gym'},{at:new Date(Date.now()+3*864e5).toISOString().replace(/T.*/,'T23:00:00.000Z'),allDay:false,title:'vs Radnor',where:'Radnor HS'}]; S.calUrl='https://example.com/aces.ics'; S.notices=[{id:'n1',ts:new Date(Date.now()-36e5).toISOString(),group:'Varsity',lines:['Varsity practice on Thu moved from 3:30 pm to 4:15 pm at the main gym']}]; S.goals=[{metric:'ftp',target:70,label:'Free throw %'},{metric:'to',target:12,label:'Turnovers per game'},{metric:'wins',target:18,label:'Wins'}]; S.plays[0].situations=['need3','ato']; S.plays[1].situations=['blob','need2']; if(S.plays[2]) S.plays[2].situations=['vs_zone']; S.terms=[{id:'t1',term:'Fist',means:'Horns Flare. Our go to set against man.',kind:'call',play_id:S.plays[0].id},{id:'t2',term:'Ice',means:'Force the ball handler to the baseline on a side ball screen. Big stays low.',kind:'defense'},{id:'t3',term:'Weak',means:'Push the ball handler to his weak hand and keep him there.',kind:'defense'},{id:'t4',term:'Red',means:'Full court man press after a made free throw.',kind:'call'},{id:'t5',term:'Chop',means:'Our 2-3 zone slides.',kind:'call',play_id:S.plays[2]?S.plays[2].id:''}]; S.endgame={ball_down3:{play_ids:[S.plays[0].id],note:'Flare for 1. If they switch it, 5 seals and we throw it in.'},ball_down2:{play_ids:[S.plays[1].id],note:''},def_up3:{play_ids:[],note:'Foul before the shot goes up, under 5 seconds only. Hands up, no reach.',foul:true},inb_blob2:{play_ids:[S.plays[1].id],note:''}}; S.plays[0].due=new Date(Date.now()+3*864e5).toISOString().slice(0,10); S.plays[1].due=new Date(Date.now()-864e5).toISOString().slice(0,10); S.tonight={on:true,play_ids:[S.plays[0].id,S.plays[1].id],label:'vs Radnor',date:new Date(Date.now()+3*864e5).toISOString().slice(0,10)}; S.plays[0].marks=[{t:12,text:'Watch 5 set the screen on the top shoulder'},{t:31,text:'1 gets his feet set before the catch'}];
     S.done={viewed:['demo1','demo2'],quiz:{demo1:100}}; S.attitude='';
     S.plan={id:'plan1',opponent:'Radnor',date:new Date(Date.now()+3*864e5).toISOString().slice(0,10),where:'away',keys:['Box out. They crash three guys every shot.','Make them play in the half court. No run outs.','Deny #23 the ball on the wing.','Free throws win this one.'],our_plays:['demo1','demo2'],their_plays:['demo5'],matchups:[{us:{id:'demo_me',name:'Demo Player'},them:'#23 Smith',note:'Deny the wing, go under on screens'},{us:{id:'d2',name:'Chris Lee'},them:'#4 Rivera',note:'Lefty, force right'}],personnel:[{num:'23',name:'Smith',pos:'G',notes:'Best player. Shoots off the dribble going left.',guard:'Deny the catch, go under ball screens'},{num:'4',name:'Rivera',pos:'G',notes:'Lefty, drives left every time.',guard:'Force right'},{num:'32',name:'Okafor',pos:'C',notes:'Crashes the glass. No range.',guard:'Box out first, sag off'}],notes:'Bus leaves 4:15. Bring both jerseys.'};
     S.games=[{id:'g1',date:new Date(Date.now()-3*864e5).toISOString().slice(0,10),opponent:'Conestoga',where:'home',us:61,them:55,lines:[{player_id:'demo_me',name:'Demo Player',num:'5',min:28,pts:19,fgm:7,fga:12,tpm:2,tpa:5,ftm:3,fta:4,oreb:1,dreb:6,reb:7,ast:4,stl:2,blk:0,to:3,pf:2},{player_id:'d2',name:'Chris Lee',num:'24',min:30,pts:14,fgm:5,fga:11,tpm:1,tpa:3,ftm:3,fta:3,oreb:2,dreb:5,reb:7,ast:2,stl:1,blk:1,to:2,pf:3},{player_id:'d5',name:'Sam Oduya',num:'35',min:22,pts:9,fgm:4,fga:6,tpm:0,tpa:0,ftm:1,fta:2,oreb:4,dreb:6,reb:10,ast:0,stl:0,blk:3,to:2,pf:4}]},{id:'g2',date:new Date(Date.now()-7*864e5).toISOString().slice(0,10),opponent:'Harriton',where:'away',us:48,them:52,lines:[{player_id:'demo_me',name:'Demo Player',num:'5',min:30,pts:12,fgm:4,fga:14,tpm:1,tpa:6,ftm:3,fta:4,oreb:0,dreb:4,reb:4,ast:6,stl:1,blk:0,to:4,pf:3},{player_id:'d2',name:'Chris Lee',num:'24',min:29,pts:16,fgm:6,fga:12,tpm:2,tpa:4,ftm:2,fta:2,oreb:1,dreb:4,reb:5,ast:1,stl:2,blk:0,to:1,pf:2}]}];
@@ -577,7 +583,7 @@ function fetchPlays(){
     return start(); }
   return api({action:'plays',token:S.token}).then(function(d){
     if(!d.plays){ if(d._status===401||d._status===403){ save(null); S.token=''; } showGate(ERR[d.error]||ERR.server); return; }
-    S.me=d.player; S.plays=d.plays; S.plan=d.plan||null; S.plans=d.plans||[]; S.games=d.games||[]; S.practice=d.practice||null; S.done=d.done||{viewed:[],quiz:{}}; S.attitude=d.attitude_share||''; S.upcoming=d.upcoming||[]; S.notices=d.notices||[]; S.calUrl=d.calendar_url||''; S.terms=d.terms||[]; S.endgame=d.endgame||{}; S.goals=d.goals||[]; save({token:S.token,me:S.me}); start();
+    S.me=d.player; S.plays=d.plays; S.plan=d.plan||null; S.plans=d.plans||[]; S.games=d.games||[]; S.practice=d.practice||null; S.done=d.done||{viewed:[],quiz:{}}; S.attitude=d.attitude_share||''; S.upcoming=d.upcoming||[]; S.notices=d.notices||[]; S.calUrl=d.calendar_url||''; S.terms=d.terms||[]; S.endgame=d.endgame||{}; S.goals=d.goals||[]; S.tonight=d.tonight||null; save({token:S.token,me:S.me}); start();
   }).catch(function(){ showGate('No connection. Try again.'); });
 }
 $('outBtn').addEventListener('click',function(){ save(null); S.token=''; S.me=null; S.plays=[]; history.replaceState(null,'',location.pathname+location.search); showGate(''); });
@@ -590,7 +596,7 @@ function start(){
   var first=String(S.me.name).split(' ')[0];
   $('hiTitle').textContent='Hi '+first+'.';
   $('hiSub').textContent=S.plays.length? (S.plays.length+(S.plays.length===1?' play':' plays')+' to learn. Tap one to watch it run.') : '';
-  renderSeg(); renderCats(); renderGrid(); renderTop(); route();
+  renderSeg(); renderCats(); renderGrid(); renderTop(); renderTonight(); route();
   clearTimeout(S.pollT); S.pollT=setTimeout(pollBoard,500);
 }
 /* ── top of the list: game plan, practice, must know ── */
@@ -745,7 +751,10 @@ function showSits(fresh){
   hideAllViews(); $('sitView').classList.remove('hide'); window.scrollTo(0,0);
   if(fresh) EGS={side:null,leaf:null}; renderEg();
   var byKey={}; S.plays.forEach(function(p){ if(kindOf(p)==='scout') return; (p.situations||[]).forEach(function(k){ (byKey[k]=byKey[k]||[]).push(p); }); });
-  var groups=[]; PBCourt.SITUATIONS.forEach(function(d){ if(!byKey[d.key]) return; var g=groups.filter(function(x){return x.name===d.group;})[0]; if(!g){ g={name:d.group,items:[]}; groups.push(g); } g.items.push(d); });
+  var all=[]; PBCourt.SITUATIONS.forEach(function(d){ if(!byKey[d.key]) return; var g=all.filter(function(x){return x.name===d.group;})[0]; if(!g){ g={name:d.group,items:[]}; all.push(g); } g.items.push(d); });
+  if(fresh) S.sitG='';
+  $('sitGroups').classList.toggle('hide',all.length<2); $('sitGroups').innerHTML=['All'].concat(all.map(function(g){return g.name;})).map(function(nm){ return '<button class="chip" type="button" data-sg="'+esc(nm)+'" aria-pressed="'+((S.sitG||'All')===nm)+'">'+esc(nm)+'</button>'; }).join('');
+  var groups=all.filter(function(g){ return !S.sitG||S.sitG==='All'||g.name===S.sitG; });
   $('sitList').innerHTML=groups.length?groups.map(function(g){ return '<h3 class="sec" style="font-family:Oswald,sans-serif;font-size:14px;letter-spacing:1.8px;text-transform:uppercase;color:#840036;margin:24px 0 2px">'+esc(g.name)+'</h3>'+g.items.map(function(d){ var list=byKey[d.key]; return '<div class="sitrow"><div class="sitlab">'+esc(d.label)+'<small>'+list.length+(list.length===1?' play':' plays')+'</small></div><div class="grid">'+cards(list)+'</div></div>'; }).join(''); }).join(''):'<div class="empty" style="margin-top:18px"><h3>No plays tagged yet</h3><p>Coach tags plays with situations in the editor. Check back soon.</p></div>';
 }
 function egLeaves(side){ return PBCourt.ENDGAME_LEAVES.filter(function(l){ var v=(S.endgame||{})[l.key]; return l.side===side&&v&&((v.play_ids||[]).length||v.note); }); }
@@ -766,6 +775,7 @@ $('eg').addEventListener('click',function(e){ var b;
   if((b=e.target.closest('[data-open]'))) openPlay(b.getAttribute('data-open'));
 });
 $('sitList').addEventListener('click',function(e){ var b=e.target.closest('[data-open]'); if(b) openPlay(b.getAttribute('data-open')); });
+$('sitGroups').addEventListener('click',function(e){ var b=e.target.closest('[data-sg]'); if(!b) return; S.sitG=b.getAttribute('data-sg'); showSits(false); });
 $('sitCard').addEventListener('click',function(){ history.pushState({sit:1},'','#situations'); showSits(true); });
 $('sitBack').addEventListener('click',function(){ if(history.state&&history.state.sit) history.back(); else { history.replaceState(null,'',location.pathname+location.search); closePlan(); } });
 /* ── glossary ── */
@@ -932,7 +942,27 @@ function renderCats(){
   var c=cats(); if(c.indexOf(S.cat)<0) S.cat='All';
   $('cats').innerHTML=c.length>2? c.map(function(k){ return '<button class="chip" type="button" data-cat="'+esc(k)+'" aria-pressed="'+(k===S.cat)+'">'+esc(k)+'</button>'; }).join('') : '';
 }
-$('seg').addEventListener('click',function(e){ var b=e.target.closest('[data-kind]'); if(!b) return; S.kind=b.getAttribute('data-kind'); S.cat='All'; renderSeg(); renderCats(); renderGrid(); });
+$('seg').addEventListener('click',function(e){ var b=e.target.closest('[data-kind]'); if(!b) return; S.kind=b.getAttribute('data-kind'); S.cat='All'; S.sit=''; renderSeg(); renderCats(); renderGrid(); });
+/* situation chips: tap "Box and one" and see every play we run for it */
+function sitLabel(k){ var d=PBCourt.SITUATIONS.filter(function(x){return x.key===k;})[0]; return d?d.label:k; }
+function renderSitChips(){
+  var el=$('sitChips'); if(S.kind!=='ours'){ el.classList.add('hide'); return; }
+  var n={}; S.plays.forEach(function(p){ if(kindOf(p)!=='ours') return; (p.situations||[]).forEach(function(k){ n[k]=(n[k]||0)+1; }); });
+  var list=PBCourt.SITUATIONS.filter(function(d){ return n[d.key]; });
+  if(S.sit&&!n[S.sit]) S.sit='';
+  el.classList.toggle('hide',!list.length); if(!list.length) return;
+  el.innerHTML='<span class="k">When</span>'+list.map(function(d){ return '<button class="chip" type="button" data-sit="'+d.key+'" aria-pressed="'+(S.sit===d.key)+'">'+esc(d.label)+' <small>'+n[d.key]+'</small></button>'; }).join('');
+}
+$('sitChips').addEventListener('click',function(e){ var b=e.target.closest('[data-sit]'); if(!b) return; var k=b.getAttribute('data-sit'); S.sit=S.sit===k?'':k; renderSitChips(); renderGrid(); });
+/* tonight's plays: the handful coach starred for this game */
+function renderTonight(){
+  var T=S.tonight, box=$('tonightBox'), byId={}; S.plays.forEach(function(p){ byId[p.id]=p; });
+  var list=T&&T.on?(T.play_ids||[]).map(function(id){ return byId[id]; }).filter(Boolean):[];
+  box.classList.toggle('hide',!list.length); if(!list.length) return;
+  $('tonightSub').textContent=[T.label,T.date?fmtDay(T.date):''].filter(Boolean).join(' · ')||'Know these cold before tip.';
+  $('tonightGrid').innerHTML=cards(list);
+}
+$('tonightGrid').addEventListener('click',function(e){ var b=e.target.closest('[data-open]'); if(b) openPlay(b.getAttribute('data-open')); });
 $('cats').addEventListener('click',function(e){ var b=e.target.closest('[data-cat]'); if(!b) return; S.cat=b.getAttribute('data-cat'); renderCats(); renderGrid(); });
 $('q').addEventListener('input',function(){ S.q=this.value.trim().toLowerCase(); renderGrid(); });
 function isNew(p){ var t=Date.parse(p.updated||''); return t && Date.now()-t<6*864e5; }
@@ -955,9 +985,10 @@ $('statsView').addEventListener('click',function(e){ var b=e.target.closest('[da
   box.innerHTML='<table class="stt"><thead><tr><th>Player</th>'+cols.map(function(k){return '<th class="n">'+STAT_LAB[k]+'</th>';}).join('')+'<th class="n">FG</th><th class="n">3PT</th><th class="n">FT</th></tr></thead><tbody>'+(g.lines||[]).slice().sort(function(a,b){return (b.pts||0)-(a.pts||0);}).map(function(l){ return '<tr'+(l.player_id===S.me.id?' class="me"':'')+'><td>'+(l.num?'<span class="muted">#'+esc(l.num)+'</span> ':'')+esc(l.name)+'</td>'+cols.map(function(k){return '<td class="n">'+(l[k]||0)+'</td>';}).join('')+'<td class="n">'+(l.fgm||0)+'-'+(l.fga||0)+'</td><td class="n">'+(l.tpm||0)+'-'+(l.tpa||0)+'</td><td class="n">'+(l.ftm||0)+'-'+(l.fta||0)+'</td></tr>'; }).join('')+'</tbody></table>'; box.classList.remove('hide'); });
 function renderGrid(){
   if(S.kind==='hustle'||S.kind==='stats') return;
-  var list=S.plays.filter(function(p){ return inKind(p)&&(S.cat==='All'||catOf(p)===S.cat)&&(!S.q||(p.name+' '+catOf(p)+' '+(p.notes||'')).toLowerCase().indexOf(S.q)>=0); });
+  renderSitChips();
+  var list=S.plays.filter(function(p){ return inKind(p)&&(S.cat==='All'||catOf(p)===S.cat)&&(!S.sit||(p.situations||[]).indexOf(S.sit)>=0)&&(!S.q||(p.name+' '+catOf(p)+' '+(p.notes||'')+' '+(p.situations||[]).map(sitLabel).join(' ')).toLowerCase().indexOf(S.q)>=0); });
   if(!S.plays.filter(inKind).length){ $('grid').innerHTML='<div class="empty" style="grid-column:1/-1"><h3>'+(S.kind==='scout'?'No scouting plays yet':'No plays yet')+'</h3><p>Your coach hasn\'t posted any yet. Check back soon.</p></div>'; return; }
-  if(!list.length){ $('grid').innerHTML='<div class="empty" style="grid-column:1/-1"><h3>No matches</h3><p>Try a different search.</p></div>'; return; }
+  if(!list.length){ $('grid').innerHTML='<div class="empty" style="grid-column:1/-1"><h3>No matches</h3><p>'+(S.sit?'Nothing tagged for '+esc(sitLabel(S.sit))+' in this category.':'Try a different search.')+'</p></div>'; return; }
   var wm=wmLines();
   $('grid').innerHTML=list.map(function(p){
     var steps=Math.max(0,(p.frames||[]).length-1);

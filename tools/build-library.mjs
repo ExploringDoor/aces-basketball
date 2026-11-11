@@ -664,6 +664,48 @@ PACKS.push(
   { key: 'specials', name: 'Specials', blurb: 'Technical foul free throws, the held ball set, the last second heave, the fake timeout, and the two jump ball plays.', plays: ['technical-foul-free-throws', 'held-ball-arrow-set', 'last-second-heave', 'fake-timeout-backdoor', 'jump-ball-tip-to-the-wing', 'jump-ball-safe'] }
 );
 
+
+/* ================================================================
+   BUILD MY PLAYBOOK: the wizard. Six answers pick a starter playbook from the plays above.
+   Every key is checked against PLAYS at build time.
+================================================================ */
+const WIZARD = {
+  questions: [
+    { key: 'defense', q: 'What do you see most from the other team?', opts: [['man', 'Man to man'], ['zone', 'Zone'], ['both', 'A mix of both']] },
+    { key: 'post', q: 'Do you have a post player who can score inside?', opts: [['yes', 'Yes'], ['no', 'Not really']] },
+    { key: 'press', q: 'How often do teams press you?', opts: [['often', 'Most games'], ['some', 'Now and then'], ['rare', 'Almost never']] },
+    { key: 'star', q: 'Your best player is a', opts: [['guard', 'Guard'], ['wing', 'Wing'], ['big', 'Big']] },
+    { key: 'base_d', q: 'Your base defense', opts: [['man', 'Man to man'], ['zone', '2-3 zone'], ['press', 'We press']] },
+    { key: 'level', q: 'Level', opts: [['youth', 'Youth, 5th and 6th'], ['ms', 'Middle school'], ['jv', 'JV or freshman'], ['varsity', 'Varsity or club']] },
+  ],
+  // how many plays each level gets, and the actions youth teams skip
+  caps: { youth: 12, ms: 16, jv: 20, varsity: 26 },
+  skip_youth: ['spain-pick-and-roll', 'elevator-doors', 'chicago', 'princeton-chin', 'iverson-cut', 'hammer', 'ram-screen', 'horns-twist', 'box-elevator', 'need-three-double-drag', 'pistol'],
+  // rules, in priority order. when: every listed answer must match (array = any of). add: keys, highest priority first.
+  rules: [
+    { why: 'Every team needs a baseline and a sideline play', add: ['box-up', 'line-lob', 'sideline-box', 'sideline-stack'] },
+    { why: 'Late game basics', add: ['need-three-flare-ato', 'need-two-high-ball-screen', 'last-shot-tied-spread', 'up-late-four-corners', 'free-throw-need-the-miss', 'up-three-foul-before-the-shot'] },
+    { when: { defense: ['man', 'both'] }, why: 'Man to man offense', add: ['horns-flare', 'horns-dive-and-pop', 'five-out-cut-and-fill', 'four-out-drive-and-kick', 'ucla-cut', 'flex'] },
+    { when: { defense: ['zone', 'both'] }, why: 'Zone offense', add: ['zone-overload', 'zone-high-low', 'zone-short-corner', '1-2-2-zone-attack', 'runner-through-the-zone', 'box-vs-zone', 'zone-blob-line'] },
+    { when: { post: 'yes' }, why: 'You have a post, so get him the ball', add: ['horns-punch', 'high-low', 'four-out-post-entry', 'post-split', 'box-big-lob'] },
+    { when: { post: 'no' }, why: 'No post, so play with space and movement', add: ['five-out-dribble-handoff', 'five-out-backdoor', 'spread-pick-and-roll', 'dribble-drive-loop', 'motion-weak'] },
+    { when: { press: 'often' }, why: 'Teams press you, so the whole press break', add: ['press-break-four-across', 'press-break-one-up-two-back', 'press-break-sideline-trap-escape', 'press-break-middle-flash', 'press-break-long-pass', 'sideline-backcourt-safe'] },
+    { when: { press: 'some' }, why: 'A press break for when it comes', add: ['press-break-four-across', 'press-break-sideline-trap-escape'] },
+    { when: { press: 'rare' }, why: 'One safe press break', add: ['press-break-four-across'] },
+    { when: { star: 'guard' }, why: 'Your best player is a guard: ball screens and gets', add: ['elbow-get', 'drag-screen', 'need-two-iso-at-the-top', 'pistol', 'spain-pick-and-roll'] },
+    { when: { star: 'wing' }, why: 'Your best player is a wing: screens to get him open', add: ['floppy', 'wide-pin-down', 'horns-stagger', 'stagger-away', 'hammer'] },
+    { when: { star: 'big' }, why: 'Your best player is a big: lobs and post ups', add: ['horns-punch', 'high-low', 'line-lob', 'box-big-lob', 'sideline-back-screen-lob'] },
+    { when: { base_d: 'man' }, why: 'Man to man defense rules', add: ['shell-help-side', 'ice-the-side-pick-and-roll', 'deny-the-post'] },
+    { when: { base_d: 'zone' }, why: 'The 2-3 zone', add: ['2-3-zone-slides', '2-3-zone-vs-high-post', '2-3-trap-the-corner'] },
+    { when: { base_d: 'press' }, why: 'Your press', add: ['diamond-press-1-2-1-1', '2-2-1-zone-press', 'press-after-a-made-free-throw', 'run-and-jump'] },
+    { when: { level: ['jv', 'varsity'] }, why: 'Quick hitters and counters for older players', add: ['chicago', 'iverson-cut', 'zipper', 'two-for-one', 'against-pressure-backdoor-series'] },
+    { when: { level: 'varsity' }, why: 'Varsity extras', add: ['elevator-doors', 'against-box-and-one-screen-for-the-chased', 'against-the-half-court-trap', 'seven-seconds-drag-to-a-shot', 'attack-the-bonus'] },
+    { when: { level: ['youth', 'ms'] }, why: 'Simple and repeatable', add: ['jump-ball-safe', 'five-out-cut-and-fill', 'stack-vs-man-pop-and-dive'] },
+  ],
+  // the end of game tree gets filled from these packs, using whichever of their plays made the cut
+  endgame_from: ['late-down3', 'late-down12', 'late-tied', 'protect-lead', 'close-it-out'],
+};
+
 /* ---------- validate and write ---------- */
 const keys = new Set();
 const out = [];
@@ -678,9 +720,12 @@ for (const p of PLAYS) {
 }
 for (const pk of PACKS) for (const k of pk.plays) if (!keys.has(k)) throw new Error('pack ' + pk.key + ' names unknown play ' + k);
 for (const pk of PACKS) for (const leaf of Object.values(pk.endgame || {})) for (const k of leaf.play_keys) if (!keys.has(k)) throw new Error('pack ' + pk.key + ' endgame names unknown play ' + k);
+for (const r of WIZARD.rules) for (const k of r.add) if (!keys.has(k)) throw new Error('wizard rule "' + r.why + '" names unknown play ' + k);
+for (const k of WIZARD.skip_youth) if (!keys.has(k)) throw new Error('wizard skip_youth names unknown play ' + k);
+for (const k of WIZARD.endgame_from) if (!PACKS.find((p) => p.key === k)) throw new Error('wizard endgame_from names unknown pack ' + k);
 const js = `/* Premade play library and scenario packs for the coach board ("Add from the library").
    GENERATED by tools/build-library.mjs, do not edit by hand. ${out.length} plays, ${PACKS.length} packs. */
-window.PB_LIBRARY = ${JSON.stringify({ plays: out, packs: PACKS })};
+window.PB_LIBRARY = ${JSON.stringify({ plays: out, packs: PACKS, wizard: WIZARD })};
 `;
 writeFileSync(new URL('../public/playbook-library.js', import.meta.url), js);
 const byCat = {}; out.forEach((p) => (byCat[p.category] = (byCat[p.category] || 0) + 1));

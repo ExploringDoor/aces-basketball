@@ -429,7 +429,13 @@ tr:last-child td{border-bottom:0}
 .run-list .it.now{background:var(--mrn-50);border:1px solid var(--mrn-100);font-weight:700}
 .run-list .it .m{color:var(--ink-3);font-size:13px}
 /* print */
-#printPlan,#printBench,#printReport{display:none}
+#printPlan,#printBench,#printReport,#printCards,#printPocket{display:none}
+@media print{ #printCards{display:block!important;font-family:Arial,Helvetica,sans-serif;color:#111} .pcd{page-break-after:always;padding:0 6px} .pcd:last-child{page-break-after:auto}
+  .pcd .hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #840036;padding-bottom:6px;margin-bottom:10px} .pcd .hd .k{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#555} .pcd h1{font-size:24px;margin:0;color:#840036} .pcd .hd img{height:40px}
+  .pcd .fr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px} .pcd .fr.two{grid-template-columns:1fr 1fr} .pcd .f{break-inside:avoid} .pcd .f svg{width:100%;height:auto;border:1px solid #ddd;border-radius:6px} .pcd .f .n{font-size:11px;line-height:1.35;margin-top:3px} .pcd .f .n b{color:#840036;margin-right:4px}
+  .pcd .notes{font-size:12px;line-height:1.45;margin:10px 0 0;white-space:pre-wrap} .pcd .tips{background:#fbf5e4;border-left:3px solid #c9a44a;padding:6px 10px;margin-top:10px;font-size:11.5px} .pcd .tips b{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#555;margin-bottom:3px} .pcd .tips ol{margin:0;padding-left:18px} .pcd .sits{color:#555;font-size:10.5px;margin-top:6px} .pcd .foot{font-size:9px;color:#777;text-align:center;margin-top:10px}
+  #printPocket{display:block!important;font-family:Arial,Helvetica,sans-serif;color:#111;padding:0 6px;font-size:11px} #printPocket .pk{display:grid;grid-template-columns:1fr 1fr;gap:14px} #printPocket h1{font-size:18px;margin:0 0 6px;color:#840036;border-bottom:3px solid #840036;padding-bottom:4px} #printPocket h2{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#555;margin:10px 0 4px;border-bottom:1px solid #ddd}
+  #printPocket .ln{display:flex;gap:6px;padding:3px 0;border-bottom:1px dotted #ddd} #printPocket .ln span{width:118px;flex:none;color:#444} #printPocket .ln b{font-weight:600} #printPocket .ln i{color:#840036;font-style:normal;font-weight:700;margin-right:4px} #printPocket .sm{color:#777;font-size:9.5px;font-weight:400} #printPocket .foot{font-size:9px;color:#777;text-align:center;margin-top:10px;grid-column:1/-1} }
 .rep-page{font-family:Arial,Helvetica,sans-serif;color:#111;font-size:12px} .rep-head{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #840036;padding-bottom:8px;margin-bottom:12px} .rep-head img{height:48px} .rep-head .k{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#555} .rep-head h1{font-size:24px;margin:0;color:#840036} .rep-head .sub{color:#555;font-size:12px}
 .rep-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px} .rep-box{border:1px solid #ddd;border-radius:8px;padding:10px 12px;margin-bottom:12px;break-inside:avoid} .rep-box h3{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#555;margin:0 0 8px}
 .rep-tiles{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px} .rep-tiles div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted #ddd;padding:3px 0} .rep-tiles span{color:#555} .rep-tiles b{font-size:13px} .rep-tiles small{font-weight:400;color:#777;font-size:10px}
@@ -498,6 +504,15 @@ tr:last-child td{border-bottom:0}
 #libView.open{display:flex}
 .lib-top{background:#fff;border-bottom:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .lib-top .sp{flex:1}.lib-count{color:var(--ink-3);font-size:13.5px;font-weight:600}
+.lib-opp{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13.5px;color:var(--ink-2)} .lib-opp .inp{width:200px;padding:7px 10px}
+.lib-wiz{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:18px;box-shadow:var(--sh)}
+.lib-wiz h3{margin:0 0 4px;font-size:20px} .wiz-q{margin:14px 0 0} .wiz-q .lab{font-weight:700;font-size:14px;margin-bottom:6px} .wiz-q .chips{display:flex;gap:8px;flex-wrap:wrap}
+.wiz-res{margin-top:16px;border-top:1px solid var(--line);padding-top:14px} .wiz-res .sum{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:6px} .wiz-group{margin:12px 0 0} .wiz-group>b{display:block;font-size:13px;color:var(--ink-2);margin-bottom:4px}
+.wiz-item{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px dotted var(--line)} .wiz-item .dg{width:54px;flex:none} .wiz-item .dg svg{width:54px;height:auto;display:block} .wiz-item .nm{flex:1;font-weight:600;font-size:14px} .wiz-item .nm small{display:block;color:var(--ink-3);font-size:12.5px;font-weight:400}
+.tonight{background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:14px;padding:12px 16px;margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;box-shadow:var(--sh)}
+.tonight .k{font-family:Oswald,sans-serif;letter-spacing:1.4px;text-transform:uppercase;font-size:13px;color:var(--gold-d)} .tonight .list{display:flex;gap:6px;flex-wrap:wrap;flex:1;min-width:200px} .tonight .list span{background:var(--gold-50);border:1px solid #efe2bd;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:600;display:inline-flex;gap:6px;align-items:center} .tonight .list span button{border:0;background:none;cursor:pointer;color:var(--ink-3);font-size:15px;padding:0;line-height:1}
+.tonight .inp{padding:7px 10px} .tonight .inp.lab{width:190px} .tonight .inp.date{width:150px}
+.pc .acts [data-star][aria-pressed="true"]{background:var(--gold-50);border-color:#e6d49a;color:var(--gold-d)}
 .lib-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 380px}
 .lib-main{overflow-y:auto;padding:16px 18px 40px}
 .lib-side{overflow-y:auto;border-left:1px solid var(--line);background:#fff;padding:16px}
@@ -526,6 +541,7 @@ tr:last-child td{border-bottom:0}
   <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 4.5h3.5v15H7zM13.5 4.5H17v15h-3.5z" fill="currentColor"/></symbol>
   <symbol id="i-prev" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-next" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.8l6.1-.7z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16v4zM13 7l4 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -581,9 +597,10 @@ tr:last-child td{border-bottom:0}
     <section class="panel" id="p-plays">
       <div class="hero"><div class="row">
         <div><div class="k">Team playbook</div><div class="big" id="heroN">0 plays</div><div class="of" id="heroSub"></div></div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="chip" id="openChip"><span class="dot"></span><span></span></span><button class="btn lg" type="button" id="plibBtn">Add from the library</button><button class="btn gold lg" type="button" id="newPlayBtn">Draw a new play</button></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="chip" id="openChip"><span class="dot"></span><span></span></span><button class="btn" type="button" id="printCardsBtn">Print play cards</button><button class="btn lg" type="button" id="plibBtn">Add from the library</button><button class="btn gold lg" type="button" id="newPlayBtn">Draw a new play</button></div>
       </div></div>
       <div class="filters"><div class="chips" id="playCats"></div><input class="search" id="playQ" type="search" placeholder="Search plays" aria-label="Search plays"></div>
+      <div class="tonight hide" id="tonightBar"></div>
       <div class="pgrid" id="playGrid"></div>
       <div id="archivedWrap" class="hide" style="margin-top:28px"><div class="sec">Archived plays</div><div class="pgrid" id="archGrid"></div></div>
     </section>
@@ -591,7 +608,7 @@ tr:last-child td{border-bottom:0}
     <section class="panel" id="p-scout">
       <div class="hero" style="background:linear-gradient(135deg,#33333d 0%,#1d1d24 100%)"><div class="row">
         <div><div class="k" style="color:#c9c9d2">Scouting</div><div class="big" id="scoutN">0 opponent plays</div><div class="of" style="color:#c9c9d2">Draw up what the other team runs. Players study it before the game.</div></div>
-        <button class="btn gold lg" type="button" id="newScoutBtn">Draw an opponent play</button>
+        <button class="btn lg" type="button" id="slibBtn">Add from the library</button><button class="btn gold lg" type="button" id="newScoutBtn">Draw an opponent play</button>
       </div></div>
       <div class="filters"><div class="chips" id="scoutCats"></div><input class="search" id="scoutQ" type="search" placeholder="Search" aria-label="Search scouting plays"></div>
       <div class="pgrid" id="scoutGrid"></div>
@@ -636,7 +653,7 @@ tr:last-child td{border-bottom:0}
       <div class="hero"><div class="row">
         <div><div class="k">Situations and team language</div><div class="big">End of game, special situations, our words</div><div class="of">Tag plays with the moment they are for, fill in the end of game tree once, and give the guys a glossary of what you yell. Players get a Situations page, a tap through end of game plan, and a glossary quiz.</div></div>
       </div></div>
-      <div class="card"><div class="card-head"><div><h2>End of game</h2><div class="sub">Who has the ball, what's the score, what do we run. Players tap through it; it also prints on the bench card.</div></div><button class="btn primary" type="button" id="egSave">Save end of game</button></div>
+      <div class="card"><div class="card-head"><div><h2>End of game</h2><div class="sub">Who has the ball, what's the score, what do we run. Players tap through it; it also prints on the bench card.</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="pocketBtn">Print the pocket card</button><button class="btn primary" type="button" id="egSave">Save end of game</button></div></div>
         <div class="eg-ed" id="egEd"></div></div>
       <div class="grid2">
         <div class="card"><div class="card-head"><div><h2>Situations library</h2><div class="sub">Which plays are tagged for what. Tag a play in the editor under Situations.</div></div></div><div id="sitOverview"></div></div>
@@ -854,6 +871,8 @@ tr:last-child td{border-bottom:0}
 <div id="printPlan"></div>
 <div id="printBench"></div>
 <div id="printReport"></div>
+<div id="printCards"></div>
+<div id="printPocket"></div>
 
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="mbox" id="mbox"><div class="mh"><h3 id="mTitle"></h3><button class="iconbtn" id="mClose" type="button" aria-label="Close"><svg><use href="#i-x"/></svg></button></div><div class="mb" id="mBody"></div><div class="mf" id="mFoot"></div></div>
@@ -861,10 +880,11 @@ tr:last-child td{border-bottom:0}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <div id="libView" role="dialog" aria-label="Play library" aria-modal="true">
-  <div class="lib-top"><div><div class="k">Play library</div><h2 style="margin:0">Premade plays and scenarios</h2></div><div class="sp"></div><span class="lib-count" id="libCount"></span><button class="btn primary hide" type="button" id="libAddSel">Add selected</button><button class="btn" type="button" id="libClose">Close</button></div>
+  <div class="lib-top"><div><div class="k">Play library</div><h2 style="margin:0">Premade plays and scenarios</h2></div><div class="sp"></div><span class="lib-count" id="libCount"></span><label class="lib-opp hide" id="libOppWrap">Opponent <input class="inp" id="libOpp" list="libOppList" placeholder="Team name" maxlength="60" autocomplete="off"><datalist id="libOppList"></datalist></label><button class="btn gold hide" type="button" id="libWizBtn">Build my playbook</button><button class="btn primary hide" type="button" id="libAddSel">Add selected</button><button class="btn" type="button" id="libClose">Close</button></div>
   <div class="lib-body">
     <div class="lib-main">
-      <div class="lib-packs"><div class="k" style="margin-bottom:8px">Scenario packs</div><p class="help" style="margin:0 0 10px">A pack adds a set of plays as drafts and fills in the end of game tree for those situations. You can edit or delete any of it afterward.</p><div class="lib-packgrid" id="libPacks"></div></div>
+      <div class="lib-wiz hide" id="libWiz"></div>
+      <div class="lib-packs" id="libPackWrap"><div class="k" style="margin-bottom:8px">Scenario packs</div><p class="help" style="margin:0 0 10px">A pack adds a set of plays as drafts and fills in the end of game tree for those situations. You can edit or delete any of it afterward.</p><div class="lib-packgrid" id="libPacks"></div></div>
       <div class="filters" style="margin-top:18px"><div class="chips" id="libCats"></div><input class="search" id="libQ" type="search" placeholder="Search the library" aria-label="Search the library"></div>
       <div class="grid" id="libGrid"></div>
     </div>
@@ -873,7 +893,7 @@ tr:last-child td{border-bottom:0}
 </div>
 <script src="/playbook-court.js?v=2"></script>
 <script src="/playbook-drills.js"></script>
-<script src="/playbook-library.js?v=2"></script>
+<script src="/playbook-library.js?v=3"></script>
 <script>
 (function(){
 var KEY_STORE='dba_admin_key', DEMO=/[?&]demo=1/.test(location.search);
@@ -966,6 +986,7 @@ function demoApi(action,b){
     calls:[{id:'c1',play_id:'demo1',play_name:'Horns Flare',result:'score',opponent:'Radnor',date:new Date(Date.now()-3*864e5).toISOString().slice(0,10),quarter:'1',at:new Date(Date.now()-3*864e5).toISOString()},{id:'c2',play_id:'demo1',play_name:'Horns Flare',result:'miss',opponent:'Radnor',date:new Date(Date.now()-3*864e5).toISOString().slice(0,10),quarter:'2',at:new Date(Date.now()-3*864e5).toISOString()},{id:'c3',play_id:'demo2',play_name:'Box Up',result:'foul',opponent:'Radnor',date:new Date(Date.now()-3*864e5).toISOString().slice(0,10),quarter:'4',at:new Date(Date.now()-3*864e5).toISOString()}],
     terms:[{id:'t1',term:'Fist',means:'Horns Flare. Our go to set against man.',kind:'call',play_id:'demo1'},{id:'t2',term:'Ice',means:'Force the ball handler to the baseline on a side ball screen. Big stays low.',kind:'defense'},{id:'t3',term:'Red',means:'Full court man press after a made free throw.',kind:'call'}],
     endgame:{ball_down3:{play_ids:['demo1'],note:'Flare for 1. If they switch it, 5 seals.'},def_up3:{play_ids:[],note:'Foul before the shot, under 5 seconds only.',foul:true}},
+    tonight:{on:true,play_ids:['demo1','demo2'],label:'vs Radnor',date:new Date(Date.now()+3*864e5).toISOString().slice(0,10)},
     drills:[{id:'dmine1',name:'Coach D closeout ladder',category:'Defense',minutes:8,players:'6+',equipment:'1 ball',setup:'Three cones from the block to the three point line.',run:'Close out to each cone in order, chopping the feet, then live 1 on 1 from the last one.',points:['Hands high on the last two steps','Stop on balance, no flying by'],variations:'Add a shot fake at the last cone.',created:new Date().toISOString()}],
     games:[{id:'g1',date:new Date(Date.now()-3*864e5).toISOString().slice(0,10),opponent:'Conestoga',where:'home',us:61,them:55,kind:'game',source:'hudl',lines:[{player_id:'demo_me',name:'Demo Player',num:'5',min:28,pts:19,fgm:7,fga:12,tpm:2,tpa:5,ftm:3,fta:4,oreb:1,dreb:6,reb:7,ast:4,stl:2,blk:0,to:3,pf:2},{player_id:'d2',name:'Chris Lee',num:'24',min:30,pts:14,fgm:5,fga:11,tpm:1,tpa:3,ftm:3,fta:3,oreb:2,dreb:5,reb:7,ast:2,stl:1,blk:1,to:2,pf:3},{player_id:'d3',name:'Marcus Hall',num:'13',min:26,pts:11,fgm:4,fga:9,tpm:3,tpa:6,ftm:0,fta:0,oreb:0,dreb:3,reb:3,ast:5,stl:3,blk:0,to:1,pf:1},{player_id:'d5',name:'Sam Oduya',num:'35',min:22,pts:9,fgm:4,fga:6,tpm:0,tpa:0,ftm:1,fta:2,oreb:4,dreb:6,reb:10,ast:0,stl:0,blk:3,to:2,pf:4},{player_id:'',name:'Will Parrish',num:'2',min:18,pts:8,fgm:3,fga:7,tpm:2,tpa:4,ftm:0,fta:0,oreb:0,dreb:2,reb:2,ast:1,stl:1,blk:0,to:1,pf:2}]},{id:'g2',date:new Date(Date.now()-7*864e5).toISOString().slice(0,10),opponent:'Harriton',where:'away',us:48,them:52,kind:'game',source:'manual',lines:[{player_id:'demo_me',name:'Demo Player',num:'5',min:30,pts:12,fgm:4,fga:14,tpm:1,tpa:6,ftm:3,fta:4,oreb:0,dreb:4,reb:4,ast:6,stl:1,blk:0,to:4,pf:3},{player_id:'d2',name:'Chris Lee',num:'24',min:29,pts:16,fgm:6,fga:12,tpm:2,tpa:4,ftm:2,fta:2,oreb:1,dreb:4,reb:5,ast:1,stl:2,blk:0,to:1,pf:2},{player_id:'d3',name:'Marcus Hall',num:'13',min:25,pts:6,fgm:2,fga:8,tpm:2,tpa:7,ftm:0,fta:0,oreb:0,dreb:2,reb:2,ast:3,stl:1,blk:0,to:2,pf:2},{player_id:'d5',name:'Sam Oduya',num:'35',min:24,pts:10,fgm:5,fga:8,tpm:0,tpa:0,ftm:0,fta:2,oreb:3,dreb:7,reb:10,ast:1,stl:0,blk:2,to:3,pf:4}]}],
     notes:[{id:'n1',player_id:'d4',player_name:'Jaden Price',kind:'injury',text:'Ankle, limited for the week',date:new Date(Date.now()-2*864e5).toISOString().slice(0,10),created:new Date().toISOString()}],
@@ -982,6 +1003,7 @@ function demoApi(action,b){
   else if(action==='delete_call') demo.calls=demo.calls.filter(function(x){return x.id!==b.id;});
   else if(action==='send_digest') r.sent='coach@example.com';
   else if(action==='set_board'){}
+  else if(action==='set_tonight'){ demo.tonight=b.tonight; r.tonight=b.tonight; }
   else if(action==='set_goals'){ demo.goals=b.goals; r.goals=b.goals; }
   else if(action==='set_lineups'){ demo.lineups=b.lineups; r.lineups=b.lineups; }
   else if(action==='set_endgame'){ demo.endgame=b.leaves; r.leaves=b.leaves; }
@@ -1221,7 +1243,49 @@ function renderCalls(){
 }
 $('clOpp').addEventListener('change',renderCalls);
 // One sheet for the bench: our calls with diagrams and signals, what they run, matchups, fouls and timeouts.
-function clearPrint(){ ['printPlan','printBench','printReport'].forEach(function(id){ $(id).innerHTML=''; }); }
+function clearPrint(){ ['printPlan','printBench','printReport','printCards','printPocket'].forEach(function(id){ $(id).innerHTML=''; }); }
+/* play cards: one page per play, every step with its note, then the notes and coaching points */
+function printCards(list){
+  if(!list.length) return toast('No plays to print.',true);
+  var h=list.map(function(p){ var v=viewPlay(p), fr=p.frames||[], n=fr.length, cls=n<=4?' two':'';
+    return '<div class="pcd"><div class="hd"><div><div class="k">'+esc(p.category||'')+(p.court==='full'?' · Full court':'')+((p.kind||'ours')==='scout'&&p.opponent?' · '+esc(p.opponent):'')+'</div><h1>'+esc(p.name)+'</h1></div><img src="/LM_Logo.png" alt=""></div>'+
+      '<div class="fr'+cls+'">'+fr.map(function(f,i){ return '<div class="f">'+PBCourt.diagram(v,i,{noNames:true})+'<div class="n"><b>'+(i===0?'Setup':'Step '+i)+'</b>'+esc(f.note||'')+'</div></div>'; }).join('')+'</div>'+
+      (p.notes?'<p class="notes">'+esc(p.notes)+'</p>':'')+((p.tips||[]).length?'<div class="tips"><b>Coaching points</b><ol>'+p.tips.map(function(t){ return '<li>'+esc(t)+'</li>'; }).join('')+'</ol></div>':'')+
+      ((p.situations||[]).length?'<div class="sits">When: '+p.situations.map(function(k){ var d=PBCourt.SITUATIONS.filter(function(x){return x.key===k;})[0]; return esc(d?d.label:k); }).join(' · ')+'</div>':'')+
+      '<div class="foot">Aces playbook · coaches only</div></div>'; }).join('');
+  clearPrint(); $('printCards').innerHTML=h; setTimeout(function(){ window.print(); },120);
+}
+$('printCardsBtn').addEventListener('click',function(){
+  var live=plays('ours').filter(function(p){return !p.archived;}), list=live.filter(function(p){ return (S.cat.plays==='All'||p.category===S.cat.plays)&&(!S.q.plays||(p.name+' '+p.category).toLowerCase().indexOf(S.q.plays)>=0); });
+  if(!list.length) return toast('No plays to print.',true);
+  confirmBox('Print play cards','One page per play, '+list.length+(list.length===1?' play':' plays')+((S.cat.plays!=='All'||S.q.plays)?' (the current filter)':'')+'. Each card has every step with its note, then the coaching points.','Print',function(){ printCards(list); });
+});
+/* pocket card: the end of game tree and every tagged situation on one sheet, for the bench */
+function pocketCard(){
+  var byId={}; (S.data.plays||[]).forEach(function(p){ byId[p.id]=p; }); var EGD=S.data.endgame||{};
+  var SIDES=[['ball','We have the ball'],['def','They have the ball'],['inb','We are inbounding']];
+  var eg=SIDES.map(function(sd){ var leaves=PBCourt.ENDGAME_LEAVES.filter(function(l){ var v=EGD[l.key]; return l.side===sd[0]&&v&&((v.play_ids||[]).length||v.note); }); if(!leaves.length) return ''; return '<h2>'+sd[1]+'</h2>'+leaves.map(function(l){ var v=EGD[l.key], names=(v.play_ids||[]).map(function(id){ return byId[id]?byId[id].name:''; }).filter(Boolean); return '<div class="ln"><span>'+esc(l.label)+'</span><b>'+(l.key==='def_up3'?'<i>'+(v.foul?'FOUL':'Defend')+'</i>':'')+esc(names.join(' / '))+(v.note?'<div class="sm">'+esc(v.note)+'</div>':'')+'</b></div>'; }).join(''); }).join('');
+  var byKey={}; plays('ours').forEach(function(p){ if(p.archived) return; (p.situations||[]).forEach(function(k){ (byKey[k]=byKey[k]||[]).push(p.name); }); });
+  var groups={}, order=[]; PBCourt.SITUATIONS.forEach(function(d){ if(!byKey[d.key]) return; if(!groups[d.group]){ groups[d.group]=[]; order.push(d.group); } groups[d.group].push('<div class="ln"><span>'+esc(d.label)+'</span><b>'+esc(byKey[d.key].join(' / '))+'</b></div>'); });
+  var sits=order.map(function(g){ return '<h2>'+esc(g)+'</h2>'+groups[g].join(''); }).join('');
+  if(!eg&&!sits) return toast('Fill in the end of game tree or tag some plays with situations first.',true);
+  clearPrint(); $('printPocket').innerHTML='<h1>Pocket card</h1><div class="pk"><div>'+(eg||'<div class="sm">The end of game tree is empty.</div>')+'</div><div>'+sits+'</div><div class="foot">Fold it once and keep it on the bench. Coaches only.</div></div>';
+  setTimeout(function(){ window.print(); },120);
+}
+$('pocketBtn').addEventListener('click',pocketCard);
+/* tonight's plays: star a handful before a game, players see them on top of the playbook */
+function tonightState(){ var t=S.data.tonight||{}; return { on:!!t.on, play_ids:(t.play_ids||[]).slice(), label:t.label||'', date:t.date||'' }; }
+function saveTonight(T,msg){ api('set_tonight',{tonight:T}).then(function(d){ if(d.error) return toast(errText(d),true); S.data.tonight=d.tonight||T; if(msg) toast(msg); renderPlays('plays'); }); }
+function renderTonightBar(){
+  var T=tonightState(), byId={}; (S.data.plays||[]).forEach(function(p){ byId[p.id]=p; });
+  var list=T.play_ids.map(function(id){ return byId[id]; }).filter(Boolean), bar=$('tonightBar');
+  bar.classList.toggle('hide',!list.length); if(!list.length) return;
+  bar.innerHTML='<div><div class="k">Tonight\'s plays</div><div class="muted" style="font-size:12.5px">'+list.length+' starred'+(T.on?' · players see them on top':' · hidden until you show players')+'</div></div><div class="list">'+list.map(function(p){ return '<span>'+esc(p.name)+'<button type="button" data-star="'+esc(p.id)+'" aria-label="Take off the list">×</button></span>'; }).join('')+'</div><input class="inp lab" id="tnLabel" placeholder="vs Radnor, Friday" maxlength="80" value="'+esc(T.label)+'"><input class="inp date" id="tnDate" type="date" value="'+esc(T.date)+'"><button class="btn sm'+(T.on?' primary':'')+'" type="button" id="tnOn" aria-pressed="'+T.on+'">'+(T.on?'Live for players':'Show players')+'</button><button class="btn sm ghost" type="button" id="tnClear">Clear</button>';
+  $('tnOn').onclick=function(){ var N=tonightState(); N.on=!N.on; N.label=$('tnLabel').value.trim(); N.date=$('tnDate').value; saveTonight(N,N.on?'Players see tonight\'s plays on top of the playbook.':'Hidden from players.'); };
+  $('tnClear').onclick=function(){ saveTonight({on:false,play_ids:[],label:'',date:''},'Cleared.'); };
+  var deb; function later(){ clearTimeout(deb); deb=setTimeout(function(){ var N=tonightState(); N.label=$('tnLabel').value.trim(); N.date=$('tnDate').value; api('set_tonight',{tonight:N}).then(function(d){ if(!d.error) S.data.tonight=d.tonight||N; }); },600); }
+  $('tnLabel').oninput=later; $('tnDate').onchange=later;
+}
 function benchCard(p){
   if(!p) return;
   var byId={}; (S.data.plays||[]).forEach(function(x){ byId[x.id]=x; });
@@ -1684,6 +1748,7 @@ function renderPlays(kind){
   else grid.innerHTML=list.map(card).join('');
   var aw=$(key==='plays'?'archivedWrap':'scoutArchWrap'); aw.classList.toggle('hide',!arch.length);
   $(key==='plays'?'archGrid':'scoutArchGrid').innerHTML=arch.map(card).join('');
+  if(key==='plays') renderTonightBar();
 }
 function card(p){
   var v=viewPlay(p), steps=Math.max(0,(p.frames||[]).length-1), views=viewsFor(p.id), who={}; views.forEach(function(x){ who[x.player_id]=1; });
@@ -1693,13 +1758,14 @@ function card(p){
     '<span class="pill '+(p.archived?'':(p.visible?'live':'hidden'))+'">'+(p.archived?'Archived':(p.visible?'Live':'Draft'))+'</span></div>'+
     '<div class="meta"><div class="cat">'+esc(scout?(p.opponent+' · '+p.category):p.category)+(p.court==='full'?' · Full court':'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+steps+(steps===1?' step':' steps')+' · '+(p.groups&&p.groups.length?esc(p.groups.join(', ')):'Everyone')+' · '+views.length+(views.length===1?' view':' views')+(Object.keys(who).length?' by '+Object.keys(who).length:'')+(qOpen?' · <b style="color:var(--gold-d)">'+qOpen+(qOpen===1?' question':' questions')+'</b>':'')+'</div></div>'+
     '<div class="acts">'+(p.archived?'<button class="btn sm" type="button" data-restore="'+esc(p.id)+'">Restore</button>':
-      '<button class="btn sm" type="button" data-edit="'+esc(p.id)+'">'+svg('i-edit')+'Edit</button><button class="btn sm" type="button" data-vis="'+esc(p.id)+'" aria-pressed="'+!!p.visible+'">'+svg(p.visible?'i-eye':'i-eyeoff')+(p.visible?'Live':'Draft')+'</button><button class="btn sm ghost" type="button" data-dup="'+esc(p.id)+'">'+svg('i-copy')+'Copy</button><button class="btn sm ghost" type="button" data-board="'+esc(p.id)+'" title="Full screen, on a loop">'+svg('i-play')+'Board</button><span class="sp"></span><button class="iconbtn" style="width:32px;height:32px" type="button" data-arch="'+esc(p.id)+'" title="Archive">'+svg('i-trash')+'</button>')+'</div></div>';
+      '<button class="btn sm" type="button" data-edit="'+esc(p.id)+'">'+svg('i-edit')+'Edit</button><button class="btn sm" type="button" data-vis="'+esc(p.id)+'" aria-pressed="'+!!p.visible+'">'+svg(p.visible?'i-eye':'i-eyeoff')+(p.visible?'Live':'Draft')+'</button><button class="btn sm ghost" type="button" data-dup="'+esc(p.id)+'">'+svg('i-copy')+'Copy</button><button class="btn sm ghost" type="button" data-board="'+esc(p.id)+'" title="Full screen, on a loop">'+svg('i-play')+'Board</button>'+(scout?'':'<button class="btn sm ghost" type="button" data-star="'+esc(p.id)+'" aria-pressed="'+(tonightState().play_ids.indexOf(p.id)>=0)+'" title="Tonight\'s plays: players see these on top">'+svg('i-star')+'Tonight</button>')+'<span class="sp"></span><button class="iconbtn" style="width:32px;height:32px" type="button" data-arch="'+esc(p.id)+'" title="Archive">'+svg('i-trash')+'</button>')+'</div></div>';
 }
 document.addEventListener('click',function(e){
   var t;
   if((t=e.target.closest('[data-cat][data-key]'))){ S.cat[t.getAttribute('data-key')]=t.getAttribute('data-cat'); renderPlays(t.getAttribute('data-key')); return; }
   if((t=e.target.closest('[data-edit]'))){ openEditor(t.getAttribute('data-edit')); return; }
   if((t=e.target.closest('[data-board]'))){ boardOpen(t.getAttribute('data-board')); return; }
+  if((t=e.target.closest('[data-star]'))){ var sid=t.getAttribute('data-star'), T=tonightState(), ix=T.play_ids.indexOf(sid); if(ix>=0) T.play_ids.splice(ix,1); else { if(T.play_ids.length>=12) return toast('Twelve plays is plenty for one night.',true); T.play_ids.push(sid); } if(!T.play_ids.length) T.on=false; saveTonight(T,ix>=0?'Taken off tonight\'s list.':'Added to tonight\'s plays.'+(T.on?'':' Show players when the list is ready.')); return; }
   if((t=e.target.closest('[data-vis]'))){ var id=t.getAttribute('data-vis'), p=S.data.plays.find(function(x){return x.id===id;}); api('set_visible',{id:id,visible:!p.visible}).then(function(d){ if(d.error) return toast(errText(d),true); toast(p.visible?'Hidden from players':'Live for players'); reload(); }); return; }
   if((t=e.target.closest('[data-arch]'))){ var id2=t.getAttribute('data-arch'); confirmBox('Archive this play?','Players won\'t see it anymore. You can restore it later.','Archive',function(){ api('archive',{id:id2}).then(function(d){ if(d.error) return toast(errText(d),true); toast('Archived'); reload(); }); }); return; }
   if((t=e.target.closest('[data-restore]'))){ api('restore',{id:t.getAttribute('data-restore')}).then(function(){ toast('Restored as a draft'); reload(); }); return; }
@@ -2219,11 +2285,15 @@ window.addEventListener('hashchange',function(){ if(!$('app').classList.contains
 /* ── premade play library (window.PB_LIBRARY from /playbook-library.js) ── */
 if(window.PB_LIBRARY)(function(){
   var LIB=window.PB_LIBRARY, $=function(id){ return document.getElementById(id); }, esc=PBCourt.esc;
-  var st={cat:'All',q:'',sel:{},cur:null,player:null,timer:0};
+  var st={cat:'All',q:'',sel:{},cur:null,player:null,timer:0,mode:'ours',opp:'',wiz:null};
   var SIT={}; PBCourt.SITUATIONS.forEach(function(s){ SIT[s.key]=s.label; });
-  function haveNames(){ var h={}; (S.data.plays||[]).forEach(function(p){ if(!p.archived&&(p.kind||'ours')==='ours') h[p.name.toLowerCase()]=p.id; }); return h; }
-  function toPlay(l){ return { name:l.name, category:l.category, court:l.court, notes:l.notes, tips:l.tips, situations:l.situations, frames:l.frames, kind:'ours', groups:[], visible:false }; }
-  function openLib(){ st.sel={}; st.cur=null; $('libView').classList.add('open'); document.body.style.overflow='hidden'; renderLib(); }
+  function haveNames(){ var h={}; (S.data.plays||[]).forEach(function(p){ if(p.archived) return; if(st.mode==='scout'){ if(p.kind==='scout'&&p.opponent===st.opp) h[p.name.toLowerCase()]=p.id; } else if((p.kind||'ours')==='ours') h[p.name.toLowerCase()]=p.id; }); return h; }
+  function toPlay(l){ var p={ name:l.name, category:l.category, court:l.court, notes:l.notes, tips:l.tips, situations:l.situations, frames:l.frames, kind:'ours', groups:[], visible:false }; if(st.mode==='scout'){ p.kind='scout'; p.opponent=st.opp; } return p; }
+  // mode 'ours' adds to Our plays; mode 'scout' adds the same diagrams as an opponent's sets under Scouting
+  function openLib(mode){ st.mode=mode==='scout'?'scout':'ours'; st.sel={}; st.cur=null; st.wiz=null; $('libWiz').classList.add('hide');
+    $('libOppWrap').classList.toggle('hide',st.mode!=='scout'); $('libWizBtn').classList.toggle('hide',st.mode==='scout'); $('libPackWrap').classList.toggle('hide',st.mode==='scout');
+    $('libOppList').innerHTML=opponents().map(function(o){ return '<option value="'+esc(o)+'">'; }).join(''); $('libOpp').value=st.opp;
+    $('libView').classList.add('open'); document.body.style.overflow='hidden'; renderLib(); if(st.mode==='scout'&&!st.opp) setTimeout(function(){ $('libOpp').focus(); },50); }
   function closeLib(){ $('libView').classList.remove('open'); document.body.style.overflow=''; stopPrev(); }
   function renderLib(){
     var have=haveNames();
@@ -2238,7 +2308,7 @@ if(window.PB_LIBRARY)(function(){
   function preview(key){
     stopPrev(); st.cur=key; var p=LIB.plays.find(function(x){return x.key===key;}); if(!p) return;
     var have=haveNames(), had=have[p.name.toLowerCase()];
-    $('libSide').innerHTML='<div class="lib-prev"><div class="cat">'+esc(p.category)+(p.court==='full'?' · Full court':'')+'</div><div class="nm">'+esc(p.name)+'</div><svg id="libSvg" role="img" aria-label="'+esc(p.name)+'"></svg><div class="note" id="libNote"></div><div class="ctl"><button class="btn sm" type="button" id="libPrevB">&lsaquo;</button><button class="btn sm primary" type="button" id="libPlay">Play</button><button class="btn sm" type="button" id="libNextB">&rsaquo;</button></div>'+(p.notes?'<p style="margin:10px 0 0;font-size:14px;color:var(--ink-2)">'+esc(p.notes)+'</p>':'')+(p.tips&&p.tips.length?'<div class="tips"><b>Coaching points</b><ul style="margin:0;padding:0">'+p.tips.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ul></div>':'')+(p.situations&&p.situations.length?'<div class="sits">'+p.situations.map(function(k){return '<span>'+esc(SIT[k]||k)+'</span>';}).join('')+'</div>':'')+'<div class="add"><button class="btn primary" type="button" id="libAddOne" style="flex:1">'+(had?'Add another copy':'Add to playbook')+'</button><button class="btn" type="button" id="libSideClose">Close</button></div><p class="help" style="margin-top:8px">Added as a draft under Our plays. Edit the names, lineups and tips, then make it live.</p></div>';
+    $('libSide').innerHTML='<div class="lib-prev"><div class="cat">'+esc(p.category)+(p.court==='full'?' · Full court':'')+'</div><div class="nm">'+esc(p.name)+'</div><svg id="libSvg" role="img" aria-label="'+esc(p.name)+'"></svg><div class="note" id="libNote"></div><div class="ctl"><button class="btn sm" type="button" id="libPrevB">&lsaquo;</button><button class="btn sm primary" type="button" id="libPlay">Play</button><button class="btn sm" type="button" id="libNextB">&rsaquo;</button></div>'+(p.notes?'<p style="margin:10px 0 0;font-size:14px;color:var(--ink-2)">'+esc(p.notes)+'</p>':'')+(p.tips&&p.tips.length?'<div class="tips"><b>Coaching points</b><ul style="margin:0;padding:0">'+p.tips.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ul></div>':'')+(p.situations&&p.situations.length?'<div class="sits">'+p.situations.map(function(k){return '<span>'+esc(SIT[k]||k)+'</span>';}).join('')+'</div>':'')+'<div class="add"><button class="btn primary" type="button" id="libAddOne" style="flex:1">'+(st.mode==='scout'?(had?'Add another copy for '+esc(st.opp):'Add as '+(st.opp?esc(st.opp)+'\'s':'an opponent\'s')+' set'):(had?'Add another copy':'Add to playbook'))+'</button><button class="btn" type="button" id="libSideClose">Close</button></div><p class="help" style="margin-top:8px">'+(st.mode==='scout'?'Added as a draft under Scouting for that opponent. The numbers become them, the X\'s become us. Rename it to what they call it.':'Added as a draft under Our plays. Edit the names, lineups and tips, then make it live.')+'</p></div>';
     $('libSide').classList.add('show');
     var svg=$('libSvg'), n=p.frames.length, pl=new PBCourt.Player(svg,p,{onChange:function(at,playing){ var f=p.frames[at]||{}; $('libNote').innerHTML='<b>Step '+(at+1)+' of '+n+'</b>'+esc(f.note||''); if(!playing&&at>=n-1){ clearTimeout(st.timer); st.timer=setTimeout(function(){ if(st.player===pl) pl.playAll(); },1800); } }});
     st.player=pl; $('libNote').innerHTML='<b>Step 1 of '+n+'</b>'+esc(p.frames[0].note||''); setTimeout(function(){ if(st.player===pl) pl.playAll(); },500);
@@ -2249,9 +2319,10 @@ if(window.PB_LIBRARY)(function(){
     renderLib();
   }
   function addPlays(keys,cb){
+    if(st.mode==='scout'&&!st.opp){ toast('Type the opponent first, top right.',true); $('libOpp').focus(); return; }
     var have=haveNames(), ids={}, todo=keys.slice(), added=0;
     (function next(){
-      if(!todo.length){ if(cb) cb(ids,added); else { toast(added?(added+(added===1?' play added as a draft. Find it under Our plays.':' plays added as drafts. Find them under Our plays.')):'Nothing new to add.'); reload().then(renderLib); } return; }
+      if(!todo.length){ if(cb) cb(ids,added); else { var where=st.mode==='scout'?'Scouting':'Our plays'; toast(added?(added+(added===1?' play added as a draft. Find it under '+where+'.':' plays added as drafts. Find them under '+where+'.')):'Nothing new to add.'); reload().then(renderLib); } return; }
       var k=todo.shift(), l=LIB.plays.find(function(x){return x.key===k;}); if(!l) return next();
       if(cb&&have[l.name.toLowerCase()]){ ids[k]=have[l.name.toLowerCase()]; return next(); } // packs reuse what you already have
       api('save_play',{play:toPlay(l)}).then(function(d){ if(d.error){ toast(errText(d),true); return next(); } ids[k]=d.id; added++; next(); });
@@ -2260,14 +2331,84 @@ if(window.PB_LIBRARY)(function(){
   function addPack(pk){
     var b=document.querySelector('[data-lpack="'+pk.key+'"]'); if(b){ b.disabled=true; b.textContent='Adding...'; }
     addPlays(pk.plays,function(ids,added){
-      var done=function(){ toast(added+(added===1?' play':' plays')+' added'+(pk.endgame?' and the end of game tree filled in':'')+'.'); reload().then(function(){ EG=null; renderLib(); }); };
+      var done=function(){ toast(added+(added===1?' play':' plays')+' added'+(pk.endgame?' and the end of game tree filled in':'')+'.'); reload().then(function(){ EG=null; renderLib(); offerPractices(pk,ids); }); };
       if(!pk.endgame) return done();
       var cur=JSON.parse(JSON.stringify(S.data.endgame||{}));
       Object.keys(pk.endgame).forEach(function(leaf){ var want=pk.endgame[leaf], c=cur[leaf]||(cur[leaf]={play_ids:[],note:''}); var pid=(want.play_keys||[]).map(function(k){return ids[k];}).filter(Boolean); pid.forEach(function(id){ if(c.play_ids.indexOf(id)<0&&c.play_ids.length<4) c.play_ids.push(id); }); if(!c.note&&want.note) c.note=want.note; if(want.foul!=null&&c.foul==null) c.foul=want.foul; });
       api('set_endgame',{leaves:cur}).then(function(d){ if(d.error) toast(errText(d),true); done(); });
     });
   }
-  $('plibBtn').addEventListener('click',openLib);
+  /* a pack just went in: offer two practice plans that install it */
+  function localDate(d){ return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+  function nextWeekdays(n){ var out=[], d=new Date(); while(out.length<n){ d.setDate(d.getDate()+1); if(d.getDay()!==0&&d.getDay()!==6) out.push(localDate(d)); } return out; }
+  function installPractices(name,pids){
+    var days=nextWeekdays(2), half=Math.ceil(pids.length/2), a=pids.slice(0,half), b=pids.slice(half), all=pids.slice(0,12);
+    var blk=function(n,m,c,d,pts,ids){ return {name:n,minutes:m,category:c,drill:d,points:pts,play_ids:ids||[],stations:[],notes:''}; };
+    return [
+      { date:days[0], title:'Install: '+name+' (1 of 2)', start:'15:30', focus:name+': walk it through, every spot, both sides', show_players:false, notes:'', blocks:[
+        blk('Huddle: what we are putting in and why',3,'Team','huddle',['Say the name of each play','One sentence on when we call it']),
+        blk('Dynamic warmup',8,'Warmup','dynamic-warmup',[]),
+        blk('Walk through, 5 on 0',18,'Plays','plays-5on0',['Walk it, then jog it, then run it','Every player learns every spot'],all),
+        blk('Plays, 5 on 5 live',15,'Plays','plays-5on5',['Defense plays it straight the first time','Then defense cheats and we read the counter'],a.slice(0,12)),
+        blk('Pressure free throws',6,'Shooting','pressure-free-throws',[]) ] },
+      { date:days[1], title:'Install: '+name+' (2 of 2)', start:'15:30', focus:name+': live reps, then the situations they are for', show_players:false, notes:'', blocks:[
+        blk('Dynamic warmup',8,'Warmup','dynamic-warmup',[]),
+        blk('Review, 5 on 0',8,'Plays','plays-5on0',['Coaches quiet, the players call it'],all),
+        blk('Plays, 5 on 5 live',18,'Plays','plays-5on5',['Score it: offense gets a point for a shot in rhythm'],(b.length?b:a).slice(0,12)),
+        blk('Late game situations',14,'Special situations','late-game-situations',['Call the play from the bench by name only','Clock and score on the board every rep'],all),
+        blk('Pressure free throws',6,'Shooting','pressure-free-throws',[]) ] } ];
+  }
+  function offerPractices(pk,ids){
+    var pids=pk.plays.map(function(k){ return ids[k]; }).filter(Boolean); if(!pids.length) return;
+    confirmBox('Plan two practices to install it?','Two practice plans go in under Practice on the next two weekdays: a walk through on day one, live reps and the situations on day two. Edit anything after.','Plan them',function(){
+      var P=installPractices(pk.name,pids);
+      (function go(i){ if(i>=P.length){ toast('Two practices planned. Find them under Practice.'); reload(); return; } api('save_practice',{practice:P[i]}).then(function(d){ if(d.error){ toast(errText(d),true); return; } go(i+1); }); })(0);
+    });
+  }
+  /* Build my playbook: six answers pick a starter playbook from the library */
+  function wizPick(a){
+    var W=LIB.wizard, cap=W.caps[a.level]||20, skip=a.level==='youth'?W.skip_youth:[], out=[], why={};
+    var lists=W.rules.filter(function(r){ return !r.when||Object.keys(r.when).every(function(q){ var w=r.when[q]; return Array.isArray(w)?w.indexOf(a[q])>=0:w===a[q]; }); }).map(function(r){ return {why:r.why,keys:r.add.filter(function(k){ return skip.indexOf(k)<0; })}; });
+    var more=true; while(out.length<cap&&more){ more=false; lists.forEach(function(l){ while(l.keys.length&&out.indexOf(l.keys[0])>=0) l.keys.shift(); if(l.keys.length&&out.length<cap){ var k=l.keys.shift(); out.push(k); why[k]=l.why; more=true; } }); }
+    return {keys:out,why:why};
+  }
+  function renderWiz(){
+    var W=LIB.wizard, z=st.wiz, box=$('libWiz'); if(!z){ box.classList.add('hide'); return; }
+    box.classList.remove('hide');
+    var h='<div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap"><div><h3>Build my playbook</h3><p class="help" style="margin:0">Answer six things about your team and get a starter playbook picked from the library, with the end of game tree filled in. Untick anything you don\'t want.</p></div><button class="btn sm" type="button" id="wizClose">Close</button></div>';
+    h+=W.questions.map(function(q){ return '<div class="wiz-q"><div class="lab">'+esc(q.q)+'</div><div class="chips">'+q.opts.map(function(o){ return '<button class="fchip" type="button" data-wq="'+q.key+'" data-wv="'+o[0]+'" aria-pressed="'+(z.a[q.key]===o[0])+'">'+esc(o[1])+'</button>'; }).join('')+'</div></div>'; }).join('');
+    var done=W.questions.every(function(q){ return z.a[q.key]; });
+    if(done){
+      var pick=wizPick(z.a), have=haveNames(), groups=[], byWhy={};
+      pick.keys.forEach(function(k){ var w=pick.why[k]; if(!byWhy[w]){ byWhy[w]=[]; groups.push(w); } byWhy[w].push(k); });
+      if(!z.un) z.un={};
+      var n=pick.keys.filter(function(k){ return !z.un[k]; }).length;
+      h+='<div class="wiz-res"><div class="sum"><b style="font-size:16px">'+n+' plays picked</b><button class="btn primary" type="button" id="wizAdd"'+(n?'':' disabled')+'>Add '+n+(n===1?' play':' plays')+' and fill the end of game tree</button><button class="btn sm ghost" type="button" id="wizReset">Start over</button></div>'+
+        groups.map(function(w){ return '<div class="wiz-group"><b>'+esc(w)+'</b>'+byWhy[w].map(function(k){ var p=LIB.plays.find(function(x){return x.key===k;}); return '<label class="wiz-item"><input type="checkbox" data-wk="'+k+'"'+(z.un[k]?'':' checked')+'><span class="dg">'+PBCourt.diagram(p,0,{noNames:true})+'</span><span class="nm">'+esc(p.name)+'<small>'+esc(p.category)+' · '+p.steps+(p.steps===1?' step':' steps')+(have[p.name.toLowerCase()]?' · already in your playbook':'')+'</small></span></label>'; }).join('')+'</div>'; }).join('')+'</div>';
+      z.keys=pick.keys;
+    }
+    box.innerHTML=h;
+    $('wizClose').onclick=function(){ st.wiz=null; renderWiz(); };
+    if(done){
+      $('wizReset').onclick=function(){ st.wiz={a:{},un:{}}; renderWiz(); };
+      $('wizAdd').onclick=function(){ var keys=z.keys.filter(function(k){ return !z.un[k]; }); if(!keys.length) return; this.disabled=true; this.textContent='Adding...';
+        addPlays(keys,function(ids,added){
+          var cur=JSON.parse(JSON.stringify(S.data.endgame||{})), filled=0;
+          (W.endgame_from||[]).forEach(function(pkKey){ var pk=LIB.packs.find(function(x){return x.key===pkKey;}); if(!pk||!pk.endgame) return; Object.keys(pk.endgame).forEach(function(leaf){ var want=pk.endgame[leaf], pid=(want.play_keys||[]).map(function(k){return ids[k];}).filter(Boolean); if(!pid.length) return; var c=cur[leaf]||(cur[leaf]={play_ids:[],note:''}); pid.forEach(function(id){ if(c.play_ids.indexOf(id)<0&&c.play_ids.length<4){ c.play_ids.push(id); filled++; } }); if(!c.note&&want.note) c.note=want.note; if(want.foul!=null&&c.foul==null) c.foul=want.foul; }); });
+          var fin=function(){ toast(added+(added===1?' play':' plays')+' added as drafts'+(filled?', end of game tree filled in':'')+'. Find them under Our plays.'); st.wiz=null; reload().then(function(){ EG=null; renderWiz(); renderLib(); }); };
+          if(!filled) return fin();
+          api('set_endgame',{leaves:cur}).then(function(d){ if(d.error) toast(errText(d),true); fin(); });
+        });
+      };
+    }
+  }
+  $('libWizBtn').addEventListener('click',function(){ st.wiz=st.wiz?null:{a:{},un:{}}; renderWiz(); if(st.wiz) $('libWiz').scrollIntoView({behavior:'smooth',block:'start'}); });
+  $('libWiz').addEventListener('click',function(e){ var t;
+    if((t=e.target.closest('[data-wq]'))){ st.wiz.a[t.getAttribute('data-wq')]=t.getAttribute('data-wv'); st.wiz.un={}; renderWiz(); return; } });
+  $('libWiz').addEventListener('change',function(e){ var t=e.target.closest('[data-wk]'); if(!t) return; if(t.checked) delete st.wiz.un[t.getAttribute('data-wk')]; else st.wiz.un[t.getAttribute('data-wk')]=1; var n=st.wiz.keys.filter(function(k){ return !st.wiz.un[k]; }).length; var b=$('wizAdd'); b.disabled=!n; b.textContent='Add '+n+(n===1?' play':' plays')+' and fill the end of game tree'; $('libWiz').querySelector('.sum b').textContent=n+' plays picked'; });
+  $('libOpp').addEventListener('input',function(){ st.opp=this.value.trim(); if(st.cur) preview(st.cur); });
+  $('plibBtn').addEventListener('click',function(){ openLib('ours'); });
+  $('slibBtn').addEventListener('click',function(){ openLib('scout'); });
   $('libClose').addEventListener('click',closeLib);
   $('libQ').addEventListener('input',function(){ st.q=this.value.trim().toLowerCase(); renderLib(); });
   $('libView').addEventListener('click',function(e){ var t;
