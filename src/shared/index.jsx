@@ -367,6 +367,11 @@ export const instagramPosts = [
 
 // ─── Schedule ─────────────────────────────────────────────────
 // Opponent logos (shared with the Central League page).
+// Season sponsors. Shown on the home page, in the footer of every page, and first on the Sponsors page.
+export const sponsors = [
+  { name: "Jersey Mike's Subs", place: "Ardmore", logo: "/sponsors/jersey-mikes-ardmore.webp", url: "https://www.jerseymikes.com/8103/ardmore-pa" },
+];
+
 export const teamLogos = {
   "Conestoga": "/logos/conestoga.png", "Garnet Valley": "/logos/garnet-valley.png",
   "Harriton": "/logos/harriton.png", "Haverford": "/logos/haverford.png",

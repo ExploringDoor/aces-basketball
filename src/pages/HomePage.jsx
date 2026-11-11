@@ -1,6 +1,6 @@
 // pages/HomePage.jsx
 import { useState, useEffect } from "react";
-import { FadeIn, CountUp, Spade, Icon, news, nextGame, lastResult, computeRecord, gameTime, teamLogos } from "../shared";
+import { FadeIn, CountUp, Spade, Icon, news, nextGame, lastResult, computeRecord, gameTime, teamLogos, sponsors } from "../shared";
 
 const latestNews = [...news].sort((a, b) => (b.sortKey || 0) - (a.sortKey || 0));
 
@@ -358,6 +358,27 @@ export default function HomePage({ goTo }) {
           </div>
         </div>
       </section>
+
+      {/* Season sponsors */}
+      {sponsors.length > 0 && (
+        <section style={{ background:"#0d0008", padding:"56px 5% 64px", borderTop:"1px solid rgba(132,0,54,0.18)" }}>
+          <div style={{ maxWidth:1100, margin:"0 auto", textAlign:"center" }}>
+            <div className="section-label" style={{ justifyContent:"center" }}>Proudly Supported By</div>
+            <h2 style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:"clamp(24px,3.2vw,34px)", textTransform:"uppercase", margin:"0 0 28px", lineHeight:1 }}>Our Sponsor{sponsors.length > 1 ? "s" : ""}</h2>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:20, justifyContent:"center" }}>
+              {sponsors.map(sp => (
+                <a key={sp.name} href={sp.url} target="_blank" rel="noopener noreferrer" aria-label={`${sp.name} ${sp.place}`} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:14, background:"#fff", borderRadius:18, padding:"26px 34px 20px", textDecoration:"none", border:"2px solid rgba(201,164,74,0.5)", boxShadow:"0 14px 40px rgba(0,0,0,0.45)", transition:"transform 0.2s, box-shadow 0.2s" }}
+                  onMouseEnter={e => { e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 20px 50px rgba(0,0,0,0.55)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow="0 14px 40px rgba(0,0,0,0.45)"; }}>
+                  <img src={sp.logo} alt={`${sp.name} ${sp.place}`} style={{ width:"min(260px,62vw)", height:"auto", display:"block" }} />
+                  <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:12, letterSpacing:2, textTransform:"uppercase", color:"#840036" }}>Visit {sp.name} {sp.place} →</span>
+                </a>
+              ))}
+            </div>
+            <p style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:14, color:"rgba(255,255,255,0.5)", margin:"24px 0 0" }}>Thank you for supporting Aces basketball. Stop in and tell them the Aces sent you.</p>
+          </div>
+        </section>
+      )}
     </>
   );
 }

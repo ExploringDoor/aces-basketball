@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Spade, schedule, teamLogos, loadLive, nextGame } from "./shared";
+import { Spade, schedule, teamLogos, loadLive, nextGame, sponsors } from "./shared";
 import { pageview } from "@vercel/analytics";
 
 
@@ -87,6 +87,7 @@ const NAV = [
     { id:"playbook", label:"Team Playbook" },
     { id:"attitude", label:"Attitude Board" },
     { id:"support",  label:"Support the Aces" },
+    { id:"sponsors", label:"Sponsors" },
     { id:"store",    label:"Team Store", badge:"Soon" },
   ]},
 ];
@@ -520,7 +521,7 @@ export default function App() {
               <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:13, fontWeight:700, letterSpacing:3 }}>ACES <span style={{ fontWeight:400, fontSize:10, letterSpacing:2, color:"rgba(255,255,255,0.4)" }}>LOWER MERION BASKETBALL</span></div>
             </div>
             <div style={{ display:"flex", flexWrap:"wrap", gap:"4px 16px" }}>
-              {[["schedule","Schedule"],["roster","Roster"],["news","News"],["store","Store"],["support","Support"]].map(([id, label]) => (
+              {[["schedule","Schedule"],["roster","Roster"],["news","News"],["store","Store"],["support","Support"],["sponsors","Sponsors"]].map(([id, label]) => (
                 <button key={id} onClick={() => goTo(id)} style={{ background:"none", border:"none", padding:"4px 0", fontFamily:"'Source Sans 3',sans-serif", fontSize:12.5, color:"rgba(255,255,255,0.55)", cursor:"pointer" }}
                   onMouseEnter={e => e.currentTarget.style.color = "var(--gold)"}
                   onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.55)"}>
@@ -529,6 +530,16 @@ export default function App() {
               ))}
             </div>
           </div>
+          {sponsors.length > 0 && (
+            <div style={{ maxWidth:1100, margin:"0 auto", padding:"12px 5%", borderTop:"1px solid rgba(255,255,255,0.06)", display:"flex", flexWrap:"wrap", alignItems:"center", gap:"10px 16px" }}>
+              <button onClick={() => goTo("sponsors")} style={{ background:"none", border:"none", padding:0, cursor:"pointer", fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2.5, color:"rgba(255,255,255,0.45)", textTransform:"uppercase" }}>Proudly supported by</button>
+              {sponsors.map(sp => (
+                <a key={sp.name} href={sp.url} target="_blank" rel="noopener noreferrer" title={`${sp.name} ${sp.place}`} style={{ display:"flex", alignItems:"center", background:"#fff", borderRadius:10, padding:"5px 8px" }}>
+                  <img src={sp.logo} alt={`${sp.name} ${sp.place}`} style={{ height:56, width:"auto", display:"block" }} />
+                </a>
+              ))}
+            </div>
+          )}
           <div style={{ maxWidth:1100, margin:"0 auto", padding:"10px 5% 14px", borderTop:"1px solid rgba(255,255,255,0.06)", display:"flex", flexWrap:"wrap", gap:"6px 16px", alignItems:"center", justifyContent:"space-between" }}>
             <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10.5, color:"rgba(255,255,255,0.3)" }}>© {new Date().getFullYear()} Lower Merion Aces Basketball · Ardmore, PA</div>
             <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:9.5, letterSpacing:2, color:"rgba(255,255,255,0.3)", textTransform:"uppercase" }}>Designed by <a href="https://mainline-webdesign.com/" target="_blank" rel="noopener noreferrer" style={{ color:"var(--gold)", textDecoration:"none" }}>Main Line Web Design</a></div>

@@ -1,5 +1,5 @@
 // pages/SponsorshipsPage.jsx
-import { FadeIn, CountUp, Spade } from "../shared";
+import { FadeIn, CountUp, Spade, sponsors } from "../shared";
 
 const whySponsor = [
   { icon: "📍", label: "Community Reach", desc: "Connect with thousands of Main Line families, students, alumni and fans across a full season of packed gyms." },
@@ -81,10 +81,52 @@ export default function SponsorshipsPage() {
           <div className="divider" />
         </FadeIn>
 
+        {/* Current partners */}
+        <FadeIn delay={0.2}>
+          <div style={{ marginTop: 40 }}>
+            <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 11, letterSpacing: 4, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", marginBottom: 8 }}>Our Partners</div>
+            <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.7, margin: "0 0 24px", maxWidth: 620 }}>
+              We are proud to partner with the businesses and families who make Aces basketball possible. There is room on the wall for yours.
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(160px,1fr))", gap: 12 }}>
+              {sponsors.map((sp) => (
+                <a key={sp.name} href={sp.url} target="_blank" rel="noopener noreferrer" aria-label={`${sp.name} ${sp.place}`} style={{
+                  gridColumn: "1 / -1",
+                  background: "#fff",
+                  border: "2px solid rgba(201,164,74,0.6)",
+                  borderRadius: 12,
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 18,
+                  padding: 18, textDecoration: "none", transition: "transform 0.2s",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
+                  <img src={sp.logo} alt={`${sp.name} ${sp.place}`} style={{ height: 150, width: "auto", maxWidth: "60%", objectFit: "contain" }} />
+                  <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 13, letterSpacing: 1.5, color: "#840036", textTransform: "uppercase", lineHeight: 1.4 }}>{sp.name}<br />{sp.place}<br /><span style={{ fontSize: 11, color: "#555" }}>Visit them →</span></span>
+                </a>
+              ))}
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} style={{
+                  aspectRatio: "3 / 2",
+                  background: "rgba(255,255,255,0.015)",
+                  border: "1px dashed rgba(201,164,74,0.28)",
+                  borderRadius: 12,
+                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8,
+                  transition: "all 0.2s",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(201,164,74,0.6)"; e.currentTarget.style.background = "rgba(132,0,54,0.06)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(201,164,74,0.28)"; e.currentTarget.style.background = "rgba(255,255,255,0.015)"; }}>
+                  <Spade size={22} color="#840036" />
+                  <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 11, letterSpacing: 2, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>Your Logo Here</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </FadeIn>
+
         {/* Intro card */}
         <FadeIn delay={0.15}>
           <div style={{
-            marginTop: 48,
+            marginTop: 40,
             background: "linear-gradient(135deg, rgba(132,0,54,0.15), rgba(0,0,0,0.4))",
             border: "1px solid rgba(132,0,54,0.35)",
             borderRadius: 16,
@@ -239,33 +281,6 @@ export default function SponsorshipsPage() {
                   onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"; e.currentTarget.style.background = "rgba(255,255,255,0.02)"; }}>
                   <span style={{ fontSize: 24 }}>{item.icon}</span>
                   <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 14, letterSpacing: 1.5, color: "rgba(255,255,255,0.7)", textTransform: "uppercase" }}>{item.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </FadeIn>
-
-        {/* Current partners */}
-        <FadeIn delay={0.45}>
-          <div style={{ marginTop: 56 }}>
-            <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 11, letterSpacing: 4, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", marginBottom: 8 }}>Our Partners</div>
-            <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.7, margin: "0 0 24px", maxWidth: 620 }}>
-              We are proud to partner with the businesses and families who make Aces basketball possible. There is room on the wall for yours.
-            </p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(160px,1fr))", gap: 12 }}>
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} style={{
-                  aspectRatio: "3 / 2",
-                  background: "rgba(255,255,255,0.015)",
-                  border: "1px dashed rgba(201,164,74,0.28)",
-                  borderRadius: 12,
-                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8,
-                  transition: "all 0.2s",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(201,164,74,0.6)"; e.currentTarget.style.background = "rgba(132,0,54,0.06)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(201,164,74,0.28)"; e.currentTarget.style.background = "rgba(255,255,255,0.015)"; }}>
-                  <Spade size={22} color="#840036" />
-                  <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 11, letterSpacing: 2, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>Your Logo Here</span>
                 </div>
               ))}
             </div>

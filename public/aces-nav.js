@@ -44,6 +44,7 @@
       { id: "playbook", label: "Team Playbook" },
       { id: "attitude", label: "Attitude Board" },
       { id: "support", label: "Support the Aces" },
+      { id: "sponsors", label: "Sponsors" },
       { id: "store", label: "Team Store", badge: "Soon" }
     ] }
   ];
