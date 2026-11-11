@@ -493,6 +493,29 @@ tr:last-child td{border-bottom:0}
   table{display:block;overflow-x:auto;white-space:nowrap}
 }
 @media (max-width:480px){ .kpis{grid-template-columns:1fr 1fr} .pgrid{grid-template-columns:1fr} }
+/* play library */
+#libView{position:fixed;inset:0;z-index:62;background:var(--bg);display:none;flex-direction:column}
+#libView.open{display:flex}
+.lib-top{background:#fff;border-bottom:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.lib-top .sp{flex:1}.lib-count{color:var(--ink-3);font-size:13.5px;font-weight:600}
+.lib-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 380px}
+.lib-main{overflow-y:auto;padding:16px 18px 40px}
+.lib-side{overflow-y:auto;border-left:1px solid var(--line);background:#fff;padding:16px}
+.lib-packgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.lib-pack{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--sh)}
+.lib-pack b{font-family:'Oswald',sans-serif;font-size:16px}.lib-pack p{font-size:13px;color:var(--ink-2);margin:0;flex:1}
+.lib-pack .row2{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:4px}.lib-pack .n{font-size:12px;color:var(--ink-3)}
+.lib-card{position:relative}.lib-card .pick{position:absolute;left:10px;top:10px;z-index:2;width:22px;height:22px;accent-color:var(--mrn)}
+.lib-card .pill.have{background:var(--gold-50);color:#7a5a10;border:1px solid var(--gold)}
+.lib-card.on{outline:3px solid var(--mrn)}
+.lib-prev svg{width:100%;height:auto;border-radius:12px;background:#f3e4c4}
+.lib-prev .nm{font-family:'Oswald',sans-serif;font-weight:700;font-size:20px;margin:10px 0 2px}.lib-prev .cat{font-size:12.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.lib-prev .note{margin-top:8px;background:var(--bg);border-radius:10px;padding:9px 11px;font-size:14px;min-height:54px}.lib-prev .note b{display:block;font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--mrn);margin-bottom:2px}
+.lib-prev .ctl{display:flex;gap:6px;margin-top:8px}.lib-prev .ctl .btn{flex:1}
+.lib-prev .tips{margin-top:12px;background:var(--gold-50);border:1px solid #efe2bd;border-radius:10px;padding:9px 11px;font-size:13.5px}.lib-prev .tips b{display:block;font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#7a5a10;margin-bottom:4px}.lib-prev .tips li{margin:3px 0 3px 16px}
+.lib-prev .sits{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.lib-prev .sits span{font-size:12px;border:1px solid var(--line-2);border-radius:999px;padding:3px 9px;color:var(--ink-2)}
+.lib-prev .add{margin-top:14px;display:flex;gap:8px}
+@media(max-width:900px){.lib-body{grid-template-columns:1fr}.lib-side{border-left:0;border-top:1px solid var(--line);position:fixed;left:0;right:0;bottom:0;max-height:62vh;box-shadow:0 -12px 40px rgba(0,0,0,.18);border-radius:18px 18px 0 0;display:none}.lib-side.show{display:block}.lib-main{padding-bottom:70vh}}
 </style>
 </head>
 <body>
@@ -558,7 +581,7 @@ tr:last-child td{border-bottom:0}
     <section class="panel" id="p-plays">
       <div class="hero"><div class="row">
         <div><div class="k">Team playbook</div><div class="big" id="heroN">0 plays</div><div class="of" id="heroSub"></div></div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="chip" id="openChip"><span class="dot"></span><span></span></span><button class="btn gold lg" type="button" id="newPlayBtn">Draw a new play</button></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="chip" id="openChip"><span class="dot"></span><span></span></span><button class="btn lg" type="button" id="plibBtn">Add from the library</button><button class="btn gold lg" type="button" id="newPlayBtn">Draw a new play</button></div>
       </div></div>
       <div class="filters"><div class="chips" id="playCats"></div><input class="search" id="playQ" type="search" placeholder="Search plays" aria-label="Search plays"></div>
       <div class="pgrid" id="playGrid"></div>
@@ -837,8 +860,20 @@ tr:last-child td{border-bottom:0}
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<div id="libView" role="dialog" aria-label="Play library" aria-modal="true">
+  <div class="lib-top"><div><div class="k">Play library</div><h2 style="margin:0">Premade plays and scenarios</h2></div><div class="sp"></div><span class="lib-count" id="libCount"></span><button class="btn primary hide" type="button" id="libAddSel">Add selected</button><button class="btn" type="button" id="libClose">Close</button></div>
+  <div class="lib-body">
+    <div class="lib-main">
+      <div class="lib-packs"><div class="k" style="margin-bottom:8px">Scenario packs</div><p class="help" style="margin:0 0 10px">A pack adds a set of plays as drafts and fills in the end of game tree for those situations. You can edit or delete any of it afterward.</p><div class="lib-packgrid" id="libPacks"></div></div>
+      <div class="filters" style="margin-top:18px"><div class="chips" id="libCats"></div><input class="search" id="libQ" type="search" placeholder="Search the library" aria-label="Search the library"></div>
+      <div class="grid" id="libGrid"></div>
+    </div>
+    <aside class="lib-side" id="libSide"><div class="empty"><h3>Pick a play</h3><p>Tap any play to watch it run, read the coaching points, and add it to your playbook.</p></div></aside>
+  </div>
+</div>
 <script src="/playbook-court.js?v=2"></script>
 <script src="/playbook-drills.js"></script>
+<script src="/playbook-library.js?v=1"></script>
 <script>
 (function(){
 var KEY_STORE='dba_admin_key', DEMO=/[?&]demo=1/.test(location.search);
@@ -2179,6 +2214,70 @@ window.addEventListener('hashchange',function(){ if(!$('app').classList.contains
   if(DEMO){ S.key='demo'; reload().then(showApp); return; }
   var k=''; try{ k=sessionStorage.getItem(KEY_STORE)||''; }catch(e){}
   if(k){ S.key=k; reload().then(showApp).catch(function(){ S.key=''; }); }
+})();
+
+/* ── premade play library (window.PB_LIBRARY from /playbook-library.js) ── */
+if(window.PB_LIBRARY)(function(){
+  var LIB=window.PB_LIBRARY, $=function(id){ return document.getElementById(id); }, esc=PBCourt.esc;
+  var st={cat:'All',q:'',sel:{},cur:null,player:null,timer:0};
+  var SIT={}; PBCourt.SITUATIONS.forEach(function(s){ SIT[s.key]=s.label; });
+  function haveNames(){ var h={}; (S.data.plays||[]).forEach(function(p){ if(!p.archived&&(p.kind||'ours')==='ours') h[p.name.toLowerCase()]=p.id; }); return h; }
+  function toPlay(l){ return { name:l.name, category:l.category, court:l.court, notes:l.notes, tips:l.tips, situations:l.situations, frames:l.frames, kind:'ours', groups:[], visible:false }; }
+  function openLib(){ st.sel={}; st.cur=null; $('libView').classList.add('open'); document.body.style.overflow='hidden'; renderLib(); }
+  function closeLib(){ $('libView').classList.remove('open'); document.body.style.overflow=''; stopPrev(); }
+  function renderLib(){
+    var have=haveNames();
+    var cats=['All']; LIB.plays.forEach(function(p){ if(cats.indexOf(p.category)<0) cats.push(p.category); });
+    $('libCats').innerHTML=cats.map(function(c){ return '<button class="fchip" type="button" data-lc="'+esc(c)+'" aria-pressed="'+(c===st.cat)+'">'+esc(c)+(c==='All'?' ('+LIB.plays.length+')':'')+'</button>'; }).join('');
+    var list=LIB.plays.filter(function(p){ return (st.cat==='All'||p.category===st.cat)&&(!st.q||(p.name+' '+p.category+' '+p.notes+' '+(p.situations||[]).map(function(k){return SIT[k]||k;}).join(' ')).toLowerCase().indexOf(st.q)>=0); });
+    $('libGrid').innerHTML=list.length?list.map(function(p){ var had=have[p.name.toLowerCase()]; return '<div class="pc lib-card'+(st.cur===p.key?' on':'')+'" data-lk="'+esc(p.key)+'"><input class="pick" type="checkbox" data-lsel="'+esc(p.key)+'"'+(st.sel[p.key]?' checked':'')+' aria-label="Select '+esc(p.name)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{noNames:true})+(had?'<span class="pill have">In your playbook</span>':'')+'</div><div class="meta"><div class="cat">'+esc(p.category)+(p.court==='full'?' · Full court':'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+p.steps+(p.steps===1?' step':' steps')+(p.situations&&p.situations.length?' · '+p.situations.map(function(k){return SIT[k]||k;}).join(', '):'')+'</div></div></div>'; }).join(''):'<div class="empty" style="grid-column:1/-1"><h3>No matches</h3></div>';
+    $('libPacks').innerHTML=LIB.packs.map(function(pk){ var n=pk.plays.length, got=pk.plays.filter(function(k){ var l=LIB.plays.find(function(x){return x.key===k;}); return l&&have[l.name.toLowerCase()]; }).length; return '<div class="lib-pack"><b>'+esc(pk.name)+'</b><p>'+esc(pk.blurb)+'</p><div class="row2"><span class="n">'+n+' plays'+(pk.endgame?' · fills '+Object.keys(pk.endgame).length+' end of game spots':'')+(got?' · '+got+' already in':'')+'</span><button class="btn sm primary" type="button" data-lpack="'+esc(pk.key)+'">Add pack</button></div></div>'; }).join('');
+    var n=Object.keys(st.sel).length; $('libAddSel').classList.toggle('hide',!n); $('libAddSel').textContent='Add selected ('+n+')'; $('libCount').textContent=LIB.plays.length+' plays · '+LIB.packs.length+' packs';
+  }
+  function stopPrev(){ clearTimeout(st.timer); if(st.player){ st.player.pause(); st.player=null; } }
+  function preview(key){
+    stopPrev(); st.cur=key; var p=LIB.plays.find(function(x){return x.key===key;}); if(!p) return;
+    var have=haveNames(), had=have[p.name.toLowerCase()];
+    $('libSide').innerHTML='<div class="lib-prev"><div class="cat">'+esc(p.category)+(p.court==='full'?' · Full court':'')+'</div><div class="nm">'+esc(p.name)+'</div><svg id="libSvg" role="img" aria-label="'+esc(p.name)+'"></svg><div class="note" id="libNote"></div><div class="ctl"><button class="btn sm" type="button" id="libPrevB">&lsaquo;</button><button class="btn sm primary" type="button" id="libPlay">Play</button><button class="btn sm" type="button" id="libNextB">&rsaquo;</button></div>'+(p.notes?'<p style="margin:10px 0 0;font-size:14px;color:var(--ink-2)">'+esc(p.notes)+'</p>':'')+(p.tips&&p.tips.length?'<div class="tips"><b>Coaching points</b><ul style="margin:0;padding:0">'+p.tips.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ul></div>':'')+(p.situations&&p.situations.length?'<div class="sits">'+p.situations.map(function(k){return '<span>'+esc(SIT[k]||k)+'</span>';}).join('')+'</div>':'')+'<div class="add"><button class="btn primary" type="button" id="libAddOne" style="flex:1">'+(had?'Add another copy':'Add to playbook')+'</button><button class="btn" type="button" id="libSideClose">Close</button></div><p class="help" style="margin-top:8px">Added as a draft under Our plays. Edit the names, lineups and tips, then make it live.</p></div>';
+    $('libSide').classList.add('show');
+    var svg=$('libSvg'), n=p.frames.length, pl=new PBCourt.Player(svg,p,{onChange:function(at,playing){ var f=p.frames[at]||{}; $('libNote').innerHTML='<b>Step '+(at+1)+' of '+n+'</b>'+esc(f.note||''); if(!playing&&at>=n-1){ clearTimeout(st.timer); st.timer=setTimeout(function(){ if(st.player===pl) pl.playAll(); },1800); } }});
+    st.player=pl; $('libNote').innerHTML='<b>Step 1 of '+n+'</b>'+esc(p.frames[0].note||''); setTimeout(function(){ if(st.player===pl) pl.playAll(); },500);
+    $('libPlay').onclick=function(){ if(pl.isPlaying()) pl.pause(); else pl.playAll(); };
+    $('libPrevB').onclick=function(){ clearTimeout(st.timer); pl.go(pl.at-1); }; $('libNextB').onclick=function(){ clearTimeout(st.timer); pl.go(pl.at+1); };
+    $('libAddOne').onclick=function(){ addPlays([key]); };
+    $('libSideClose').onclick=function(){ $('libSide').classList.remove('show'); stopPrev(); };
+    renderLib();
+  }
+  function addPlays(keys,cb){
+    var have=haveNames(), ids={}, todo=keys.slice(), added=0;
+    (function next(){
+      if(!todo.length){ if(cb) cb(ids,added); else { toast(added?(added+(added===1?' play added as a draft. Find it under Our plays.':' plays added as drafts. Find them under Our plays.')):'Nothing new to add.'); reload().then(renderLib); } return; }
+      var k=todo.shift(), l=LIB.plays.find(function(x){return x.key===k;}); if(!l) return next();
+      if(cb&&have[l.name.toLowerCase()]){ ids[k]=have[l.name.toLowerCase()]; return next(); } // packs reuse what you already have
+      api('save_play',{play:toPlay(l)}).then(function(d){ if(d.error){ toast(errText(d),true); return next(); } ids[k]=d.id; added++; next(); });
+    })();
+  }
+  function addPack(pk){
+    var b=document.querySelector('[data-lpack="'+pk.key+'"]'); if(b){ b.disabled=true; b.textContent='Adding...'; }
+    addPlays(pk.plays,function(ids,added){
+      var done=function(){ toast(added+(added===1?' play':' plays')+' added'+(pk.endgame?' and the end of game tree filled in':'')+'.'); reload().then(function(){ EG=null; renderLib(); }); };
+      if(!pk.endgame) return done();
+      var cur=JSON.parse(JSON.stringify(S.data.endgame||{}));
+      Object.keys(pk.endgame).forEach(function(leaf){ var want=pk.endgame[leaf], c=cur[leaf]||(cur[leaf]={play_ids:[],note:''}); var pid=(want.play_keys||[]).map(function(k){return ids[k];}).filter(Boolean); pid.forEach(function(id){ if(c.play_ids.indexOf(id)<0&&c.play_ids.length<4) c.play_ids.push(id); }); if(!c.note&&want.note) c.note=want.note; if(want.foul!=null&&c.foul==null) c.foul=want.foul; });
+      api('set_endgame',{leaves:cur}).then(function(d){ if(d.error) toast(errText(d),true); done(); });
+    });
+  }
+  $('plibBtn').addEventListener('click',openLib);
+  $('libClose').addEventListener('click',closeLib);
+  $('libQ').addEventListener('input',function(){ st.q=this.value.trim().toLowerCase(); renderLib(); });
+  $('libView').addEventListener('click',function(e){ var t;
+    if((t=e.target.closest('[data-lc]'))){ st.cat=t.getAttribute('data-lc'); renderLib(); return; }
+    if((t=e.target.closest('[data-lsel]'))){ var k=t.getAttribute('data-lsel'); if(t.checked) st.sel[k]=1; else delete st.sel[k]; var n=Object.keys(st.sel).length; $('libAddSel').classList.toggle('hide',!n); $('libAddSel').textContent='Add selected ('+n+')'; return; }
+    if((t=e.target.closest('[data-lpack]'))){ var pk=LIB.packs.find(function(x){return x.key===t.getAttribute('data-lpack');}); if(pk) addPack(pk); return; }
+    if((t=e.target.closest('.lib-card'))){ preview(t.getAttribute('data-lk')); return; }
+  });
+  $('libAddSel').addEventListener('click',function(){ var keys=Object.keys(st.sel); st.sel={}; addPlays(keys); });
+  window.addEventListener('keydown',function(e){ if(e.key==='Escape'&&$('libView').classList.contains('open')) closeLib(); });
 })();
 })();
 </script>
