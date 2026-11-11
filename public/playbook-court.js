@@ -63,7 +63,7 @@
       var a = A.pos[id], b = B.pos[id];
       if (!a || !b || dist(a, b) < 3) return;
       var mv = (B.moves && B.moves[id]) || {};
-      moves.push({ id: id, a: a, b: b, c: mv.c || lerp(a, b, 0.5), curved: !!mv.c, t: mv.t || 'cut' });
+      moves.push({ id: id, a: a, b: b, c: mv.c || lerp(a, b, 0.5), curved: !!mv.c, t: mv.t || 'cut', late: !!mv.late });
     });
     var from = A.ball || '', to = B.ball || '', ball = null;
     if (from !== to) {
@@ -82,9 +82,11 @@
   // Where every token and the ball are at time t (0..1) of action i.
   function stateAt(play, i, t) {
     var A = frame(play, i - 1), B = frame(play, i), act = action(play, i), pos = {};
-    var tm = ease(clamp01((t - act.win.moves[0]) / (act.win.moves[1] - act.win.moves[0])));
+    var W = act.win.moves, tm = ease(clamp01((t - W[0]) / (W[1] - W[0])));
+    // a move marked late waits for the others (a cutter waiting for his screen) and goes in the second half of the window
+    var w0 = W[0] + (W[1] - W[0]) * 0.45, tl = ease(clamp01((t - w0) / (W[1] - w0)));
     ALL.forEach(function (id) { if (A.pos[id] && B.pos[id]) pos[id] = A.pos[id]; else if (B.pos[id] && t >= 1) pos[id] = B.pos[id]; else if (A.pos[id] && t < 1) pos[id] = A.pos[id]; });
-    act.moves.forEach(function (m) { pos[m.id] = bez(m, tm); });
+    act.moves.forEach(function (m) { pos[m.id] = bez(m, m.late ? tl : tm); });
     var ball = null, scale = 1, court = play.court;
     var tb = clamp01((t - act.win.ball[0]) / (act.win.ball[1] - act.win.ball[0]));
     var held = function (id) { if (id === 'rim') return nearestRim(court, pos[A.ball] || null); return pos[id] ? [pos[id][0] + 13, pos[id][1] - 13] : null; };
@@ -257,12 +259,118 @@
   { key: 'vs_trap', label: 'Against a half court trap', group: 'Against' },
   { key: 'vs_pack', label: 'They pack the paint', group: 'Against' },
   { key: 'vs_pressure', label: 'Tight ball pressure and denial', group: 'Against' },
-  { key: 'transition', label: 'Secondary break', group: 'Game flow' },
+  { key: 'transition', label: 'Transition offense', group: 'Transition' },
   { key: 'quick', label: 'Quick hitter', group: 'Game flow' },
   { key: 'foul_trouble', label: 'Star in foul trouble', group: 'Game flow' },
   { key: 'bonus', label: 'In the bonus, attack the rim', group: 'Game flow' },
   { key: 'tech_ft', label: 'Technical foul free throws', group: 'Game flow' },
   { key: 'post_entry', label: 'Get the ball inside', group: 'Game flow' },
+  { key: 'blob_need3', label: 'Baseline out, need a 3', group: 'Inbounds' },
+  { key: 'blob_need2', label: 'Baseline out, need a 2', group: 'Inbounds' },
+  { key: 'blob_short', label: 'Baseline out, under 3 seconds', group: 'Inbounds' },
+  { key: 'blob_vs_switch', label: 'Baseline out when they switch', group: 'Inbounds' },
+  { key: 'blob_vs_man', label: 'Baseline out against man', group: 'Inbounds' },
+  { key: 'blob_far', label: 'Baseline out from the far end', group: 'Inbounds' },
+  { key: 'slob_need3', label: 'Sideline out, need a 3', group: 'Inbounds' },
+  { key: 'slob_need2', label: 'Sideline out, need a 2', group: 'Inbounds' },
+  { key: 'slob_short', label: 'Sideline out, under 3 seconds', group: 'Inbounds' },
+  { key: 'slob_zone', label: 'Sideline out against a zone', group: 'Inbounds' },
+  { key: 'slob_vs_denial', label: 'Sideline out when they deny', group: 'Inbounds' },
+  { key: 'full_court_1', label: 'Full court, one second', group: 'Inbounds' },
+  { key: 'full_court_catch', label: 'Full court, catch and call timeout', group: 'Inbounds' },
+  { key: 'inb_after_to', label: 'Inbound after their timeout', group: 'Inbounds' },
+  { key: 'inb_safe', label: 'Inbound, just get it in', group: 'Inbounds' },
+  { key: 'down1_last', label: 'Down 1, last shot', group: 'Score and clock' },
+  { key: 'down2_last', label: 'Down 2, last shot', group: 'Score and clock' },
+  { key: 'down3_last', label: 'Down 3, last shot', group: 'Score and clock' },
+  { key: 'down4_late', label: 'Down 4 or more, under a minute', group: 'Score and clock' },
+  { key: 'up1_late', label: 'Up 1, under a minute', group: 'Score and clock' },
+  { key: 'up2_late', label: 'Up 2, under a minute', group: 'Score and clock' },
+  { key: 'up3_late', label: 'Up 3, under a minute', group: 'Score and clock' },
+  { key: 'tied_late', label: 'Tied, under two minutes', group: 'Score and clock' },
+  { key: 'hold_last', label: 'Hold for the last shot', group: 'Score and clock' },
+  { key: 'end_half', label: 'Last shot of the half', group: 'Score and clock' },
+  { key: 'start_half', label: 'First possession of the half', group: 'Score and clock' },
+  { key: 'first_poss', label: 'First possession of the game', group: 'Score and clock' },
+  { key: 'ot_start', label: 'Start of overtime', group: 'Score and clock' },
+  { key: 'need_quick2', label: 'Need a quick 2, then foul', group: 'Score and clock' },
+  { key: 'need_3_and_stop', label: 'Need a 3 and a stop', group: 'Score and clock' },
+  { key: 'shot_clock_10', label: 'Ten seconds on the shot clock', group: 'Score and clock' },
+  { key: 'shot_clock_5', label: 'Five seconds on the shot clock', group: 'Score and clock' },
+  { key: 'stop_run', label: 'Stop their run', group: 'Score and clock' },
+  { key: 'extend_lead', label: 'Extend the lead early', group: 'Score and clock' },
+  { key: 'vs_23', label: 'Against a 2-3 zone', group: 'Against' },
+  { key: 'vs_32', label: 'Against a 3-2 zone', group: 'Against' },
+  { key: 'vs_131', label: 'Against a 1-3-1 zone', group: 'Against' },
+  { key: 'vs_122', label: 'Against a 1-2-2 zone', group: 'Against' },
+  { key: 'vs_matchup', label: 'Against a matchup zone', group: 'Against' },
+  { key: 'vs_tri2', label: 'Against a triangle and two', group: 'Against' },
+  { key: 'vs_diamond1', label: 'Against a diamond and one', group: 'Against' },
+  { key: 'vs_sagging', label: 'Against a sagging man', group: 'Against' },
+  { key: 'vs_deny', label: 'Against full denial', group: 'Against' },
+  { key: 'vs_faceguard', label: 'When they face guard our best player', group: 'Against' },
+  { key: 'vs_bigger', label: 'Against a bigger team', group: 'Against' },
+  { key: 'vs_faster', label: 'Against a faster team', group: 'Against' },
+  { key: 'vs_rimprotector', label: 'Against a shot blocker', group: 'Against' },
+  { key: 'vs_zone_press', label: 'Against a zone press', group: 'Against' },
+  { key: 'vs_man_press', label: 'Against full court man', group: 'Against' },
+  { key: 'vs_run_jump', label: 'Against run and jump', group: 'Against' },
+  { key: 'vs_hc_zone_trap', label: 'Against a half court zone trap', group: 'Against' },
+  { key: 'cov_switch', label: 'They switch the ball screen', group: 'Coverages' },
+  { key: 'cov_drop', label: 'They drop on the ball screen', group: 'Coverages' },
+  { key: 'cov_hedge', label: 'They hedge the ball screen', group: 'Coverages' },
+  { key: 'cov_blitz', label: 'They blitz the ball screen', group: 'Coverages' },
+  { key: 'cov_ice', label: 'They ice the side ball screen', group: 'Coverages' },
+  { key: 'cov_under', label: 'They go under the ball screen', group: 'Coverages' },
+  { key: 'cov_over', label: 'They chase over the ball screen', group: 'Coverages' },
+  { key: 'cov_top_lock', label: 'They top lock the shooter', group: 'Coverages' },
+  { key: 'cov_shoot_gap', label: 'They shoot the gap on the pin down', group: 'Coverages' },
+  { key: 'cov_front_post', label: 'They front the post', group: 'Coverages' },
+  { key: 'cov_double_post', label: 'They double the post', group: 'Coverages' },
+  { key: 'cov_switch_offball', label: 'They switch off ball screens', group: 'Coverages' },
+  { key: 'first_play', label: 'First play out of the huddle', group: 'Game flow' },
+  { key: 'ato_any', label: 'After a timeout, need any score', group: 'Game flow' },
+  { key: 'dead_ball', label: 'After a dead ball', group: 'Game flow' },
+  { key: 'after_made', label: 'After their made basket', group: 'Game flow' },
+  { key: 'after_miss', label: 'After their miss', group: 'Game flow' },
+  { key: 'after_steal', label: 'After a steal', group: 'Game flow' },
+  { key: 'after_ft_made', label: 'After their made free throw', group: 'Game flow' },
+  { key: 'vs_set_defense', label: 'Against a set defense', group: 'Game flow' },
+  { key: 'early_offense', label: 'Early offense before they set', group: 'Game flow' },
+  { key: 'delay', label: 'Delay game', group: 'Game flow' },
+  { key: 'kill_clock', label: 'Kill the clock with the lead', group: 'Game flow' },
+  { key: 'get_shooter', label: 'Get our shooter a look', group: 'Game flow' },
+  { key: 'get_big', label: 'Get our big a touch', group: 'Game flow' },
+  { key: 'get_pg', label: 'Get our point guard downhill', group: 'Game flow' },
+  { key: 'iso', label: 'Isolation for our best player', group: 'Game flow' },
+  { key: 'mismatch', label: 'Attack a mismatch', group: 'Game flow' },
+  { key: 'hot_hand', label: 'Feed the hot hand', group: 'Game flow' },
+  { key: 'cold_start', label: 'Cold start, get an easy one', group: 'Game flow' },
+  { key: 'ft_they_shoot', label: 'Their free throw, box out and go', group: 'Free throws and dead balls' },
+  { key: 'ft_they_miss_push', label: 'They miss the free throw, push', group: 'Free throws and dead balls' },
+  { key: 'ft_block_out', label: 'Free throw block out', group: 'Free throws and dead balls' },
+  { key: 'jump_ball_lose', label: 'Jump ball, they win the tip', group: 'Free throws and dead balls' },
+  { key: 'held_ball', label: 'Held ball, arrow ours', group: 'Free throws and dead balls' },
+  { key: 'after_tech', label: 'After a technical foul', group: 'Free throws and dead balls' },
+  { key: 'their_timeout', label: 'Their timeout, our ball', group: 'Free throws and dead balls' },
+  { key: 'sub_dead_ball', label: 'Substitution dead ball', group: 'Free throws and dead balls' },
+  { key: 'no_pg', label: 'Point guard on the bench', group: 'Personnel' },
+  { key: 'no_big', label: 'No big on the floor', group: 'Personnel' },
+  { key: 'small_ball', label: 'Small ball lineup', group: 'Personnel' },
+  { key: 'two_bigs', label: 'Two bigs on the floor', group: 'Personnel' },
+  { key: 'five_shooters', label: 'Five shooters on the floor', group: 'Personnel' },
+  { key: 'star_out', label: 'Best player on the bench', group: 'Personnel' },
+  { key: 'big_foul_trouble', label: 'Big in foul trouble', group: 'Personnel' },
+  { key: 'young_lineup', label: 'Young lineup, keep it simple', group: 'Personnel' },
+  { key: 'second_unit', label: 'Second unit sets', group: 'Personnel' },
+  { key: 'primary_break', label: 'Primary break', group: 'Transition' },
+  { key: 'secondary', label: 'Secondary break', group: 'Transition' },
+  { key: 'drag', label: 'Drag screen in transition', group: 'Transition' },
+  { key: 'pitch_ahead', label: 'Pitch ahead', group: 'Transition' },
+  { key: 'trail_three', label: 'Trailer three', group: 'Transition' },
+  { key: 'rim_run', label: 'Rim run', group: 'Transition' },
+  { key: 'numbers', label: 'Numbers advantage', group: 'Transition' },
+  { key: 'flow_into_set', label: 'Flow into the set', group: 'Transition' },
   ];
   var ENDGAME_LEAVES = [
     { key: 'ball_down3', side: 'ball', label: 'Down 3' }, { key: 'ball_down2', side: 'ball', label: 'Down 2' }, { key: 'ball_down1', side: 'ball', label: 'Down 1' },
@@ -370,6 +478,22 @@
     'Box': { O1: [250, 335], O2: [320, 190], O3: [180, 190], O4: [180, 95], O5: [320, 95] },
     '1-4 high': { O1: [250, 335], O2: [445, 195], O3: [55, 195], O4: [180, 195], O5: [320, 195] },
     'Stack': { O1: [250, 335], O2: [330, 210], O3: [330, 160], O4: [330, 110], O5: [170, 95] },
+    'Elbow': { O1: [250, 335], O5: [320, 200], O2: [460, 55], O3: [70, 240], O4: [40, 55] },
+    'Delay (5 at the top)': { O5: [250, 335], O1: [340, 325], O2: [460, 55], O3: [160, 325], O4: [40, 55] },
+    'Zipper': { O1: [250, 335], O2: [305, 85], O5: [320, 200], O3: [70, 240], O4: [195, 85] },
+    'Floppy': { O1: [250, 335], O2: [250, 85], O4: [195, 85], O5: [305, 85], O3: [70, 240] },
+    'Pistol (21)': { O1: [340, 325], O2: [430, 240], O5: [250, 390], O3: [40, 55], O4: [70, 240] },
+    'Spread': { O1: [250, 385], O5: [250, 165], O2: [460, 55], O3: [40, 55], O4: [70, 240] },
+    'Diamond': { O1: [250, 335], O5: [250, 200], O2: [430, 240], O3: [70, 240], O4: [250, 85] },
+    'Two guard front': { O1: [160, 325], O2: [340, 325], O3: [430, 240], O4: [70, 240], O5: [250, 200] },
+    'Triangle (sideline)': { O1: [430, 240], O2: [460, 55], O5: [305, 85], O3: [250, 335], O4: [180, 200] },
+    'Flex': { O1: [160, 325], O2: [340, 325], O3: [40, 55], O4: [195, 85], O5: [305, 85] },
+    '1-4 low': { O1: [250, 335], O2: [460, 55], O3: [40, 55], O4: [170, 110], O5: [330, 110] },
+    'Baseline out (line)': { O3: [300, -25], O5: [300, 100], O4: [300, 145], O2: [300, 190], O1: [300, 235] },
+    'Baseline out (stack)': { O3: [300, -25], O1: [305, 100], O4: [305, 145], O5: [305, 190], O2: [250, 335] },
+    'Baseline out (flat)': { O3: [300, -25], O1: [130, 200], O4: [210, 200], O5: [290, 200], O2: [370, 200] },
+    'Sideline out (stack)': { O3: [-25, 250], O1: [150, 250], O2: [150, 205], O4: [150, 160], O5: [150, 115] },
+    'Sideline out (line)': { O3: [-25, 250], O5: [120, 290], O4: [200, 290], O2: [280, 290], O1: [360, 290] },
     'Baseline out (box)': { O3: [300, -25], O1: [180, 190], O2: [320, 190], O4: [180, 90], O5: [320, 90] },
     'Sideline out': { O3: [-25, 250], O1: [250, 330], O2: [110, 140], O4: [230, 230], O5: [320, 110] }
   };
@@ -427,7 +551,7 @@
 
   window.PBCourt = {
     C: C, R: R, OFF: OFF, DEF: DEF, ALL: ALL, dims: dims, courtSVG: courtSVG, action: action, stateAt: stateAt, stillState: stillState,
-    arrowsSVG: arrowsSVG, tokensSVG: tokensSVG, viewOpts: viewOpts, shortName: shortName, tokenSVG: tokenSVG, ballSVG: ballSVG, ghostsSVG: ghostsSVG, watermark: watermark,
+    arrowsSVG: arrowsSVG, tokensSVG: tokensSVG, rims: rims, viewOpts: viewOpts, shortName: shortName, tokenSVG: tokenSVG, ballSVG: ballSVG, ghostsSVG: ghostsSVG, watermark: watermark,
     SITUATIONS: SITUATIONS, ENDGAME_LEAVES: ENDGAME_LEAVES, GOAL_METRICS: GOAL_METRICS, goalValue: goalValue, goalPct: goalPct, goalMet: goalMet, goalFmt: goalFmt, SETS: SETS, FULL_SETS: FULL_SETS, DEF_SETS: DEF_SETS, manD: manD, samples: samples, diagram: diagram, duration: duration, nearestRim: nearestRim, dist: dist, lerp: lerp, esc: esc, Player: Player
   };
 })();

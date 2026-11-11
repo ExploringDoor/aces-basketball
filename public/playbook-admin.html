@@ -233,6 +233,9 @@ tr:last-child td{border-bottom:0}
 .sel-box{background:var(--gold-50);border:1px solid #efe2bd;border-radius:12px;padding:12px}
 .sel-box h4{font-family:'Oswald',sans-serif;font-size:15px;margin-bottom:8px}
 .mtypes{display:flex;gap:6px;flex-wrap:wrap}
+.ed-pop{position:absolute;z-index:6;background:#16161a;color:#fff;border-radius:12px;padding:5px;display:flex;gap:3px;box-shadow:0 12px 30px rgba(0,0,0,.3)} .ed-pop button{border:0;background:transparent;color:#fff;font:inherit;font-weight:600;font-size:13px;padding:7px 10px;border-radius:8px;cursor:pointer;white-space:nowrap} .ed-pop button:hover{background:rgba(255,255,255,.12)} .ed-pop button[aria-pressed="true"]{background:var(--gold);color:#241a00} .ed-pop.hide{display:none}
+.ed-court svg .mh{cursor:move} .ed-court svg .rimhit{cursor:pointer}
+.kbd{display:inline-block;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:5px;padding:0 5px;font-size:11.5px;font-family:ui-monospace,Menlo,monospace;color:var(--ink-2);background:#fff;margin:0 1px}
 .pf{display:flex;gap:6px}
 .pf button{flex:1}
 .clipbox{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fafafb}
@@ -790,6 +793,7 @@ body.assistant .coach-only,body.assistant [data-edit].btn,body.assistant [data-a
         <span style="flex:1"></span>
         <select class="inp" id="edSet" style="width:auto;min-width:160px"><option value="">Start from a set…</option></select>
         <select class="inp" id="edDef" style="width:auto;min-width:150px"><option value="">Add defense…</option></select>
+        <button class="btn sm" type="button" id="edUndo" title="Undo (Cmd or Ctrl+Z)">Undo</button><button class="btn sm" type="button" id="edRedo" title="Redo (Shift+Cmd+Z)">Redo</button><button class="btn sm" type="button" id="edMirror" title="Flip the whole play to the other side (M)">Mirror</button>
       </div>
       <div class="ed-lu" id="edLuBar">
         <div class="ed-lu-head"><span class="lbl" id="edLineupH">Players on the spots</span><span class="hlp" id="edLineupHelp">Names show on the court. Each player sees a YOU ring on his spot.</span>
@@ -798,6 +802,7 @@ body.assistant .coach-only,body.assistant [data-edit].btn,body.assistant [data-a
       </div>
       <div class="ed-court" id="edCourtWrap">
         <svg id="edSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="ed-pop hide" id="edPop"></div>
         <div class="ed-hint" id="edHint"></div>
       </div>
       <div class="ed-mob"><button class="btn" type="button" data-mob="edLeft">Details</button><button class="btn" type="button" data-mob="edRight">This step</button></div>
@@ -812,6 +817,7 @@ body.assistant .coach-only,body.assistant [data-edit].btn,body.assistant [data-a
       <div id="edSel" class="sel-box hide">
         <h4 id="edSelName"></h4>
         <div class="mtypes" id="edMoveTypes"></div>
+        <div class="mtypes" id="edTiming" style="margin-top:8px"></div>
         <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button class="btn sm" type="button" id="edBend">Bend the path</button><button class="btn sm" type="button" id="edStraight">Straighten</button><button class="btn sm" type="button" id="edUndoMove">Put back</button></div>
         <div class="help" style="font-size:13px;color:var(--ink-2);margin-top:8px" id="edSelHelp"></div>
       </div>
@@ -908,9 +914,8 @@ body.assistant .coach-only,body.assistant [data-edit].btn,body.assistant [data-a
     <aside class="lib-side" id="libSide"><div class="empty"><h3>Pick a play</h3><p>Tap any play to watch it run, read the coaching points, and add it to your playbook.</p></div></aside>
   </div>
 </div>
-<script src="/playbook-court.js?v=2"></script>
+<script src="/playbook-court.js?v=3"></script>
 <script src="/playbook-drills.js"></script>
-<script src="/playbook-library.js?v=4"></script>
 <script>
 (function(){
 var KEY_STORE='dba_admin_key', DEMO=/[?&]demo=1/.test(location.search);
@@ -1157,7 +1162,9 @@ function renderSits(){
   var SIDES=[['ball','We have the ball'],['def','They have the ball'],['inb','We are inbounding']];
   $('egEd').innerHTML=SIDES.map(function(sd){ return '<div class="eg-side"><b>'+sd[1]+'</b>'+PBCourt.ENDGAME_LEAVES.filter(function(l){return l.side===sd[0];}).map(function(l){ var v=EG[l.key]||(EG[l.key]={play_ids:[],note:''}); return '<div class="eg-leaf" data-leaf="'+l.key+'"><div class="lab">'+esc(l.label)+'</div><div>'+(l.key==='def_up3'?'<div class="fd"><button type="button" data-foul="1" aria-pressed="'+(!!v.foul)+'">Foul</button><button type="button" data-foul="0" aria-pressed="'+(!v.foul)+'">Play defense</button></div>':'')+'<div class="chips">'+(ours.length?ours.map(function(p){ return '<button class="fchip" type="button" data-egp="'+esc(p.id)+'" aria-pressed="'+((v.play_ids||[]).indexOf(p.id)>=0)+'">'+esc(p.name)+'</button>'; }).join(''):'<span class="muted" style="font-size:13px">Draw some plays first.</span>')+'</div><input class="inp" data-egnote="1" value="'+esc(v.note||'')+'" placeholder="One line for the huddle" maxlength="300"></div></div>'; }).join('')+'</div>'; }).join('');
   var byKey={}; ours.forEach(function(p){ (p.situations||[]).forEach(function(k){ (byKey[k]=byKey[k]||[]).push(p.name); }); });
-  $('sitOverview').innerHTML='<div class="sit-ov">'+PBCourt.SITUATIONS.map(function(d){ var l=byKey[d.key]||[]; return '<div class="sr"><b>'+esc(d.label)+'</b><span>'+(l.length?esc(l.join(', ')):'<i>nothing tagged</i>')+'</span></div>'; }).join('')+'</div>';
+  var sg={}, so=[]; PBCourt.SITUATIONS.forEach(function(d){ var l=byKey[d.key]||[]; if(!l.length) return; if(!sg[d.group]){ sg[d.group]=[]; so.push(d.group); } sg[d.group].push('<div class="sr"><b>'+esc(d.label)+'</b><span>'+esc(l.join(', '))+'</span></div>'); });
+  var untagged=PBCourt.SITUATIONS.length-Object.keys(byKey).length;
+  $('sitOverview').innerHTML='<div class="sit-ov">'+(so.length?so.map(function(g){ return '<div style="margin:8px 0 2px;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-3);font-weight:700">'+esc(g)+'</div>'+sg[g].join(''); }).join(''):'<div class="muted">Nothing tagged yet. Tag a play in the editor, or add from the library: library plays come tagged.</div>')+'<div class="muted" style="font-size:13px;margin-top:10px">'+PBCourt.SITUATIONS.length+' situations to choose from, '+untagged+' with nothing tagged yet.</div></div>';
   var byId={}; ours.forEach(function(p){ byId[p.id]=p; }); var KL={call:'Call',offense:'Offense',defense:'Defense',action:'Action',other:''};
   $('termList').innerHTML=terms.length?terms.map(function(t){ var p=t.play_id&&byId[t.play_id]; return '<div class="term-row"><div><div class="tt">'+esc(t.term)+(KL[t.kind]?'<small>'+KL[t.kind]+'</small>':'')+'</div><div class="tm">'+esc(t.means)+'</div>'+(p?'<div class="tp">→ '+esc(p.name)+'</div>':'')+'</div><div class="rowacts"><button class="btn sm ghost" type="button" data-tedit="'+esc(t.id)+'">Edit</button><button class="iconbtn" style="width:32px;height:32px" type="button" data-tdel="'+esc(t.id)+'" title="Delete">'+svg('i-trash')+'</button></div></div>'; }).join(''):'<div class="muted" style="font-size:14px">No words yet. Start with the calls you use every game.</div>';
 }
@@ -1984,7 +1991,7 @@ function openEditor(id,kind){
   var play=src?JSON.parse(JSON.stringify(src)):{ name:'', kind:kind||'ours', opponent:'', category:kind==='scout'?'Offense':'Offense', court:'half', notes:'', groups:[], visible:false, lineup:{}, frames:[blankFrame()] };
   if(!play.lineup) play.lineup={}; if(!play.groups) play.groups=[];
   (play.frames||[]).forEach(function(f){ f.moves=f.moves||{}; f.pos=f.pos||{}; });
-  E={ id:src?src.id:null, play:play, at:0, sel:'', bending:false, dirty:false };
+  E={ id:src?src.id:null, play:play, at:0, sel:'', bending:false, dirty:false, hist:[], redo:[], last:null };
   if(!src){ var set=PBCourt.SETS['Five out']; TOK.slice(0,5).forEach(function(k){ play.frames[0].pos[k]=set[k].slice(); }); play.frames[0].ball='O1'; }
   $('edName').value=play.name; $('edNotes').value=play.notes||''; $('edTips').value=(play.tips||[]).join('\n'); $('edReads').value=(play.reads||[]).map(function(r){ return r.when+' | '+r.then+(r.frame?' | '+r.frame:''); }).join('\n'); $('edDue').value=play.due||''; if(!play.signal) play.signal={call:'',photo:''}; $('edSigCall').value=play.signal.call||''; renderSig(); if(!play.situations) play.situations=[]; renderSitsChips(); renderVn(); if(!play.marks) play.marks=[]; $('edVisible').checked=!!play.visible; $('edOpp').value=play.opponent||'';
   $('edOppFld').classList.toggle('hide',!isScout());
@@ -2002,7 +2009,20 @@ function openEditor(id,kind){
 }
 function closeEditor(){ if(E&&E.dirty&&!window.confirm('You have unsaved changes. Close anyway?')) return; if(REC){ REC.discard=true; stopRec(); } if(E&&E.newClip&&E.dirty) api('drop_clip',{url:E.newClip.url}); $('editor').classList.remove('on'); document.body.style.overflow=''; E=null; }
 $('edClose').addEventListener('click',closeEditor);
-function dirty(){ if(E) E.dirty=true; }
+function snapState(){ return JSON.stringify({frames:E.play.frames,at:E.at}); }
+// every change to the court is one undo step: drawAll() remembers the state it drew, dirty() files it when something changed
+function dirty(){ if(!E) return; E.dirty=true; var now=snapState(); if(E.last&&now!==E.last&&E.hist[E.hist.length-1]!==E.last){ E.hist.push(E.last); if(E.hist.length>60) E.hist.shift(); E.redo=[]; } }
+function edUndo(){ if(!E||!E.hist.length) return toast('Nothing to undo.'); E.redo.push(snapState()); var st=JSON.parse(E.hist.pop()); E.play.frames=st.frames; E.at=Math.min(st.at,st.frames.length-1); E.sel=''; E.bending=false; E.dirty=true; drawAll(); }
+function edRedo(){ if(!E||!E.redo.length) return toast('Nothing to redo.'); E.hist.push(snapState()); var st=JSON.parse(E.redo.pop()); E.play.frames=st.frames; E.at=Math.min(st.at,st.frames.length-1); E.sel=''; E.bending=false; E.dirty=true; drawAll(); }
+$('edUndo').addEventListener('click',edUndo); $('edRedo').addEventListener('click',edRedo);
+// mirror: the whole play flips to the other side, notes swap left and right
+function mirrorPlay(){
+  var w=PBCourt.dims(E.play.court).w, flip=function(xy){ return [Math.round((w-xy[0])*10)/10,xy[1]]; }, swap=function(t){ return String(t||'').replace(/\b(right|left)\b/gi,function(m){ var r=m.toLowerCase()==='right'?'left':'right'; return m[0]===m[0].toUpperCase()?r.charAt(0).toUpperCase()+r.slice(1):r; }); };
+  E.play.frames.forEach(function(f){ Object.keys(f.pos).forEach(function(k){ f.pos[k]=flip(f.pos[k]); }); Object.keys(f.moves||{}).forEach(function(k){ if(f.moves[k].c) f.moves[k].c=flip(f.moves[k].c); }); f.note=swap(f.note); });
+  E.play.notes=swap(E.play.notes); E.play.tips=(E.play.tips||[]).map(swap); $('edNotes').value=E.play.notes||''; $('edTips').value=(E.play.tips||[]).join('\n');
+  dirty(); drawAll(); toast('Mirrored. Left is right now.');
+}
+$('edMirror').addEventListener('click',mirrorPlay);
 function renderGroupsChips(){
   var g=groups();
   $('edGroups').innerHTML=g.length?g.map(function(x){ return '<button class="fchip" type="button" data-grp="'+esc(x)+'" aria-pressed="'+(E.play.groups.indexOf(x)>=0)+'">'+esc(x)+'</button>'; }).join(''):'<span class="muted" style="font-size:13.5px">Give players a group (Varsity, JV) and you can pick it here.</span>';
@@ -2075,8 +2095,16 @@ $('edName').addEventListener('input',function(){ E.play.name=this.value; dirty()
 $('edOpp').addEventListener('input',function(){ E.play.opponent=this.value; dirty(); });
 $('edNotes').addEventListener('input',function(){ E.play.notes=this.value; dirty(); });
 $('edDue').addEventListener('change',function(){ E.play.due=this.value||''; dirty(); });
-function renderSitsChips(){ $('edSits').innerHTML=PBCourt.SITUATIONS.map(function(d){ return '<button class="fchip" type="button" data-sit="'+d.key+'" aria-pressed="'+(E.play.situations.indexOf(d.key)>=0)+'">'+esc(d.label)+'</button>'; }).join(''); }
-$('edSits').addEventListener('click',function(e){ var b=e.target.closest('[data-sit]'); if(!b) return; var k=b.getAttribute('data-sit'), i=E.play.situations.indexOf(k); if(i<0){ if(E.play.situations.length>=6) return toast('Six situations max on one play.',true); E.play.situations.push(k); } else E.play.situations.splice(i,1); dirty(); renderSitsChips(); });
+function renderSitsChips(){
+  // 100+ tags: grouped, with the picked ones first and a filter box
+  var q=(E.sitQ||'').toLowerCase(), picked=E.play.situations||[], groups=[], by={};
+  PBCourt.SITUATIONS.forEach(function(d){ if(q&&(d.label+' '+d.group).toLowerCase().indexOf(q)<0&&picked.indexOf(d.key)<0) return; if(!by[d.group]){ by[d.group]=[]; groups.push(d.group); } by[d.group].push(d); });
+  var h='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px"><input class="inp" id="edSitQ" placeholder="Filter: zone, late, press, switch..." value="'+esc(E.sitQ||'')+'" style="max-width:260px;padding:7px 10px"><span class="muted" style="font-size:13px">'+picked.length+' of 10 picked'+(picked.length?': '+picked.map(function(k){ var d=PBCourt.SITUATIONS.filter(function(x){return x.key===k;})[0]; return esc(d?d.label:k); }).join(', '):'')+'</span></div>';
+  h+=groups.map(function(g){ return '<div style="margin:6px 0 2px;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-3);font-weight:700">'+esc(g)+'</div><div class="chips" style="margin-bottom:6px">'+by[g].map(function(d){ return '<button class="fchip" type="button" data-sit="'+d.key+'" aria-pressed="'+(picked.indexOf(d.key)>=0)+'">'+esc(d.label)+'</button>'; }).join('')+'</div>'; }).join('');
+  $('edSits').innerHTML=h;
+  $('edSitQ').addEventListener('input',function(){ E.sitQ=this.value; var pos=this.selectionStart; renderSitsChips(); var el=$('edSitQ'); el.focus(); try{ el.setSelectionRange(pos,pos); }catch(e){} });
+}
+$('edSits').addEventListener('click',function(e){ var b=e.target.closest('[data-sit]'); if(!b) return; var k=b.getAttribute('data-sit'), i=E.play.situations.indexOf(k); if(i<0){ if(E.play.situations.length>=10) return toast('Ten situations max on one play.',true); E.play.situations.push(k); } else E.play.situations.splice(i,1); dirty(); renderSitsChips(); });
 /* voice note: record (or upload), turn it into a small 16kHz WAV every phone can play, push it to Blob */
 var REC=null;
 function renderVn(){
@@ -2157,7 +2185,7 @@ $('edToks').addEventListener('click',function(e){
 function freeSpot(k){ var d=PBCourt.dims(E.play.court), y=k.charAt(0)==='X'?d.h*0.45:d.h*0.78, n=+k.charAt(1); return [60+(n-1)*95,y]; }
 
 /* drawing */
-function drawAll(){ drawCourt(); renderStrip(); renderStepPanel(); renderToks(); }
+function drawAll(){ hidePop(); drawCourt(); renderStrip(); renderStepPanel(); renderToks(); E.last=snapState(); $('edUndo').disabled=!E.hist.length; $('edRedo').disabled=!E.redo.length; }
 function drawCourt(){
   var play=E.play, d=PBCourt.dims(play.court), f=cur(), vo=PBCourt.viewOpts(viewPlay(play));
   edSvg.setAttribute('viewBox',d.vb);
@@ -2165,22 +2193,25 @@ function drawCourt(){
   s+='<g>'+PBCourt.ghostsSVG(play,E.at)+'</g>';
   s+='<g>'+(E.at>0?PBCourt.arrowsSVG(play,E.at):'')+'</g>';
   s+='<g>'+PBCourt.tokensSVG(PBCourt.stillState(play,E.at),{selected:E.sel,hit:true,names:vo.names,scout:vo.scout})+'</g>';
-  // bend handle for the selected move
-  if(E.sel&&E.at>0){ var m=PBCourt.action(play,E.at).moves.find(function(x){return x.id===E.sel;}); if(m){ s+='<g class="ctl" data-ctl="'+E.sel+'"><line x1="'+m.a[0]+'" y1="'+m.a[1]+'" x2="'+m.c[0]+'" y2="'+m.c[1]+'" stroke="#c9a44a" stroke-width="1.2" stroke-dasharray="4 4"/><line x1="'+m.b[0]+'" y1="'+m.b[1]+'" x2="'+m.c[0]+'" y2="'+m.c[1]+'" stroke="#c9a44a" stroke-width="1.2" stroke-dasharray="4 4"/><circle cx="'+m.c[0]+'" cy="'+m.c[1]+'" r="14" fill="transparent"/><circle cx="'+m.c[0]+'" cy="'+m.c[1]+'" r="7" fill="#fff" stroke="#c9a44a" stroke-width="3"/></g>'; } }
+  // a handle on every path (drag it to bend), bigger with guide lines on the selected one
+  if(E.at>0){ PBCourt.action(play,E.at).moves.forEach(function(m){ var on=m.id===E.sel;
+    s+='<g class="ctl mh" data-ctl="'+m.id+'">'+(on?'<line x1="'+m.a[0]+'" y1="'+m.a[1]+'" x2="'+m.c[0]+'" y2="'+m.c[1]+'" stroke="#c9a44a" stroke-width="1.2" stroke-dasharray="4 4"/><line x1="'+m.b[0]+'" y1="'+m.b[1]+'" x2="'+m.c[0]+'" y2="'+m.c[1]+'" stroke="#c9a44a" stroke-width="1.2" stroke-dasharray="4 4"/>':'')+'<circle cx="'+m.c[0]+'" cy="'+m.c[1]+'" r="14" fill="transparent"/><circle cx="'+m.c[0]+'" cy="'+m.c[1]+'" r="'+(on?7:4.5)+'" fill="#fff" stroke="#c9a44a" stroke-width="'+(on?3:2)+'"'+(on?'':' opacity=".75"')+'/></g>'; }); }
+  // the rim is a target: with the ball handler selected, tap it for the shot
+  if(E.at>0&&E.sel&&f.ball===E.sel){ PBCourt.rims(play.court).forEach(function(r){ s+='<g class="rimhit" data-rim="1"><circle cx="'+r[0]+'" cy="'+r[1]+'" r="30" fill="#c9a44a" fill-opacity=".18" stroke="#c9a44a" stroke-width="2" stroke-dasharray="5 4"/><text x="'+r[0]+'" y="'+(r[1]+ (r[1]<100?48:-40))+'" font-family="Oswald,Arial,sans-serif" font-size="12" font-weight="700" fill="#9c7a2a" text-anchor="middle">TAP TO SHOOT</text></g>'; }); }
   edSvg.innerHTML=s;
   hint();
 }
 function hint(){
   var h=$('edHint'), f=cur();
-  if(E.at===0) h.textContent=Object.keys(f.pos).length?'Drag players to their starting spots. Then add a step.':'Pick a set above, or turn players on.';
-  else if(E.sel&&E.bending) h.textContent='Drag the gold handle to bend '+E.sel.charAt(1)+'\'s path.';
-  else if(E.sel) h.textContent='Drag '+E.sel.charAt(1)+' where he goes. Pick cut, dribble or screen on the right.';
-  else h.textContent='Drag anyone who moves on this step. Tap a player to change his line.';
+  if(E.at===0) h.textContent=Object.keys(f.pos).length?'Drag players to their starting spots. Then Next step.':'Pick a set above, or turn players on.';
+  else if(E.sel&&f.ball===E.sel) h.textContent=E.sel.charAt(1)+' has the ball. Tap a teammate to pass, tap the rim to shoot, or drag him to dribble.';
+  else if(E.sel) h.textContent='Drag '+E.sel.charAt(1)+' along the path you want. End on a teammate to screen. Hold him for more.';
+  else h.textContent='Drag anyone who moves. The path you draw is the arrow. Hold a player for cut, dribble or screen.';
 }
 function renderStrip(){
   var play=E.play, v=viewPlay(play);
   $('edStrip').innerHTML=play.frames.map(function(f,i){ return '<button class="fr'+(play.court==='full'?' full':'')+'" type="button" data-fr="'+i+'" aria-current="'+(i===E.at)+'" title="'+esc(f.note||'')+'"><span class="n">'+(i===0?'Setup':'Step '+i)+'</span>'+PBCourt.diagram(v,i,{noNames:true})+'</button>'; }).join('')+
-    '<button class="fr-add" type="button" id="edAddFr">'+svg('i-plus')+'Add step</button>';
+    '<button class="fr-add" type="button" id="edAddFr" title="Everyone starts the next step where their arrows end (N)">'+svg('i-plus')+'Next step</button>';
   var el=$('edStrip').querySelector('[aria-current="true"]'); if(el&&el.scrollIntoView) el.scrollIntoView({block:'nearest',inline:'nearest'});
 }
 $('edStrip').addEventListener('click',function(e){
@@ -2219,9 +2250,10 @@ function renderStepPanel(){
     $('edMoveTypes').innerHTML=[['cut','Cut','<path d="M2 7H26" stroke="currentColor" stroke-width="2.4"/><path d="M34 7L25 2.5V11.5Z" fill="currentColor"/>'],['dribble','Dribble','<path d="M2 7L6 2L10 12L14 2L18 12L22 2L26 7" stroke="currentColor" stroke-width="2" fill="none"/><path d="M34 7L25 2.5V11.5Z" fill="currentColor"/>'],['screen','Screen','<path d="M2 7H30M30 1V13" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>']].map(function(x){ return '<button class="tool" type="button" data-mt="'+x[0]+'" aria-pressed="'+(t===x[0])+'"'+(m?'':' disabled')+'><svg viewBox="0 0 36 14">'+x[2]+'</svg>'+x[1]+'</button>'; }).join('');
     $('edBend').disabled=!m; $('edStraight').disabled=!(m&&m.curved); $('edUndoMove').disabled=!m;
     $('edBend').setAttribute('aria-pressed',String(E.bending));
+    var late=!!(f.moves[E.sel]&&f.moves[E.sel].late); $('edTiming').innerHTML=m?[['now','With the others'],['late','Waits, then goes']].map(function(x){ return '<button class="tool" type="button" data-tm="'+x[0]+'" aria-pressed="'+((x[0]==='late')===late)+'">'+x[1]+'</button>'; }).join(''):'';
     $('edSelHelp').textContent=m?'Drag him again to change where he ends up.':'Drag him on the court to make him move this step.';
   }
-  $('edStepHelp').textContent=E.at===0?'The setup is where everyone starts. Add a step for the first thing that happens.':'On each step, drag the players who move. Change the ball to draw a pass. Keep steps small: one or two things at a time reads best.';
+  $('edStepHelp').innerHTML=E.at===0?'The setup is where everyone starts. Press Next step for the first thing that happens.':'Drag the players who move; the path you draw is the arrow. With the ball handler selected, tap a teammate to pass and the rim to shoot. Hold a player for cut, dribble, screen, waits, put back.'+(window.matchMedia&&window.matchMedia('(pointer:fine)').matches?'<div style="margin-top:8px"><span class="kbd">←</span><span class="kbd">→</span> steps · <span class="kbd">N</span> next step · <span class="kbd">1</span>…<span class="kbd">5</span> select · <span class="kbd">B</span> ball · <span class="kbd">C</span><span class="kbd">D</span><span class="kbd">S</span> cut, dribble, screen · <span class="kbd">⌫</span> put back · <span class="kbd">M</span> mirror · <span class="kbd">Space</span> preview · <span class="kbd">⌘Z</span> undo</div>':'');
 }
 $('edMoveTypes').addEventListener('click',function(e){ var b=e.target.closest('[data-mt]'); if(!b||!E.sel) return; var f=cur(); f.moves[E.sel]=Object.assign({},f.moves[E.sel]||{},{t:b.getAttribute('data-mt')}); dirty(); drawAll(); });
 $('edBend').addEventListener('click',function(){ E.bending=!E.bending; var f=cur(), m=PBCourt.action(E.play,E.at).moves.find(function(x){return x.id===E.sel;}); if(E.bending&&m&&!m.curved){ var dx=m.b[0]-m.a[0], dy=m.b[1]-m.a[1], L=Math.hypot(dx,dy)||1; f.moves[E.sel]=Object.assign({},f.moves[E.sel]||{t:'cut'},{c:[Math.round(m.c[0]-dy/L*Math.min(60,L*0.35)),Math.round(m.c[1]+dx/L*Math.min(60,L*0.35))]}); dirty(); } drawAll(); });
@@ -2264,32 +2296,100 @@ var drag=null;
 function svgPt(e){ var pt=edSvg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; var m=edSvg.getScreenCTM(); if(!m) return [0,0]; var p=pt.matrixTransform(m.inverse()); return [p.x,p.y]; }
 function clampPt(p){ var d=PBCourt.dims(E.play.court), m=d.m; return [Math.round(Math.min(d.w+m,Math.max(-m,p[0]))*10)/10, Math.round(Math.min(d.h+m,Math.max(-m,p[1]))*10)/10]; }
 edSvg.addEventListener('pointerdown',function(e){
-  if(!E) return;
-  var ctl=e.target.closest('[data-ctl]'); var tk=e.target.closest('.tk');
-  if(ctl){ drag={kind:'ctl',id:ctl.getAttribute('data-ctl'),moved:false}; }
-  else if(tk){ var id=tk.getAttribute('data-id'); var f=cur(); if(!f.pos[id]) return; drag={kind:'tok',id:id,start:svgPt(e),orig:f.pos[id].slice(),moved:false}; tk.classList.add('drag'); }
+  if(!E) return; hidePop();
+  var ctl=e.target.closest('[data-ctl]'); var tk=e.target.closest('.tk'); var rim=e.target.closest('[data-rim]');
+  if(rim){ var fb=cur(); if(E.at>0&&E.sel&&fb.ball===E.sel){ fb.ball='rim'; dirty(); drawAll(); toast('Shot by '+E.sel.charAt(1)+'.'); } return; }
+  if(ctl){ drag={kind:'ctl',id:ctl.getAttribute('data-ctl'),moved:false}; E.sel=drag.id; }
+  else if(tk){ var id=tk.getAttribute('data-id'); var f=cur(); if(!f.pos[id]) return; var st=svgPt(e); drag={kind:'tok',id:id,start:st,orig:f.pos[id].slice(),moved:false,path:[st],cx:e.clientX,cy:e.clientY}; tk.classList.add('drag');
+    // hold a player for the quick menu: cut, dribble, screen, straighten, put back, give him the ball
+    drag.timer=setTimeout(function(){ if(drag&&drag.kind==='tok'&&!drag.moved){ drag.lp=true; showPop(drag.id,drag.cx,drag.cy); } },480); }
   else { if(E.sel){ E.sel=''; E.bending=false; drawCourt(); renderStepPanel(); } return; }
-  e.preventDefault(); edSvg.setPointerCapture(e.pointerId);
+  e.preventDefault(); try{ edSvg.setPointerCapture(e.pointerId); }catch(x){}
 });
 edSvg.addEventListener('pointermove',function(e){
   if(!drag) return; var p=clampPt(svgPt(e)), f=cur();
-  if(drag.kind==='tok'){ if(!drag.moved&&PBCourt.dist(p,drag.start)<2) return; drag.moved=true; f.pos[drag.id]=p; if(E.at>0&&f.moves[drag.id]&&f.moves[drag.id].c) delete f.moves[drag.id].c; }
+  if(drag.kind==='tok'){ if(drag.lp) return; if(!drag.moved&&PBCourt.dist(p,drag.start)<4) return; if(!drag.moved){ drag.moved=true; clearTimeout(drag.timer); } f.pos[drag.id]=p; var lp=drag.path[drag.path.length-1]; if(PBCourt.dist(p,lp)>=4) drag.path.push(p); if(E.at>0&&f.moves[drag.id]&&f.moves[drag.id].c) delete f.moves[drag.id].c; }
   else { drag.moved=true; f.moves[drag.id]=Object.assign({},f.moves[drag.id]||{t:'cut'},{c:p}); }
   liveDraw();
 });
 function liveDraw(){ drawCourt(); }
 edSvg.addEventListener('pointerup',endDrag); edSvg.addEventListener('pointercancel',endDrag);
 function endDrag(e){
-  if(!drag) return; var d=drag; drag=null;
+  if(!drag) return; var d=drag; drag=null; clearTimeout(d.timer);
   if(d.kind==='tok'){
-    if(!d.moved){ E.sel=E.sel===d.id?'':d.id; E.bending=false; }
-    else { E.sel=d.id; dirty(); var f=cur(), p=prev();
-      // a ball handler who moves is dribbling unless told otherwise
-      if(E.at>0&&p&&p.ball===d.id&&f.ball===d.id&&!f.moves[d.id]) f.moves[d.id]={t:'dribble'};
+    if(d.lp){ drawCourt(); return; }
+    if(!d.moved){ tapToken(d.id); }
+    else { E.sel=d.id; var f=cur(), p=prev();
+      if(E.at>0&&p&&p.pos[d.id]){
+        var a=p.pos[d.id], b=f.pos[d.id], hadBall=p.ball===d.id&&f.ball===d.id;
+        // the path you drew is the arrow: a real bend becomes the curve
+        var cpt=curveFromPath(a,b,d.path); var mv=f.moves[d.id]||{};
+        if(cpt) mv.c=cpt; else delete mv.c;
+        // ended on a teammate: a screen, or a handoff if he had the ball
+        var near=nearToken(d.id,b);
+        if(near){ var dx=b[0]-near.p[0], dy=b[1]-near.p[1], L=Math.hypot(dx,dy)||1, back=hadBall?22:20; f.pos[d.id]=clampPt([near.p[0]+dx/L*back,near.p[1]+dy/L*back]);
+          if(hadBall){ mv.t='dribble'; f.ball=near.id; f.passFirst=false; toast('Handoff to '+near.id.charAt(1)+'.'); }
+          else { mv.t='screen'; toast(d.id.charAt(1)+' screens for '+near.id.charAt(1)+'.'); } }
+        else if(hadBall&&!mv.t) mv.t='dribble';
+        if(mv.t||mv.c||mv.late) f.moves[d.id]=mv; else delete f.moves[d.id];
+      }
+      dirty();
     }
-  } else dirty();
+  } else { dirty(); }
   drawAll();
 }
+// a tap on a player: pass to him when the selected player has the ball, otherwise select him
+function tapToken(id){
+  var f=cur();
+  if(E.at>0&&E.sel&&E.sel!==id&&f.ball===E.sel){ f.ball=id; dirty(); E.sel=id; toast('Pass to '+id.charAt(1)+'.'); return; }
+  E.sel=E.sel===id?'':id; E.bending=false;
+}
+function nearToken(id,b){ var f=cur(), best=null; Object.keys(f.pos).forEach(function(k){ if(k===id||k.charAt(0)!==id.charAt(0)) return; var dd=PBCourt.dist(f.pos[k],b); if(dd<=34&&(!best||dd<best.d)) best={id:k,p:f.pos[k],d:dd}; }); return best; }
+// quadratic through the point of the drawn path that bends furthest from the straight line; small wobbles stay straight
+function curveFromPath(a,b,path){
+  if(!path||path.length<4) return null; var dx=b[0]-a[0], dy=b[1]-a[1], L=Math.hypot(dx,dy); if(L<40) return null;
+  var best=null, bd=0; path.forEach(function(q){ var t=((q[0]-a[0])*dx+(q[1]-a[1])*dy)/(L*L); if(t<0.15||t>0.85) return; var dd=Math.abs((q[0]-a[0])*dy-(q[1]-a[1])*dx)/L; if(dd>bd){ bd=dd; best=q; } });
+  if(!best||bd<14) return null; return clampPt([2*best[0]-(a[0]+b[0])/2, 2*best[1]-(a[1]+b[1])/2]);
+}
+/* hold menu */
+function showPop(id,cx,cy){
+  var f=cur(), p=prev(), moved=E.at>0&&p&&p.pos[id]&&PBCourt.dist(p.pos[id],f.pos[id])>=3, mv=f.moves[id]||{}, t=mv.t||(f.ball===id&&p&&p.ball===id?'dribble':'cut');
+  var items=[]; if(moved){ items.push(['cut','Cut',t==='cut'],['dribble','Dribble',t==='dribble'],['screen','Screen',t==='screen']); if(mv.c) items.push(['straight','Straighten',false]); items.push(['late','Waits',!!mv.late],['back','Put back',false]); }
+  if(f.ball!==id) items.push(['ball','Give ball',false]); if(E.at>0&&f.ball===id) items.push(['shot','Shoot',false]);
+  if(!items.length) return;
+  var pop=$('edPop'), wrap=$('edCourtWrap').getBoundingClientRect(); pop.innerHTML=items.map(function(x){ return '<button type="button" data-pop="'+x[0]+'" aria-pressed="'+x[2]+'">'+x[1]+'</button>'; }).join(''); pop.classList.remove('hide');
+  var x=Math.max(8,Math.min(wrap.width-pop.offsetWidth-8,cx-wrap.left-pop.offsetWidth/2)), y=Math.max(8,cy-wrap.top-pop.offsetHeight-26); pop.style.left=x+'px'; pop.style.top=y+'px'; pop.setAttribute('data-for',id);
+  E.sel=id; drawCourt(); renderStepPanel();
+}
+function hidePop(){ var pop=$('edPop'); if(pop) pop.classList.add('hide'); }
+$('edPop').addEventListener('click',function(e){ var b=e.target.closest('[data-pop]'); if(!b) return; var id=$('edPop').getAttribute('data-for'), f=cur(), p=prev(), k=b.getAttribute('data-pop'); E.sel=id;
+  if(k==='cut'||k==='dribble'||k==='screen'){ f.moves[id]=Object.assign({},f.moves[id]||{},{t:k}); }
+  else if(k==='straight'){ if(f.moves[id]) delete f.moves[id].c; }
+  else if(k==='late'){ f.moves[id]=Object.assign({},f.moves[id]||{t:'cut'}); if(f.moves[id].late) delete f.moves[id].late; else f.moves[id].late=true; }
+  else if(k==='back'){ if(p&&p.pos[id]){ f.pos[id]=p.pos[id].slice(); delete f.moves[id]; } }
+  else if(k==='ball'){ f.ball=id; }
+  else if(k==='shot'){ f.ball='rim'; }
+  dirty(); drawAll(); });
+$('edTiming').addEventListener('click',function(e){ var b=e.target.closest('[data-tm]'); if(!b||!E.sel) return; var f=cur(); f.moves[E.sel]=Object.assign({},f.moves[E.sel]||{t:'cut'}); if(b.getAttribute('data-tm')==='late') f.moves[E.sel].late=true; else delete f.moves[E.sel].late; dirty(); drawAll(); });
+/* keyboard, desktop */
+document.addEventListener('keydown',function(e){
+  if(!E||!$('editor').classList.contains('on')) return; var tag=(e.target.tagName||'').toLowerCase(); if(tag==='input'||tag==='textarea'||tag==='select'||e.target.isContentEditable) return;
+  var k=e.key, meta=e.metaKey||e.ctrlKey, f=cur();
+  if(meta&&k.toLowerCase()==='z'){ e.preventDefault(); if(e.shiftKey) edRedo(); else edUndo(); return; }
+  if(meta) return;
+  if(k==='ArrowLeft'){ e.preventDefault(); if(E.at>0){ E.at--; E.sel=''; drawAll(); } return; }
+  if(k==='ArrowRight'){ e.preventDefault(); if(E.at<E.play.frames.length-1){ E.at++; E.sel=''; drawAll(); } return; }
+  if(k==='n'||k==='N'){ e.preventDefault(); addFrame(); return; }
+  if(k==='m'||k==='M'){ e.preventDefault(); mirrorPlay(); return; }
+  if(k===' '){ e.preventDefault(); $('edPreview').click(); return; }
+  if(k==='Escape'){ if(E.sel){ E.sel=''; E.bending=false; drawAll(); } hidePop(); return; }
+  if(/^[1-5]$/.test(k)){ var id=(e.shiftKey?'X':'O')+k; if(f.pos[id]){ E.sel=id; drawAll(); } return; }
+  if(!E.sel) return;
+  var p=prev(), moved=E.at>0&&p&&p.pos[E.sel]&&PBCourt.dist(p.pos[E.sel],f.pos[E.sel])>=3;
+  if(k==='b'||k==='B'){ f.ball=E.sel; dirty(); drawAll(); return; }
+  if((k==='c'||k==='C'||k==='d'||k==='D'||k==='s'||k==='S')&&moved){ f.moves[E.sel]=Object.assign({},f.moves[E.sel]||{},{t:{c:'cut',d:'dribble',s:'screen'}[k.toLowerCase()]}); dirty(); drawAll(); return; }
+  if((k==='Backspace'||k==='Delete')&&moved){ e.preventDefault(); f.pos[E.sel]=p.pos[E.sel].slice(); delete f.moves[E.sel]; dirty(); drawAll(); return; }
+});
 
 /* preview + save */
 var previewP=null;
@@ -2340,12 +2440,14 @@ window.addEventListener('hashchange',function(){ if(!$('app').classList.contains
 })();
 
 /* ── premade play library (window.PB_LIBRARY from /playbook-library.js) ── */
-if(window.PB_LIBRARY)(function(){
-  var LIB=window.PB_LIBRARY, $=function(id){ return document.getElementById(id); }, esc=PBCourt.esc;
+(function(){
+  // the library (600+ plays, one big file) loads the first time the coach opens it, not with the board
+  var LIB=null, $=function(id){ return document.getElementById(id); }, esc=PBCourt.esc;
+  function loadLib(cb){ if(window.PB_LIBRARY){ LIB=window.PB_LIBRARY; return cb(); } var b=$('plibBtn'); if(b){ b.disabled=true; b.textContent='Loading the library...'; } var sc=document.createElement('script'); sc.src="/playbook-library.js?v=6"; sc.onload=function(){ LIB=window.PB_LIBRARY; if(b){ b.disabled=false; b.textContent='Add from the library'; } if(LIB) cb(); else toast('The library did not load. Try again.',true); }; sc.onerror=function(){ if(b){ b.disabled=false; b.textContent='Add from the library'; } toast('The library did not load. Check the connection and try again.',true); }; document.head.appendChild(sc); }
   var st={cat:'All',q:'',sel:{},cur:null,player:null,timer:0,mode:'ours',opp:'',wiz:null};
   var SIT={}; PBCourt.SITUATIONS.forEach(function(s){ SIT[s.key]=s.label; });
   function haveNames(){ var h={}; (S.data.plays||[]).forEach(function(p){ if(p.archived) return; if(st.mode==='scout'){ if(p.kind==='scout'&&p.opponent===st.opp) h[p.name.toLowerCase()]=p.id; } else if((p.kind||'ours')==='ours') h[p.name.toLowerCase()]=p.id; }); return h; }
-  function toPlay(l){ var p={ name:l.name, category:l.category, court:l.court, notes:l.notes, tips:l.tips, situations:l.situations, reads:l.reads||[], frames:l.frames, kind:'ours', groups:S.team?[S.team]:[], visible:false }; if(st.mode==='scout'){ p.kind='scout'; p.opponent=st.opp; } return p; }
+  function toPlay(l){ var p={ name:l.name, category:l.category, court:l.court, notes:l.notes, tips:l.tips, situations:l.situations, reads:l.reads||[], signal:{call:l.call||'',photo:''}, frames:l.frames, kind:'ours', groups:S.team?[S.team]:[], visible:false }; if(st.mode==='scout'){ p.kind='scout'; p.opponent=st.opp; } return p; }
   // mode 'ours' adds to Our plays; mode 'scout' adds the same diagrams as an opponent's sets under Scouting
   function openLib(mode){ st.mode=mode==='scout'?'scout':'ours'; st.sel={}; st.cur=null; st.wiz=null; $('libWiz').classList.add('hide');
     $('libOppWrap').classList.toggle('hide',st.mode!=='scout'); $('libWizBtn').classList.toggle('hide',st.mode==='scout'); $('libPackWrap').classList.toggle('hide',st.mode==='scout');
@@ -2464,8 +2566,8 @@ if(window.PB_LIBRARY)(function(){
     if((t=e.target.closest('[data-wq]'))){ st.wiz.a[t.getAttribute('data-wq')]=t.getAttribute('data-wv'); st.wiz.un={}; renderWiz(); return; } });
   $('libWiz').addEventListener('change',function(e){ var t=e.target.closest('[data-wk]'); if(!t) return; if(t.checked) delete st.wiz.un[t.getAttribute('data-wk')]; else st.wiz.un[t.getAttribute('data-wk')]=1; var n=st.wiz.keys.filter(function(k){ return !st.wiz.un[k]; }).length; var b=$('wizAdd'); b.disabled=!n; b.textContent='Add '+n+(n===1?' play':' plays')+' and fill the end of game tree'; $('libWiz').querySelector('.sum b').textContent=n+' plays picked'; });
   $('libOpp').addEventListener('input',function(){ st.opp=this.value.trim(); if(st.cur) preview(st.cur); });
-  $('plibBtn').addEventListener('click',function(){ openLib('ours'); });
-  $('slibBtn').addEventListener('click',function(){ openLib('scout'); });
+  $('plibBtn').addEventListener('click',function(){ loadLib(function(){ openLib('ours'); }); });
+  $('slibBtn').addEventListener('click',function(){ loadLib(function(){ openLib('scout'); }); });
   $('libClose').addEventListener('click',closeLib);
   $('libQ').addEventListener('input',function(){ st.q=this.value.trim().toLowerCase(); renderLib(); });
   $('libView').addEventListener('click',function(e){ var t;
