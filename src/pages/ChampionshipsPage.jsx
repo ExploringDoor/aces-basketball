@@ -135,19 +135,19 @@ export default function ChampionshipsPage() {
 
         {/* Content */}
         <div style={{ marginTop: 32, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12 }}>
-          {activeTab === "state" && championships.state.map((c, i) => (
+          {activeTab === "state" && [...championships.state].sort((a, b) => b.year - a.year).map((c, i) => (
             <FadeIn key={i} delay={i * 0.05}>
               <TitleCard year={c.year} kind="state" label={c.details} onOpen={setLightbox} big />
             </FadeIn>
           ))}
 
-          {activeTab === "district" && championships.district.map((y, i) => (
+          {activeTab === "district" && [...championships.district].sort((a, b) => b - a).map((y, i) => (
             <FadeIn key={i} delay={i * 0.03}>
               <TitleCard year={y} kind="district" label="District 1 Champions" short="District 1" onOpen={setLightbox} />
             </FadeIn>
           ))}
 
-          {activeTab === "league" && championships.league.map((y, i) => (
+          {activeTab === "league" && [...championships.league].sort((a, b) => b - a).map((y, i) => (
             <FadeIn key={i} delay={i * 0.03}>
               <TitleCard year={y} kind="league" label="Central League" onOpen={setLightbox} />
             </FadeIn>
