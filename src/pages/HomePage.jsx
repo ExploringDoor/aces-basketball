@@ -1,5 +1,8 @@
 // pages/HomePage.jsx
 import { useState, useEffect } from "react";
+import { titleStories } from "../shared/titleStories";
+import { historyFor, historyDate } from "../shared/thisDay";
+import StoryModal from "../shared/StoryModal";
 import { FadeIn, CountUp, Spade, Icon, news, nextGame, lastResult, computeRecord, gameTime, teamLogos, sponsors } from "../shared";
 
 const latestNews = [...news].sort((a, b) => (b.sortKey || 0) - (a.sortKey || 0));
@@ -50,6 +53,8 @@ const bannerTexts = [
 ];
 
 export default function HomePage({ goTo }) {
+  const [histStory, setHistStory] = useState(null);
+  const hist = historyFor();
   const [activeBanner, setActiveBanner] = useState(0);
   const [heroIn, setHeroIn] = useState(false);
 
@@ -299,6 +304,36 @@ export default function HomePage({ goTo }) {
           </div>
           <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:12, color:"rgba(255,255,255,0.3)", marginTop:12 }}>Photos via @acesbasketball</div>
         </div>
+      </section>
+
+      {/* This day in Aces history */}
+      <section style={{ background:"#0a0006", padding:"34px 5%", borderTop:"1px solid rgba(132,0,54,0.18)" }}>
+        <div style={{ maxWidth:1100, margin:"0 auto" }}>
+          {(hist.today || hist.next).map(e => {
+            const story = e.storyId ? titleStories.find(t => t.id === e.storyId) : null;
+            const Tag = story ? "button" : "div";
+            return (
+              <Tag key={e.y + e.text} {...(story ? { onClick: () => setHistStory(story) } : {})} style={{
+                width:"100%", textAlign:"left", font:"inherit", color:"inherit", cursor: story ? "pointer" : "default",
+                display:"flex", alignItems:"center", gap:"clamp(14px,3vw,26px)", flexWrap:"wrap",
+                background:"linear-gradient(120deg, rgba(132,0,54,0.28), rgba(0,0,0,0.35))",
+                border:"1px solid rgba(201,164,74,0.3)", borderRadius:14, padding:"18px clamp(16px,3vw,26px)", marginBottom:10,
+              }}>
+                <div style={{ textAlign:"center", minWidth:86 }}>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2.5, color:"var(--gold)", textTransform:"uppercase" }}>{hist.today ? "This day in" : "Coming up in"}</div>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2.5, color:"var(--gold)", textTransform:"uppercase" }}>Aces history</div>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:38, lineHeight:1.05, color:"#fff", marginTop:4 }}>{e.y}</div>
+                </div>
+                <div style={{ flex:"1 1 260px", minWidth:0 }}>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:12, letterSpacing:2, color:"rgba(255,255,255,0.55)", textTransform:"uppercase", marginBottom:5 }}>{historyDate(e)} · {e.label}</div>
+                  <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:16, lineHeight:1.5, color:"rgba(255,255,255,0.88)" }}>{e.text}</div>
+                </div>
+                {story && <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:11, letterSpacing:1.5, color:"var(--gold)", textTransform:"uppercase", whiteSpace:"nowrap" }}>Read the story ›</span>}
+              </Tag>
+            );
+          })}
+        </div>
+        <StoryModal story={histStory} onClose={() => setHistStory(null)} />
       </section>
 
       {/* Latest from Aces Nation */}

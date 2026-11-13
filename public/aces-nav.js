@@ -27,6 +27,7 @@
     { label: "History", children: [
       { id: "history", label: "Program History" },
       { id: "championships", label: "Championships" },
+      { id: "banners", label: "The Rafters" },
       { id: "league", label: "Central League" }
     ] },
     { label: "People", children: [

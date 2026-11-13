@@ -14,6 +14,7 @@ import ThousandClubPage  from "./pages/ThousandClubPage";
 import SchedulePage      from "./pages/SchedulePage";
 import StoryPage         from "./pages/StoryPage";
 import ChampionshipsPage from "./pages/ChampionshipsPage";
+import BannersPage from "./pages/BannersPage";
 import CentralLeaguePage from "./pages/CentralLeaguePage";
 import AlumniPage        from "./pages/AlumniPage";
 import CoachingPage      from "./pages/CoachingPage";
@@ -35,7 +36,7 @@ import NewsletterPage     from "./pages/NewsletterPage";
 
 const PAGES = {
   home: null, news: NewsPage, clinics: FallClinicsPage, store: StorePage, flyers: FlyerPage, standings: StandingsPage, history: HistoryPage, thousand: ThousandClubPage,
-  schedule: SchedulePage, story: StoryPage, championships: ChampionshipsPage,
+  schedule: SchedulePage, story: StoryPage, championships: ChampionshipsPage, banners: BannersPage,
   league: CentralLeaguePage, alumni: AlumniPage, coaching: CoachingPage,
   roster: RosterPage, records: RecordBookPage, photos: PhotosPage,
   videos: VideosPage, kobe: KobePage, social: SocialPage,
@@ -64,6 +65,7 @@ const NAV = [
   { label:"History", children:[
     { id:"history",       label:"Program History" },
     { id:"championships", label:"Championships" },
+    { id:"banners",       label:"The Rafters" },
     { id:"league",        label:"Central League" },
   ]},
   { label:"People", children:[
