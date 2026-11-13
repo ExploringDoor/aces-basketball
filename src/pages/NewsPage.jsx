@@ -1,6 +1,6 @@
 // pages/NewsPage.jsx
 import { useState } from "react";
-import { FadeIn, Spade, Icon, news } from "../shared";
+import { FadeIn, Spade, Icon, news, pressCoverage, titlePhoto, titleName } from "../shared";
 
 const ordered = [...news].sort((a, b) => (b.sortKey || 0) - (a.sortKey || 0));
 
@@ -171,6 +171,39 @@ export default function NewsPage() {
               </div>
             </FadeIn>
           ))}
+        </div>
+
+        {/* Title wins in the press: we link out to the original stories */}
+        <FadeIn>
+          <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 4, color: "var(--gold)", textTransform: "uppercase", marginTop: 64, marginBottom: 8 }}>Championship Coverage</h3>
+          <p style={{ fontFamily: SANS, fontSize: 14, color: "rgba(255,255,255,0.5)", lineHeight: 1.6, margin: "0 0 22px" }}>How the Aces' title wins were covered. Each card opens the original story.</p>
+        </FadeIn>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 16 }}>
+          {pressCoverage.map((a, i) => {
+            const photo = titlePhoto(a.kind, a.year);
+            return (
+              <FadeIn key={a.url} delay={Math.min(i, 6) * 0.04}>
+                <a href={a.url} target="_blank" rel="noopener noreferrer" style={{
+                  height: "100%", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column", textDecoration: "none", color: "inherit",
+                  transition: "all 0.2s ease",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.borderColor = "rgba(201,164,74,0.5)"; e.currentTarget.style.boxShadow = "0 14px 36px rgba(0,0,0,0.4)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"; e.currentTarget.style.boxShadow = "none"; }}>
+                  {photo && <img src={photo} alt="" loading="lazy" style={{ width: "100%", aspectRatio: "16 / 9", objectFit: "cover", objectPosition: "center 30%", display: "block", background: "#000" }} />}
+                  <div style={{ padding: "20px 22px", display: "flex", flexDirection: "column", flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
+                      <span style={{ padding: "3px 10px", borderRadius: 20, background: "rgba(132,0,54,0.3)", border: "1px solid rgba(201,164,74,0.35)", fontFamily: "'Oswald',sans-serif", fontSize: 9, letterSpacing: 1.5, color: "var(--gold)", textTransform: "uppercase" }}>{a.year} {titleName[a.kind].replace(" Champions", "")}</span>
+                      <span style={{ fontFamily: SANS, fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{a.date}</span>
+                    </div>
+                    <h3 style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 600, fontSize: 18, lineHeight: 1.25, margin: "0 0 10px" }}>{a.headline}</h3>
+                    <p style={{ fontFamily: SANS, fontSize: 13.5, color: "rgba(255,255,255,0.55)", lineHeight: 1.6, margin: 0 }}>{a.note}</p>
+                    <span style={{ marginTop: "auto", paddingTop: 16, fontFamily: "'Oswald',sans-serif", fontSize: 11, letterSpacing: 1.5, color: "rgba(201,164,74,0.8)", textTransform: "uppercase" }}>Read at {a.source} ›</span>
+                  </div>
+                </a>
+              </FadeIn>
+            );
+          })}
         </div>
       </div>
     </section>
