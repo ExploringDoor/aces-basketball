@@ -29,6 +29,7 @@
       { id: "championships", label: "Championships" },
       { id: "banners", label: "The Rafters" },
       { id: "seasons", label: "Every Season" },
+      { id: "rivalry", label: "Aces vs. Chester" },
       { id: "league", label: "Central League" }
     ] },
     { label: "People", children: [

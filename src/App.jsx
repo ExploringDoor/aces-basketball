@@ -15,6 +15,7 @@ import SchedulePage      from "./pages/SchedulePage";
 import StoryPage         from "./pages/StoryPage";
 import ChampionshipsPage from "./pages/ChampionshipsPage";
 import BannersPage from "./pages/BannersPage";
+import RivalryPage from "./pages/RivalryPage";
 import SeasonsPage from "./pages/SeasonsPage";
 import NextLevelPage from "./pages/NextLevelPage";
 import CentralLeaguePage from "./pages/CentralLeaguePage";
@@ -38,7 +39,7 @@ import NewsletterPage     from "./pages/NewsletterPage";
 
 const PAGES = {
   home: null, news: NewsPage, clinics: FallClinicsPage, store: StorePage, flyers: FlyerPage, standings: StandingsPage, history: HistoryPage, thousand: ThousandClubPage,
-  schedule: SchedulePage, story: StoryPage, championships: ChampionshipsPage, banners: BannersPage, seasons: SeasonsPage, nextlevel: NextLevelPage,
+  schedule: SchedulePage, story: StoryPage, championships: ChampionshipsPage, banners: BannersPage, rivalry: RivalryPage, seasons: SeasonsPage, nextlevel: NextLevelPage,
   league: CentralLeaguePage, alumni: AlumniPage, coaching: CoachingPage,
   roster: RosterPage, records: RecordBookPage, photos: PhotosPage,
   videos: VideosPage, kobe: KobePage, social: SocialPage,
@@ -69,6 +70,7 @@ const NAV = [
     { id:"championships", label:"Championships" },
     { id:"banners",       label:"The Rafters" },
     { id:"seasons",       label:"Every Season" },
+    { id:"rivalry",       label:"Aces vs. Chester" },
     { id:"league",        label:"Central League" },
   ]},
   { label:"People", children:[

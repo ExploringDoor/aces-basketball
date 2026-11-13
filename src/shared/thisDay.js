@@ -3,6 +3,7 @@
 // titleStories (only the ones with an exact game date); add other moments below.
 //  · m/d/y → month, day, year   · text → one line   · storyId → opens that story
 import { titleStories } from "./titleStories";
+import { seasonGames } from "./seasons";
 
 // Stories whose `sortKey` day is confirmed by the reporting (not estimated).
 const INEXACT = new Set(["title-2018-league", "title-2009-league"]);
@@ -17,7 +18,13 @@ const moments = [
   { m: 12, d: 9,  y: 2023, label: "Hall of Fame", text: "The 1996 state championship team is inducted into the Lower Merion Basketball Hall of Fame." },
 ];
 
-export const acesHistory = [...fromStories, ...moments];
+// Playoff wins and wins over Chester from the published game results (2005-06 on).
+const storyDays = new Set(fromStories.map(e => `${e.y}-${e.m}-${e.d}`));
+const fromGames = Object.entries(seasonGames).flatMap(([season, games]) => games
+  .filter(([m, d, y, opp, note, lm, , r]) => r === "W" && lm != null && (/State|District|Central League|Classic/.test(note) || /^Chester/.test(opp)) && !storyDays.has(`${y}-${m}-${d}`))
+  .map(([m, d, y, opp, note, lm, them]) => ({ m, d, y, label: `${season} season`, text: `Aces ${lm}, ${opp} ${them}${note ? ` in the ${note.replace(/^State Playoffs/, "state playoffs").replace(/^State /, "state ")}` : ""}.` })));
+
+export const acesHistory = [...fromStories, ...moments, ...fromGames];
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 export const historyDate = (e) => `${MONTHS[e.m - 1]} ${e.d}, ${e.y}`;
