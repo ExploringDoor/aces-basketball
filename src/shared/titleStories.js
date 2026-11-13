@@ -53,7 +53,7 @@ export const titleStories = [
     body: [
       "Lower Merion beat Radnor 68-54 at Marple Newtown to win the Central League championship. It was the third straight year the two met in the final, and Radnor came in as the defending champion.",
       "Radnor led by 10 in the first quarter. The game turned after halftime, when the Aces scored the first 17 points of the third quarter and won the period 20-4 to lead 47-30.",
-      "Senior Adam Herron Kohl led the way with 16 points. Owen McCabe and Carson Kasmer had 14 each, and Jayden Robinson scored 13 while working the front of the press for steals and layups.",
+      "Senior Adam Herrenkohl led the way with 16 points. Owen McCabe and Carson Kasmer had 14 each, and Jayden Robinson scored 13 while working the front of the press for steals and layups.",
       "The win was Lower Merion's 14th in a row and put the Aces at 23-1.",
     ],
     sources: [
