@@ -49,35 +49,48 @@ export default function PhotosPage() {
           <div className="divider" />
         </FadeIn>
 
-        {/* Gallery Cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16, marginTop: 48 }}>
-          {galleries.map((gallery, gi) => (
-            <FadeIn key={gi} delay={gi * 0.05}>
-              <div
-                onClick={() => setOpenGallery(openGallery === gi ? null : gi)}
-                style={{
-                  borderRadius: 12, overflow: "hidden", cursor: "pointer",
-                  border: openGallery === gi ? "2px solid var(--gold)" : "2px solid rgba(255,255,255,0.1)",
-                  transition: "all 0.3s ease",
-                  backgroundImage: `linear-gradient(180deg, rgba(10,0,5,0.15) 0%, rgba(10,0,5,0.55) 55%, rgba(10,0,5,0.92) 100%), url(${toUrl(gallery.coverId)})`,
-                  backgroundSize: "cover", backgroundPosition: "center",
-                  minHeight: 210, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 24,
-                }}
-                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 16px 40px rgba(0,0,0,0.55)"; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
-              >
-                <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 6 }}>{gallery.date}</div>
-                <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 500, marginBottom: 8 }}>{gallery.title}</div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 12, color: "rgba(255,255,255,0.4)" }}>{gallery.ids.length} photos</span>
-                  <span style={{ color: "var(--gold)" }}>{openGallery === gi ? "▲" : "▼"}</span>
-                </div>
-              </div>
-            </FadeIn>
+        {/* Jump to a season */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 28 }}>
+          {["2025-26", ...new Set(tomGalleries.map(t => t.season))].map(season => (
+            <button key={season} onClick={() => document.getElementById(`photos-${season}`)?.scrollIntoView({ behavior: "smooth", block: "start" })} style={{
+              fontFamily: "'Oswald', sans-serif", fontSize: 14, letterSpacing: 1, padding: "9px 16px", cursor: "pointer",
+              color: "#fff", background: "rgba(132,0,54,0.25)", border: "1px solid rgba(201,164,74,0.4)", borderRadius: 8,
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(132,0,54,0.55)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "rgba(132,0,54,0.25)"; }}>{season}</button>
           ))}
         </div>
 
-        {/* Expanded Gallery */}
+        {/* Game galleries by Tom Weishaar: links out to his albums */}
+        <div style={{ marginTop: 44 }}>
+          <FadeIn>
+            <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 4, color: "var(--gold)", textTransform: "uppercase", margin: "0 0 8px" }}>Game Galleries</h3>
+            <p style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: 700, margin: "0 0 6px" }}>
+              Every album opens right here. Most were shot by Tom Weishaar, who has been on the baseline at Aces games for years: {tomGalleries.length} of his albums, {Object.values(tomCovers).reduce((n, c) => n + c[0], 0).toLocaleString()} photos in all.
+            </p>
+            <p style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13.5, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, margin: 0 }}>
+              To book a shoot: {tomContact.name}, <a href={`mailto:${tomContact.email}`} style={{ color: "var(--gold)", textDecoration: "none" }}>{tomContact.email}</a>, {tomContact.phone}. <a href={tomHome} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)", textDecoration: "none" }}>All of his Lower Merion albums ›</a>
+            </p>
+          </FadeIn>
+          <div id="photos-2025-26" style={{ marginTop: 30, scrollMarginTop: 90 }}>
+            <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 20, fontWeight: 600, color: "#fff", marginBottom: 10 }}>2025-26</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 10 }}>
+              {galleries.map((gallery, gi) => (
+                <button key={gi} onClick={() => setOpenGallery(openGallery === gi ? null : gi)} style={{
+                  display: "flex", flexDirection: "column", textAlign: "left", font: "inherit", color: "inherit", padding: 0, cursor: "pointer", overflow: "hidden", height: "100%", width: "100%",
+                  background: "rgba(255,255,255,0.03)", border: openGallery === gi ? "1px solid var(--gold)" : "1px solid rgba(255,255,255,0.08)", borderRadius: 12, transition: "transform 0.15s ease, border-color 0.15s ease",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
+                  <img src={toUrl(gallery.coverId)} alt="" loading="lazy" referrerPolicy="no-referrer" style={{ width: "100%", aspectRatio: "3 / 2", objectFit: "cover", display: "block", background: "#16000c" }} />
+                  <div style={{ padding: "12px 14px 14px" }}>
+                    <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 600, color: "#fff", lineHeight: 1.25 }}>{gallery.title.replace(/^LM vs\.? /, "vs. ")}</div>
+                    <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 12.5, color: "rgba(255,255,255,0.5)", marginTop: 3 }}>{gallery.date} · {gallery.ids.length} photos</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+            {/* Expanded Gallery */}
         {openGallery !== null && (
           <FadeIn>
             <div style={{ marginTop: 24, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "28px" }}>
@@ -105,19 +118,10 @@ export default function PhotosPage() {
           </FadeIn>
         )}
 
-        {/* Game galleries by Tom Weishaar: links out to his albums */}
-        <div style={{ marginTop: 72 }}>
-          <FadeIn>
-            <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 4, color: "var(--gold)", textTransform: "uppercase", margin: "0 0 8px" }}>Game Galleries by Tom Weishaar</h3>
-            <p style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: 700, margin: "0 0 6px" }}>
-              Tom Weishaar has been shooting Aces basketball from the baseline for years. Here are {tomGalleries.length} of his albums, {Object.values(tomCovers).reduce((n, c) => n + c[0], 0).toLocaleString()} photos in all. Tap an album to see every picture.
-            </p>
-            <p style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13.5, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, margin: 0 }}>
-              To book a shoot: {tomContact.name}, <a href={`mailto:${tomContact.email}`} style={{ color: "var(--gold)", textDecoration: "none" }}>{tomContact.email}</a>, {tomContact.phone}. <a href={tomHome} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)", textDecoration: "none" }}>All of his Lower Merion albums ›</a>
-            </p>
-          </FadeIn>
+          </div>
+
           {[...new Set(tomGalleries.map(t => t.season))].map(season => (
-            <div key={season} style={{ marginTop: 30 }}>
+            <div key={season} id={`photos-${season}`} style={{ marginTop: 30, scrollMarginTop: 90 }}>
               <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 20, fontWeight: 600, color: "#fff", marginBottom: 10 }}>{season}</div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 10 }}>
                 {tomGalleries.filter(t => t.season === season).map(t => {
