@@ -611,7 +611,7 @@ function submitDonate(e){
       if(res.status===200 && d.pay && d.url){ window.location.href=d.url; return; }       // pay now
       if(res.status===200 && d.pledged){ btn.disabled=false; btn.innerHTML=old; pledgedDone(payload); return; }
       btn.disabled=false; btn.innerHTML=old;
-      var map={ closed:'Donations are closed right now.', unknown_player:'That player isn\'t in this event.', unknown_team:'That team isn\'t in this event.', bad_amount:'Please enter a valid amount.', bad_per_shot:'Enter at least $0.25 per made free throw.', not_configured:'Payments aren\'t available right now. Please try again soon.', checkout_failed:'Couldn\'t start payment. Please try again.' };
+      var map={ closed:'Donations are closed right now.', too_many:'That is a lot of pledges in a short time. Please wait a while and try again.', unknown_player:'That player isn\'t in this event.', unknown_team:'That team isn\'t in this event.', bad_amount:'Please enter a valid amount.', bad_per_shot:'Enter at least $0.25 per made free throw.', not_configured:'Payments aren\'t available right now. Please try again soon.', checkout_failed:'Couldn\'t start payment. Please try again.' };
       mErr(map[d.error]||'Sorry, something went wrong. Please try again.');
     })
     .catch(function(){ btn.disabled=false; btn.innerHTML=old; mErr('Network error. Please try again.'); });

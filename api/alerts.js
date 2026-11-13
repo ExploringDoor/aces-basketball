@@ -24,6 +24,7 @@ import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 import { fbAdminConfigured, fsGet, fsPatch, fsList, fsCreate } from './_firestore.js';
 import { SITE_TAG } from './_site.js';
 import { sendMail, emailConfigured } from './_email.js';
+import { clientIp, emailKey, firstBlocked, HOUR, DAY } from './_ratelimit.js';
 import { TEAMS, UNSUB_TAG, normEmail, validEmail, cleanSignup, cleanTeams, cleanRole, mergeTeams, extractEmails, cleanNotice, recipientsFor, footerHtml, footerText, welcomeEmail, unsubscribePageHtml } from './_alerts.js';
 
 const SUBS = 'alert_subs';
@@ -156,6 +157,14 @@ export default async function handler(req, res) {
     const s = cleanSignup(body);
     if (s.error) return json(res, 400, { error: s.error });
     if (!fbAdminConfigured()) return json(res, 503, { error: 'not_configured' });
+    // The welcome email goes to whatever address was typed, so cap the inbox as well as the
+    // caller, in the database so the count holds across instances. A whole team signing up
+    // from the school wifi, or a parent coming back to add a team, stays well under these.
+    const over = await firstBlocked([
+      ['alerts-ip', clientIp(req), 60, HOUR],
+      ['alerts-email', emailKey(s.email), 6, DAY],
+    ]);
+    if (over) return json(res, 429, { error: 'slow_down' });
     let r;
     try { r = await saveSub(s, 'site'); } catch (e) { return json(res, 500, { error: 'save_failed' }); }
     // A welcome email only when something actually changed, so replaying the form can't spam anyone.
