@@ -212,22 +212,6 @@ export const championships = {
 //  · image     → optional; a path in /public or a full image URL
 //  · body      → array of paragraphs (the full story)
 //  · featured  → set true on ONE post to headline it
-// Press coverage of Aces title wins. We link out to the original story; the
-// "note" line is our own one-line summary of the result. Newest first on the page.
-export const pressCoverage = [
-  { kind: "league", year: 2025, date: "February 2025", source: "This Is Lower Merion", headline: "Lower Merion boys basketball team defeats Penncrest in Central League tourney final", note: "Aces 63, Penncrest 55 for the Central League title.", url: "https://thisislowermerion.com/?p=63123" },
-  { kind: "district", year: 2024, date: "March 2, 2024", source: "PA Prep Live", headline: "Mobley finds the range to make Lower Merion champion", note: "Aces 57, Garnet Valley 49 at the Liacouras Center for the District 1 6A title.", url: "https://papreplive.com/2024/03/02/district-1-class-6a-boys-basketball-mobley-finds-the-range-to-make-lower-merion-champion/" },
-  { kind: "district", year: 2024, date: "March 2, 2024", source: "The Philadelphia Inquirer", headline: "District 1 6A finals: Lower Merion boys grab third crown in four years", note: "The Inquirer on the Aces' third district title in four seasons.", url: "https://www.inquirer.com/high-school-sports/perk-valley-girls-basketball-lower-merion-boys-district-title-20240302.html" },
-  { kind: "league", year: 2024, date: "February 16, 2024", source: "PA Prep Live", headline: "Lower Merion dunks Radnor for Central League boys basketball title", note: "Aces 68, Radnor 54 in the Central League final.", url: "https://papreplive.com/2024/02/16/lower-merion-dunks-radnor-for-central-league-boys-basketball-title/" },
-  { kind: "district", year: 2022, date: "March 5, 2022", source: "PA Prep Live", headline: "Lower Merion shows championship poise against Norristown to repeat as District 1 champion", note: "Aces 68, Norristown 57 at Temple for back to back district titles.", url: "https://papreplive.com/2022/03/05/lower-merion-shows-championship-poise-against-norristown-to-repeat-as-district-1-champion" },
-  { kind: "league", year: 2022, date: "February 15, 2022", source: "City of Basketball Love", headline: "With Lilley at full strength, Lower Merion boys win Central League championship", note: "Aces 59, Radnor 49 in the Central League final.", url: "https://www.cityofbasketballlove.com/news_article/show/1209657" },
-  { kind: "district", year: 2021, date: "March 19, 2021", source: "PA Prep Live", headline: "Lower Merion wins first district title since Kobe Bryant era", note: "Aces 62, Abington 41 for the program's first District 1 title since 1996.", url: "https://papreplive.com/2021/03/19/lower-merion-wins-first-district-title-since-kobe-bryant-era" },
-  { kind: "league", year: 2018, date: "February 16, 2018", source: "PA Prep Live", headline: "'Next man up' mentality gives Lower Merion 2nd consecutive Central League title", note: "Back to back Central League championships.", url: "https://papreplive.com/2018/02/16/next-man-up-mentality-gives-lower-merion-2nd-consecutive-central-league-title" },
-  { kind: "state", year: 2013, date: "March 25, 2013", source: "Patch", headline: "Aces Win State Basketball Title Against Rival Chester", note: "Aces 63, Chester 47 in Hershey for the PIAA AAAA championship.", url: "https://patch.com/pennsylvania/ardmore/aces-win-state-basketball-championship-against-rival-chester" },
-  { kind: "state", year: 2013, date: "March 2013", source: "Trib HSSN", headline: "Lower Merion Ends Chester's Reign As PIAA Quad-A Champs", note: "The view from across the state on the Aces' seventh state title.", url: "https://tribhssn.triblive.com/?p=56668" },
-  { kind: "state", year: 1996, date: "December 9, 2023", source: "The Philadelphia Inquirer", headline: "Lower Merion's 1996 state champion team inducted into school's Hall of Fame during Kobe Bryant Classic", note: "A look back at the 1996 team that beat Erie Cathedral Prep 48-43 for the state title.", url: "https://www.inquirer.com/high-school-sports/lower-merion-state-champion-inducted-hall-of-fame-kobe-bryant-classic-20231209.html" },
-];
-
 export const news = [
   {
     id: "2025-central-league-champions",
