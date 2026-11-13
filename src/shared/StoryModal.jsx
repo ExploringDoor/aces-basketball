@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
+import { tomGalleries } from "./tomGalleries";
 
 const SANS = "'Source Sans 3',sans-serif";
 const OSW = "'Oswald',sans-serif";
@@ -15,6 +16,7 @@ export default function StoryModal({ story, onClose }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [story, onClose]);
   if (!story) return null;
+  const gallery = story.id ? tomGalleries.find(t => t.storyId === story.id) : null;
   return createPortal(
     <div onClick={onClose} role="dialog" aria-modal="true" aria-label={story.title} style={{
       position: "fixed", inset: 0, zIndex: 99999, background: "rgba(0,0,0,0.92)",
@@ -42,6 +44,12 @@ export default function StoryModal({ story, onClose }) {
           {(story.body || []).map((para, i) => (
             <p key={i} style={{ fontFamily: SANS, fontSize: 15.5, color: "rgba(255,255,255,0.72)", lineHeight: 1.85, margin: "0 0 16px" }}>{para}</p>
           ))}
+          {gallery && (
+            <a href={gallery.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", marginTop: 8, padding: "14px 16px", borderRadius: 12, background: "linear-gradient(120deg, rgba(132,0,54,0.3), rgba(0,0,0,0.3))", border: "1px solid rgba(201,164,74,0.35)" }}>
+              <div style={{ fontFamily: OSW, fontSize: 10, letterSpacing: 2, color: "var(--gold)", textTransform: "uppercase" }}>Photos from this game</div>
+              <div style={{ fontFamily: OSW, fontSize: 16, fontWeight: 600, color: "#fff", marginTop: 3 }}>See the full album by Tom Weishaar ›</div>
+            </a>
+          )}
           {story.sources && story.sources.length > 0 && (
             <div style={{ marginTop: 26, paddingTop: 18, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
               <div style={{ fontFamily: OSW, fontSize: 11, letterSpacing: 2.5, color: "var(--gold)", textTransform: "uppercase", marginBottom: 10 }}>Reporting from</div>
