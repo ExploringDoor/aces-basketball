@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { FadeIn, Spade, Icon, news } from "../shared";
 import { titleStories } from "../shared/titleStories";
+import StoryModal from "../shared/StoryModal";
 
 const ordered = [...news].sort((a, b) => (b.sortKey || 0) - (a.sortKey || 0));
 
@@ -72,55 +73,7 @@ export default function NewsPage() {
       {/* mini-hero photo band */}
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 380, zIndex: -1, backgroundImage: "linear-gradient(180deg, rgba(74,0,30,0.42) 0%, rgba(10,0,5,0.72) 52%, rgba(10,0,5,1) 96%), url('/ig/crowd.jpg')", backgroundSize: "cover", backgroundPosition: "center 28%", pointerEvents: "none" }} />
 
-      {/* Article reader modal */}
-      {selected && (
-        <div onClick={() => setSelected(null)} style={{
-          position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.92)",
-          display: "flex", alignItems: "flex-start", justifyContent: "center",
-          padding: "40px 20px", overflowY: "auto", cursor: "zoom-out",
-        }}>
-          <style>{`@keyframes newsIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }`}</style>
-          <div onClick={e => e.stopPropagation()} style={{
-            background: "linear-gradient(135deg,rgba(26,0,14,0.99),rgba(10,0,5,0.99))",
-            border: "1px solid rgba(201,164,74,0.28)", borderRadius: 16,
-            maxWidth: 720, width: "100%", overflow: "hidden",
-            boxShadow: "0 40px 90px rgba(0,0,0,0.7)", cursor: "default",
-            animation: "newsIn 0.3s ease", position: "relative",
-          }}>
-            <button onClick={() => setSelected(null)} style={{
-              position: "absolute", top: 14, right: 14, zIndex: 2,
-              background: "rgba(0,0,0,0.55)", border: "1px solid rgba(255,255,255,0.2)",
-              color: "#fff", borderRadius: "50%", width: 34, height: 34, fontSize: 16, cursor: "pointer",
-            }}>✕</button>
-
-            {selected.image && (
-              <div style={{ height: 260, backgroundImage: `linear-gradient(180deg,transparent 40%,rgba(10,0,5,0.9)), url(${selected.image})`, backgroundSize: "cover", backgroundPosition: "center 25%" }} />
-            )}
-            <div style={{ padding: "32px 36px 40px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-                <span style={{ padding: "4px 12px", borderRadius: 20, background: "rgba(132,0,54,0.35)", border: "1px solid rgba(201,164,74,0.35)", fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: 2, color: "var(--gold)", textTransform: "uppercase" }}>{selected.category}</span>
-                <span style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 12, color: "rgba(255,255,255,0.4)", letterSpacing: 1 }}>{selected.date}</span>
-              </div>
-              <h2 style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 700, fontSize: "clamp(24px,3.4vw,34px)", lineHeight: 1.15, textTransform: "uppercase", margin: "0 0 20px" }}>{selected.title}</h2>
-              {selected.body.map((para, i) => (
-                <p key={i} style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 15.5, color: "rgba(255,255,255,0.68)", lineHeight: 1.85, margin: "0 0 16px" }}>{para}</p>
-              ))}
-              {selected.sources && (
-                <div style={{ marginTop: 26, paddingTop: 18, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-                  <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 11, letterSpacing: 2.5, color: "var(--gold)", textTransform: "uppercase", marginBottom: 10 }}>Reporting from</div>
-                  {selected.sources.map(src => (
-                    <a key={src.url} href={src.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", padding: "8px 0", fontFamily: SANS, fontSize: 13.5, lineHeight: 1.5, color: "rgba(255,255,255,0.7)" }}>
-                      <span style={{ color: "#fff", fontWeight: 600 }}>{src.outlet}</span>{src.author ? `, ${src.author}` : ""}, {src.date}
-                      <span style={{ display: "block", color: "rgba(201,164,74,0.85)" }}>{src.headline} ›</span>
-                    </a>
-                  ))}
-                  <p style={{ fontFamily: SANS, fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.6, margin: "10px 0 0" }}>This recap was written by Aces Basketball from the reporting credited above. Tap a story to read the original.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <StoryModal story={selected} onClose={() => setSelected(null)} />
 
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <FadeIn>

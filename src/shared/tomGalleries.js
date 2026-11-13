@@ -11,6 +11,7 @@ const g = (season, title, date, slug, extra = {}) => ({ season, title, date, url
 
 export const tomGalleries = [
   g("2024-25", "Central League Final vs. Penncrest", "February 10, 2025", "Lower-Merion-ACES-Basketball-vs-Penncrest-02102025", { storyId: "title-2025-league", tag: "Champions" }),
+  g("2023-24", "Gregg Downer Basketball Camp", "June 20, 2024", "Greg-Downer-Basketball-CAMP-06202024"),
   g("2023-24", "Team Celebration", "April 7, 2024", "ACES-Basketball-Celebration-April-7-2024"),
   g("2023-24", "District 1 Champions vs. Garnet Valley", "March 2, 2024", "Lower-Merion-ACES-District-Champions-03022024", { storyId: "title-2024-district", tag: "Champions" }),
   g("2023-24", "District 1 Semifinal vs. Chester", "February 27, 2024", "Lower-Merion-ACES-vs-Chester-02272024"),
@@ -20,6 +21,7 @@ export const tomGalleries = [
   g("2021-22", "Central League Final vs. Radnor", "February 14, 2022", "Lower-Merion-ACES-Basketball-vs-Radnor-02142022", { storyId: "title-2022-league", tag: "Champions" }),
   g("2020-21", "District 1 Final vs. Abington", "March 19, 2021", "Lower-Merion-ACES-vs-Abington-DISTRICT-1-FINALS-03192021", { storyId: "title-2021-district", tag: "Champions" }),
   g("2019-20", "State Qualifier vs. CB East", "February 18, 2020", "Lower-Merion-ACES-vs-CB-East-State-Qualifiers-02182020"),
+  g("2018-19", "Basketball Clinic", "May 31, 2019", "Lower-Merion-Basketball-Clinic-05312019"),
   g("2018-19", "Awards Banquet", "2019", "Lower-Merion-Boys-Basketball-2019-Awards-Banquet"),
   g("2018-19", "Aces Brothers", "2019", "Lower-Merion-Aces-BROTHERS-2019"),
   g("2018-19", "District 1 Quarterfinal vs. Chester", "February 22, 2019", "Lower-Merion-Boys-Basketball-vs-Chester-02222019"),

@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { FadeIn, Spade } from "../shared";
 import { tomGalleries, tomHome, tomContact } from "../shared/tomGalleries";
+import { tomCovers } from "../shared/tomCovers";
+import GalleryModal from "../shared/GalleryModal";
 
 const galleries = [
   {
@@ -35,6 +37,7 @@ const toUrl = (id) => `https://lh3.googleusercontent.com/d/${id}=s800`;
 export default function PhotosPage() {
   const [openGallery, setOpenGallery] = useState(null);
   const [lightbox, setLightbox] = useState(null);
+  const [album, setAlbum] = useState(null);
 
   return (
     <section id="photos" style={{ background: "#0a0005", padding: "120px 5% 100px" , position: "relative", overflow: "hidden" }}>
@@ -107,7 +110,7 @@ export default function PhotosPage() {
           <FadeIn>
             <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 4, color: "var(--gold)", textTransform: "uppercase", margin: "0 0 8px" }}>Game Galleries by Tom Weishaar</h3>
             <p style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: 700, margin: "0 0 6px" }}>
-              Tom Weishaar has been shooting Aces basketball from the baseline for years. These {tomGalleries.length} albums open on his site, where you can view every photo full size and order prints.
+              Tom Weishaar has been shooting Aces basketball from the baseline for years. Here are {tomGalleries.length} of his albums, {Object.values(tomCovers).reduce((n, c) => n + c[0], 0).toLocaleString()} photos in all. Tap an album to see every picture.
             </p>
             <p style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13.5, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, margin: 0 }}>
               To book a shoot: {tomContact.name}, <a href={`mailto:${tomContact.email}`} style={{ color: "var(--gold)", textDecoration: "none" }}>{tomContact.email}</a>, {tomContact.phone}. <a href={tomHome} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)", textDecoration: "none" }}>All of his Lower Merion albums ›</a>
@@ -117,25 +120,30 @@ export default function PhotosPage() {
             <div key={season} style={{ marginTop: 30 }}>
               <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 20, fontWeight: 600, color: "#fff", marginBottom: 10 }}>{season}</div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 10 }}>
-                {tomGalleries.filter(t => t.season === season).map(t => (
-                  <a key={t.url} href={t.url} target="_blank" rel="noopener noreferrer" style={{
-                    display: "flex", flexDirection: "column", textDecoration: "none", color: "inherit", overflow: "hidden", height: "100%",
-                    background: "rgba(255,255,255,0.03)", border: t.tag ? "1px solid rgba(201,164,74,0.35)" : "1px solid rgba(255,255,255,0.08)", borderRadius: 12, transition: "transform 0.15s ease, border-color 0.15s ease",
-                  }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = "rgba(201,164,74,0.7)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = t.tag ? "rgba(201,164,74,0.35)" : "rgba(255,255,255,0.08)"; }}>
-                    <div style={{ padding: "13px 15px", display: "flex", flexDirection: "column", flex: 1 }}>
-                      {t.tag && <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 9.5, letterSpacing: 1.5, color: "var(--gold)", textTransform: "uppercase", marginBottom: 4 }}>{t.tag}</div>}
-                      <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 600, color: "#fff", lineHeight: 1.25 }}>{t.title}</div>
-                      {t.date && <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 12.5, color: "rgba(255,255,255,0.5)", marginTop: 3 }}>{t.date}</div>}
-                      <div style={{ marginTop: "auto", paddingTop: 10, fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: 1.5, color: "rgba(201,164,74,0.85)", textTransform: "uppercase" }}>Open album ›</div>
-                    </div>
-                  </a>
-                ))}
+                {tomGalleries.filter(t => t.season === season).map(t => {
+                  const c = tomCovers[t.url.split("/").pop()];
+                  return (
+                    <button key={t.url} onClick={() => setAlbum(t)} style={{
+                      display: "flex", flexDirection: "column", textAlign: "left", font: "inherit", color: "inherit", padding: 0, cursor: "pointer", overflow: "hidden", height: "100%", width: "100%",
+                      background: "rgba(255,255,255,0.03)", border: t.tag ? "1px solid rgba(201,164,74,0.45)" : "1px solid rgba(255,255,255,0.08)", borderRadius: 12, transition: "transform 0.15s ease, border-color 0.15s ease",
+                    }}
+                      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = "rgba(201,164,74,0.8)"; }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = t.tag ? "rgba(201,164,74,0.45)" : "rgba(255,255,255,0.08)"; }}>
+                      {c && <img src={c[1]} alt="" loading="lazy" referrerPolicy="no-referrer" style={{ width: "100%", aspectRatio: "3 / 2", objectFit: "cover", display: "block", background: "#16000c" }} />}
+                      <div style={{ padding: "12px 14px 14px", display: "flex", flexDirection: "column", flex: 1 }}>
+                        {t.tag && <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 9.5, letterSpacing: 1.5, color: "var(--gold)", textTransform: "uppercase", marginBottom: 4 }}>{t.tag}</div>}
+                        <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 600, color: "#fff", lineHeight: 1.25 }}>{t.title}</div>
+                        <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 12.5, color: "rgba(255,255,255,0.5)", marginTop: 3 }}>{[t.date, c ? `${c[0]} photos` : ""].filter(Boolean).join(" · ")}</div>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ))}
         </div>
+
+        <GalleryModal album={album} onClose={() => setAlbum(null)} />
 
         {/* Lightbox */}
         {lightbox && (() => {

@@ -4,6 +4,9 @@ import { FadeIn, Spade, championships, seasonData, titlePhoto, titleName } from 
 import { seasonTable, seasonRosters, seasonGames } from "../shared/seasons";
 import { titleStories } from "../shared/titleStories";
 import StoryModal from "../shared/StoryModal";
+import GalleryModal from "../shared/GalleryModal";
+import { tomGalleries } from "../shared/tomGalleries";
+import { tomCovers } from "../shared/tomCovers";
 
 const OSW = "'Oswald',sans-serif";
 const SANS = "'Source Sans 3',sans-serif";
@@ -38,15 +41,19 @@ const chipStyle = (kind) => ({
 const chipLabel = { state: "State", district: "District 1", league: "League" };
 
 function TeamCard({ s, onClose, onStory }) {
+  const [album, setAlbum] = useState(null);
+  const albums = tomGalleries.filter(t => t.season === s.season);
   useEffect(() => {
-    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    const onKey = (e) => { if (e.key === "Escape" && !album) onClose(); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [onClose, album]);
   const facts = [
     ["Overall", s.record], ["League", s.league], ["District 1 playoffs", s.district], ["State playoffs", s.state], ["Head coach", s.coach],
   ].filter(([, v]) => v);
   return createPortal(
+    <>
+    <GalleryModal album={album} onClose={() => setAlbum(null)} />
     <div onClick={onClose} role="dialog" aria-modal="true" aria-label={`${s.season} Aces`} style={{
       position: "fixed", inset: 0, zIndex: 99990, background: "rgba(0,0,0,0.92)", display: "flex", alignItems: "flex-start", justifyContent: "center",
       padding: "clamp(12px,4vw,40px) clamp(10px,3vw,20px)", overflowY: "auto", cursor: "zoom-out",
@@ -85,6 +92,26 @@ function TeamCard({ s, onClose, onStory }) {
             </div>
           )}
 
+          {albums.length > 0 && (
+            <div style={{ marginTop: 24 }}>
+              <h3 style={{ fontFamily: OSW, fontSize: 12, letterSpacing: 3, color: "var(--gold)", textTransform: "uppercase", margin: "0 0 10px" }}>Photo albums</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: 8 }}>
+                {albums.map(t => {
+                  const c = tomCovers[t.url.split("/").pop()];
+                  return (
+                    <button key={t.url} onClick={() => setAlbum(t)} style={{ padding: 0, textAlign: "left", font: "inherit", color: "inherit", cursor: "pointer", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, overflow: "hidden" }}>
+                      {c && <img src={c[1]} alt="" loading="lazy" referrerPolicy="no-referrer" style={{ width: "100%", aspectRatio: "3 / 2", objectFit: "cover", display: "block" }} />}
+                      <div style={{ padding: "8px 10px 10px" }}>
+                        <div style={{ fontFamily: OSW, fontSize: 13, fontWeight: 600, lineHeight: 1.25 }}>{t.title}</div>
+                        <div style={{ fontFamily: SANS, fontSize: 11.5, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{c ? `${c[0]} photos` : t.date}</div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {s.roster && (
             <div style={{ marginTop: 24 }}>
               <h3 style={{ fontFamily: OSW, fontSize: 12, letterSpacing: 3, color: "var(--gold)", textTransform: "uppercase", margin: "0 0 10px" }}>Roster</h3>
@@ -116,12 +143,13 @@ function TeamCard({ s, onClose, onStory }) {
             </div>
           )}
 
-          {!s.roster && !s.games && s.stories.length === 0 && (
+          {!s.roster && !s.games && s.stories.length === 0 && albums.length === 0 && (
             <p style={{ fontFamily: SANS, fontSize: 13.5, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, margin: "20px 0 0" }}>That is everything on record for this team so far. Have a roster, photo or program from this season? Send it through the Support page and we will add it.</p>
           )}
         </div>
       </div>
-    </div>,
+    </div>
+    </>,
     document.body
   );
 }

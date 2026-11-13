@@ -4,10 +4,10 @@
 //  · w → true when the Aces won   · big → a final or a game that decided a title
 //  · storyId → links to one of our title stories
 export const chesterGames = [
-  { date: "February 27, 2024", event: "District 1 semifinal", place: "Kobe Bryant Gymnasium", lm: 54, them: 48, w: true, big: true,
+  { date: "February 27, 2024", event: "District 1 semifinal", place: "Kobe Bryant Gymnasium", lm: 54, them: 48, w: true, big: true, album: "Lower-Merion-ACES-vs-Chester-02272024",
     note: "Tied at 47 with under two minutes left. A steal and late free throws send the Aces to the final, which they win four days later. John Mobley scores 17." },
   { date: "February 2020",     event: "District 1 quarterfinal", place: "at Chester", lm: 46, them: 54, w: false },
-  { date: "February 22, 2019", event: "District 1 quarterfinal", lm: 67, them: 59, w: true,
+  { date: "February 22, 2019", event: "District 1 quarterfinal", lm: 67, them: 59, w: true, album: "Lower-Merion-Boys-Basketball-vs-Chester-02222019",
     note: "Jack Forrest scores 31 with seven threes." },
   { date: "December 27, 2018", event: "Kobe Bryant Classic", lm: 59, them: 55, w: true },
   { date: "December 9, 2017",  event: "Regular season", lm: 57, them: 52, w: true },

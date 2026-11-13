@@ -3,16 +3,21 @@ import { FadeIn, Spade } from "../shared";
 import { chesterGames } from "../shared/rivalry";
 import { titleStories } from "../shared/titleStories";
 import StoryModal from "../shared/StoryModal";
+import GalleryModal from "../shared/GalleryModal";
+import { tomGalleries } from "../shared/tomGalleries";
+import { tomCovers } from "../shared/tomCovers";
 
 const OSW = "'Oswald',sans-serif";
 const SANS = "'Source Sans 3',sans-serif";
 
 export default function RivalryPage() {
   const [story, setStory] = useState(null);
+  const [album, setAlbum] = useState(null);
   return (
     <section id="rivalry" style={{ background: "linear-gradient(180deg, #0a0a0a, #0d000a)", padding: "120px 5% 100px", minHeight: "100vh", position: "relative", overflow: "hidden", isolation: "isolate" }}>
       <div className="ghost-word" style={{ top: 110, transform: "none", left: "auto", right: "-2%" }}>RIVALS</div>
       <StoryModal story={story} onClose={() => setStory(null)} />
+      <GalleryModal album={album} onClose={() => setAlbum(null)} />
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <FadeIn>
           <div className="section-label"><Spade size={14} color="#840036" /> The Rivalry</div>
@@ -42,6 +47,7 @@ export default function RivalryPage() {
                     <div style={{ fontFamily: OSW, fontSize: 16, fontWeight: 600, color: "#fff", lineHeight: 1.25 }}>{g.event}</div>
                     <div style={{ fontFamily: SANS, fontSize: 13, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{g.date}{g.place ? ` · ${g.place}` : ""}</div>
                     {g.note && <div style={{ fontFamily: SANS, fontSize: 14, color: "rgba(255,255,255,0.75)", lineHeight: 1.55, marginTop: 7 }}>{g.note}</div>}
+                    {g.album && tomCovers[g.album] && <button onClick={() => setAlbum(tomGalleries.find(t => t.url.endsWith(g.album)))} style={{ alignSelf: "flex-start", marginTop: 9, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: OSW, fontSize: 11, letterSpacing: 1.5, color: "var(--gold)", textTransform: "uppercase" }}>See {tomCovers[g.album][0]} photos ›</button>}
                     {st && <button onClick={() => setStory(st)} style={{ alignSelf: "flex-start", marginTop: 9, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: OSW, fontSize: 11, letterSpacing: 1.5, color: "var(--gold)", textTransform: "uppercase" }}>Read the story ›</button>}
                   </div>
                 </div>

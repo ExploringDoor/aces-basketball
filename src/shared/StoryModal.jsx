@@ -1,6 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { tomGalleries } from "./tomGalleries";
+import { tomCovers } from "./tomCovers";
+import GalleryModal from "./GalleryModal";
 
 const SANS = "'Source Sans 3',sans-serif";
 const OSW = "'Oswald',sans-serif";
@@ -9,15 +11,20 @@ const OSW = "'Oswald',sans-serif";
 // `isolation` can never trap it under the site menu.
 // story: { title, category, date, image, body: [], sources: [] }
 export default function StoryModal({ story, onClose }) {
+  const [showGallery, setShowGallery] = useState(false);
+  useEffect(() => { setShowGallery(false); }, [story]);
   useEffect(() => {
     if (!story) return;
-    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    const onKey = (e) => { if (e.key === "Escape" && !showGallery) onClose(); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [story, onClose]);
+  }, [story, onClose, showGallery]);
   if (!story) return null;
   const gallery = story.id ? tomGalleries.find(t => t.storyId === story.id) : null;
+  const cover = gallery ? tomCovers[gallery.url.split("/").pop()] : null;
   return createPortal(
+    <>
+    {showGallery && gallery && <GalleryModal album={gallery} onClose={() => setShowGallery(false)} />}
     <div onClick={onClose} role="dialog" aria-modal="true" aria-label={story.title} style={{
       position: "fixed", inset: 0, zIndex: 99999, background: "rgba(0,0,0,0.92)",
       display: "flex", alignItems: "flex-start", justifyContent: "center",
@@ -45,10 +52,13 @@ export default function StoryModal({ story, onClose }) {
             <p key={i} style={{ fontFamily: SANS, fontSize: 15.5, color: "rgba(255,255,255,0.72)", lineHeight: 1.85, margin: "0 0 16px" }}>{para}</p>
           ))}
           {gallery && (
-            <a href={gallery.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", marginTop: 8, padding: "14px 16px", borderRadius: 12, background: "linear-gradient(120deg, rgba(132,0,54,0.3), rgba(0,0,0,0.3))", border: "1px solid rgba(201,164,74,0.35)" }}>
-              <div style={{ fontFamily: OSW, fontSize: 10, letterSpacing: 2, color: "var(--gold)", textTransform: "uppercase" }}>Photos from this game</div>
-              <div style={{ fontFamily: OSW, fontSize: 16, fontWeight: 600, color: "#fff", marginTop: 3 }}>See the full album by Tom Weishaar ›</div>
-            </a>
+            <button onClick={() => setShowGallery(true)} style={{ display: "flex", alignItems: "center", gap: 14, width: "100%", textAlign: "left", font: "inherit", color: "inherit", cursor: "pointer", marginTop: 8, padding: 10, borderRadius: 12, background: "linear-gradient(120deg, rgba(132,0,54,0.3), rgba(0,0,0,0.3))", border: "1px solid rgba(201,164,74,0.35)" }}>
+              {cover && <img src={cover[1]} alt="" referrerPolicy="no-referrer" style={{ width: 96, height: 66, objectFit: "cover", borderRadius: 8, flexShrink: 0 }} />}
+              <span>
+                <span style={{ display: "block", fontFamily: OSW, fontSize: 10, letterSpacing: 2, color: "var(--gold)", textTransform: "uppercase" }}>Photos from this game</span>
+                <span style={{ display: "block", fontFamily: OSW, fontSize: 16, fontWeight: 600, color: "#fff", marginTop: 3 }}>See all {cover ? cover[0] : ""} photos by Tom Weishaar ›</span>
+              </span>
+            </button>
           )}
           {story.sources && story.sources.length > 0 && (
             <div style={{ marginTop: 26, paddingTop: 18, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
@@ -64,7 +74,8 @@ export default function StoryModal({ story, onClose }) {
           )}
         </div>
       </div>
-    </div>,
+    </div>
+    </>,
     document.body
   );
 }
