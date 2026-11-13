@@ -51,21 +51,6 @@ export default function SponsorshipsPage() {
                   <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 13, letterSpacing: 1.5, color: "#840036", textTransform: "uppercase", lineHeight: 1.4 }}>{sp.name}<br />{sp.place}<br /><span style={{ fontSize: 11, color: "#555" }}>Visit them →</span></span>
                 </a>
               ))}
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} style={{
-                  aspectRatio: "3 / 2",
-                  background: "rgba(255,255,255,0.015)",
-                  border: "1px dashed rgba(201,164,74,0.28)",
-                  borderRadius: 12,
-                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8,
-                  transition: "all 0.2s",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(201,164,74,0.6)"; e.currentTarget.style.background = "rgba(132,0,54,0.06)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(201,164,74,0.28)"; e.currentTarget.style.background = "rgba(255,255,255,0.015)"; }}>
-                  <Spade size={22} color="#840036" />
-                  <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 11, letterSpacing: 2, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>Your Logo Here</span>
-                </div>
-              ))}
             </div>
           </div>
         </FadeIn>
