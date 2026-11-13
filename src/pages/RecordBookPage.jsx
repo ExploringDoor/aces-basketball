@@ -1,6 +1,7 @@
 // pages/RecordBookPage.jsx
 import { useState } from "react";
 import { FadeIn, Spade, recordBookSeasons } from "../shared";
+import { programRecords } from "../shared/programRecords";
 
 export default function RecordBookPage() {
   const [activeSeason, setActiveSeason] = useState("2025-26");
@@ -104,6 +105,28 @@ export default function RecordBookPage() {
             </table>
           </div>
         </FadeIn>
+
+        {/* All-time program records */}
+        <FadeIn>
+          <h2 className="section-title" style={{ marginTop: 84 }}>All-Time<br /><span style={{ color: "var(--gold)" }}>Records</span></h2>
+          <div className="divider" />
+        </FadeIn>
+        {programRecords.map(g => (
+          <div key={g.group} style={{ marginTop: 36 }}>
+            <FadeIn><h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 4, color: "var(--gold)", textTransform: "uppercase", margin: "0 0 14px" }}>{g.group}</h3></FadeIn>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: 10 }}>
+              {g.items.map((r, i) => (
+                <FadeIn key={r.label + r.big} delay={Math.min(i, 8) * 0.03} className="h100">
+                  <div style={{ height: "100%", boxSizing: "border-box", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "16px 18px" }}>
+                    <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 34, fontWeight: 700, color: "var(--gold)", lineHeight: 1 }}>{r.big}</div>
+                    <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.2, color: "#fff", textTransform: "uppercase", marginTop: 8, lineHeight: 1.3 }}>{r.label}</div>
+                    <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13.5, color: "rgba(255,255,255,0.55)", marginTop: 5, lineHeight: 1.5 }}>{r.who}</div>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
