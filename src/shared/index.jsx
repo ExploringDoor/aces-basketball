@@ -269,19 +269,19 @@ export const alumni = [
       "Wore his Lower Merion practice shorts under his Lakers uniform for every NBA game.",
       "The Aces' home gym was renamed the Kobe Bryant Gymnasium in his honor in 2010.",
     ] },
-  { name: "Jim Brogan", classYear: "'78", college: "West Virginia Wesleyan", pro: "San Diego Clippers (NBA)",
+  { name: "Jim Brogan", classYear: "'76", college: "West Virginia Wesleyan", pro: "San Diego Clippers (NBA)",
     stats: "Reached the NBA with the San Diego Clippers (1981 to 1983), appearing in 121 games.",
     funFacts: [
       "Born in Ardmore, PA, the home of Lower Merion High School.",
       "Became a pro shooting and skills trainer who has worked with athletes including Drew Brees and Cole Hamels.",
     ] },
-  { name: "B.J. Johnson", classYear: "'14", college: "Syracuse → La Salle (D-I)", pro: "Orlando Magic (NBA) / overseas", photo: "/players/bj-johnson.jpg",
+  { name: "B.J. Johnson", classYear: "'13", college: "Syracuse → La Salle (D-I)", pro: "Orlando Magic (NBA) / overseas", photo: "/players/bj-johnson.jpg",
     stats: "1,070 points at La Salle. As a senior averaged 20.8 points and 8.3 rebounds and made 2nd Team All-Atlantic 10.",
     funFacts: [
       "Signed with the Orlando Magic in 2018 and played for their G League affiliate, the Lakeland Magic.",
       "Posted 22 points and 11 rebounds in Lower Merion's 2013 PIAA state title win over Chester.",
     ] },
-  { name: "Demetrius Lilley", classYear: "'22", college: "Penn State → Binghamton (D-I)", pro: "2× District 1 6A Champion", photo: "/players/demetrius-lilley.jpg",
+  { name: "Demetrius Lilley", classYear: "'22", college: "Penn State → La Salle → Binghamton (D-I)", pro: "2× District 1 6A Champion", photo: "/players/demetrius-lilley.jpg",
     stats: "Played 25 games over two seasons at Penn State (2.8 pts, 2.7 reb as a sophomore) before transferring to Binghamton.",
     funFacts: [
       "Lower Merion's all-time leading rebounder, and led the Aces to back-to-back District 1 6A championships.",

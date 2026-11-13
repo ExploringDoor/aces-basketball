@@ -33,6 +33,7 @@
     { label: "People", children: [
       { id: "thousand", label: "1,000 Club" },
       { id: "alumni", label: "Alumni" },
+      { id: "nextlevel", label: "Next Level" },
       { id: "coaching", label: "Coaching Staff" },
       { id: "hof", label: "Hall of Fame" }
     ] },
