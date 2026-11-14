@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { FadeIn, Spade, championships, seasonData, titlePhoto, titleName } from "../shared";
+import { FadeIn, Spade, championships, seasonData, recordBookSeasons, titlePhoto, titleName } from "../shared";
 import { seasonTable, seasonRosters, seasonGames } from "../shared/seasons";
 import { titleStories } from "../shared/titleStories";
 import StoryModal from "../shared/StoryModal";
@@ -25,6 +25,8 @@ function buildSeasons() {
   const all = [...recent, ...fromTable];
   // seasons we only have game results for
   Object.keys(seasonGames).forEach(season => { if (!all.some(s => s.season === season)) all.push({ season, record: "", league: "", district: "", state: "", coach: "Gregg Downer" }); });
+  // fill a missing overall record from the Record Book
+  all.forEach(s => { if (!s.record && recordBookSeasons[s.season]?.record) s.record = recordBookSeasons[s.season].record; });
   return all.sort((a, b) => endYear(b.season) - endYear(a.season)).map(s => {
     const y = endYear(s.season);
     const titles = ["state", "district", "league"].filter(k => won(k, y));
