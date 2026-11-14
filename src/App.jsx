@@ -60,7 +60,6 @@ const EXTERNAL = { shootathon: "/donate.html", playbook: "/playbook.html", attit
 const NAV = [
   { id:"home", label:"Home" },
   { id:"news", label:"News" },
-  { id:"clinics", label:"Clinics" },
   { label:"Season", children:[
     { id:"roster",    label:"Roster" },
     { id:"schedule",  label:"Schedule" },
@@ -92,6 +91,7 @@ const NAV = [
   //   { id:"sponsors",  label:"Sponsorships" },
   // ]},
   { label:"More", children:[
+    { id:"clinics", label:"Clinics" },
     { id:"kobe",   label:"Kobe" },
     { id:"photos", label:"Photos" },
     { id:"videos", label:"Videos" },

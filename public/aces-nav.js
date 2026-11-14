@@ -16,7 +16,6 @@
   var NAV = [
     { id: "home", label: "Home" },
     { id: "news", label: "News" },
-    { id: "clinics", label: "Clinics" },
     { label: "Season", children: [
       { id: "roster", label: "Roster" },
       { id: "schedule", label: "Schedule" },
@@ -42,6 +41,7 @@
       { id: "hof", label: "Hall of Fame" }
     ] },
     { label: "More", children: [
+      { id: "clinics", label: "Clinics" },
       { id: "kobe", label: "Kobe" },
       { id: "photos", label: "Photos" },
       { id: "videos", label: "Videos" },
