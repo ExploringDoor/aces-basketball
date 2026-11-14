@@ -136,7 +136,7 @@ async function notifyCoach(player, play, text, base) {
 function publicPlay(p, byId) {
   const lineup = {};
   for (const [tok, pid] of Object.entries(p.lineup || {})) { const pl = byId[pid]; if (pl) lineup[tok] = { id: pl.id, name: pl.name }; }
-  return { id: p.id, name: p.name, kind: p.kind || 'ours', opponent: p.opponent || '', category: p.category, court: p.court, notes: p.notes || '', tips: p.tips || [], due: p.due || '', marks: p.marks || [], signal: p.signal || { call: '', photo: '' }, situations: p.situations || [], reads: p.reads || [], audio: p.audio || null, lineup, clip: p.clip || null, clip_link: p.clip_link || '', frames: p.frames || [], updated: p.updated || p.created || '' };
+  return { id: p.id, name: p.name, mode: p.mode === 'ink' ? 'ink' : '', kind: p.kind || 'ours', opponent: p.opponent || '', category: p.category, court: p.court, notes: p.notes || '', tips: p.tips || [], due: p.due || '', marks: p.marks || [], signal: p.signal || { call: '', photo: '' }, situations: p.situations || [], reads: p.reads || [], audio: p.audio || null, lineup, clip: p.clip || null, clip_link: p.clip_link || '', frames: p.frames || [], updated: p.updated || p.created || '' };
 }
 let boardMemo = null; const playMemo = new Map();   // per warm instance, for the Board polling
 // Quizzes that are not about one play: scored under a fixed id in playbook_quiz.

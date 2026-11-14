@@ -49,6 +49,26 @@ await test('a clean play survives intact', () => {
   assert.equal(r.play.frames[2].ball, 'rim');
   assert.deepEqual(r.play.frames[2].moves.O5, { t: 'screen', c: [270, 260] });
 });
+await test('a whiteboard play keeps its strokes and nothing else', () => {
+  const big = []; for (let i = 0; i < 900; i++) big.push(i % 500, (i * 7) % 420);
+  const r = cleanPlay({ name: 'Board', mode: 'ink', court: 'half', frames: [
+    { ink: [{ k: 'st', c: 'k', t: '1', p: [250, 330] }, { k: 'st', c: 'z', t: '9', p: [1, 1] }, { k: 'pen', c: 'r', p: [10, 10, 20.26, 9999] }] },
+    { clear: true, ink: [{ k: 'cut', c: 'b', p: [1, 2] }, { k: 'laser', p: [1, 2, 3, 4] }, { k: 'drib', p: big }, { k: 'pass', c: 'k', p: [0, 0, 'x', 1, 50, 60] }] },
+  ] });
+  assert.equal(r.error, undefined);
+  assert.equal(r.play.mode, 'ink');
+  assert.deepEqual(r.play.frames[0].ink, [{ k: 'st', c: 'k', t: '1', p: [250, 330] }, { k: 'pen', c: 'r', p: [10, 10, 20.3, 470] }]);
+  assert.equal(r.play.frames[0].clear, undefined);
+  assert.equal(r.play.frames[1].clear, true);
+  assert.equal(r.play.frames[1].ink.length, 2);
+  assert.equal(r.play.frames[1].ink[0].p.length, 800);   // capped at 400 points
+  assert.deepEqual(r.play.frames[1].ink[1].p, [0, 0, 50, 60]);
+  assert.equal(cleanPlay({ name: 'Empty', mode: 'ink', frames: [{ ink: [] }] }).error, 'empty_board');
+  // a normal play never picks up ink
+  const n = cleanPlay({ ...PLAY, frames: PLAY.frames.map((f) => ({ ...f, ink: [{ k: 'pen', p: [1, 1, 2, 2] }] })) });
+  assert.equal(n.play.mode, '');
+  assert.equal(n.play.frames[0].ink, undefined);
+});
 await test('junk is stripped or rejected', () => {
   assert.equal(cleanPlay({ name: '', frames: PLAY.frames }).error, 'missing_name');
   assert.equal(cleanPlay({ name: 'x', frames: [] }).error, 'no_frames');

@@ -146,6 +146,7 @@ select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns
 .pc{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--sh);display:flex;flex-direction:column}
 .pc .th{background:#d8c094;cursor:pointer;position:relative;display:flex;justify-content:center}
 .pc .th.full svg{height:260px!important;width:auto!important}
+.pc .th.wb,.plrow .th.wb{background:#e7ebef}
 .pc .th .pill{position:absolute;top:10px;left:10px;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:#fff;color:var(--ink-2)}
 .pc .th .pill.hidden{background:var(--warn-50);color:var(--warn)}
 .pc .th .pill.live{background:var(--ok-50);color:var(--ok)}
@@ -216,6 +217,23 @@ tr:last-child td{border-bottom:0}
 .tool[aria-pressed="true"]{background:var(--mrn);border-color:var(--mrn);color:#fff}
 .tool:disabled{opacity:.45;cursor:default}
 .tool svg{width:36px;height:14px}
+#editor:not(.ink) .ink-only{display:none!important}
+#editor.ink .tok-only,#editor.ink #edLuBar,#editor.ink #edPfFld,#editor.ink #edSel{display:none!important}
+.ink-bar{display:flex;flex-direction:column;gap:6px;width:100%}
+.ink-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.inksw{width:30px;height:30px;border-radius:50%;background:var(--sw);border:3px solid #fff;box-shadow:0 0 0 1px var(--line-2);cursor:pointer;padding:0}
+.inksw[aria-pressed="true"]{box-shadow:0 0 0 2.5px var(--mrn)}
+.inkst{min-width:34px;height:34px;border-radius:50%;border:2px solid var(--ink-2);background:#fff;color:var(--ink);font-weight:700;font-size:15px;cursor:pointer;padding:0}
+.inkst[aria-pressed="true"]{background:var(--mrn);border-color:var(--mrn);color:#fff}
+.inkst.ball{border-radius:17px;padding:0 11px;font-size:13.5px}
+.ink-sep{width:1px;height:26px;background:var(--line-2);margin:0 4px}
+#edSvg.erasing{cursor:cell}
+.mk-choose{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mk-opt{text-align:left;border:1px solid var(--line-2);background:#fff;border-radius:14px;padding:12px;cursor:pointer;display:flex;flex-direction:column;gap:5px;font:inherit;color:var(--ink)}
+.mk-opt:hover,.mk-opt:focus-visible{border-color:var(--mrn)}
+.mk-opt svg{width:100%;height:auto;display:block;margin-bottom:6px}
+.mk-opt b{font-size:16px}.mk-opt span{font-size:13.5px;color:var(--ink-2);line-height:1.4}
+@media (max-width:560px){.mk-choose{grid-template-columns:1fr} #edInk .tool svg{display:none} #edInk .tool{padding:6px 10px} .inksw{width:26px;height:26px} .inkst{min-width:30px;height:30px;font-size:14px}}
 .ed-strip{background:#fff;border-top:1px solid var(--line);padding:10px 14px;display:flex;gap:10px;align-items:center;overflow-x:auto}
 .fr{flex:none;width:112px;border:2px solid var(--line);border-radius:10px;overflow:hidden;background:#d8c094;cursor:pointer;position:relative;text-align:left;padding:0}
 .fr[aria-current="true"]{border-color:var(--mrn);box-shadow:0 0 0 3px var(--mrn-100)}
@@ -829,10 +847,11 @@ body.assistant .coach-only,body.assistant [data-edit].btn,body.assistant [data-a
 
     <section class="ed-main">
       <div class="ed-tools">
-        <span class="lbl">On the court</span><div class="toks" id="edToks" style="display:flex;gap:4px"></div>
-        <span style="flex:1"></span>
-        <select class="inp" id="edSet" style="width:auto;min-width:160px"><option value="">Start from a set…</option></select>
-        <select class="inp" id="edDef" style="width:auto;min-width:150px"><option value="">Add defense…</option></select>
+        <div class="ink-only ink-bar" id="edInk"></div>
+        <span class="lbl tok-only">On the court</span><div class="toks tok-only" id="edToks" style="display:flex;gap:4px"></div>
+        <span style="flex:1" class="tok-only"></span>
+        <select class="inp tok-only" id="edSet" style="width:auto;min-width:160px"><option value="">Start from a set…</option></select>
+        <select class="inp tok-only" id="edDef" style="width:auto;min-width:150px"><option value="">Add defense…</option></select>
         <button class="btn sm" type="button" id="edUndo" title="Undo (Cmd or Ctrl+Z)">Undo</button><button class="btn sm" type="button" id="edRedo" title="Redo (Shift+Cmd+Z)">Redo</button><button class="btn sm" type="button" id="edMirror" title="Flip the whole play to the other side (M)">Mirror</button>
       </div>
       <div class="ed-lu" id="edLuBar">
@@ -852,7 +871,8 @@ body.assistant .coach-only,body.assistant [data-edit].btn,body.assistant [data-a
     <aside class="ed-side r" id="edRight">
       <div class="sec"><span id="edStepTitle">Setup</span><span style="display:flex;gap:4px"><button class="iconbtn" type="button" id="edFrLeft" title="Move step earlier"><svg><use href="#i-left"/></svg></button><button class="iconbtn" type="button" id="edFrRight" title="Move step later"><svg><use href="#i-right"/></svg></button><button class="iconbtn" type="button" id="edFrDup" title="Duplicate step"><svg><use href="#i-copy"/></svg></button><button class="iconbtn" type="button" id="edFrDel" title="Delete step"><svg><use href="#i-trash"/></svg></button></span></div>
       <div class="fld"><label for="edFrNote">What happens</label><textarea class="inp" id="edFrNote" rows="2" placeholder="1 hits 4 at the elbow, 5 sets the flare screen"></textarea></div>
-      <div class="fld"><label for="edBall">Ball</label><select class="inp" id="edBall"></select><div class="help" id="edBallHelp"></div></div>
+      <label class="switch ink-only" id="edClearWrap" style="margin-bottom:14px"><input type="checkbox" id="edClear"><span class="tr"></span><span class="tx"><b>Start with a clean board</b><span>Hides everything drawn on the steps before this one</span></span></label>
+      <div class="fld tok-only"><label for="edBall">Ball</label><select class="inp" id="edBall"></select><div class="help" id="edBallHelp"></div></div>
       <div class="fld hide" id="edPfFld"><label>Order</label><div class="pf"><button class="btn sm" type="button" data-pf="0">Move, then pass</button><button class="btn sm" type="button" data-pf="1">Pass, then move</button></div></div>
       <div id="edSel" class="sel-box hide">
         <h4 id="edSelName"></h4>
@@ -954,7 +974,7 @@ body.assistant .coach-only,body.assistant [data-edit].btn,body.assistant [data-a
     <aside class="lib-side" id="libSide"><div class="empty"><h3>Pick a play</h3><p>Tap any play to watch it run, read the coaching points, and add it to your playbook.</p></div></aside>
   </div>
 </div>
-<script src="/playbook-court.js?v=3"></script>
+<script src="/playbook-court.js?v=4"></script>
 <script src="/playbook-drills.js"></script>
 <script>
 (function(){
@@ -969,7 +989,7 @@ var toastT; function toast(msg,err){ var t=$('toast'); t.textContent=msg; t.clas
 function fmtDate(iso,withTime){ if(!iso) return ''; var d=new Date(iso); if(isNaN(d)) return ''; var o={month:'short',day:'numeric'}; if(d.getFullYear()!==new Date().getFullYear()) o.year='numeric'; var s=d.toLocaleDateString('en-US',o); if(withTime) s+=' '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); return s; }
 function ago(iso){ if(!iso) return 'Never'; var m=Math.round((Date.now()-Date.parse(iso))/6e4); if(m<1) return 'Just now'; if(m<60) return m+' min ago'; var h=Math.round(m/60); if(h<24) return h+(h===1?' hour ago':' hours ago'); var d=Math.round(h/24); if(d<14) return d+(d===1?' day ago':' days ago'); return fmtDate(iso); }
 function copy(t){ return (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){ toast('Copied'); },function(){ window.prompt('Copy this:',t); }); }
-var ERRORS={ offline_first:'No connection, and this device has not opened the board online yet. Connect once, then it works offline.', offline:'You are offline. This needs a connection; the Board, bench card and bench log still work.', unauthorized:'Wrong passcode.', empty_answer:'Type an answer first.', bad_game:'Something is off in that box score.', missing_date:'Pick the date.', empty_note:'Type the note.', no_report:'No scouting report for that opponent yet.', missing_name:'Give the play a name.', missing_opponent:'Which opponent is this?', no_frames:'The play needs at least one step.', empty_court:'Put some players on the court first.', not_found:'That one isn\'t there anymore. Reload the page.', save_failed:'Couldn\'t save. Try again.', not_configured:'The playbook isn\'t set up on the server yet.', server_error:'Something went wrong. Try again.', coaches_only:'That part is for the head coach.', short_code:'Make the assistant code at least 6 characters.', same_code:'Pick something different from the coach passcode.' };
+var ERRORS={ offline_first:'No connection, and this device has not opened the board online yet. Connect once, then it works offline.', offline:'You are offline. This needs a connection; the Board, bench card and bench log still work.', unauthorized:'Wrong passcode.', empty_answer:'Type an answer first.', bad_game:'Something is off in that box score.', missing_date:'Pick the date.', empty_note:'Type the note.', no_report:'No scouting report for that opponent yet.', missing_name:'Give the play a name.', missing_opponent:'Which opponent is this?', no_frames:'The play needs at least one step.', empty_court:'Put some players on the court first.',empty_board:'Draw something on the whiteboard first.', not_found:'That one isn\'t there anymore. Reload the page.', save_failed:'Couldn\'t save. Try again.', not_configured:'The playbook isn\'t set up on the server yet.', server_error:'Something went wrong. Try again.', coaches_only:'That part is for the head coach.', short_code:'Make the assistant code at least 6 characters.', same_code:'Pick something different from the coach passcode.' };
 function errText(d){ return (d&&ERRORS[d.error])||'Something went wrong.'; }
 
 function api(action,body){
@@ -1861,7 +1881,7 @@ function playSub(p){ var steps=Math.max(0,(p.frames||[]).length-1), views=viewsF
   return steps+(steps===1?' step':' steps')+(p.court==='full'?' · full court':'')+' · '+(p.groups&&p.groups.length?esc(p.groups.join(', ')):'Everyone')+' · '+views.length+(views.length===1?' view':' views')+(Object.keys(who).length?' by '+Object.keys(who).length:'')+(qOpen?' · <b style="color:var(--gold-d)">'+qOpen+(qOpen===1?' question':' questions')+'</b>':''); }
 function row(p){
   var scout=(p.kind||'ours')==='scout', st=p.archived?'Archived':(p.visible?'Live':'Draft');
-  return '<div class="plrow" data-id="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+'" data-edit="'+esc(p.id)+'" title="Edit">'+PBCourt.diagram(viewPlay(p),0,{noNames:true})+'</div>'+
+  return '<div class="plrow" data-id="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+(p.mode==='ink'?' wb':'')+'" data-edit="'+esc(p.id)+'" title="Edit">'+PBCourt.diagram(viewPlay(p),0,{noNames:true})+'</div>'+
     '<div style="min-width:0"><button class="nm" type="button" data-edit="'+esc(p.id)+'">'+esc(p.name)+'</button><div class="sub">'+playSub(p)+'</div></div>'+
     '<span class="pill '+(p.archived?'':(p.visible?'live':'hidden'))+'">'+st+'</span>'+
     '<div class="acts">'+(p.archived?'<button class="btn sm" type="button" data-restore="'+esc(p.id)+'">Restore</button>':
@@ -1874,7 +1894,7 @@ function card(p){
   var v=viewPlay(p), steps=Math.max(0,(p.frames||[]).length-1), views=viewsFor(p.id), who={}; views.forEach(function(x){ who[x.player_id]=1; });
   var qOpen=(S.data.questions||[]).filter(function(q){ return q.play_id===p.id&&!q.answer; }).length;
   var scout=(p.kind||'ours')==='scout';
-  return '<div class="pc" data-id="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+'" data-edit="'+esc(p.id)+'" title="Edit">'+PBCourt.diagram(v,0,{noNames:true})+
+  return '<div class="pc" data-id="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+(p.mode==='ink'?' wb':'')+'" data-edit="'+esc(p.id)+'" title="Edit">'+PBCourt.diagram(v,0,{noNames:true})+
     '<span class="pill '+(p.archived?'':(p.visible?'live':'hidden'))+'">'+(p.archived?'Archived':(p.visible?'Live':'Draft'))+'</span></div>'+
     '<div class="meta"><div class="cat">'+esc(scout?(p.opponent+' · '+p.category):p.category)+(p.court==='full'?' · Full court':'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+steps+(steps===1?' step':' steps')+' · '+(p.groups&&p.groups.length?esc(p.groups.join(', ')):'Everyone')+' · '+views.length+(views.length===1?' view':' views')+(Object.keys(who).length?' by '+Object.keys(who).length:'')+(qOpen?' · <b style="color:var(--gold-d)">'+qOpen+(qOpen===1?' question':' questions')+'</b>':'')+'</div></div>'+
     '<div class="acts">'+(p.archived?'<button class="btn sm" type="button" data-restore="'+esc(p.id)+'">Restore</button>':
@@ -1893,8 +1913,8 @@ document.addEventListener('click',function(e){
 });
 $('playQ').addEventListener('input',function(){ S.q.plays=this.value.trim().toLowerCase(); renderPlays('plays'); });
 $('scoutQ').addEventListener('input',function(){ S.q.scout=this.value.trim().toLowerCase(); renderPlays('scout'); });
-$('newPlayBtn').addEventListener('click',function(){ openEditor(null,'ours'); });
-$('newScoutBtn').addEventListener('click',function(){ openEditor(null,'scout'); });
+$('newPlayBtn').addEventListener('click',function(){ chooseNewPlay('ours'); });
+$('newScoutBtn').addEventListener('click',function(){ chooseNewPlay('scout'); });
 
 /* ── players ── */
 function renderPlayers(){
@@ -2043,13 +2063,14 @@ function isScout(){ return E.play.kind==='scout'; }
 function blankFrame(){ return {pos:{},moves:{},ball:'',note:'',passFirst:false}; }
 function clonePos(p){ var o={}; Object.keys(p).forEach(function(k){ o[k]=[p[k][0],p[k][1]]; }); return o; }
 
-function openEditor(id,kind){
+function openEditor(id,kind,mode){
   var src=id?S.data.plays.find(function(p){return p.id===id;}):null;
   var play=src?JSON.parse(JSON.stringify(src)):{ name:'', kind:kind||'ours', opponent:'', category:kind==='scout'?'Offense':'Offense', court:'half', notes:'', groups:[], visible:false, lineup:{}, frames:[blankFrame()] };
+  if(!src&&mode==='ink'){ play.mode='ink'; play.frames[0].ink=[]; }
   if(!play.lineup) play.lineup={}; if(!play.groups) play.groups=[];
   (play.frames||[]).forEach(function(f){ f.moves=f.moves||{}; f.pos=f.pos||{}; });
-  E={ id:src?src.id:null, play:play, at:0, sel:'', bending:false, dirty:false, hist:[], redo:[], last:null };
-  if(!src){ var set=PBCourt.SETS['Five out']; TOK.slice(0,5).forEach(function(k){ play.frames[0].pos[k]=set[k].slice(); }); play.frames[0].ball='O1'; }
+  E={ id:src?src.id:null, play:play, at:0, sel:'', bending:false, dirty:false, hist:[], redo:[], last:null, tool:play.mode==='ink'&&!src?'st':'cut', color:'k', stamp:'1' };
+  if(!src&&play.mode!=='ink'){ var set=PBCourt.SETS['Five out']; TOK.slice(0,5).forEach(function(k){ play.frames[0].pos[k]=set[k].slice(); }); play.frames[0].ball='O1'; }
   $('edName').value=play.name; $('edNotes').value=play.notes||''; $('edTips').value=(play.tips||[]).join('\n'); $('edReads').value=(play.reads||[]).map(function(r){ return r.when+' | '+r.then+(r.frame?' | '+r.frame:''); }).join('\n'); $('edDue').value=play.due||''; if(!play.signal) play.signal={call:'',photo:''}; $('edSigCall').value=play.signal.call||''; renderSig(); if(!play.situations) play.situations=[]; renderSitsChips(); renderVn(); if(!play.marks) play.marks=[]; $('edVisible').checked=!!play.visible; $('edOpp').value=play.opponent||'';
   $('edOppFld').classList.toggle('hide',!isScout());
   $('edKindTag').textContent=isScout()?'Scouting':'Our play';
@@ -2058,9 +2079,9 @@ function openEditor(id,kind){
   $('edLineupH').textContent=isScout()?'Our defenders':'Players on the spots';
   $('edLineupHelp').textContent=isScout()?'Put your guys on the X\'s so each player knows who he\'s guarding.':'Names show on the court. Each player sees a YOU ring on his spot.';
   // a brand new play starts with the first saved lineup already on it
-  if(!src&&savedLineups().length) applyLineup(savedLineups()[0],true);
+  if(!src&&play.mode!=='ink'&&savedLineups().length) applyLineup(savedLineups()[0],true);
   renderGroupsChips(); renderLineup(); renderCourtBtns(); renderSets(); renderClip();
-  $('editor').classList.add('on'); document.body.style.overflow='hidden';
+  $('editor').classList.add('on'); $('editor').classList.toggle('ink',play.mode==='ink'); document.body.style.overflow='hidden';
   drawAll();
   setTimeout(function(){ if(!play.name) $('edName').focus(); },60);
 }
@@ -2076,6 +2097,7 @@ $('edUndo').addEventListener('click',edUndo); $('edRedo').addEventListener('clic
 function mirrorPlay(){
   var w=PBCourt.dims(E.play.court).w, flip=function(xy){ return [Math.round((w-xy[0])*10)/10,xy[1]]; }, swap=function(t){ return String(t||'').replace(/\b(right|left)\b/gi,function(m){ var r=m.toLowerCase()==='right'?'left':'right'; return m[0]===m[0].toUpperCase()?r.charAt(0).toUpperCase()+r.slice(1):r; }); };
   E.play.frames.forEach(function(f){ Object.keys(f.pos).forEach(function(k){ f.pos[k]=flip(f.pos[k]); }); Object.keys(f.moves||{}).forEach(function(k){ if(f.moves[k].c) f.moves[k].c=flip(f.moves[k].c); }); f.note=swap(f.note); });
+  if(isInkEd()) PBCourt.inkMirror(E.play);
   E.play.notes=swap(E.play.notes); E.play.tips=(E.play.tips||[]).map(swap); $('edNotes').value=E.play.notes||''; $('edTips').value=(E.play.tips||[]).join('\n');
   dirty(); drawAll(); toast('Mirrored. Left is right now.');
 }
@@ -2242,8 +2264,9 @@ $('edToks').addEventListener('click',function(e){
 function freeSpot(k){ var d=PBCourt.dims(E.play.court), y=k.charAt(0)==='X'?d.h*0.45:d.h*0.78, n=+k.charAt(1); return [60+(n-1)*95,y]; }
 
 /* drawing */
-function drawAll(){ hidePop(); drawCourt(); renderStrip(); renderStepPanel(); renderToks(); E.last=snapState(); $('edUndo').disabled=!E.hist.length; $('edRedo').disabled=!E.redo.length; }
+function drawAll(){ hidePop(); drawCourt(); renderStrip(); renderStepPanel(); renderToks(); if(isInkEd()) renderInkBar(); E.last=snapState(); $('edUndo').disabled=!E.hist.length; $('edRedo').disabled=!E.redo.length; }
 function drawCourt(){
+  if(isInkEd()){ drawInkCourt(); return; }
   var play=E.play, d=PBCourt.dims(play.court), f=cur(), vo=PBCourt.viewOpts(viewPlay(play));
   edSvg.setAttribute('viewBox',d.vb);
   var s=PBCourt.courtSVG(play.court);
@@ -2260,6 +2283,7 @@ function drawCourt(){
 }
 function hint(){
   var h=$('edHint'), f=cur();
+  if(isInkEd()){ h.textContent=inkHint(); return; }
   if(E.at===0) h.textContent=Object.keys(f.pos).length?'Drag players to their starting spots. Then Next step.':'Pick a set above, or turn players on.';
   else if(E.sel&&f.ball===E.sel) h.textContent=E.sel.charAt(1)+' has the ball. Tap a teammate to pass, tap the rim to shoot, or drag him to dribble.';
   else if(E.sel) h.textContent='Drag '+E.sel.charAt(1)+' along the path you want. End on a teammate to screen. Hold him for more.';
@@ -2276,6 +2300,7 @@ $('edStrip').addEventListener('click',function(e){
   if(e.target.closest('#edAddFr')){ addFrame(); }
 });
 function addFrame(){
+  if(isInkEd()){ if(E.play.frames.length>=30) return toast('That\'s the most steps a play can have.',true); E.play.frames.splice(E.at+1,0,{pos:{},moves:{},ball:'',note:'',passFirst:false,ink:[]}); E.at++; if(E.tool==='st') E.tool='cut'; dirty(); drawAll(); return; }
   var f=cur(), nf={pos:clonePos(f.pos),moves:{},ball:f.ball==='rim'?'':f.ball,note:'',passFirst:false};
   E.play.frames.splice(E.at+1,0,nf); E.at++; E.sel=''; dirty(); drawAll();
   if(E.play.frames.length>=30) toast('That\'s the most steps a play can have.');
@@ -2310,6 +2335,7 @@ function renderStepPanel(){
     var late=!!(f.moves[E.sel]&&f.moves[E.sel].late); $('edTiming').innerHTML=m?[['now','With the others'],['late','Waits, then goes']].map(function(x){ return '<button class="tool" type="button" data-tm="'+x[0]+'" aria-pressed="'+((x[0]==='late')===late)+'">'+x[1]+'</button>'; }).join(''):'';
     $('edSelHelp').textContent=m?'Drag him again to change where he ends up.':'Drag him on the court to make him move this step.';
   }
+  if(isInkEd()){ $('edStepHelp').innerHTML=inkStepHelp(); $('edClear').checked=!!f.clear; $('edClearWrap').classList.toggle('hide',E.at===0); return; }
   $('edStepHelp').innerHTML=E.at===0?'The setup is where everyone starts. Press Next step for the first thing that happens.':'Drag the players who move; the path you draw is the arrow. With the ball handler selected, tap a teammate to pass and the rim to shoot. Hold a player for cut, dribble, screen, waits, put back.'+(window.matchMedia&&window.matchMedia('(pointer:fine)').matches?'<div style="margin-top:8px"><span class="kbd">←</span><span class="kbd">→</span> steps · <span class="kbd">N</span> next step · <span class="kbd">1</span>…<span class="kbd">5</span> select · <span class="kbd">B</span> ball · <span class="kbd">C</span><span class="kbd">D</span><span class="kbd">S</span> cut, dribble, screen · <span class="kbd">⌫</span> put back · <span class="kbd">M</span> mirror · <span class="kbd">Space</span> preview · <span class="kbd">⌘Z</span> undo</div>':'');
 }
 $('edMoveTypes').addEventListener('click',function(e){ var b=e.target.closest('[data-mt]'); if(!b||!E.sel) return; var f=cur(); f.moves[E.sel]=Object.assign({},f.moves[E.sel]||{},{t:b.getAttribute('data-mt')}); dirty(); drawAll(); });
@@ -2354,6 +2380,7 @@ function svgPt(e){ var pt=edSvg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY
 function clampPt(p){ var d=PBCourt.dims(E.play.court), m=d.m; return [Math.round(Math.min(d.w+m,Math.max(-m,p[0]))*10)/10, Math.round(Math.min(d.h+m,Math.max(-m,p[1]))*10)/10]; }
 edSvg.addEventListener('pointerdown',function(e){
   if(!E) return; hidePop();
+  if(isInkEd()){ inkDown(e); return; }
   var ctl=e.target.closest('[data-ctl]'); var tk=e.target.closest('.tk'); var rim=e.target.closest('[data-rim]');
   if(rim){ var fb=cur(); if(E.at>0&&E.sel&&fb.ball===E.sel){ fb.ball='rim'; dirty(); drawAll(); toast('Shot by '+E.sel.charAt(1)+'.'); } return; }
   if(ctl){ drag={kind:'ctl',id:ctl.getAttribute('data-ctl'),moved:false}; E.sel=drag.id; }
@@ -2364,6 +2391,7 @@ edSvg.addEventListener('pointerdown',function(e){
   e.preventDefault(); try{ edSvg.setPointerCapture(e.pointerId); }catch(x){}
 });
 edSvg.addEventListener('pointermove',function(e){
+  if(INKD){ inkMove(e); return; }
   if(!drag) return; var p=clampPt(svgPt(e)), f=cur();
   if(drag.kind==='tok'){ if(drag.lp) return; if(!drag.moved&&PBCourt.dist(p,drag.start)<4) return; if(!drag.moved){ drag.moved=true; clearTimeout(drag.timer); } f.pos[drag.id]=p; var lp=drag.path[drag.path.length-1]; if(PBCourt.dist(p,lp)>=4) drag.path.push(p); if(E.at>0&&f.moves[drag.id]&&f.moves[drag.id].c) delete f.moves[drag.id].c; }
   else { drag.moved=true; f.moves[drag.id]=Object.assign({},f.moves[drag.id]||{t:'cut'},{c:p}); }
@@ -2372,6 +2400,7 @@ edSvg.addEventListener('pointermove',function(e){
 function liveDraw(){ drawCourt(); }
 edSvg.addEventListener('pointerup',endDrag); edSvg.addEventListener('pointercancel',endDrag);
 function endDrag(e){
+  if(INKD){ inkUp(e); return; }
   if(!drag) return; var d=drag; drag=null; clearTimeout(d.timer);
   if(d.kind==='tok'){
     if(d.lp){ drawCourt(); return; }
@@ -2440,6 +2469,7 @@ document.addEventListener('keydown',function(e){
   if(k==='m'||k==='M'){ e.preventDefault(); mirrorPlay(); return; }
   if(k===' '){ e.preventDefault(); $('edPreview').click(); return; }
   if(k==='Escape'){ if(E.sel){ E.sel=''; E.bending=false; drawAll(); } hidePop(); return; }
+  if(isInkEd()){ inkKey(k,e); return; }
   if(/^[1-5]$/.test(k)){ var id=(e.shiftKey?'X':'O')+k; if(f.pos[id]){ E.sel=id; drawAll(); } return; }
   if(!E.sel) return;
   var p=prev(), moved=E.at>0&&p&&p.pos[E.sel]&&PBCourt.dist(p.pos[E.sel],f.pos[E.sel])>=3;
@@ -2448,11 +2478,118 @@ document.addEventListener('keydown',function(e){
   if((k==='Backspace'||k==='Delete')&&moved){ e.preventDefault(); f.pos[E.sel]=p.pos[E.sel].slice(); delete f.moves[E.sel]; dirty(); drawAll(); return; }
 });
 
+/* whiteboard plays: draw free hand, step by step */
+function isInkEd(){ return !!(E&&E.play&&E.play.mode==='ink'); }
+var INKD=null;          // the stroke being drawn, or the eraser in use
+var INK_BTNS=[
+  ['st','Players','<circle cx="9" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width="1.8"/><text x="9" y="10.2" text-anchor="middle" font-size="8.5" font-weight="700" fill="currentColor">1</text><path d="M22 3L30 11M30 3L22 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'],
+  ['pen','Pen','<path d="M2 10C7 1 12 13 18 6S29 3 34 9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'],
+  ['cut','Cut','<path d="M2 7H26" stroke="currentColor" stroke-width="2.4"/><path d="M34 7L25 2.5V11.5Z" fill="currentColor"/>'],
+  ['pass','Pass','<path d="M2 7H26" stroke="currentColor" stroke-width="2.4" stroke-dasharray="4 3"/><path d="M34 7L25 2.5V11.5Z" fill="currentColor"/>'],
+  ['drib','Dribble','<path d="M2 7L5 2L9 12L13 2L17 12L21 2L25 7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M34 7L25 2.5V11.5Z" fill="currentColor"/>'],
+  ['scr','Screen','<path d="M2 7H30M30 1V13" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>'],
+  ['er','Eraser','<path d="M8 12L3 7L10 0L19 9L16 12Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M16 12H33" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>']
+];
+var INK_STAMPS=[['1','1'],['2','2'],['3','3'],['4','4'],['5','5'],['X','X'],['B','Ball']];
+var INK_NAMES={k:'Black',r:'Red',b:'Blue'};
+function renderInkBar(){
+  var t=E.tool, h='<div class="ink-row">'+INK_BTNS.map(function(b){ return '<button class="tool" type="button" data-ink="'+b[0]+'" aria-pressed="'+(t===b[0])+'" title="'+b[1]+'"><svg viewBox="0 0 36 14">'+b[2]+'</svg>'+b[1]+'</button>'; }).join('')+'</div>';
+  h+='<div class="ink-row">'+['k','r','b'].map(function(c){ return '<button class="inksw" type="button" data-inkc="'+c+'" aria-pressed="'+(E.color===c)+'" title="'+INK_NAMES[c]+'" aria-label="'+INK_NAMES[c]+' marker" style="--sw:'+PBCourt.INK[c]+'"></button>'; }).join('');
+  if(t==='st') h+='<span class="ink-sep"></span>'+INK_STAMPS.map(function(s){ return '<button class="inkst'+(s[0]==='B'?' ball':'')+'" type="button" data-inks="'+s[0]+'" aria-pressed="'+(E.stamp===s[0])+'" title="Tap the board to put '+(s[0]==='B'?'the ball':s[0]==='X'?'a defender':s[0])+' down">'+s[1]+'</button>'; }).join('');
+  h+='<span style="flex:1"></span><button class="btn sm" type="button" id="inkClr">Clear this step</button></div>';
+  $('edInk').innerHTML=h;
+}
+$('edInk').addEventListener('click',function(e){
+  var b;
+  if((b=e.target.closest('[data-ink]'))){ E.tool=b.getAttribute('data-ink'); renderInkBar(); hint(); return; }
+  if((b=e.target.closest('[data-inkc]'))){ E.color=b.getAttribute('data-inkc'); if(E.tool==='er') E.tool='pen'; renderInkBar(); return; }
+  if((b=e.target.closest('[data-inks]'))){ E.stamp=b.getAttribute('data-inks'); E.tool='st'; renderInkBar(); hint(); return; }
+  if(e.target.closest('#inkClr')){ var f=cur(); if(!(f.ink||[]).length) return toast('Nothing drawn on this step yet.'); f.ink=[]; dirty(); drawAll(); toast('Step cleared. Undo brings it back.'); }
+});
+$('edClear').addEventListener('change',function(){ if(!isInkEd()||E.at===0) return; if(this.checked) cur().clear=true; else delete cur().clear; dirty(); drawAll(); });
+function drawInkCourt(){
+  var play=E.play, d=PBCourt.dims(play.court);
+  edSvg.setAttribute('viewBox',d.vb);
+  edSvg.innerHTML=PBCourt.courtSVG(play.court,'wb')+'<g>'+PBCourt.inkBoardSVG(play,E.at)+'</g><g id="inkLive"></g>';
+  edSvg.classList.toggle('erasing',E.tool==='er');
+  hint();
+}
+function inkHint(){
+  var t=E.tool;
+  if(t==='st') return E.stamp==='B'?'Tap where the ball starts.':E.stamp==='X'?'Tap the board to put a defender down.':'Tap the board to put '+E.stamp+' down. The next number is ready after each tap.';
+  if(t==='er') return 'Drag over anything on this step to rub it out.';
+  if(E.at===0) return 'Setup: put the players down, then Next step.';
+  return {pen:'Draw anything free hand: words, a circle, a spot.',cut:'Draw the cut. The arrow goes where your finger stops.',pass:'Draw the pass from the passer to the catcher.',drib:'Draw the dribble. It turns into a zigzag.',scr:'Draw to where the screen is set. A bar goes at the end.'}[t]||'';
+}
+function inkStepHelp(){ return E.at===0?'The setup is the board before anything happens: put the players on it. Then press Next step and draw what happens first. Each step draws itself in when players press Play.':'Draw only what happens on this step. Earlier steps show lighter underneath. Turn on a clean board when the picture gets busy.'; }
+// Douglas-Peucker: keep the shape, drop the points that add nothing
+function simplify(P,eps){
+  if(P.length<3) return P;
+  var a=P[0], b=P[P.length-1], dx=b[0]-a[0], dy=b[1]-a[1], L=Math.hypot(dx,dy)||1, best=0, at=0;
+  for(var i=1;i<P.length-1;i++){ var d=Math.abs((P[i][0]-a[0])*dy-(P[i][1]-a[1])*dx)/L; if(L<1) d=Math.hypot(P[i][0]-a[0],P[i][1]-a[1]); if(d>best){ best=d; at=i; } }
+  if(best<=eps) return [a,b];
+  return simplify(P.slice(0,at+1),eps).slice(0,-1).concat(simplify(P.slice(at),eps));
+}
+function flat(P){ var o=[]; P.forEach(function(p){ o.push(Math.round(p[0]*10)/10,Math.round(p[1]*10)/10); }); return o; }
+function segDist(p,a,b){ var dx=b[0]-a[0], dy=b[1]-a[1], L2=dx*dx+dy*dy; var t=L2?Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L2)):0; return Math.hypot(p[0]-(a[0]+t*dx),p[1]-(a[1]+t*dy)); }
+function inkHit(s,p){
+  var q=s.p||[]; if(s.k==='st') return Math.hypot(q[0]-p[0],q[1]-p[1])<=20;
+  for(var i=0;i+3<q.length;i+=2) if(segDist(p,[q[i],q[i+1]],[q[i+2],q[i+3]])<=11) return true;
+  return false;
+}
+function nextStamp(){ var used={}; (cur().ink||[]).forEach(function(s){ if(s.k==='st') used[s.t]=1; }); if(!/^[1-5]$/.test(E.stamp)) return; for(var n=+E.stamp+1;n<=5;n++) if(!used[String(n)]){ E.stamp=String(n); return; } }
+function inkDown(e){
+  if(!e.isPrimary||INKD) return;
+  var p=clampPt(svgPt(e)), f=cur(); if(!f.ink) f.ink=[];
+  e.preventDefault(); try{ edSvg.setPointerCapture(e.pointerId); }catch(x){}
+  if(E.tool==='st'){
+    if(f.ink.length>=80) return toast('That step is full. Start the next one.',true);
+    f.ink.push({k:'st',c:E.stamp==='B'?'k':E.color,t:E.stamp,p:[Math.round(p[0]),Math.round(p[1])]}); nextStamp(); dirty(); drawAll(); return;
+  }
+  if(E.tool==='er'){ INKD={er:true,hit:false}; inkErase(p); return; }
+  if(f.ink.length>=80) return toast('That step is full. Start the next one.',true);
+  INKD={k:E.tool,c:E.color,pts:[p]}; inkLive();
+}
+function inkMove(e){
+  if(!INKD||!e.isPrimary) return; var p=clampPt(svgPt(e));
+  if(INKD.er){ inkErase(p); return; }
+  var last=INKD.pts[INKD.pts.length-1]; if(Math.hypot(p[0]-last[0],p[1]-last[1])<2.5) return;
+  INKD.pts.push(p); inkLive();
+}
+function inkLive(){ var g=document.getElementById('inkLive'); if(g) g.innerHTML=PBCourt.inkStrokeSVG({k:INKD.k,c:INKD.c,p:flat(INKD.pts)},1); }
+function inkErase(p){
+  var f=cur(), before=(f.ink||[]).length; f.ink=(f.ink||[]).filter(function(s){ return !inkHit(s,p); });
+  if(f.ink.length!==before){ INKD.hit=true; drawInkCourt(); }
+}
+function inkUp(){
+  var d=INKD; INKD=null; if(!d) return;
+  if(d.er){ if(d.hit){ dirty(); drawAll(); } return; }
+  var P=simplify(d.pts,1.1), L=0; for(var i=1;i<P.length;i++) L+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);
+  if(L<8){ drawInkCourt(); return; }
+  var pts=0; (cur().ink||[]).forEach(function(s){ pts+=(s.p||[]).length/2; });
+  if(pts+P.length>1500){ drawInkCourt(); return toast('That step has a lot drawn on it. Start the next step.',true); }
+  cur().ink.push({k:d.k,c:d.c,p:flat(P.slice(0,400))}); dirty(); drawAll();
+}
+function inkKey(k,e){
+  var map={p:'pen',c:'cut',a:'pass',d:'drib',s:'scr',e:'er'}, low=k.toLowerCase();
+  if(/^[1-5]$/.test(k)||low==='x'||low==='b'){ E.tool='st'; E.stamp=low==='x'?'X':low==='b'?'B':k; renderInkBar(); hint(); return; }
+  if(map[low]){ E.tool=map[low]; renderInkBar(); hint(); return; }
+  if((k==='Backspace'||k==='Delete')&&(cur().ink||[]).length){ e.preventDefault(); cur().ink.pop(); dirty(); drawAll(); }
+}
+/* new play: move the players, or draw it on the whiteboard */
+function chooseNewPlay(kind){
+  modal(kind==='scout'?'Draw an opponent play':'Draw a new play','<p class="muted" style="margin:0 0 14px">Both kinds run step by step for your players, with Play and Next.</p><div class="mk-choose">'+
+    '<button type="button" class="mk-opt" data-mk="tokens"><svg viewBox="0 0 120 70" aria-hidden="true"><rect width="120" height="70" rx="8" fill="#f3e4c4"/><circle cx="30" cy="48" r="9" fill="#1b1b22"/><text x="30" y="52" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">1</text><circle cx="88" cy="22" r="9" fill="#1b1b22"/><text x="88" y="26" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">2</text><path d="M38 42Q60 18 76 22" fill="none" stroke="#1b1b22" stroke-width="2.4"/><path d="M80 23L71 17V27Z" fill="#1b1b22"/></svg><b>Move the players</b><span>Drag each player where he goes. The arrows, passes and animation are drawn for you.</span></button>'+
+    '<button type="button" class="mk-opt" data-mk="ink"><svg viewBox="0 0 120 70" aria-hidden="true"><rect width="120" height="70" rx="8" fill="#fcfcfd" stroke="#cfd6de"/><circle cx="30" cy="48" r="8.5" fill="#fff" stroke="#1b1b22" stroke-width="2"/><text x="30" y="52" text-anchor="middle" font-size="10" font-weight="700" fill="#1b1b22">1</text><path d="M80 16L94 30M94 16L80 30" stroke="#c62828" stroke-width="2.6" stroke-linecap="round"/><path d="M38 44C50 30 58 40 66 26S76 18 72 14" fill="none" stroke="#1d4ed8" stroke-width="2.4" stroke-linecap="round"/><path d="M70 12L64 20L74 19Z" fill="#1d4ed8"/></svg><b>Whiteboard</b><span>Draw it free hand like a dry erase board, one step at a time. Each step draws itself in when it plays.</span></button>'+
+    '</div>',[['Cancel','ghost',closeModal]]);
+  Array.prototype.forEach.call(document.querySelectorAll('[data-mk]'),function(b){ b.addEventListener('click',function(){ closeModal(); openEditor(null,kind,b.getAttribute('data-mk')==='ink'?'ink':''); }); });
+}
+
 /* preview + save */
 var previewP=null;
 $('edPreview').addEventListener('click',function(){
-  var v=viewPlay(E.play); if(!v.frames.length||!Object.keys(v.frames[0].pos).length) return toast('Put some players on the court first.',true);
-  modal(E.play.name||'Preview','<div style="background:#d8c094;border-radius:12px;overflow:hidden"><svg id="pvSvg" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;max-height:70vh"></svg></div><div style="display:flex;gap:8px;align-items:center;margin-top:12px"><button class="btn primary" type="button" id="pvPlay">'+svg('i-play')+'Play</button><button class="iconbtn" type="button" id="pvPrev">'+svg('i-prev')+'</button><button class="iconbtn" type="button" id="pvNext">'+svg('i-next')+'</button><span class="muted" id="pvNote" style="flex:1"></span></div>',[['Close','',closeModal]],true);
+  var v=viewPlay(E.play), wbp=PBCourt.isInk(v); if(wbp?!PBCourt.inkCount(v):(!v.frames.length||!Object.keys(v.frames[0].pos).length)) return toast(wbp?'Draw something on the whiteboard first.':'Put some players on the court first.',true);
+  modal(E.play.name||'Preview','<div style="background:'+(wbp?'#e7ebef':'#d8c094')+';border-radius:12px;overflow:hidden"><svg id="pvSvg" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;max-height:70vh"></svg></div><div style="display:flex;gap:8px;align-items:center;margin-top:12px"><button class="btn primary" type="button" id="pvPlay">'+svg('i-play')+'Play</button><button class="iconbtn" type="button" id="pvPrev">'+svg('i-prev')+'</button><button class="iconbtn" type="button" id="pvNext">'+svg('i-next')+'</button><span class="muted" id="pvNote" style="flex:1"></span></div>',[['Close','',closeModal]],true);
   previewP=new PBCourt.Player($('pvSvg'),v,{onChange:function(at,playing){ $('pvPlay').innerHTML=svg(playing?'i-pause':'i-play')+(playing?'Pause':'Play'); var n=v.frames.length; $('pvNote').textContent=(at===0?'Setup':'Step '+at+' of '+(n-1))+(v.frames[at].note?': '+v.frames[at].note:''); }});
   $('pvPlay').addEventListener('click',function(){ if(previewP.isPlaying()) previewP.pause(); else previewP.playAll(); });
   $('pvPrev').addEventListener('click',function(){ previewP.pause(); previewP.go(previewP.at-1); });
@@ -2522,8 +2659,8 @@ window.addEventListener('hashchange',function(){ if(!$('app').classList.contains
     var lastCat=null, counts={}; if(isList) list.forEach(function(p){ counts[p.category]=(counts[p.category]||0)+1; });
     $('libGrid').innerHTML=list.length?list.map(function(p){ var had=have[p.name.toLowerCase()];
       if(isList){ var h=''; if(st.cat==='All'&&p.category!==lastCat){ h='<div class="pcat-h">'+esc(p.category)+'<small>'+counts[p.category]+(counts[p.category]===1?' play':' plays')+'</small></div>'; lastCat=p.category; }
-        return h+'<div class="lrow lib-card'+(st.cur===p.key?' on':'')+'" data-lk="'+esc(p.key)+'"><input class="pick" type="checkbox" data-lsel="'+esc(p.key)+'"'+(st.sel[p.key]?' checked':'')+' aria-label="Select '+esc(p.name)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{noNames:true})+'</div><div style="min-width:0"><div class="nm">'+esc(p.name)+'</div><div class="sub">'+esc(p.category)+' · '+sub(p)+'</div></div>'+(had?'<span class="have">In your playbook</span>':'<span></span>')+'</div>'; }
-      return '<div class="pc lib-card'+(st.cur===p.key?' on':'')+'" data-lk="'+esc(p.key)+'"><input class="pick" type="checkbox" data-lsel="'+esc(p.key)+'"'+(st.sel[p.key]?' checked':'')+' aria-label="Select '+esc(p.name)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{noNames:true})+(had?'<span class="pill have">In your playbook</span>':'')+'</div><div class="meta"><div class="cat">'+esc(p.category)+(p.court==='full'?' · Full court':'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+sub(p)+'</div></div></div>'; }).join(''):'<div class="empty" style="grid-column:1/-1"><h3>No matches</h3></div>';
+        return h+'<div class="lrow lib-card'+(st.cur===p.key?' on':'')+'" data-lk="'+esc(p.key)+'"><input class="pick" type="checkbox" data-lsel="'+esc(p.key)+'"'+(st.sel[p.key]?' checked':'')+' aria-label="Select '+esc(p.name)+'"><div class="th'+(p.court==='full'?' full':'')+(p.mode==='ink'?' wb':'')+'">'+PBCourt.diagram(p,0,{noNames:true})+'</div><div style="min-width:0"><div class="nm">'+esc(p.name)+'</div><div class="sub">'+esc(p.category)+' · '+sub(p)+'</div></div>'+(had?'<span class="have">In your playbook</span>':'<span></span>')+'</div>'; }
+      return '<div class="pc lib-card'+(st.cur===p.key?' on':'')+'" data-lk="'+esc(p.key)+'"><input class="pick" type="checkbox" data-lsel="'+esc(p.key)+'"'+(st.sel[p.key]?' checked':'')+' aria-label="Select '+esc(p.name)+'"><div class="th'+(p.court==='full'?' full':'')+(p.mode==='ink'?' wb':'')+'">'+PBCourt.diagram(p,0,{noNames:true})+(had?'<span class="pill have">In your playbook</span>':'')+'</div><div class="meta"><div class="cat">'+esc(p.category)+(p.court==='full'?' · Full court':'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+sub(p)+'</div></div></div>'; }).join(''):'<div class="empty" style="grid-column:1/-1"><h3>No matches</h3></div>';
     var packs=LIB.packs; $('libPacks').classList.toggle('strip',!st.allPacks); $('libPackMore').textContent=st.allPacks?'One row':'Show all '+LIB.packs.length+' packs';
     $('libPacks').innerHTML=packs.map(function(pk){ var n=pk.plays.length, got=pk.plays.filter(function(k){ var l=LIB.plays.find(function(x){return x.key===k;}); return l&&have[l.name.toLowerCase()]; }).length; return '<div class="lib-pack"><b>'+esc(pk.name)+'</b><p>'+esc(pk.blurb)+'</p><div class="row2"><span class="n">'+n+' plays'+(pk.endgame?' · fills '+Object.keys(pk.endgame).length+' end of game spots':'')+(got?' · '+got+' already in':'')+'</span><button class="btn sm primary" type="button" data-lpack="'+esc(pk.key)+'">Add pack</button></div></div>'; }).join('');
     var n=Object.keys(st.sel).length; $('libAddSel').classList.toggle('hide',!n); $('libAddSel').textContent='Add selected ('+n+')'; $('libCount').textContent=LIB.plays.length+' plays · '+LIB.packs.length+' packs';

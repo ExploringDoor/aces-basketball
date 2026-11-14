@@ -115,6 +115,7 @@ h1,h2,h3{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2px}
 .pcard .th{background:#e8d6ae;position:relative}
 .pcard .th.full{display:flex;justify-content:center;background:#d8c094}
 .pcard .th.full svg{height:300px!important;width:auto!important}
+.pcard .th.wb{background:#e7ebef}
 .pcard .meta{padding:12px 14px 14px}
 .pcard .cat{font-family:'Oswald',sans-serif;font-size:11.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--mrn)}
 .pcard h3{font-size:19px;margin:2px 0 2px;line-height:1.2}
@@ -549,7 +550,7 @@ body.shielded #app{filter:blur(22px)}
 <div class="shield" id="shield" role="dialog" aria-label="Playbook hidden"><div class="sb"><img src="/LM_Logo.png" alt=""><h3>Playbook hidden</h3><p>Tap anywhere to show it again.</p></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="/playbook-court.js?v=3"></script>
+<script src="/playbook-court.js?v=4"></script>
 
 <script>
 (function(){
@@ -665,7 +666,7 @@ $('mustList').addEventListener('click',function(e){ var b=e.target.closest('[dat
 $('planCard').addEventListener('click',function(){ history.pushState({plan:1},'','#opp='+encodeURIComponent(S.plan.opponent)); showOpp(S.plan.opponent); });
 $('planBack').addEventListener('click',function(){ if(history.state&&(history.state.plan||history.state.opp)) history.back(); else { history.replaceState(null,'',location.pathname+location.search); closePlan(); } });
 // a grid of small play cards, used by the game plan, situations and end of game views
-function cards(list){ var wm=wmLines(); return list.filter(Boolean).map(function(p){ var st=status(p); return '<button class="pcard" type="button" data-open="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{watermark:wm,meId:S.me.id,noNames:true})+'<span class="playic">'+svg('i-play')+'</span>'+(st==='ok'?'<span class="dueb ok">Passed</span>':'')+'</div><div class="meta"><div class="cat">'+esc(catOf(p))+'</div><h3>'+esc(p.name)+'</h3></div></button>'; }).join(''); }
+function cards(list){ var wm=wmLines(); return list.filter(Boolean).map(function(p){ var st=status(p); return '<button class="pcard" type="button" data-open="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+(p.mode==='ink'?' wb':'')+'">'+PBCourt.diagram(p,0,{watermark:wm,meId:S.me.id,noNames:true})+'<span class="playic">'+svg('i-play')+'</span>'+(st==='ok'?'<span class="dueb ok">Passed</span>':'')+'</div><div class="meta"><div class="cat">'+esc(catOf(p))+'</div><h3>'+esc(p.name)+'</h3></div></button>'; }).join(''); }
 function closePlan(){ $('planView').classList.add('hide'); $('sigView').classList.add('hide'); $('sitView').classList.add('hide'); $('termView').classList.add('hide'); $('whereView').classList.add('hide'); $('listView').classList.remove('hide'); }
 /* ── coach's voice note: plays over the animation ── */
 var VA=null;
@@ -896,7 +897,7 @@ $('qz').addEventListener('click',function(e){
   Array.prototype.forEach.call($('qz').querySelectorAll('[data-ra]'),function(x){ var i=+x.getAttribute('data-ra'); if(i===q.answer) x.classList.add('ok'); else if(x===b) x.classList.add('bad'); x.disabled=true; });
   $('qz').className='qz '+(ok?'right':'wrong');
   var row=$('qz').querySelector('.row'); row.innerHTML='<span class="score">'+(ok?'Right.':'Not that one.')+'</span><button class="btn primary" type="button" id="rqNext">'+(RQ.k+1<RQ.qs.length?'Next':'See my score')+'</button>';
-  S.player.gA.innerHTML=PBCourt.arrowsSVG(q.p,Math.min(q.p.frames.length-1,(q.r.frame||0)+1)||1);
+  var rqi=Math.min(q.p.frames.length-1,(q.r.frame||0)+1)||1; S.player.gA.innerHTML=PBCourt.isInk(q.p)?PBCourt.inkBoardSVG(q.p,rqi):PBCourt.arrowsSVG(q.p,rqi);
   $('rqNext').addEventListener('click',function(){ RQ.busy=false; RQ.k++; if(RQ.k<RQ.qs.length) askR(); else finishReads(); });
 });
 function finishReads(){
@@ -906,9 +907,9 @@ function finishReads(){
   var p=RQ.p; $('rqAgain').addEventListener('click',function(){ startReads(p); }); $('rqDone').addEventListener('click',function(){ endReads(); });
   var cur=(S.done.quiz||{})[id]||0; if(pct>cur){ S.done.quiz=S.done.quiz||{}; S.done.quiz[id]=pct; renderTop(); }
   if(!DEMO) api({action:'quiz_result',token:S.token,id:id,score:sc,total:n}).catch(function(){});
-  RQ=null; S.quiz=null; $('quizBtn').classList.remove('hide'); $('readsBtn').classList.remove('hide'); $('nowLab').textContent='Quiz done'; $('nowTx').textContent=pct+'%';
+  RQ=null; S.quiz=null; $('quizBtn').classList.toggle('hide',!!(S.open&&S.open.mode==='ink')); $('readsBtn').classList.remove('hide'); $('nowLab').textContent='Quiz done'; $('nowTx').textContent=pct+'%';
 }
-function endReads(silent){ RQ=null; S.quiz=null; $('qz').className='qz hide'; $('qz').innerHTML=''; $('quizBtn').classList.remove('hide'); if(S.open&&(S.open.reads||[]).length) $('readsBtn').classList.remove('hide'); if(!silent&&S.player){ S.player.go(0); } }
+function endReads(silent){ RQ=null; S.quiz=null; $('qz').className='qz hide'; $('qz').innerHTML=''; $('quizBtn').classList.toggle('hide',!!(S.open&&S.open.mode==='ink')); if(S.open&&(S.open.reads||[]).length) $('readsBtn').classList.remove('hide'); if(!silent&&S.player){ S.player.go(0); } }
 $('readsBtn').addEventListener('click',function(){ if(S.open) startReads(S.open); });
 $('readsCard').addEventListener('click',function(){ var all=readsAll(); if(!all.length) return; openPlay(all[0].p.id); startReads(null); });
 /* ── game day: one card on top, everything else drops below the fold ── */
@@ -1090,7 +1091,7 @@ function renderGrid(){
     var steps=Math.max(0,(p.frames||[]).length-1);
     var mine=myTok(p), st=status(p), dd=p.due?dayDiff(p.due):null;
     var badge=st==='ok'?'<span class="dueb ok">Passed</span>':(p.due&&dd>=-7?'<span class="dueb'+(dd<0?' late':'')+'">'+(dd<0?'Overdue':dd===0?'Due today':'Due '+fmtDay(p.due).split(',')[0])+'</span>':'');
-    return '<button class="pcard" type="button" data-open="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+'">'+PBCourt.diagram(p,0,{watermark:wm,meId:S.me.id,noNames:true})+(isNew(p)?'<span class="new">New</span>':'')+badge+'<span class="playic">'+svg('i-play')+'</span></div>'+
+    return '<button class="pcard" type="button" data-open="'+esc(p.id)+'"><div class="th'+(p.court==='full'?' full':'')+(p.mode==='ink'?' wb':'')+'">'+PBCourt.diagram(p,0,{watermark:wm,meId:S.me.id,noNames:true})+(isNew(p)?'<span class="new">New</span>':'')+badge+'<span class="playic">'+svg('i-play')+'</span></div>'+
       '<div class="meta"><div class="cat">'+esc(catOf(p))+(kindOf(p)==='scout'?' · '+esc(p.category):'')+'</div><h3>'+esc(p.name)+'</h3><div class="sub">'+steps+(steps===1?' step':' steps')+(p.court==='full'?', full court':'')+(mine?', you are the '+mine.charAt(1):'')+'</div></div></button>';
   }).join('');
 }
@@ -1103,7 +1104,7 @@ function openPlay(id,fromRoute){
   if(!fromRoute) history.pushState({play:id},'','#play='+encodeURIComponent(id));
   if((S.done.viewed||[]).indexOf(p.id)<0){ S.done.viewed=(S.done.viewed||[]).concat([p.id]); renderTop(); }
   $('listView').classList.add('hide'); $('planView').classList.add('hide'); $('playView').classList.remove('hide'); window.scrollTo(0,0);
-  $('quizBtn').classList.toggle('hide',p.frames.length<2); var rds=p.reads||[]; $('readsBtn').classList.toggle('hide',!rds.length); $('pvReads').classList.toggle('hide',!rds.length); $('pvReadsList').innerHTML=rds.map(function(r){ return '<li><b>If they '+esc(theyLess(r.when))+':</b><span>'+esc(r.then)+(r.frame?' <small class="muted">(step '+r.frame+')</small>':'')+'</span></li>'; }).join('');
+  $('quizBtn').classList.toggle('hide',p.frames.length<2||p.mode==='ink'); var rds=p.reads||[]; $('readsBtn').classList.toggle('hide',!rds.length); $('pvReads').classList.toggle('hide',!rds.length); $('pvReadsList').innerHTML=rds.map(function(r){ return '<li><b>If they '+esc(theyLess(r.when))+':</b><span>'+esc(r.then)+(r.frame?' <small class="muted">(step '+r.frame+')</small>':'')+'</span></li>'; }).join('');
   $('pvCat').textContent=(kindOf(p)==='scout'?p.opponent+' · ':'')+p.category; $('pvName').textContent=p.name; $('pvNotes').textContent=p.notes||''; $('pvNotes').classList.toggle('hide',!p.notes);
   $('pvScout').classList.toggle('hide',kindOf(p)!=='scout'); $('pvScout').innerHTML='<b>Scouting</b><span>This is <strong>'+esc(p.opponent)+'</strong>\'s play. The grey numbers are them, the X\'s are us.</span>';
   var tips=p.tips||[]; $('pvTips').classList.toggle('hide',!tips.length); $('pvTipsList').innerHTML=tips.map(function(t,i){ return '<li><span class="n">'+(i+1)+'</span><span>'+esc(t)+'</span></li>'; }).join('');

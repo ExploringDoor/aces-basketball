@@ -22,10 +22,10 @@
   function isDef(id) { return id.charAt(0) === 'X'; }
 
   /* ── court ───────────────────────────────────────────────────────────── */
-  function halfLines() {
-    var s = '';
-    s += '<rect x="190" y="0" width="120" height="190" fill="' + C.mrn + '" fill-opacity=".13"/>';
-    s += '<g fill="none" stroke="' + C.mrn + '" stroke-width="2.6" stroke-linecap="round">';
+  function halfLines(col) {
+    var s = ''; col = col || C.mrn;
+    s += '<rect x="190" y="0" width="120" height="190" fill="' + col + '" fill-opacity=".13"/>';
+    s += '<g fill="none" stroke="' + col + '" stroke-width="2.6" stroke-linecap="round">';
     s += '<rect x="190" y="0" width="120" height="190"/>';
     s += '<path d="M190 190 A60 60 0 0 0 310 190"/>';
     s += '<path d="M190 190 A60 60 0 0 1 310 190" stroke-dasharray="9 8"/>';
@@ -37,20 +37,21 @@
     s += '<circle cx="250" cy="52.5" r="7.5" fill="none" stroke="' + C.ball + '" stroke-width="2.6"/>';
     return s;
   }
-  function courtSVG(court) {
-    var d = dims(court), s = '';
-    s += '<rect x="' + (-M) + '" y="' + (-M) + '" width="' + (d.w + 2 * M) + '" height="' + (d.h + 2 * M) + '" fill="' + C.edge + '"/>';
-    s += '<rect x="0" y="0" width="500" height="' + d.h + '" fill="' + C.floor + '"/>';
-    for (var x = 25; x < 500; x += 25) s += '<path d="M' + x + ' 0 V' + d.h + '" stroke="' + C.floor2 + '" stroke-width="1"/>';
-    s += halfLines();
+  // skin 'wb' is the whiteboard: white board, thin grey lines, for plays drawn free hand
+  function courtSVG(court, skin) {
+    var d = dims(court), s = '', wb = skin === 'wb', col = wb ? '#a3acb7' : C.mrn;
+    s += '<rect x="' + (-M) + '" y="' + (-M) + '" width="' + (d.w + 2 * M) + '" height="' + (d.h + 2 * M) + '" fill="' + (wb ? '#e7ebef' : C.edge) + '"/>';
+    s += '<rect x="0" y="0" width="500" height="' + d.h + '" fill="' + (wb ? '#fcfcfd' : C.floor) + '"/>';
+    if (!wb) for (var x = 25; x < 500; x += 25) s += '<path d="M' + x + ' 0 V' + d.h + '" stroke="' + C.floor2 + '" stroke-width="1"/>';
+    s += halfLines(col);
     if (court === 'full') {
-      s += '<g transform="translate(0 840) scale(1 -1)">' + halfLines() + '</g>';
-      s += '<g fill="none" stroke="' + C.mrn + '" stroke-width="2.6"><path d="M0 420 H500"/><circle cx="250" cy="420" r="60"/></g>';
-      s += '<circle cx="250" cy="420" r="20" fill="' + C.mrn + '" fill-opacity=".15"/>';
+      s += '<g transform="translate(0 840) scale(1 -1)">' + halfLines(col) + '</g>';
+      s += '<g fill="none" stroke="' + col + '" stroke-width="2.6"><path d="M0 420 H500"/><circle cx="250" cy="420" r="60"/></g>';
+      s += '<circle cx="250" cy="420" r="20" fill="' + col + '" fill-opacity=".15"/>';
     } else {
-      s += '<path d="M190 420 A60 60 0 0 1 310 420" fill="' + C.mrn + '" fill-opacity=".1" stroke="' + C.mrn + '" stroke-width="2.6"/>';
+      s += '<path d="M190 420 A60 60 0 0 1 310 420" fill="' + col + '" fill-opacity=".1" stroke="' + col + '" stroke-width="2.6"/>';
     }
-    s += '<rect x="0" y="0" width="500" height="' + d.h + '" fill="none" stroke="' + C.mrn + '" stroke-width="3"/>';
+    s += '<rect x="0" y="0" width="500" height="' + d.h + '" fill="none" stroke="' + col + '" stroke-width="3"/>';
     return s;
   }
 
@@ -77,7 +78,7 @@
       win: both ? (pf ? { ball: [0, 0.4], moves: [0.3, 1] } : { moves: [0, 0.66], ball: [0.6, 1] }) : { ball: [0, 1], moves: [0, 1] }
     };
   }
-  function duration(play, i) { var a = action(play, i); return (a.ball && a.moves.length ? 2100 : 1500); }
+  function duration(play, i) { if (isInk(play)) return inkPlan(play, i).total; var a = action(play, i); return (a.ball && a.moves.length ? 2100 : 1500); }
   function bez(m, t) { var u = 1 - t; return [u * u * m.a[0] + 2 * u * t * m.c[0] + t * t * m.b[0], u * u * m.a[1] + 2 * u * t * m.c[1] + t * t * m.b[1]]; }
   // Where every token and the ball are at time t (0..1) of action i.
   function stateAt(play, i, t) {
@@ -170,6 +171,7 @@
   }
   function arrowsSVG(play, i, opts) {
     if (i < 1 || !play.frames || i >= play.frames.length) return '';
+    if (isInk(play)) return inkFrameSVG(play, i);
     var act = action(play, i), s = '', scout = play.kind === 'scout';
     act.moves.forEach(function (m) { s += moveSVG(m, scout); });
     s += ballLineSVG(play, i, act);
@@ -215,7 +217,7 @@
     return { names: names, me: me, scout: play.kind === 'scout' };
   }
   function ghostsSVG(play, i) {
-    if (i < 1) return '';
+    if (i < 1 || isInk(play)) return '';
     var A = frame(play, i - 1), B = frame(play, i), s = '', scout = play.kind === 'scout';
     ALL.forEach(function (id) { if (A.pos[id] && (!B.pos[id] || dist(A.pos[id], B.pos[id]) >= 3)) s += tokenSVG(id, A.pos[id], { ghost: true, scout: scout }); });
     return s;
@@ -230,12 +232,127 @@
     s += '</pattern></defs><rect x="' + (-M) + '" y="' + (-M) + '" width="' + (d.w + 2 * M) + '" height="' + (d.h + 2 * M) + '" fill="url(#wm' + uid + ')" pointer-events="none"/>';
     return s;
   }
+
+  /* ── whiteboard plays (mode 'ink') ──────────────────────────────────────
+     The coach draws free hand, one step at a time. A frame carries ink: strokes
+     {k, c, p:[x,y,x,y...]} and stamps {k:'st', c, t:'1'..'5'|'X'|'B', p:[x,y]}.
+     k: pen (plain line), cut (arrow), pass (dashed arrow), drib (zigzag arrow),
+     scr (screen, a T at the end). Frame 0 is the setup; each later frame is a step
+     drawn on top. Older steps fade so the board never turns into a mess; a step
+     marked clear starts a fresh board. */
+  var INK = { k: '#1b1b22', r: '#c62828', b: '#1d4ed8' };
+  var INK_TOOLS = ['pen', 'cut', 'pass', 'drib', 'scr', 'st'];
+  function isInk(play) { return !!play && play.mode === 'ink'; }
+  function inkOf(play, i) { var f = frame(play, i); return f.ink || []; }
+  function inkPts(s) { var p = s.p || [], out = []; for (var k = 0; k + 1 < p.length; k += 2) out.push([p[k], p[k + 1]]); return out; }
+  function polyLen(P) { var L = 0; for (var k = 1; k < P.length; k++) L += dist(P[k], P[k - 1]); return L; }
+  function cutPoly(P, len) {       // the first len units of a polyline
+    if (len <= 0) return P.slice(0, 1);
+    var out = [P[0]], acc = 0;
+    for (var k = 1; k < P.length; k++) {
+      var d = dist(P[k], P[k - 1]);
+      if (acc + d >= len) { out.push(lerp(P[k - 1], P[k], d ? (len - acc) / d : 1)); return out; }
+      acc += d; out.push(P[k]);
+    }
+    return out;
+  }
+  function trimPoly(P, d) {        // drop the last d units (room for the arrowhead)
+    var L = polyLen(P); return L > d + 2 ? cutPoly(P, L - d) : P.slice(0, 1);
+  }
+  function smoothD(P) {            // quadratic through the midpoints: hand drawn but not jagged
+    if (P.length < 2) return '';
+    if (P.length === 2) return 'M' + f1(P[0][0]) + ' ' + f1(P[0][1]) + ' L' + f1(P[1][0]) + ' ' + f1(P[1][1]);
+    var s = 'M' + f1(P[0][0]) + ' ' + f1(P[0][1]);
+    for (var k = 1; k < P.length - 1; k++) { var m = [(P[k][0] + P[k + 1][0]) / 2, (P[k][1] + P[k + 1][1]) / 2]; s += ' Q' + f1(P[k][0]) + ' ' + f1(P[k][1]) + ' ' + f1(m[0]) + ' ' + f1(m[1]); }
+    var e = P[P.length - 1]; return s + ' L' + f1(e[0]) + ' ' + f1(e[1]);
+  }
+  function tipDir(P) {             // a point about 14 units back from the end, for the arrowhead and the screen bar
+    var e = P[P.length - 1], acc = 0;
+    for (var k = P.length - 2; k >= 0; k--) { acc += dist(P[k + 1], P[k]); if (acc >= 14) return P[k]; }
+    return P[0];
+  }
+  function zigzag(P) {
+    var L = polyLen(P), out = [P[0]], step = 8, side = 1;
+    for (var d = step; d < L - 4; d += step) {
+      var a = cutPoly(P, d - 1), b = cutPoly(P, d + 1), p1 = a[a.length - 1], p2 = b[b.length - 1];
+      var dx = p2[0] - p1[0], dy = p2[1] - p1[1], n = Math.hypot(dx, dy) || 1, c = cutPoly(P, d), q = c[c.length - 1];
+      out.push([q[0] - dy / n * 6 * side, q[1] + dx / n * 6 * side]); side = -side;
+    }
+    out.push(P[P.length - 1]); return out;
+  }
+  function lineD(P) { return 'M' + P.map(function (p) { return f1(p[0]) + ' ' + f1(p[1]); }).join(' L'); }
+  // One stroke, drawn up to fraction t of its length (t = 1 is the whole thing).
+  function inkStrokeSVG(s, t) {
+    var col = INK[s.c] || INK.k;
+    if (s.k === 'st') {
+      var q = s.p || [0, 0], x = q[0], y = q[1], sc = t == null || t >= 1 ? 1 : Math.max(0, Math.min(1, t * 1.25));
+      if (sc <= 0) return '';
+      var g = '<g transform="translate(' + f1(x) + ' ' + f1(y) + ') scale(' + f1(sc * 10) / 10 + ')">';
+      if (s.t === 'X') g += '<path d="M-11 -11 L11 11 M11 -11 L-11 11" stroke="' + col + '" stroke-width="3.6" stroke-linecap="round"/>';
+      else if (s.t === 'B') g += '<circle r="8" fill="' + C.ball + '" stroke="#7a3a10" stroke-width="1.4"/>';
+      else g += '<circle r="15.5" fill="#fff" stroke="' + col + '" stroke-width="2.8"/><text y="6.6" text-anchor="middle" font-family="Oswald,Arial Narrow,Arial,sans-serif" font-weight="700" font-size="19" fill="' + col + '">' + esc(s.t) + '</text>';
+      return g + '</g>';
+    }
+    var P = inkPts(s); if (P.length < 2) return '';
+    var L = polyLen(P), part = t == null || t >= 1 ? P : cutPoly(P, L * Math.max(0, t));
+    if (part.length < 2 || polyLen(part) < 1) return '';
+    var w = s.k === 'pen' ? 3 : 3.2, done = t == null || t >= 1, out = '';
+    var base = ' fill="none" stroke="' + col + '" stroke-width="' + w + '" stroke-linecap="round" stroke-linejoin="round"';
+    var arrow = s.k === 'cut' || s.k === 'pass' || s.k === 'drib';
+    var body = arrow && polyLen(part) > 18 ? trimPoly(part, 10) : part;
+    if (s.k === 'drib') out += '<path d="' + lineD(zigzag(body)) + '"' + base + '/>';
+    else out += '<path d="' + smoothD(body) + '"' + base + (s.k === 'pass' ? ' stroke-dasharray="9 7"' : '') + '/>';
+    if (arrow && polyLen(part) > 18) out += head(part[part.length - 1], tipDir(part), col, 13);
+    if (s.k === 'scr' && done && L > 12) {
+      var e = P[P.length - 1], b = tipDir(P), dx = e[0] - b[0], dy = e[1] - b[1], n = Math.hypot(dx, dy) || 1;
+      out += '<path d="M' + f1(e[0] - dy / n * 13) + ' ' + f1(e[1] + dx / n * 13) + ' L' + f1(e[0] + dy / n * 13) + ' ' + f1(e[1] - dx / n * 13) + '" stroke="' + col + '" stroke-width="4.2" stroke-linecap="round"/>';
+    }
+    return out;
+  }
+  function inkFrameSVG(play, i, t) { return inkOf(play, i).map(function (s) { return inkStrokeSVG(s, t); }).join(''); }
+  // Which frames are on the board at step i: back to the setup, or to the last step that started clean.
+  function inkBase(play, i) { var b = i; while (b > 0 && !frame(play, b).clear) b--; return b; }
+  // The board at frame i: its base (setup) in full, the steps in between faded, frame i in full.
+  // fade (0..1) lets the step that was just drawn fade out while the next one draws in.
+  function inkBoardSVG(play, i, o) {
+    o = o || {}; var b = inkBase(play, i), s = '';
+    for (var k = b; k <= i; k++) {
+      var op = k === b || k === i ? 1 : 0.28;
+      if (o.drawing != null && k === i) continue;
+      if (o.drawing != null && k === i - 1 && k !== b) op = 1 - 0.72 * o.fade;
+      s += '<g opacity="' + op + '">' + inkFrameSVG(play, k) + '</g>';
+    }
+    return s;
+  }
+  // How long one step takes to draw itself in: strokes in order, ~650 units a second.
+  function inkPlan(play, i) {
+    var list = inkOf(play, i), t = 0, plan = list.map(function (s) {
+      var d = s.k === 'st' ? 160 : Math.max(220, polyLen(inkPts(s)) / 0.65); var r = { s: s, t0: t, d: d }; t += d + 60; return r;
+    });
+    var total = Math.max(500, t), k = total > 4200 ? 4200 / total : 1;
+    plan.forEach(function (r) { r.t0 *= k; r.d *= k; });
+    return { plan: plan, total: Math.min(total, 4200) };
+  }
+  function inkAt(play, i, ms) {      // frame i part way through drawing itself in
+    var P = inkPlan(play, i), s = '';
+    P.plan.forEach(function (r) { if (ms > r.t0) s += inkStrokeSVG(r.s, Math.min(1, (ms - r.t0) / r.d)); });
+    return s;
+  }
+  function inkMirror(play) {
+    var w = dims(play.court).w;
+    (play.frames || []).forEach(function (f) { (f.ink || []).forEach(function (s) { for (var k = 0; k < (s.p || []).length; k += 2) s.p[k] = Math.round((w - s.p[k]) * 10) / 10; }); });
+  }
+  function inkCount(play) { var n = 0; (play.frames || []).forEach(function (f) { n += (f.ink || []).length; }); return n; }
+
   // A whole static diagram: positions at frame i with the arrows of the NEXT action.
+  // A whiteboard play shows the board as it stands at frame i.
   var uidN = 0;
   function diagram(play, i, o) {
     o = o || {};
     var d = dims(play.court), uid = 'd' + (++uidN), n = (play.frames || []).length, vo = viewOpts(play, o.meId);
     if (o.noNames) vo.names = {};
+    if (isInk(play)) return '<svg viewBox="' + d.vb + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' + esc(play.name || 'Play') + '" style="display:block;width:100%;height:auto">' +
+      courtSVG(play.court, 'wb') + '<g>' + inkBoardSVG(play, Math.min(i, Math.max(0, n - 1))) + '</g>' + watermark(uid, o.watermark, play.court) + '</svg>';
     return '<svg viewBox="' + d.vb + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' + esc(play.name || 'Play') + '" style="display:block;width:100%;height:auto">' +
       courtSVG(play.court) + '<g>' + (i + 1 < n ? arrowsSVG(play, i + 1) : '') + '</g><g>' + tokensSVG(stillState(play, i), vo) + '</g>' + watermark(uid, o.watermark, play.court) + '</svg>';
   }
@@ -421,12 +538,13 @@
     this.play = play; this.at = 0; this.vo = viewOpts(play, this.o.meId);
     var d = dims(play.court), uid = 'p' + (++uidN);
     this.svg.setAttribute('viewBox', d.vb);
-    this.svg.innerHTML = courtSVG(play.court) + '<g class="pb-arrows"></g><g class="pb-tokens"></g>' + watermark(uid, this.o.watermark, play.court);
+    this.svg.innerHTML = courtSVG(play.court, isInk(play) ? 'wb' : '') + '<g class="pb-arrows"></g><g class="pb-tokens"></g>' + watermark(uid, this.o.watermark, play.court);
     this.gA = this.svg.querySelector('.pb-arrows'); this.gT = this.svg.querySelector('.pb-tokens');
     this.draw();
   };
   Player.prototype.n = function () { return (this.play.frames || []).length; };
   Player.prototype.draw = function () {
+    if (isInk(this.play)) { this.gA.innerHTML = inkBoardSVG(this.play, this.at); this.gA.style.opacity = 1; this.gT.innerHTML = ''; this.emit(); return; }
     this.gA.innerHTML = this.at + 1 < this.n() ? arrowsSVG(this.play, this.at + 1) : '';
     this.gA.style.opacity = 1;
     this.gT.innerHTML = tokensSVG(stillState(this.play, this.at), this.vo);
@@ -440,6 +558,20 @@
     var self = this, i = this.at + 1;
     if (i >= this.n()) { this.stop(); return; }
     var dur = duration(this.play, i) / this.speed, t0 = 0;
+    if (isInk(this.play)) {          // the next step draws itself in while the one before it fades back
+      var total = duration(this.play, i);
+      var inkTick = function (ts) {
+        if (!t0) t0 = ts;
+        var t = Math.min(1, (ts - t0) / dur);
+        self.t = t;
+        self.gA.style.opacity = 1;
+        self.gA.innerHTML = inkBoardSVG(self.play, i, { drawing: true, fade: Math.min(1, t * 2.5) }) + inkAt(self.play, i, t * total);
+        if (t < 1) { self.raf = requestAnimationFrame(inkTick); self.emitT(t); return; }
+        self.raf = 0; self.at = i; self.t = 0; self.draw();
+        if (cb) cb();
+      };
+      this.raf = requestAnimationFrame(inkTick); this.emit(); return;
+    }
     var arrows = arrowsSVG(this.play, i);
     function tick(ts) {
       if (!t0) t0 = ts;
@@ -545,13 +677,29 @@
         F(p3, 'O2', '2 and 3 run the sidelines. 5 turns and hits 2 ahead.', null),
         F(p4, 'O2', 'Attack. 2 drives, 3 runs the far lane.', { O2: { t: 'dribble' } }),
         F(p4, 'O3', '2 on 1: hit 3 for the layup.'),
-        F(p4, 'rim', 'Score.')] }
+        F(p4, 'rim', 'Score.')] },
+      { id: 'demo_wb1', name: 'Elbow Back Cut', category: 'Offense', court: 'half', mode: 'ink', notes: 'Drawn on the whiteboard. Beats a defense that overplays the wings.', frames: [
+        W([st('1', 250, 335), st('2', 425, 255), st('3', 75, 255), st('4', 330, 95), st('5', 170, 95), st('B', 268, 318)], 'Spread out. 4 and 5 on the blocks, 2 and 3 high on the wings.'),
+        W([hand('cut', 'k', [[330, 115], [345, 160], [318, 188]]), hand('pass', 'k', [[262, 322], [290, 260], [310, 205]])], '4 flashes to the elbow. 1 hits him.'),
+        W([hand('cut', 'b', [[420, 236], [395, 150], [330, 70], [272, 58]]), hand('pass', 'k', [[318, 205], [300, 130], [282, 80]]), hand('pen', 'r', [[236, 40], [252, 22], [278, 30], [286, 56], [266, 78], [240, 72], [232, 50]])], '2 back cuts the second his man turns his head. 4 hits him for the layup.')] }
     ];
+    // whiteboard helpers: a stamp, and a stroke with a little hand wobble so it looks drawn
+    function st(t, x, y) { return { k: 'st', c: t === 'B' ? 'k' : 'k', t: t, p: [x, y] }; }
+    function hand(k, c, pts) {
+      var out = [], seed = pts[0][0] * 7 + pts[0][1] * 3;
+      for (var j = 1; j < pts.length; j++) {
+        var a = pts[j - 1], b = pts[j], n = Math.max(3, Math.round(dist(a, b) / 9));
+        for (var q = (j === 1 ? 0 : 1); q <= n; q++) { var p = lerp(a, b, q / n), w = (q === 0 || (j === pts.length - 1 && q === n)) ? 0 : Math.sin(seed + j * 3.1 + q * 1.7) * 1.4; out.push(Math.round((p[0] + w) * 10) / 10, Math.round((p[1] - w) * 10) / 10); }
+      }
+      return { k: k, c: c, p: out };
+    }
+    function W(ink, note) { return { pos: {}, moves: {}, ball: '', note: note || '', passFirst: false, ink: ink }; }
   }
 
   window.PBCourt = {
     C: C, R: R, OFF: OFF, DEF: DEF, ALL: ALL, dims: dims, courtSVG: courtSVG, action: action, stateAt: stateAt, stillState: stillState,
     arrowsSVG: arrowsSVG, tokensSVG: tokensSVG, rims: rims, viewOpts: viewOpts, shortName: shortName, tokenSVG: tokenSVG, ballSVG: ballSVG, ghostsSVG: ghostsSVG, watermark: watermark,
-    SITUATIONS: SITUATIONS, ENDGAME_LEAVES: ENDGAME_LEAVES, GOAL_METRICS: GOAL_METRICS, goalValue: goalValue, goalPct: goalPct, goalMet: goalMet, goalFmt: goalFmt, SETS: SETS, FULL_SETS: FULL_SETS, DEF_SETS: DEF_SETS, manD: manD, samples: samples, diagram: diagram, duration: duration, nearestRim: nearestRim, dist: dist, lerp: lerp, esc: esc, Player: Player
+    SITUATIONS: SITUATIONS, ENDGAME_LEAVES: ENDGAME_LEAVES, GOAL_METRICS: GOAL_METRICS, goalValue: goalValue, goalPct: goalPct, goalMet: goalMet, goalFmt: goalFmt, SETS: SETS, FULL_SETS: FULL_SETS, DEF_SETS: DEF_SETS, manD: manD, samples: samples, diagram: diagram, duration: duration,
+    INK: INK, INK_TOOLS: INK_TOOLS, isInk: isInk, inkStrokeSVG: inkStrokeSVG, inkFrameSVG: inkFrameSVG, inkBoardSVG: inkBoardSVG, inkMirror: inkMirror, inkCount: inkCount, smoothD: smoothD, nearestRim: nearestRim, dist: dist, lerp: lerp, esc: esc, Player: Player
   };
 })();

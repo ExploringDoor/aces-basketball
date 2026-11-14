@@ -11,7 +11,7 @@ import { clip, stripTags } from './_clinic.js';
 export const CATEGORIES = ['Offense', 'Defense', 'Baseline out', 'Sideline out', 'Press break', 'Press', 'Late game', 'Special'];
 export const TOKENS = ['O1', 'O2', 'O3', 'O4', 'O5', 'X1', 'X2', 'X3', 'X4', 'X5'];
 export const MOVE_TYPES = ['cut', 'dribble', 'screen'];
-export const LIMITS = { frames: 30, name: 60, notes: 1500, frameNote: 300, groups: 12, group: 30, playerName: 60, opponent: 60, tips: 12, tip: 200, marks: 20, mark: 160, keys: 10, key: 200, matchups: 12, personnel: 15, blocks: 24, note: 600, points: 6, point: 160, stations: 4, reads: 8, read: 160 };
+export const LIMITS = { frames: 30, name: 60, notes: 1500, frameNote: 300, groups: 12, group: 30, playerName: 60, opponent: 60, tips: 12, tip: 200, marks: 20, mark: 160, keys: 10, key: 200, matchups: 12, personnel: 15, blocks: 24, note: 600, points: 6, point: 160, stations: 4, reads: 8, read: 160, inkStrokes: 80, inkPoints: 1500, strokePoints: 400 };
 export const DRILL_CATEGORIES = ['Warmup', 'Ballhandling', 'Passing', 'Shooting', 'Finishing', 'Defense', 'Rebounding', 'Transition', 'Press', 'Plays', 'Special situations', 'Competitive', 'Conditioning', 'Team', 'Other'];
 export const KINDS = ['ours', 'scout'];   // our play, or an opponent's play we are scouting
 // Court units are tenths of a foot. Half court 50 x 42 ft (high school), full 50 x 84.
@@ -37,6 +37,37 @@ function pt(v, court) {
 export function cleanGroup(g) { return clip(stripTags(String(g || '').trim()), LIMITS.group); }
 export function cleanName(n, max = LIMITS.name) { return clip(stripTags(String(n || '').replace(/\s+/g, ' ').trim()), max); }
 
+// Whiteboard plays: free hand strokes per step. Points are whole court units inside the
+// drawing area; a frame keeps at most 80 strokes and 1500 points in all.
+const INK_KINDS = ['pen', 'cut', 'pass', 'drib', 'scr', 'st'];
+const INK_COLORS = ['k', 'r', 'b'];
+const INK_STAMPS = ['1', '2', '3', '4', '5', 'X', 'B'];
+export function cleanInk(list, court) {
+  const out = []; let total = 0;
+  if (!Array.isArray(list)) return out;
+  const m = COURT.margin, c = COURT[court];
+  for (const s of list) {
+    if (out.length >= LIMITS.inkStrokes || !s || typeof s !== 'object') break;
+    const k = INK_KINDS.includes(s.k) ? s.k : null;
+    if (!k || !Array.isArray(s.p)) continue;
+    const col = INK_COLORS.includes(s.c) ? s.c : 'k';
+    const pts = [];
+    for (let i = 0; i + 1 < s.p.length && pts.length < LIMITS.strokePoints * 2; i += 2) {
+      const x = Number(s.p[i]), y = Number(s.p[i + 1]);
+      if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+      pts.push(Math.round(Math.min(c.w + m, Math.max(-m, x)) * 10) / 10, Math.round(Math.min(c.h + m, Math.max(-m, y)) * 10) / 10);
+    }
+    if (k === 'st') {
+      if (pts.length < 2 || !INK_STAMPS.includes(String(s.t))) continue;
+      out.push({ k, c: col, t: String(s.t), p: pts.slice(0, 2) }); total += 1;
+    } else {
+      if (pts.length < 4 || total + pts.length / 2 > LIMITS.inkPoints) continue;
+      out.push({ k, c: col, p: pts }); total += pts.length / 2;
+    }
+  }
+  return out;
+}
+
 // Returns { play } or { error }. Never trusts the browser's shape.
 export function cleanPlay(p) {
   if (!p || typeof p !== 'object') return { error: 'bad_play' };
@@ -46,6 +77,7 @@ export function cleanPlay(p) {
   const category = CATEGORIES.includes(p.category) ? p.category : 'Offense';
   const frames = Array.isArray(p.frames) ? p.frames.slice(0, LIMITS.frames) : [];
   if (!frames.length) return { error: 'no_frames' };
+  const mode = p.mode === 'ink' ? 'ink' : '';
   const out = [];
   for (const f of frames) {
     const pos = {};
@@ -63,13 +95,16 @@ export function cleanPlay(p) {
     }
     let ball = f && f.ball;
     if (ball !== 'rim' && !(ball && pos[ball])) ball = '';
-    out.push({
+    const row = {
       pos, moves, ball,
       passFirst: !!(f && f.passFirst),
       note: clip(stripTags(String((f && f.note) || '').trim()), LIMITS.frameNote),
-    });
+    };
+    if (mode === 'ink') { row.ink = cleanInk(f && f.ink, court); if (f && f.clear && out.length) row.clear = true; }
+    out.push(row);
   }
-  if (!Object.keys(out[0].pos).length) return { error: 'empty_court' };
+  if (mode === 'ink') { if (!out.some((f) => f.ink.length)) return { error: 'empty_board' }; }
+  else if (!Object.keys(out[0].pos).length) return { error: 'empty_court' };
   const groups = [...new Set((Array.isArray(p.groups) ? p.groups : []).map(cleanGroup).filter(Boolean))].slice(0, LIMITS.groups);
   const kind = KINDS.includes(p.kind) ? p.kind : 'ours';
   const opponent = kind === 'scout' ? cleanName(p.opponent, LIMITS.opponent) : '';
@@ -104,7 +139,7 @@ export function cleanPlay(p) {
   })).filter((r) => r.when && r.then).slice(0, LIMITS.reads);
   return {
     play: {
-      name, court, category, groups, kind, opponent, lineup, clip: video, clip_link, tips, due, marks, signal, situations, audio, reads,
+      name, mode, court, category, groups, kind, opponent, lineup, clip: video, clip_link, tips, due, marks, signal, situations, audio, reads,
       notes: clip(stripTags(String(p.notes || '').trim()), LIMITS.notes),
       visible: !!p.visible,
       frames: out,
