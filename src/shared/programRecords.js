@@ -6,6 +6,7 @@
 //  · big → the number or name shown large   · label → what it is   · who → detail line
 export const programRecords = [
   { group: "Team", items: [
+    { big: "1,618", label: "All-time wins", who: "1,618-816 from 1921-22 through 2025-26, a .665 winning percentage" },
     { big: "31-3",  label: "Best season record", who: "1995-96, state champions" },
     { big: "30-3",  label: "Second best season", who: "2012-13, state champions" },
     { big: "27",    label: "Longest winning streak", who: "1995-96, from a 4-3 start to the state title" },

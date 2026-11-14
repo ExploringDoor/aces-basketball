@@ -48,9 +48,10 @@ export default function ChampionshipsPage() {
   }, [lightbox]);
 
   const tabs = [
-    { key: "state",    label: "State Championships (7)" },
-    { key: "district", label: "District 1 Titles (17)" },
-    { key: "league",   label: "Central League Titles (24)" },
+    { key: "state",    label: `State Championships (${championships.state.length})` },
+    { key: "district", label: `District 1 Titles (${championships.district.length})` },
+    { key: "league",   label: `Central League Titles (${championships.league.length})` },
+    { key: "suburban", label: `Suburban League Titles (${championships.suburban.length})` },
   ];
 
   return (
@@ -144,6 +145,12 @@ export default function ChampionshipsPage() {
           {activeTab === "district" && [...championships.district].sort((a, b) => b - a).map((y, i) => (
             <FadeIn key={i} delay={i * 0.03}>
               <TitleCard year={y} kind="district" label="District 1 Champions" short="District 1" onOpen={setLightbox} />
+            </FadeIn>
+          ))}
+
+          {activeTab === "suburban" && [...championships.suburban].sort((a, b) => b - a).map((y, i) => (
+            <FadeIn key={i} delay={i * 0.03}>
+              <TitleCard year={y} kind="suburban" label="Suburban League" onOpen={setLightbox} />
             </FadeIn>
           ))}
 

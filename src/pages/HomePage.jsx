@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { titleStories } from "../shared/titleStories";
 import { historyFor, historyDate } from "../shared/thisDay";
 import StoryModal from "../shared/StoryModal";
+import { programTotals as PT } from "../shared/programHistory";
 import { FadeIn, CountUp, Spade, Icon, news, nextGame, lastResult, computeRecord, gameTime, teamLogos, sponsors } from "../shared";
 
 const latestNews = [...news].sort((a, b) => (b.sortKey || 0) - (a.sortKey || 0));
@@ -193,7 +194,7 @@ export default function HomePage({ goTo }) {
 
       <section style={{ background:"#0d0008", padding:"44px 5%", borderTop:"1px solid rgba(132,0,54,0.25)" }}>
         <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))", gap:36, textAlign:"center" }}>
-          {[{end:7,suffix:"×",label:"State Championships"},{end:738,suffix:"+",label:"Downer Wins"},{end:24,suffix:"",label:"League Titles"},{end:70,suffix:"+",label:"College / Pro"},{end:1663,suffix:"+",label:"All-Time Wins"}].map((s,i) => (
+          {[{end:7,suffix:"×",label:"State Championships"},{end:734,suffix:"",label:"Downer Wins"},{end:24,suffix:"",label:"League Titles"},{end:70,suffix:"+",label:"College / Pro"},{end:PT.wins,suffix:"",label:"All-Time Wins"}].map((s,i) => (
             <FadeIn key={i} delay={i*0.08}>
               <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:"clamp(32px,4vw,48px)", fontWeight:700, color:"var(--gold)", lineHeight:1 }}><CountUp end={s.end} suffix={s.suffix} /></div>
               <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10, letterSpacing:2, color:"rgba(255,255,255,0.34)", textTransform:"uppercase", marginTop:7 }}>{s.label}</div>
@@ -252,8 +253,8 @@ export default function HomePage({ goTo }) {
           <h2 style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:"clamp(26px,3.6vw,40px)", textTransform:"uppercase", margin:"0 0 26px", lineHeight:1 }}>Milestones in Reach</h2>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))", gap:14 }}>
             {[
-              { now:738, goal:750, label:"Coach Downer Career Wins", note:"12 wins from 750", featured:true },
-              { now:1663, goal:1700, label:"All-Time Program Wins", note:"37 wins from 1,700" },
+              { now:734, goal:750, label:"Coach Downer Career Wins", note:"16 wins from 750", featured:true },
+              { now:PT.wins, goal:1650, label:"All-Time Program Wins", note:`${1650 - PT.wins} wins from 1,650` },
               { now:24, goal:25, label:"Central League Titles", note:"Chasing crown No. 25" },
               { now:7, goal:8, label:"PIAA State Championships", note:"The hunt for No. 8" },
             ].map((m, i) => (

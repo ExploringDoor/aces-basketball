@@ -21,6 +21,7 @@ const ROWS = [
   { kind: "state",    label: "PIAA State Champions",     short: "State Champions",   years: championships.state.map(c => c.year), w: 132 },
   { kind: "district", label: "District 1 Champions",     short: "District 1 Champions", years: championships.district, w: 104 },
   { kind: "league",   label: "Central League Champions", short: "Central League Champions", years: championships.league, w: 92 },
+  { kind: "suburban", label: "Suburban League Champions", short: "Suburban League Champions", years: championships.suburban, w: 92 },
 ];
 
 function Banner({ kind, year, short, w, onOpen }) {

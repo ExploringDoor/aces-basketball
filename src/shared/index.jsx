@@ -179,7 +179,7 @@ export const titlePhoto = (kind, year) => {
   if (kind === "league") return leagueTitlePhoto(y);
   return (titlePhotoYears[kind] || []).includes(y) ? `/titles/${kind}-${y - 1}-${y}.jpg` : null;
 };
-export const titleName = { state: "PIAA State Champions", district: "District 1 Champions", league: "Central League Champions" };
+export const titleName = { state: "PIAA State Champions", district: "District 1 Champions", league: "Central League Champions", suburban: "Suburban League Champions" };
 export const seasonLabel = (year) => `${Number(year) - 1}-${String(year).slice(-2)}`;
 
 export const championships = {
@@ -192,14 +192,19 @@ export const championships = {
     { year: "2006", details: "AAAA State Champions — 60-58 vs. Schenley" },
     { year: "2013", details: "AAAA State Champions" },
   ],
+  // District 1 titles, per the program's own record sheet (2006 was a District 1 runner-up season).
   district: [
-    "1930","1933","1937","1940","1941","1942","1943","1944",
-    "1976","1978","1996","2006","2021","2022","2024"
+    "1930","1931","1933","1934","1936","1937","1939","1940","1941","1942","1943","1944",
+    "1976","1978","1996","2021","2022","2024"
   ],
   league: [
     "1968","1972","1975","1976","1978","1984","1995","1996","1997","1998",
     "2000","2001","2002","2006","2009","2012","2013","2014","2017",
     "2018","2019","2022","2024","2025"
+  ],
+  // Suburban League titles, before the Central League began in 1967-68.
+  suburban: [
+    "1926","1929","1930","1931","1933","1934","1935","1936","1937","1939","1940","1941","1942","1943","1944","1946"
   ],
 };
 
@@ -253,7 +258,7 @@ export const news = [
     image: "/ig/crowd.jpg",
     featured: false,
     body: [
-      "Lower Merion basketball is one of the most decorated programs in Pennsylvania history: seven PIAA state championships, seventeen District 1 titles, and more than 1,600 all-time victories.",
+      "Lower Merion basketball is one of the most decorated programs in Pennsylvania history: seven PIAA state championships, eighteen District 1 titles, and more than 1,600 all-time victories.",
       "From the Anderson dynasty of the 1940s to the Kobe Bryant era to today's teams under Coach Gregg Downer, the standard has never changed: compete for championships, and represent the Main Line the right way.",
       "Check back here all season for game recaps, milestones, and the latest from Aces Nation.",
     ],
@@ -561,7 +566,7 @@ export const roster = [
 ];
 
 export const centralLeagueTeams = [
-  { name: "Lower Merion", mascot: "Aces", color: "#840036", initials: "LM", desc: "The flagship program of the Central League. 7 PIAA state titles (1933, '41, '42, '43, '96, '06, '13), 16 District 1 titles, 24 league championships and 1,600+ all-time wins. Home of Kobe Bryant and legendary coach Gregg Downer.", isSelf: true },
+  { name: "Lower Merion", mascot: "Aces", color: "#840036", initials: "LM", desc: "The flagship program of the Central League. 7 PIAA state titles (1933, '41, '42, '43, '96, '06, '13), 18 District 1 titles, 24 Central League championships and 1,600+ all-time wins. Home of Kobe Bryant and legendary coach Gregg Downer.", isSelf: true },
   { name: "Conestoga", mascot: "Pioneers", color: "#003366", initials: "CO", desc: "Founding Central League member (1967). Has emerged as a top contender in recent years, winning the Central League title in 2025-26 and earning the #1 seed in District 1 6A. A rising power in Chester County." },
   { name: "Garnet Valley", mascot: "Jaguars", color: "#8B0000", initials: "GV", desc: "Joined the Central League in 2008. Quickly became competitive, capturing the 2021 Central League title along with District 1 success and a trip to the 2019 PIAA 6A state finals. A rising power in Delaware County." },
   { name: "Harriton", mascot: "Rams", color: "#1E4D2B", initials: "HN", desc: "A founding member that departed in 1969 and returned in 2008. Located in Lower Merion Township alongside LM, creating the crosstown rivalry. Competitive in league play with growing program success." },
@@ -701,12 +706,12 @@ export const seasonData = {
       { date: "2/13",  opp: "Pennsbury",         loc: "vs", r: "L", lm: 45, them: 51, tag: "D1 PLAYOFF" },
     ],
   },
-  "2024-25": { wins: 22, losses: 8, confW: 14, confL: 2, confPlace: "1st", notes: "Central League Champions · PIAA 6A State Tournament R2 · Lost to Roman Catholic 63-74", highlight: "CAL Champs", games: [] },
+  "2024-25": { wins: 22, losses: 7, confW: 14, confL: 2, confPlace: "1st", notes: "Central League Champions · PIAA 6A State Tournament R2 · Lost to Roman Catholic 63-74", highlight: "CAL Champs", games: [] },
   "2023-24": { wins: 28, losses: 2, confW: 16, confL: 0, confPlace: "1st", notes: "Central League Champions · District 1 Champions · PIAA 6A State Tournament R2", highlight: "District 1 Champs · 28-2", games: [] },
-  "2022-23": { wins: 23, losses: 7, confW: 13, confL: 3, confPlace: "2nd", notes: "Central League Finalist · District 1 Champions · PIAA 6A State Quarterfinalist", highlight: "District 1 Champs", games: [] },
+  "2022-23": { wins: 24, losses: 6, confW: 13, confL: 3, confPlace: "2nd", notes: "Central League Finalist · District 1 Final Four · PIAA 6A State Sweet 16", highlight: "", games: [] },
   "2021-22": { wins: 27, losses: 4, confW: 15, confL: 1, confPlace: "1st", notes: "Central League Champions · District 1 Champions · PIAA 6A State Runner-Up", highlight: "District 1 Champs · State Runner-Up", games: [] },
-  "2020-21": { wins: 17, losses: 4, confW: 12, confL: 2, confPlace: "1st", notes: "Central League Co-Champions · District 1 Champions · COVID-shortened season", highlight: "District 1 Champs", games: [] },
-  "2019-20": { wins: 21, losses: 5, confW: 13, confL: 3, confPlace: "2nd", notes: "District 1 Semifinalist · Season ended early due to COVID-19", highlight: "", games: [] },
+  "2020-21": { wins: 13, losses: 5, confW: 8, confL: 2, confPlace: "1st", notes: "District 1 Champions · State Final Four · COVID-shortened season", highlight: "District 1 Champs", games: [] },
+  "2019-20": { wins: 20, losses: 8, confW: 13, confL: 3, confPlace: "2nd", notes: "District 1 Semifinalist · Season ended early due to COVID-19", highlight: "", games: [] },
 };
 
 export const recordBookSeasons = {

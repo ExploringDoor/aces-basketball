@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { FadeIn, Spade, championships, seasonData, recordBookSeasons, titlePhoto, titleName } from "../shared";
-import { seasonTable, seasonRosters, seasonGames } from "../shared/seasons";
+import { FadeIn, Spade, championships, recordBookSeasons, titlePhoto, titleName } from "../shared";
+import { seasonRosters, seasonGames } from "../shared/seasons";
+import { programSeasons } from "../shared/programHistory";
 import { titleStories } from "../shared/titleStories";
 import StoryModal from "../shared/StoryModal";
 import GalleryModal from "../shared/GalleryModal";
@@ -15,21 +16,14 @@ const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct
 const endYear = (season) => Number(season.slice(0, 4)) + 1;
 const won = (kind, y) => (kind === "state" ? championships.state.map(c => Number(c.year)) : championships[kind].map(Number)).includes(y);
 
-// One list of every season, newest first: this site's recent seasons, then the published history table.
+// Every season, newest first, from the program's own record sheet.
 function buildSeasons() {
-  const fromTable = seasonTable.map(([season, record, league, district, state, coach]) => ({ season, record, league, district, state, coach }));
-  const have = new Set(fromTable.map(s => s.season));
-  const recent = Object.entries(seasonData)
-    .filter(([season]) => !have.has(season))
-    .map(([season, d]) => ({ season, record: `${d.wins}-${d.losses}`, league: `${d.confW}-${d.confL}`, district: "", state: "", coach: "Gregg Downer" }));
-  const all = [...recent, ...fromTable];
-  // seasons we only have game results for
+  const all = programSeasons.map(([season, record, league, district, state, pf, pa, honors, notes, coach]) => ({ season, record, league, district, state, pf, pa, honors, notes, coach }));
   Object.keys(seasonGames).forEach(season => { if (!all.some(s => s.season === season)) all.push({ season, record: "", league: "", district: "", state: "", coach: "Gregg Downer" }); });
-  // fill a missing overall record from the Record Book
   all.forEach(s => { if (!s.record && recordBookSeasons[s.season]?.record) s.record = recordBookSeasons[s.season].record; });
   return all.sort((a, b) => endYear(b.season) - endYear(a.season)).map(s => {
     const y = endYear(s.season);
-    const titles = ["state", "district", "league"].filter(k => won(k, y));
+    const titles = ["state", "district", "league", "suburban"].filter(k => won(k, y));
     return { ...s, y, titles, roster: seasonRosters[y] || null, games: seasonGames[s.season] || null, stories: titleStories.filter(t => t.year === y), photo: titles.map(k => titlePhoto(k, y)).find(Boolean) || null };
   });
 }
@@ -40,7 +34,7 @@ const chipStyle = (kind) => ({
   color: kind === "state" ? "#1a0010" : kind === "district" ? "var(--gold)" : "#fff",
   border: kind === "league" ? "1px solid rgba(132,0,54,0.7)" : "1px solid rgba(201,164,74,0.55)",
 });
-const chipLabel = { state: "State", district: "District 1", league: "League" };
+const chipLabel = { state: "State", district: "District 1", league: "Central League", suburban: "Suburban League" };
 
 function TeamCard({ s, onClose, onStory }) {
   const [album, setAlbum] = useState(null);
@@ -52,6 +46,7 @@ function TeamCard({ s, onClose, onStory }) {
   }, [onClose, album]);
   const facts = [
     ["Overall", s.record], ["League", s.league], ["District 1 playoffs", s.district], ["State playoffs", s.state], ["Head coach", s.coach],
+    ["Points per game", s.pf ? `${(s.pf / ((s.record || "0-0").split("-").reduce((x, n) => x + Number(n), 0) || 1)).toFixed(1)} for, ${(s.pa / ((s.record || "0-0").split("-").reduce((x, n) => x + Number(n), 0) || 1)).toFixed(1)} against` : ""],
   ].filter(([, v]) => v);
   return createPortal(
     <>
@@ -82,6 +77,13 @@ function TeamCard({ s, onClose, onStory }) {
               </div>
             ))}
           </div>
+
+          {(s.honors || s.notes) && (
+            <div style={{ marginTop: 16, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "12px 14px" }}>
+              {s.honors && <div style={{ fontFamily: OSW, fontSize: 13, letterSpacing: 1, color: "var(--gold)", lineHeight: 1.4 }}>{s.honors}</div>}
+              {s.notes && <div style={{ fontFamily: SANS, fontSize: 14.5, color: "rgba(255,255,255,0.78)", lineHeight: 1.6, marginTop: s.honors ? 6 : 0 }}>{s.notes}</div>}
+            </div>
+          )}
 
           {s.stories.length > 0 && (
             <div style={{ marginTop: 22 }}>
@@ -145,7 +147,7 @@ function TeamCard({ s, onClose, onStory }) {
             </div>
           )}
 
-          {!s.roster && !s.games && s.stories.length === 0 && albums.length === 0 && (
+          {!s.roster && !s.games && s.stories.length === 0 && albums.length === 0 && !s.notes && (
             <p style={{ fontFamily: SANS, fontSize: 13.5, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, margin: "20px 0 0" }}>That is everything on record for this team so far. Have a roster, photo or program from this season? Send it through the Support page and we will add it.</p>
           )}
         </div>
@@ -217,7 +219,7 @@ export default function SeasonsPage() {
         ))}
 
         <p style={{ fontFamily: SANS, fontSize: 12.5, color: "rgba(255,255,255,0.4)", lineHeight: 1.6, marginTop: 36 }}>
-          Records through 2017-18 are from the program's own published history. The 1923-24 and 1924-25 seasons are not on record.
+          Records are from the program's own all-time record sheet. The 1923-24 and 1924-25 seasons are not on record.
         </p>
       </div>
     </section>
