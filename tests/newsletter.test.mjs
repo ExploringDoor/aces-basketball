@@ -43,7 +43,7 @@ const full = {
   results: games.slice(0, 2), upcoming: games.slice(2),
   playerOfGame: { name: 'Jimmy D', line: '24 points and 9 boards against Chester', photoUrl: '/players/jimmy-d.jpg' },
   fundraiser: { raisedCents: 1234500, goalCents: 3000000, makes: 412, url: ORIGIN + '/donate.html' },
-  store: { items: [{ name: 'Aces Hoodie', priceCents: 4500, imageUrl: ORIGIN + '/Bulldog.png', url: ORIGIN + '/#store' }, { name: 'Winter Beanie', priceCents: 2200, imageUrl: ORIGIN + '/Bulldog.png', url: ORIGIN + '/#store' }, { name: 'Practice Shorts', priceCents: 3000, imageUrl: ORIGIN + '/Bulldog.png', url: ORIGIN + '/#store' }]},
+  store: { items: [{ name: 'Aces Hoodie', priceCents: 4500, imageUrl: ORIGIN + '/Bulldog.png', url: ORIGIN + '/store' }, { name: 'Winter Beanie', priceCents: 2200, imageUrl: ORIGIN + '/Bulldog.png', url: ORIGIN + '/store' }, { name: 'Practice Shorts', priceCents: 3000, imageUrl: ORIGIN + '/Bulldog.png', url: ORIGIN + '/store' }]},
 };
 
 await test('the builder renders every section, table based, with absolute images and the unsubscribe placeholder', () => {
@@ -57,8 +57,8 @@ await test('the builder renders every section, table based, with absolute images
   assert.ok(h.includes('Fri, Dec 4 at Kobe Bryant Gymnasium'));
   assert.ok(h.includes('at Haverford') && h.includes('6:00 PM, Haverford HS'));
   assert.ok(h.includes('$12,345') && h.includes('of $30,000 raised') && h.includes('41% of the way there') && h.includes('412 free throws made'));
-  assert.ok(h.includes('Give to the Shoot-a-Thon') && h.includes(`${ORIGIN}/#store`) && h.includes('$45'));
-  assert.ok(h.includes(UNSUB_TAG) && h.includes('aces-basketball.vercel.app'));
+  assert.ok(h.includes('Give to the Shoot-a-Thon') && h.includes(`${ORIGIN}/store`) && h.includes('$45'));
+  assert.ok(h.includes(UNSUB_TAG) && h.includes('www.aceshoops.com'));
   assert.ok(!/<div[^>]*class=/.test(h) && h.includes('role="presentation"'));
   assert.ok(Buffer.byteLength(h, 'utf8') < 100 * 1024, 'over 100KB');
   // Owner's copy rules: no exclamation marks, no dashes in the text itself.
@@ -206,7 +206,7 @@ await test('preview: the fundraiser bar comes from the live pledges and the stor
   assert.equal(r.body.subject, 'Aces Newsletter, Dec 1 to Dec 7, 2026: 1 and 1 on the week');
   const h = r.body.html;
   assert.ok(h.includes('Shoot-a-Thon') && h.includes('$100') && h.includes('of $30,000 raised') && h.includes('40 free throws made') && h.includes(`${ORIGIN}/donate.html`));
-  assert.ok(h.includes('From the team store') && h.includes('Aces Hoodie') && h.includes('$45') && h.includes(`${ORIGIN}/#store`));
+  assert.ok(h.includes('From the team store') && h.includes('Aces Hoodie') && h.includes('$45') && h.includes(`${ORIGIN}/store`));
   assert.ok(!h.includes(UNSUB_TAG) && h.includes('/api/newsletter?u=family%40example.com&amp;t='));
   assert.ok(h.includes('Jimmy D') && h.includes('Results') && h.includes('Coming up'));
   // Event closed: the fundraiser section goes away on its own.

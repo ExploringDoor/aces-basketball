@@ -1,7 +1,7 @@
 // Aces Newsletter, the family newsletter: subscriber tidying and the email itself.
 //
 // Pure: no network, no env, no node imports. api/newsletter.js sends what this
-// builds, and the hidden /#newsletter page imports the same limits and the
+// builds, and the hidden /newsletter page imports the same limits and the
 // same game tidying so the composer and the server never disagree.
 //
 // The email is table based with inline styles and absolute image URLs, the
@@ -27,7 +27,7 @@ export const LIMITS = {
   pasteEmails: 500,
 };
 
-export const SITE_HOST = 'aces-basketball.vercel.app';
+export const SITE_HOST = 'www.aceshoops.com';
 
 export function clip(v, n) { return String(v == null ? '' : v).replace(/[<>]/g, '').trim().slice(0, n); }
 export function normEmail(e) { return String(e == null ? '' : e).trim().toLowerCase().slice(0, 120); }
@@ -243,7 +243,7 @@ function storeTiles(items) {
 
 /**
  * The whole email. Sections with nothing in them are left out.
- *   origin        https://aces-basketball.vercel.app (images and links hang off it)
+ *   origin        https://www.aceshoops.com (images and links hang off it)
  *   weekLabel     "Dec 1 to Dec 7, 2026"
  *   intro         plain text, newlines kept
  *   results[]     cleanGame rows with us/them

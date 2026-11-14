@@ -2,7 +2,7 @@
 // the printable clipboard sheet.
 //
 // Pure: no network, no env, no node imports. api/practice.js stores what this
-// cleans and the hidden /#practice page draws the same shapes, so the two
+// cleans and the hidden /practice page draws the same shapes, so the two
 // cannot disagree about what a plan is. Everything typed by a coach is clipped
 // here before it reaches Firestore.
 //

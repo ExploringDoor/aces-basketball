@@ -1,6 +1,6 @@
 // pages/FlyerPage.jsx
 // Coach tool: builds Instagram-ready Game Day and Final Score graphics from the
-// live schedule. Not in the public nav; open it at /#flyers. Nothing is
+// live schedule. Not in the public nav; open it at /flyers. Nothing is
 // uploaded anywhere: photos stay on the device and the PNG renders in-browser.
 import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";

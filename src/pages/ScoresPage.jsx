@@ -1,9 +1,10 @@
 // pages/ScoresPage.jsx
-// Coach tool (not in the menu): open /#scores on a phone, enter the passcode
+// Coach tool (not in the menu): open /scores on a phone, enter the passcode
 // once, then post final scores and the Central League table. Saves go to
 // /api/scores and show up across the site within about a minute (instantly on
 // this phone). Each game can jump straight to a Final Score graphic.
 import { useEffect, useState } from "react";
+import { navigate } from "../shared/navigate";
 import { Spade, allGames, standings, applyLive, live, gameTime, computeRecord, loadLive } from "../shared";
 
 const KEY_STORE = "aces-scores-key";
@@ -38,7 +39,7 @@ function GameRow({ g, keyCode, onAuthFail }) {
     setBusy(false);
   };
   const win = saved && g.result.us > g.result.them;
-  const toFlyer = () => { try { sessionStorage.setItem("aces-flyer-handoff", JSON.stringify({ mode: "final", iso: g.iso })); } catch { /* ignore */ } window.location.hash = "flyers"; };
+  const toFlyer = () => { try { sessionStorage.setItem("aces-flyer-handoff", JSON.stringify({ mode: "final", iso: g.iso })); } catch { /* ignore */ } navigate("flyers"); };
   return (
     <div style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${saved ? "rgba(201,164,74,0.35)" : "rgba(255,255,255,0.08)"}`, borderRadius: 14, padding: "14px 14px 12px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>

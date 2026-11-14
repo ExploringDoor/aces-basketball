@@ -578,7 +578,7 @@ body.assistant .coach-only,body.assistant [data-edit].btn,body.assistant [data-a
 .lib-prev .add{margin-top:14px;display:flex;gap:8px}
 @media(max-width:900px){.lib-body{grid-template-columns:1fr}.lib-side{border-left:0;border-top:1px solid var(--line);position:fixed;left:0;right:0;bottom:0;max-height:62vh;box-shadow:0 -12px 40px rgba(0,0,0,.18);border-radius:18px 18px 0 0;display:none}.lib-side.show{display:block}.lib-main{padding-bottom:70vh}}
 </style>
-<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};/* Vercel Web Analytics: never count coach or admin tools (keep this list in step with the private pages in src/routes.js), and drop anything after ? or # from every address */window.va("beforeSend",function(e){try{var u=new URL(e.url);if(/^\/(admin|checkin|playbook|playbook-admin|shootathon)\.html$|^\/(scores|scouting|practice|newsletter|flyers)\/?$/i.test(u.pathname))return null;e.url=u.origin+u.pathname;}catch(x){}return e;});</script>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>

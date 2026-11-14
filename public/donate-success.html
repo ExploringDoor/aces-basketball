@@ -51,8 +51,9 @@ footer{text-align:center;padding:26px 16px 34px;font-size:14px;color:var(--ink-3
 footer a{color:var(--ink-3)!important}
 @media(max-width:560px){.nav{padding:0 16px;height:70px}.nav .brand img{height:50px}.logo-main{font-size:22px}.logo-sub{font-size:10px;letter-spacing:3px}.wrap{padding:32px 16px}.card{padding:32px 20px}h1{font-size:34px}.amt{font-size:48px}.sbtns{grid-template-columns:1fr}}
 </style>
-<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};/* Vercel Web Analytics: never count coach or admin tools (keep this list in step with the private pages in src/routes.js), and drop anything after ? or # from every address */window.va("beforeSend",function(e){try{var u=new URL(e.url);if(/^\/(admin|checkin|playbook|playbook-admin|shootathon)\.html$|^\/(scores|scouting|practice|newsletter|flyers)\/?$/i.test(u.pathname))return null;e.url=u.origin+u.pathname;}catch(x){}return e;});</script>
 <script defer src="/_vercel/insights/script.js"></script>
+<script src="/ga.js"></script>
 </head>
 <body>
 <nav class="nav">
@@ -93,11 +94,12 @@ function showShare(d){
   if(navigator.share){ var b=document.createElement('button'); b.type='button'; b.textContent='More options'; b.addEventListener('click',function(){ navigator.share({text:text,url:link}).catch(function(){}); }); document.getElementById('sbtns').appendChild(b); }
 }
 (function(){
-  try{if(window.gtag)gtag('event','donation_complete');}catch(e){}
   var q=new URLSearchParams(location.search);
   if(q.get('demo')==='1'){ showShare({target_type:'player',target_slug:'jimmy-daniels',target_name:'Jimmy Daniels'}); return; }
   var pid=q.get('pledge')||'';
   if(!pid) return;
+  // Count the donation in Google Analytics once per pledge, so a refresh or Back doesn't count it again.
+  try{ var k='dc_'+pid; if(window.gtag && !sessionStorage.getItem(k)){ sessionStorage.setItem(k,'1'); gtag('event','donation_complete'); } }catch(e){}
   fetch('/api/pledge?info='+encodeURIComponent(pid)).then(function(r){return r.json();}).then(function(d){ if(d&&d.target_type) showShare(d); }).catch(function(){});
 })();
 </script>

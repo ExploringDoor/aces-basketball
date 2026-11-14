@@ -1,6 +1,6 @@
 // Vercel Serverless Function: /api/scouting
 // Opponent scouting for the coaching staff: who is scouting whom, and the
-// report on each opponent, edited from the hidden /#scouting page.
+// report on each opponent, edited from the hidden /scouting page.
 //
 // Storage: Firestore, through the same server login as registrations
 // (api/_firestore.js). Reports are not public: an opponent's tendencies in a

@@ -5,7 +5,7 @@
 // scouting report breakdown template that they can fill out."
 //
 // Pure: no network, no env. api/scouting.js stores what this cleans, and the
-// hidden /#scouting page draws the same template, so the two cannot disagree
+// hidden /scouting page draws the same template, so the two cannot disagree
 // about what a report holds. Everything typed by a coach is clipped here
 // before it reaches Firestore.
 //

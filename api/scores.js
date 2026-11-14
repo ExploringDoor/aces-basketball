@@ -1,6 +1,6 @@
 // Vercel Serverless Function: /api/scores
 // Live game scores + Central League standings, posted by coaches from a phone
-// (the hidden /#scores page) instead of editing the site code.
+// (the hidden /scores page) instead of editing the site code.
 //
 // Storage: the "aces-scores" Vercel Blob store (BLOB_READ_WRITE_TOKEN is set
 // by Vercel when the store is linked). Every save is its own NEW, never-changed

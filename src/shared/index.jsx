@@ -509,7 +509,7 @@ export function computeRecord() {
   return { w, l, cw, cl, hw, hl, aw, al, streak, played: played.length };
 }
 
-// ─── Live scores (posted by coaches from a phone at /#scores) ─────────
+// ─── Live scores (posted by coaches from a phone at /scores) ─────────
 // /api/scores holds the scores and league table. They are applied ON TOP of
 // the results written in this file, by mutating the same game objects, so
 // every page and helper above (record, next game, last result, standings)

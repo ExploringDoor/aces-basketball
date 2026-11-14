@@ -1,5 +1,5 @@
 // Vercel Serverless Function: /api/practice
-// Practice plans for the coaching staff, edited from the hidden /#practice page.
+// Practice plans for the coaching staff, edited from the hidden /practice page.
 // One plan per team per day, built from the drill library in api/_practice.js.
 //
 // Storage: Firestore, through the same server login as registrations.

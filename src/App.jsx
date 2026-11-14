@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Spade, schedule, teamLogos, loadLive, nextGame, sponsors } from "./shared";
-import { pageview } from "@vercel/analytics";
+import { routes, pathFor, idFromPath, fullTitle, isPrivate, SITE_ORIGIN, SITE_NAME, DEFAULT_DESCRIPTION } from "./routes";
+import { NAVIGATE_EVENT } from "./shared/navigate";
 
 
 import HomePage          from "./pages/HomePage";
@@ -171,8 +172,8 @@ const Dropdown = ({ item, page, goTo, onTabHover, onTabLeave, btnRef }) => {
           }}>
           <div style={{ position:"absolute", top:1, left:"50%", width:10, height:10, background:"rgba(8,0,4,0.97)", borderLeft:"1px solid rgba(132,0,54,0.5)", borderTop:"1px solid rgba(132,0,54,0.5)", transform:"translateX(-50%) rotate(45deg)" }} />
           {item.children.map(child => (
-            <button key={child.id} onClick={() => goTo(child.id)} style={{
-              display:"flex", alignItems:"center", gap:8, width:"100%", background:"none", border:"none",
+            <a key={child.id} {...linkTo(goTo, child.id)} style={{
+              display:"flex", alignItems:"center", gap:8, width:"100%", boxSizing:"border-box", background:"none", border:"none", textDecoration:"none",
               color: page===child.id ? "var(--gold)" : "rgba(255,255,255,0.6)",
               fontFamily:"'Oswald',sans-serif", fontSize:12, letterSpacing:"1.5px",
               padding:"10px 20px", textAlign:"left", textTransform:"uppercase",
@@ -182,7 +183,7 @@ const Dropdown = ({ item, page, goTo, onTabHover, onTabLeave, btnRef }) => {
               onMouseLeave={e => { e.currentTarget.style.color=page===child.id?"var(--gold)":"rgba(255,255,255,0.6)"; e.currentTarget.style.paddingLeft="20px"; e.currentTarget.style.background="none"; }}>
               {child.label}
               {child.badge && <span style={{ fontSize:8, letterSpacing:1, padding:"2px 6px", borderRadius:10, background:"rgba(201,164,74,0.18)", border:"1px solid rgba(201,164,74,0.4)", color:"var(--gold)" }}>{child.badge}</span>}
-            </button>
+            </a>
           ))}
           </div>
         </div>
@@ -191,13 +192,57 @@ const Dropdown = ({ item, page, goTo, onTabHover, onTabLeave, btnRef }) => {
   );
 };
 
+// ── Addresses ─────────────────────────────────────────────
+// Own-property check: "constructor" or "__proto__" in an address is not a page.
+const isPage = (id) => typeof id === "string" && Object.prototype.hasOwnProperty.call(PAGES, id);
+// Which page the address bar points at ("notfound" for anything unknown).
+function pageFromLocation() {
+  const id = idFromPath(window.location.pathname);
+  return isPage(id) ? id : "notfound";
+}
+function initialPage() {
+  const legacy = (window.location.hash || "").replace(/^#\/?/, "").toLowerCase();
+  if (legacy && isPage(legacy)) {
+    window.history.replaceState(null, "", pathFor(legacy) + window.location.search);
+    return legacy;
+  }
+  const id = pageFromLocation();
+  // Tidy the address: "/News/" -> "/news", "/home" -> "/".
+  if (id !== "notfound" && window.location.pathname !== pathFor(id)) {
+    window.history.replaceState(null, "", pathFor(id) + window.location.search + window.location.hash);
+  }
+  return id;
+}
+// Props for a menu or footer link: a real link (open in a new tab works, and
+// Google can follow it) that switches pages in place on a normal click.
+const linkTo = (goTo, id, after) => ({
+  href: EXTERNAL[id] || pathFor(id),
+  onClick: (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault(); goTo(id); if (after) after(e);
+  },
+});
+
+function NotFound({ goTo }) {
+  return (
+    <section style={{ padding: "140px 5% 120px", minHeight: "60vh", textAlign: "center" }}>
+      <div style={{ fontFamily: "'Oswald',sans-serif", fontSize: 12, letterSpacing: 4, color: "var(--gold)", textTransform: "uppercase" }}>404</div>
+      <h1 style={{ fontFamily: "'Oswald',sans-serif", fontSize: "clamp(32px,6vw,56px)", textTransform: "uppercase", margin: "10px 0 14px" }}>Page Not Found</h1>
+      <p style={{ fontFamily: "'Source Sans 3',sans-serif", fontSize: 16, color: "rgba(255,255,255,0.6)", maxWidth: 480, margin: "0 auto 28px", lineHeight: 1.7 }}>That page isn't here. It may have moved when the site got new addresses.</p>
+      <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+        {[["home", "Home"], ["schedule", "Schedule"], ["news", "News"], ["history", "History"]].map(([id, label]) => (
+          <a key={id} {...linkTo(goTo, id)} style={{ fontFamily: "'Oswald',sans-serif", fontSize: 13, letterSpacing: 2, textTransform: "uppercase", color: "#fff", textDecoration: "none", background: "rgba(132,0,54,0.5)", border: "1px solid rgba(201,164,74,0.5)", borderRadius: 8, padding: "11px 20px" }}>{label}</a>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 // ── App ───────────────────────────────────────────────────
 export default function App() {
-  // Deep links: /#schedule, /#flyers, etc. open that page directly.
-  const [page, setPage] = useState(() => {
-    const h = (window.location.hash || "").replace(/^#\/?/, "");
-    return h && h in PAGES ? h : "home";
-  });
+  // Each page has a real address (aceshoops.com/schedule). Old links in the
+  // /#schedule style still work: they are switched to the new address on load.
+  const [page, setPage] = useState(initialPage);
   const [mobileOpen, setMobileOpen] = useState(false);
   const tabsRef = useRef(null);
   const gliderRef = useRef(null);
@@ -218,12 +263,62 @@ export default function App() {
     loadLive(true);
     return () => { window.removeEventListener("aces-live", bump); document.removeEventListener("visibilitychange", refresh); };
   }, []);
-  // In-page links like href="#flyers" switch pages too.
+  // Back and forward buttons.
   useEffect(() => {
-    const onHash = () => { const h = (window.location.hash || "").replace(/^#\/?/, ""); if (h && h in PAGES) { setPage(h); window.scrollTo(0, 0); } };
+    const onPop = () => { clearTimeout(navTimer.current); setPage(pageFromLocation()); setMobileOpen(false); window.scrollTo(0, 0); };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+  // Old-style links (href="#flyers") clicked inside the site.
+  useEffect(() => {
+    const onHash = () => {
+      const h = (window.location.hash || "").replace(/^#\/?/, "").toLowerCase();
+      if (h && isPage(h)) { clearTimeout(navTimer.current); window.history.replaceState(null, "", pathFor(h)); setPage(h); window.scrollTo(0, 0); }
+    };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
+  // navigate("id") from any component, and plain <a href="/schedule"> links,
+  // switch pages without reloading the site.
+  const goToRef = useRef(null);
+  const navTimer = useRef(0); // the page switch waiting behind the sweep animation
+  useEffect(() => {
+    const onNav = (e) => { if (e.detail) goToRef.current(e.detail); };
+    const onClick = (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
+      if (!a || (a.target && a.target !== "_self") || a.hasAttribute("download")) return;
+      const url = new URL(a.getAttribute("href"), window.location.href);
+      if (url.origin !== window.location.origin || /\.[a-z0-9]+$/i.test(url.pathname)) return;
+      let id;
+      if (url.pathname === window.location.pathname && url.hash) {
+        id = url.hash.slice(1).toLowerCase();       // "#rivalry" style link
+        if (!isPage(id)) return;                     // a real in-page anchor: let the browser scroll
+      } else {
+        id = idFromPath(url.pathname);
+        if (!isPage(id)) return;
+      }
+      if (EXTERNAL[id]) return;
+      e.preventDefault();
+      goToRef.current(id);
+    };
+    window.addEventListener(NAVIGATE_EVENT, onNav);
+    document.addEventListener("click", onClick);
+    return () => { window.removeEventListener(NAVIGATE_EVENT, onNav); document.removeEventListener("click", onClick); };
+  }, []);
+
+  // Title, description and canonical address for the page on screen, then
+  // count the page view (Google Analytics skips coach and admin tools).
+  useEffect(() => {
+    const known = isPage(page);
+    document.title = known ? fullTitle(page) : `Page Not Found | ${SITE_NAME}`;
+    const desc = document.querySelector('meta[name="description"]');
+    if (desc) desc.setAttribute("content", (known && routes[page] && routes[page].description) || DEFAULT_DESCRIPTION);
+    const canon = document.querySelector('link[rel="canonical"]');
+    if (canon) canon.setAttribute("href", SITE_ORIGIN + (known ? pathFor(page) : "/"));
+    // Coach and admin tools switch Google Analytics off while they are on screen.
+    if (known && typeof window.acesTrack === "function") window.acesTrack(pathFor(page), document.title, isPrivate(page));
+  }, [page]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 130);
@@ -235,17 +330,19 @@ export default function App() {
   const goTo = (id) => {
     setMobileOpen(false);
     // Menu items that are their own pages outside the app (the payment pages).
-    if (EXTERNAL[id]) { window.location.href = EXTERNAL[id]; return; }
+    if (Object.prototype.hasOwnProperty.call(EXTERNAL, id)) { window.location.href = EXTERNAL[id]; return; }
+    if (!isPage(id)) id = "home";
     if (id === page) { window.scrollTo(0, 0); return; }
     // Maroon sweep covers the screen, page swaps underneath, sweep exits.
     setSweep(s => s + 1);
-    setTimeout(() => {
+    clearTimeout(navTimer.current);
+    navTimer.current = setTimeout(() => {
+      // New history entry, so the phone's Back button returns to the last page.
+      if (window.location.pathname !== pathFor(id)) window.history.pushState(null, "", pathFor(id));
       setPage(id); window.scrollTo(0, 0);
-      window.history.replaceState(null, "", id === "home" ? window.location.pathname : `#${id}`);
-      // replaceState is not auto-tracked, so log the in-app page change ourselves.
-      pageview({ route: id === "home" ? "/" : `/${id}`, path: id === "home" ? "/" : `/${id}` });
     }, 310);
   };
+  goToRef.current = goTo;
 
   const PageComponent = PAGES[page];
   // Nav chip: the next game still ahead (falls back to the opener).
@@ -501,14 +598,14 @@ export default function App() {
               ? <div key={i}>
                   <div style={{ padding:"10px 5% 4px", fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:3, color:"var(--gold)", textTransform:"uppercase" }}>{item.label}</div>
                   {item.children.map(child => (
-                    <button key={child.id} onClick={() => goTo(child.id)} style={{ display:"block", width:"100%", background:page===child.id?"rgba(132,0,54,0.2)":"none", border:"none", color:page===child.id?"var(--gold)":"rgba(255,255,255,0.65)", padding:"12px 8%", textAlign:"left", fontFamily:"'Oswald',sans-serif", fontSize:14, letterSpacing:2, textTransform:"uppercase", cursor:"pointer" }}>
+                    <a key={child.id} {...linkTo(goTo, child.id)} style={{ display:"block", width:"100%", boxSizing:"border-box", textDecoration:"none", background:page===child.id?"rgba(132,0,54,0.2)":"none", border:"none", color:page===child.id?"var(--gold)":"rgba(255,255,255,0.65)", padding:"12px 8%", textAlign:"left", fontFamily:"'Oswald',sans-serif", fontSize:14, letterSpacing:2, textTransform:"uppercase", cursor:"pointer" }}>
                       {child.label}
-                    </button>
+                    </a>
                   ))}
                 </div>
-              : <button key={item.id} onClick={() => goTo(item.id)} style={{ display:"block", width:"100%", background:page===item.id?"rgba(132,0,54,0.2)":"none", border:"none", color:page===item.id?"var(--gold)":"rgba(255,255,255,0.7)", padding:"13px 5%", textAlign:"left", fontFamily:"'Oswald',sans-serif", fontSize:14, letterSpacing:2, textTransform:"uppercase", cursor:"pointer" }}>
+              : <a key={item.id} {...linkTo(goTo, item.id)} style={{ display:"block", width:"100%", boxSizing:"border-box", textDecoration:"none", background:page===item.id?"rgba(132,0,54,0.2)":"none", border:"none", color:page===item.id?"var(--gold)":"rgba(255,255,255,0.7)", padding:"13px 5%", textAlign:"left", fontFamily:"'Oswald',sans-serif", fontSize:14, letterSpacing:2, textTransform:"uppercase", cursor:"pointer" }}>
                   {item.label}
-                </button>
+                </a>
           )}
         </div>
       )}
@@ -525,7 +622,7 @@ export default function App() {
 
       {/* Page content */}
       <div style={{ paddingTop:82, minHeight:"100vh", background:"#0a0005" }}>
-        {page === "home" ? <HomePage goTo={goTo} /> : PageComponent && <PageComponent />}
+        {page === "home" ? <HomePage goTo={goTo} /> : PageComponent ? <PageComponent /> : <NotFound goTo={goTo} />}
         <footer style={{ background:"#050003", borderTop:"1px solid rgba(132,0,54,0.28)", marginTop:40 }}>
           <div style={{ maxWidth:1100, margin:"0 auto", padding:"18px 5% 16px", display:"flex", flexWrap:"wrap", alignItems:"center", justifyContent:"space-between", gap:"10px 24px" }}>
             <div style={{ display:"flex", alignItems:"center", gap:10 }}>
@@ -534,11 +631,11 @@ export default function App() {
             </div>
             <div style={{ display:"flex", flexWrap:"wrap", gap:"4px 16px" }}>
               {[["schedule","Schedule"],["roster","Roster"],["news","News"],["store","Store"],["support","Support"],["sponsors","Sponsors"]].map(([id, label]) => (
-                <button key={id} onClick={() => goTo(id)} style={{ background:"none", border:"none", padding:"4px 0", fontFamily:"'Source Sans 3',sans-serif", fontSize:12.5, color:"rgba(255,255,255,0.55)", cursor:"pointer" }}
+                <a key={id} {...linkTo(goTo, id)} style={{ background:"none", border:"none", padding:"4px 0", fontFamily:"'Source Sans 3',sans-serif", fontSize:12.5, color:"rgba(255,255,255,0.55)", cursor:"pointer", textDecoration:"none" }}
                   onMouseEnter={e => e.currentTarget.style.color = "var(--gold)"}
                   onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.55)"}>
                   {label}
-                </button>
+                </a>
               ))}
             </div>
           </div>
@@ -553,7 +650,7 @@ export default function App() {
             </div>
           )}
           <div style={{ maxWidth:1100, margin:"0 auto", padding:"10px 5% 14px", borderTop:"1px solid rgba(255,255,255,0.06)", display:"flex", flexWrap:"wrap", gap:"6px 16px", alignItems:"center", justifyContent:"space-between" }}>
-            <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10.5, color:"rgba(255,255,255,0.3)" }}>© {new Date().getFullYear()} Lower Merion Aces Basketball · Ardmore, PA</div>
+            <div style={{ fontFamily:"'Source Sans 3',sans-serif", fontSize:10.5, color:"rgba(255,255,255,0.3)" }}>© {new Date().getFullYear()} Lower Merion Aces Basketball · Ardmore, PA · <a href="/policies.html#privacy" style={{ color:"rgba(255,255,255,0.45)", textDecoration:"none" }}>Privacy</a> · <a href="/policies.html#cookies" style={{ color:"rgba(255,255,255,0.45)", textDecoration:"none" }}>Cookies</a></div>
             <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:9.5, letterSpacing:2, color:"rgba(255,255,255,0.3)", textTransform:"uppercase" }}>Designed by <a href="https://mainline-webdesign.com/" target="_blank" rel="noopener noreferrer" style={{ color:"var(--gold)", textDecoration:"none" }}>Main Line Web Design</a></div>
           </div>
         </footer>

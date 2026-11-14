@@ -1,5 +1,5 @@
 // pages/NewsletterPage.jsx
-// Admin tool (not in the menu): open /#newsletter, enter the admin password
+// Admin tool (not in the menu): open /newsletter, enter the admin password
 // once, and write the Aces Newsletter: pick the week, the games come in
 // from the schedule with any live scores, add a note and a player of the game,
 // switch sections on or off, watch the preview, send a test to yourself, then
@@ -14,7 +14,7 @@ const readLS = (k) => { try { return localStorage.getItem(k) || ""; } catch { re
 const writeLS = (k, v) => { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch { /* ignore */ } };
 const NY = "America/New_York";
 const dayLabel = (g) => (g && g.iso ? new Date(g.iso).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: NY }) : (g && g.date) || "");
-const SITE = "https://aces-basketball.vercel.app";
+const SITE = "https://www.aceshoops.com";
 
 const SANS = "'Source Sans 3',sans-serif";
 const OSW = "'Oswald',sans-serif";
@@ -62,7 +62,7 @@ function Subscribers({ keyCode, data, setData, onAuthFail }) {
     finally { setBusy(false); }
   };
   const rows = showAll ? subs : subs.slice(0, 12);
-  const copyLink = async () => { try { await navigator.clipboard.writeText(`${SITE}/#news`); setMsg("Sign-up link copied."); } catch { setMsg("Couldn't copy. The link is " + SITE + "/#news"); } };
+  const copyLink = async () => { try { await navigator.clipboard.writeText(`${SITE}/news`); setMsg("Sign-up link copied."); } catch { setMsg("Couldn't copy. The link is " + SITE + "/news"); } };
   return (
     <div style={card}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>

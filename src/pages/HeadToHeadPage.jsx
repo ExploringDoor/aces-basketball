@@ -130,7 +130,7 @@ export default function HeadToHeadPage() {
             </FadeIn>
           ))}
           <FadeIn className="h100">
-            <a href="#rivalry" style={{
+            <a href="/rivalry" style={{
               height: "100%", boxSizing: "border-box", display: "flex", alignItems: "center", gap: 16, padding: "18px", textDecoration: "none", color: "inherit",
               background: "linear-gradient(120deg, rgba(132,0,54,0.35), rgba(0,0,0,0.35))", border: "1px solid rgba(201,164,74,0.45)", borderRadius: 14,
             }}>

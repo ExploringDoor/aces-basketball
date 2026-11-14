@@ -1,5 +1,5 @@
 // pages/ScoutingPage.jsx
-// Coach tool (not in the menu): open /#scouting, enter YOUR OWN password once
+// Coach tool (not in the menu): open /scouting, enter YOUR OWN password once
 // (Grugan47!: the admin hands them out from this page), and the board shows
 // every opponent on the schedule with who is scouting them. Open an opponent to
 // fill in the report: overview, personnel, offense, defense, special

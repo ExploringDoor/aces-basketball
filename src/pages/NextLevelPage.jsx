@@ -46,7 +46,7 @@ export default function NextLevelPage() {
           <h2 className="section-title">Aces at the<br /><span style={{ color: "var(--gold)" }}>Next Level</span></h2>
           <div className="divider" />
           <p style={{ fontFamily: SANS, fontSize: 16, color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: 660, margin: "18px 0 0" }}>
-            {nextLevel.length} Aces who kept playing after high school, {pros} of them professionally. Played after Lower Merion and not on the list? <a href="#nextlevel" onClick={e => { e.preventDefault(); document.getElementById("alumni-checkin")?.scrollIntoView({ behavior: "smooth" }); }} style={{ color: "var(--gold)", textDecoration: "none" }}>Check in below ›</a>
+            {nextLevel.length} Aces who kept playing after high school, {pros} of them professionally. Played after Lower Merion and not on the list? <a href="#alumni-checkin" onClick={e => { e.preventDefault(); document.getElementById("alumni-checkin")?.scrollIntoView({ behavior: "smooth" }); }} style={{ color: "var(--gold)", textDecoration: "none" }}>Check in below ›</a>
           </p>
         </FadeIn>
         <div style={{ marginTop: 40 }}><CollegeMap /></div>

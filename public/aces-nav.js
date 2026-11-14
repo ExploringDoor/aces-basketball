@@ -55,7 +55,7 @@
     ] }
   ];
   var EXTERNAL = { shootathon: "/donate.html", playbook: "/playbook.html", attitude: "/attitude/" };
-  function href(id) { return EXTERNAL[id] || (id === "home" ? "/" : "/#" + id); }
+  function href(id) { return EXTERNAL[id] || (id === "home" ? "/" : "/" + id); }
 
   var p = location.pathname;
   var active = /^\/attitude/.test(p) ? "attitude"

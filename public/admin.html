@@ -102,7 +102,7 @@ tr:hover td{background:rgba(201,164,74,.07)}
 .modal .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 @media(max-width:720px){.tiles{grid-template-columns:1fr 1fr}}
 </style>
-<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};/* Vercel Web Analytics: never count coach or admin tools (keep this list in step with the private pages in src/routes.js), and drop anything after ? or # from every address */window.va("beforeSend",function(e){try{var u=new URL(e.url);if(/^\/(admin|checkin|playbook|playbook-admin|shootathon)\.html$|^\/(scores|scouting|practice|newsletter|flyers)\/?$/i.test(u.pathname))return null;e.url=u.origin+u.pathname;}catch(x){}return e;});</script>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>

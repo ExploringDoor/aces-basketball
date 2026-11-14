@@ -11,7 +11,7 @@
 <meta name="description" content="Sponsor an Aces player per made free throw, or make a one-time donation, in our Shoot-a-Thon.">
 <meta property="og:title" content="Aces Shoot-a-Thon | Lower Merion Aces Basketball">
 <meta property="og:description" content="Sponsor an Aces player per made free throw, or make a one-time donation.">
-<meta property="og:image" content="/og-image.png">
+<meta property="og:image" content="https://www.aceshoops.com/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
@@ -252,8 +252,9 @@ footer a{text-decoration:underline}
 }
 </style>
 <script src="/aces-nav.js?v=1" defer></script>
-<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};/* Vercel Web Analytics: never count coach or admin tools (keep this list in step with the private pages in src/routes.js), and drop anything after ? or # from every address */window.va("beforeSend",function(e){try{var u=new URL(e.url);if(/^\/(admin|checkin|playbook|playbook-admin|shootathon)\.html$|^\/(scores|scouting|practice|newsletter|flyers)\/?$/i.test(u.pathname))return null;e.url=u.origin+u.pathname;}catch(x){}return e;});</script>
 <script defer src="/_vercel/insights/script.js"></script>
+<script src="/ga.js"></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -617,7 +618,7 @@ function submitDonate(e){
     .catch(function(){ btn.disabled=false; btn.innerHTML=old; mErr('Network error. Please try again.'); });
 }
 function pledgedDone(payload){
-  try{ if(window.gtag) gtag('event','pledge',{method:'per_shot'}); }catch(e){}
+  try{ if(!DEMO && window.gtag) gtag('event','pledge',{method:'per_shot'}); }catch(e){}
   $('modal').innerHTML=CLOSE+'<div class="done"><div class="ic">'+ic('i-check')+'</div>'+
     '<h2>Pledge received. Thank you!</h2>'+
     '<p class="msub" style="margin-top:6px">Thanks for sponsoring <b>'+esc(MODAL.name)+'</b>! We\'ll count every made free throw, then email <b>'+esc(payload.donor_email)+'</b> a secure link for your exact total. Nothing has been charged yet.</p>'+

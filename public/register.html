@@ -11,16 +11,16 @@
 <meta name="robots" content="noindex">
 <meta name="description" content="Register for Fall Clinics: six Sundays, Sep 27 – Nov 1, 11:00 AM – 12:15 PM, boys & girls ages 6–14, Kobe Bryant Gymnasium, Ardmore, PA.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://aces-basketball.vercel.app/register.html">
+<meta property="og:url" content="https://www.aceshoops.com/register.html">
 <meta property="og:title" content="Register — Fall Clinics | Lower Merion Aces Basketball">
 <meta property="og:description" content="Six Sundays, Sep 27 – Nov 1 · 11:00 AM – 12:15 PM · Boys & girls ages 6–14 · Kobe Bryant Gymnasium, Ardmore, PA.">
-<meta property="og:image" content="https://aces-basketball.vercel.app/og-image.png">
+<meta property="og:image" content="https://www.aceshoops.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Register — Fall Clinics | Lower Merion Aces Basketball">
 <meta name="twitter:description" content="Six Sundays, Sep 27 – Nov 1 · 11:00 AM – 12:15 PM · Boys & girls ages 6–14 · Kobe Bryant Gymnasium, Ardmore, PA.">
-<meta name="twitter:image" content="https://aces-basketball.vercel.app/og-image.png">
+<meta name="twitter:image" content="https://www.aceshoops.com/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Oswald:wght@400;500;600;700;900&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
 <style>
@@ -124,14 +124,15 @@ input[type=checkbox].inp-err{outline:2px solid var(--err);outline-offset:2px}
 }
 @media(max-width:520px){.grid2{grid-template-columns:1fr}}
 </style>
-<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};/* Vercel Web Analytics: never count coach or admin tools (keep this list in step with the private pages in src/routes.js), and drop anything after ? or # from every address */window.va("beforeSend",function(e){try{var u=new URL(e.url);if(/^\/(admin|checkin|playbook|playbook-admin|shootathon)\.html$|^\/(scores|scouting|practice|newsletter|flyers)\/?$/i.test(u.pathname))return null;e.url=u.origin+u.pathname;}catch(x){}return e;});</script>
 <script defer src="/_vercel/insights/script.js"></script>
+<script src="/ga.js"></script>
 </head>
 <body>
 
 <nav class="nav">
   <a href="index.html" class="nav-brand"><img src="/LM_Logo.png" alt="Lower Merion Aces" style="height:46px;width:auto;margin-right:12px"><div><div class="logo-main">ACES</div><div class="logo-sub">Basketball</div></div></a>
-  <a href="clinics.html" class="back">← Back to Clinics</a>
+  <a href="/clinics" class="back">← Back to Clinics</a>
 </nav>
 
 <form class="wrap" id="regForm" novalidate>

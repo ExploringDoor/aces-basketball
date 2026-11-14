@@ -1,6 +1,6 @@
 // Vercel Serverless Function: /api/newsletter
-// Aces Newsletter, the family newsletter. Families sign up on /#news, the admin
-// writes and sends it from the hidden /#newsletter page.
+// Aces Newsletter, the family newsletter. Families sign up on /news, the admin
+// writes and sends it from the hidden /newsletter page.
 //
 // Storage: Firestore through the server login (api/_firestore.js).
 //   newsletter_subs/<sha256(email) first 40>   { site, email, name, status, source, created_at, ... }
@@ -133,7 +133,7 @@ async function compose(req, body) {
     } catch (e) { fundraiser = null; }
   }
   const store = c.wantStore
-    ? { items: Object.entries(PRODUCTS).map(([id, p]) => ({ name: p.name, priceCents: p.cents, imageUrl: `${base}/Bulldog.png`, url: `${base}/#store` })) }
+    ? { items: Object.entries(PRODUCTS).map(([id, p]) => ({ name: p.name, priceCents: p.cents, imageUrl: `${base}/Bulldog.png`, url: `${base}/store` })) }
     : null;
   const o = { origin: base, weekLabel: weekLabelFor(c.from, c.to), intro: c.intro, results: c.results, upcoming: c.upcoming, playerOfGame: c.playerOfGame, fundraiser, store };
   return { content: c, subject: subjectFor(o), html: buildNewsletterHtml(o), base };

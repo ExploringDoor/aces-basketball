@@ -1,6 +1,6 @@
 // pages/PracticePage.jsx
-// Coach tool (not in the menu): open /#practice, enter YOUR OWN password once
-// (the same one as scouting; the admin hands them out on /#scouting), and the
+// Coach tool (not in the menu): open /practice, enter YOUR OWN password once
+// (the same one as scouting; the admin hands them out on /scouting), and the
 // planner shows each team's practices by week. Open a day to build it from the
 // drill library: blocks with a running clock, who leads each one, groups and
 // notes. Print makes the clipboard sheet. Saves go to /api/practice

@@ -57,13 +57,14 @@ h1{font-family:'Playfair Display',serif;font-weight:700;font-size:2rem;margin-bo
   .recap .row.rc-total{border-top-color:#ccc}
 }
 </style>
-<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};/* Vercel Web Analytics: never count coach or admin tools (keep this list in step with the private pages in src/routes.js), and drop anything after ? or # from every address */window.va("beforeSend",function(e){try{var u=new URL(e.url);if(/^\/(admin|checkin|playbook|playbook-admin|shootathon)\.html$|^\/(scores|scouting|practice|newsletter|flyers)\/?$/i.test(u.pathname))return null;e.url=u.origin+u.pathname;}catch(x){}return e;});</script>
 <script defer src="/_vercel/insights/script.js"></script>
+<script src="/ga.js"></script>
 </head>
 <body>
 <nav class="nav">
   <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:12px"><img src="/LM_Logo.png" alt="Lower Merion Aces" style="height:48px;width:auto;display:block"><div><div class="logo-main">ACES HOOPS</div><div class="logo-sub">Lower Merion</div></div></a>
-  <a href="clinics.html" class="back">← Clinics</a>
+  <a href="/clinics" class="back">← Clinics</a>
 </nav>
 
 <div class="wrap">
@@ -84,7 +85,7 @@ h1{font-family:'Playfair Display',serif;font-weight:700;font-size:2rem;margin-bo
     <div class="recap" id="recap"></div>
     <div class="btn-row">
       <button class="btn" id="printBtn">🖨 Print receipt</button>
-      <a href="clinics.html" class="btn ghost">Back to Clinics</a>
+      <a href="/clinics" class="btn ghost">Back to Clinics</a>
     </div>
     <p class="muted">Questions? Email <a href="mailto:aceshoops@gmail.com" style="color:var(--txt-m);text-decoration:underline">aceshoops@gmail.com</a></p>
     <p class="muted" style="font-size:.72rem;opacity:.8">Payments are collected by Always Competing Sports LLC on behalf of the clinic's organizing booster club and remitted to them. · <a href="policies.html" style="color:var(--dim);text-decoration:underline">Policies &amp; refunds</a></p>
