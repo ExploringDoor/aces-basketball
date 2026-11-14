@@ -2493,17 +2493,17 @@ var INK_BTNS=[
 var INK_STAMPS=[['1','1'],['2','2'],['3','3'],['4','4'],['5','5'],['X','X'],['B','Ball']];
 var INK_NAMES={k:'Black',r:'Red',b:'Blue'};
 function renderInkBar(){
-  var t=E.tool, h='<div class="ink-row">'+INK_BTNS.map(function(b){ return '<button class="tool" type="button" data-ink="'+b[0]+'" aria-pressed="'+(t===b[0])+'" title="'+b[1]+'"><svg viewBox="0 0 36 14">'+b[2]+'</svg>'+b[1]+'</button>'; }).join('')+'</div>';
-  h+='<div class="ink-row">'+['k','r','b'].map(function(c){ return '<button class="inksw" type="button" data-inkc="'+c+'" aria-pressed="'+(E.color===c)+'" title="'+INK_NAMES[c]+'" aria-label="'+INK_NAMES[c]+' marker" style="--sw:'+PBCourt.INK[c]+'"></button>'; }).join('');
-  if(t==='st') h+='<span class="ink-sep"></span>'+INK_STAMPS.map(function(s){ return '<button class="inkst'+(s[0]==='B'?' ball':'')+'" type="button" data-inks="'+s[0]+'" aria-pressed="'+(E.stamp===s[0])+'" title="Tap the board to put '+(s[0]==='B'?'the ball':s[0]==='X'?'a defender':s[0])+' down">'+s[1]+'</button>'; }).join('');
+  var t=E.tool, h='<div class="ink-row">'+INK_BTNS.map(function(b){ return '<button class="tool" type="button" data-wbt="'+b[0]+'" aria-pressed="'+(t===b[0])+'" title="'+b[1]+'"><svg viewBox="0 0 36 14">'+b[2]+'</svg>'+b[1]+'</button>'; }).join('')+'</div>';
+  h+='<div class="ink-row">'+['k','r','b'].map(function(c){ return '<button class="inksw" type="button" data-wbc="'+c+'" aria-pressed="'+(E.color===c)+'" title="'+INK_NAMES[c]+'" aria-label="'+INK_NAMES[c]+' marker" style="--sw:'+PBCourt.INK[c]+'"></button>'; }).join('');
+  if(t==='st') h+='<span class="ink-sep"></span>'+INK_STAMPS.map(function(s){ return '<button class="inkst'+(s[0]==='B'?' ball':'')+'" type="button" data-wbs="'+s[0]+'" aria-pressed="'+(E.stamp===s[0])+'" title="Tap the board to put '+(s[0]==='B'?'the ball':s[0]==='X'?'a defender':s[0])+' down">'+s[1]+'</button>'; }).join('');
   h+='<span style="flex:1"></span><button class="btn sm" type="button" id="inkClr">Clear this step</button></div>';
   $('edInk').innerHTML=h;
 }
 $('edInk').addEventListener('click',function(e){
   var b;
-  if((b=e.target.closest('[data-ink]'))){ E.tool=b.getAttribute('data-ink'); renderInkBar(); hint(); return; }
-  if((b=e.target.closest('[data-inkc]'))){ E.color=b.getAttribute('data-inkc'); if(E.tool==='er') E.tool='pen'; renderInkBar(); return; }
-  if((b=e.target.closest('[data-inks]'))){ E.stamp=b.getAttribute('data-inks'); E.tool='st'; renderInkBar(); hint(); return; }
+  if((b=e.target.closest('[data-wbt]'))){ E.tool=b.getAttribute('data-wbt'); renderInkBar(); hint(); return; }
+  if((b=e.target.closest('[data-wbc]'))){ E.color=b.getAttribute('data-wbc'); if(E.tool==='er') E.tool='pen'; renderInkBar(); return; }
+  if((b=e.target.closest('[data-wbs]'))){ E.stamp=b.getAttribute('data-wbs'); E.tool='st'; renderInkBar(); hint(); return; }
   if(e.target.closest('#inkClr')){ var f=cur(); if(!(f.ink||[]).length) return toast('Nothing drawn on this step yet.'); f.ink=[]; dirty(); drawAll(); toast('Step cleared. Undo brings it back.'); }
 });
 $('edClear').addEventListener('change',function(){ if(!isInkEd()||E.at===0) return; if(this.checked) cur().clear=true; else delete cur().clear; dirty(); drawAll(); });
