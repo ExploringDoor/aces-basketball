@@ -24,6 +24,7 @@ export default function CoachingPage() {
           <div className="section-label"><Spade size={14} color="#840036" /> Coaching Staff</div>
           <h2 className="section-title">Led By<br /><span style={{ color: "var(--gold)" }}>The Best</span></h2>
           <div className="divider" />
+          <img src="/coaches/coaching-staff.jpg" alt="The Lower Merion Aces coaching staff" style={{ display: "block", width: "100%", height: "auto", marginTop: 24, borderRadius: 14, border: "1px solid rgba(201,164,74,0.3)", boxShadow: "0 18px 50px rgba(0,0,0,0.5)" }} />
           <p style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.5)", marginTop: 16, lineHeight: 1.8 }}>Click any coach for their full bio.</p>
         </FadeIn>
 
