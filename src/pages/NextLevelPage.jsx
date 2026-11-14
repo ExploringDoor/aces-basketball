@@ -1,5 +1,6 @@
 import { FadeIn, Spade, Avatar, photoFor } from "../shared";
 import { nextLevel } from "../shared/nextLevel";
+import AlumniForm from "../shared/AlumniForm";
 
 const OSW = "'Oswald',sans-serif";
 const SANS = "'Source Sans 3',sans-serif";
@@ -44,7 +45,7 @@ export default function NextLevelPage() {
           <h2 className="section-title">Aces at the<br /><span style={{ color: "var(--gold)" }}>Next Level</span></h2>
           <div className="divider" />
           <p style={{ fontFamily: SANS, fontSize: 16, color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: 660, margin: "18px 0 0" }}>
-            {nextLevel.length} Aces who kept playing after high school, {pros} of them professionally. Know someone who belongs here? Send us a note on the Support page.
+            {nextLevel.length} Aces who kept playing after high school, {pros} of them professionally. Played after Lower Merion and not on the list? <a href="#nextlevel" onClick={e => { e.preventDefault(); document.getElementById("alumni-checkin")?.scrollIntoView({ behavior: "smooth" }); }} style={{ color: "var(--gold)", textDecoration: "none" }}>Check in below ›</a>
           </p>
         </FadeIn>
         {GROUPS.map((g, gi) => {
@@ -65,6 +66,7 @@ export default function NextLevelPage() {
             </div>
           );
         })}
+        <div style={{ marginTop: 64 }}><AlumniForm id="alumni-checkin" /></div>
       </div>
     </section>
   );

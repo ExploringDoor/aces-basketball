@@ -1,5 +1,6 @@
 // pages/AlumniPage.jsx
 import { useState } from "react";
+import AlumniForm from "../shared/AlumniForm";
 import { FadeIn, Spade, Icon, Avatar, photoFor, alumniByName, alumni } from "../shared";
 
 const rosterData = {
@@ -618,6 +619,7 @@ export default function AlumniPage() {
             </div>
           </div>
         </FadeIn>
+        <div style={{ marginTop: 64 }}><AlumniForm id="alumni-checkin" /></div>
       </div>
     </section>
   );

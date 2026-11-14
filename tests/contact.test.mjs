@@ -50,6 +50,23 @@ await test('the 6th message in 10 minutes from one IP is slowed down', async () 
   for (let i = 0; i < 5; i++) assert.equal((await call(good, ip)).status, 200);
   assert.equal((await call(good, ip)).body.error, 'slow_down');
 });
+await test('an alumni update carries class year, college and the list choice', async () => {
+  const r = await call({ ...good, topic: 'Alumni update', name: 'Sam Ace', classYear: '2013', played: 'West Chester (D-II)', alumniList: true, message: 'Teaching and coaching in Ardmore now.' });
+  assert.equal(r.status, 200);
+  const m = fake.mails()[0];
+  assert.equal(m.subject, "Alumni update: Sam Ace '13");
+  assert.ok(m.html.includes('Class of') && m.html.includes('2013') && m.html.includes('West Chester') && m.html.includes('Yes, add me'));
+  assert.ok(m.text.includes('Alumni list: Yes, add me'));
+});
+await test('alumni fields are ignored on ordinary messages, and a bad class year is dropped', async () => {
+  await call({ ...good, classYear: '2013', played: 'x', alumniList: true });
+  assert.ok(!fake.mails()[0].html.includes('Class of'));
+  fake.reset();
+  await call({ ...good, topic: 'Alumni update', classYear: '13', alumniList: 'yes' });
+  const m = fake.mails()[0];
+  assert.equal(m.subject, 'Alumni update: Pat Parent');
+  assert.ok(m.text.includes('Alumni list: No'));
+});
 await test('SendGrid down → 502 send_failed so the page can say so', async () => {
   fake.state.opts.fail.sendgrid = 500;
   const r = await call(good);
