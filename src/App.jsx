@@ -90,9 +90,9 @@ const NAV = [
   //   { id:"academics", label:"Academics" },
   //   { id:"sponsors",  label:"Sponsorships" },
   // ]},
+  { id:"kobe", label:"Kobe" },
   { label:"More", children:[
     { id:"clinics", label:"Clinics" },
-    { id:"kobe",   label:"Kobe" },
     { id:"photos", label:"Photos" },
     { id:"videos", label:"Videos" },
     { id:"social",   label:"Follow Us" },

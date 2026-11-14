@@ -40,9 +40,9 @@
       { id: "coaching", label: "Coaching Staff" },
       { id: "hof", label: "Hall of Fame" }
     ] },
+    { id: "kobe", label: "Kobe" },
     { label: "More", children: [
       { id: "clinics", label: "Clinics" },
-      { id: "kobe", label: "Kobe" },
       { id: "photos", label: "Photos" },
       { id: "videos", label: "Videos" },
       { id: "social", label: "Follow Us" },
