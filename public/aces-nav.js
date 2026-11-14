@@ -37,6 +37,7 @@
       { id: "thousand", label: "1,000 Club" },
       { id: "alumni", label: "Alumni" },
       { id: "nextlevel", label: "Next Level" },
+      { id: "numbers", label: "Who Wore It" },
       { id: "coaching", label: "Coaching Staff" },
       { id: "hof", label: "Hall of Fame" }
     ] },

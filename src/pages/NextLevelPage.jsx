@@ -1,6 +1,7 @@
 import { FadeIn, Spade, Avatar, photoFor } from "../shared";
 import { nextLevel } from "../shared/nextLevel";
 import AlumniForm from "../shared/AlumniForm";
+import CollegeMap from "../shared/CollegeMap";
 
 const OSW = "'Oswald',sans-serif";
 const SANS = "'Source Sans 3',sans-serif";
@@ -48,6 +49,8 @@ export default function NextLevelPage() {
             {nextLevel.length} Aces who kept playing after high school, {pros} of them professionally. Played after Lower Merion and not on the list? <a href="#nextlevel" onClick={e => { e.preventDefault(); document.getElementById("alumni-checkin")?.scrollIntoView({ behavior: "smooth" }); }} style={{ color: "var(--gold)", textDecoration: "none" }}>Check in below ›</a>
           </p>
         </FadeIn>
+        <div style={{ marginTop: 40 }}><CollegeMap /></div>
+
         {GROUPS.map((g, gi) => {
           const people = nextLevel.filter(g.test);
           if (!people.length) return null;

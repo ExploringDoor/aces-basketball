@@ -19,6 +19,7 @@ import RivalryPage from "./pages/RivalryPage";
 import HeadToHeadPage from "./pages/HeadToHeadPage";
 import SeasonsPage from "./pages/SeasonsPage";
 import NextLevelPage from "./pages/NextLevelPage";
+import WhoWoreItPage from "./pages/WhoWoreItPage";
 import CentralLeaguePage from "./pages/CentralLeaguePage";
 import AlumniPage        from "./pages/AlumniPage";
 import CoachingPage      from "./pages/CoachingPage";
@@ -40,7 +41,7 @@ import NewsletterPage     from "./pages/NewsletterPage";
 
 const PAGES = {
   home: null, news: NewsPage, clinics: FallClinicsPage, store: StorePage, flyers: FlyerPage, standings: StandingsPage, history: HistoryPage, thousand: ThousandClubPage,
-  schedule: SchedulePage, story: StoryPage, championships: ChampionshipsPage, banners: BannersPage, rivalry: RivalryPage, headtohead: HeadToHeadPage, seasons: SeasonsPage, nextlevel: NextLevelPage,
+  schedule: SchedulePage, story: StoryPage, championships: ChampionshipsPage, banners: BannersPage, rivalry: RivalryPage, headtohead: HeadToHeadPage, seasons: SeasonsPage, nextlevel: NextLevelPage, numbers: WhoWoreItPage,
   league: CentralLeaguePage, alumni: AlumniPage, coaching: CoachingPage,
   roster: RosterPage, records: RecordBookPage, photos: PhotosPage,
   videos: VideosPage, kobe: KobePage, social: SocialPage,
@@ -79,6 +80,7 @@ const NAV = [
     { id:"thousand", label:"1,000 Club" },
     { id:"alumni",   label:"Alumni" },
     { id:"nextlevel", label:"Next Level" },
+    { id:"numbers",   label:"Who Wore It" },
     { id:"coaching", label:"Coaching Staff" },
     { id:"hof",      label:"Hall of Fame" },
   ]},
