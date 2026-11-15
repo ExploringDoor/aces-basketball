@@ -1496,7 +1496,7 @@ function planEditor(src,isCopy){
   $('plPull').addEventListener('click',function(){
     var opp=$('plOpp').value.trim(); if(!opp) return toast('Enter the opponent first.',true);
     var msg=$('plPullMsg'); msg.textContent='Looking for the report...';
-    api('scout_report',{opponent:opp}).then(function(d){
+    api('scout_report',{opponent:opp,date:$('plDate').value}).then(function(d){
       if(d.error){ msg.textContent=d.error==='no_report'?'No scouting report for '+opp+' yet. The coaches write those under Scouting on the main site.':errText(d); return; }
       var r=d.report, added=0;
       if(r.keys&&r.keys.length){ var cur=$('plKeys').value.split('\n').filter(Boolean); r.keys.forEach(function(k){ if(cur.indexOf(k)<0){ cur.push(k); added++; } }); $('plKeys').value=cur.join('\n'); }

@@ -3,7 +3,7 @@
 // Run: npm test   (or: node tests/scouting.test.mjs)
 import assert from 'node:assert/strict';
 import * as fake from './_fake.js';
-import { opponentsFrom, cleanReport, cleanStaffList, cleanAssignments, completeness, slugOf, printHtml, codeFor, validCode, codeKey, SECTIONS, LIMITS } from '../api/_scouting.js';
+import { opponentsFrom, gamesFrom, gameKey, isGameKey, cleanReport, cleanStaffList, cleanAssignments, completeness, slugOf, printHtml, codeFor, validCode, codeKey, SECTIONS, LIMITS } from '../api/_scouting.js';
 import handler from '../api/scouting.js';
 
 fake.install();
@@ -41,6 +41,19 @@ await test('opponents come from the schedule, once each, tournaments and scrimma
   assert.equal(c.next.date, 'Jan 22');
   assert.equal(c.conf, true);
   assert.equal(o[1].next, null);
+});
+
+await test('every game is its own row, in schedule order, with game 1 of 2', () => {
+  const now = new Date('2026-12-09T12:00:00-05:00').getTime();
+  const g = gamesFrom(games, now);
+  assert.deepEqual(g.map((x) => x.key), ['chester-20261204', 'conestoga-20261208', 'conestoga-20270122']);
+  assert.deepEqual(g.map((x) => [x.meeting, x.meetings]), [[1, 1], [1, 2], [2, 2]]);
+  assert.deepEqual(g.map((x) => x.past), [true, true, false]);
+  // A late game keeps its Philadelphia date, not the next UTC day.
+  assert.equal(gameKey({ opp: "St. Joe's Prep", iso: '2027-01-05T22:30:00-05:00' }), 'st-joe-s-prep-20270105');
+  assert.equal(isGameKey('conestoga-20261208', 'Conestoga'), true);
+  assert.equal(isGameKey('conestoga', 'Conestoga'), false);
+  assert.equal(isGameKey('ridley-20261208', 'Conestoga'), false);
 });
 
 await test('a report is clipped to the template and nothing else gets through', () => {
@@ -137,42 +150,44 @@ await test('admin manages the staff: add, new code, set a code, remove; coaches 
   r = await call({ body: { action: 'check' }, key: 'Sam2026!' });
   assert.equal(r.status, 401);
   // Assignments: a coach can assign and the row saves.
-  r = await call({ body: { action: 'assign', slug: 'conestoga', scout: 'Matt', helper: 'Eric', status: 'in_progress' }, key: eric });
+  r = await call({ body: { action: 'assign', slug: 'conestoga-20261208', scout: 'Matt', helper: 'Eric', status: 'in_progress' }, key: eric });
   assert.equal(r.status, 200);
   r = await call({ body: { action: 'assign', slug: 'bad slug!', scout: 'Matt' } });
   assert.equal(r.status, 400);
   r = await call({ method: 'GET', key: matt });
-  assert.deepEqual(r.body.assignments, { conestoga: { scout: 'Matt', helper: 'Eric', status: 'in_progress' } });
-  r = await call({ body: { action: 'assign', slug: 'conestoga', scout: '', helper: '', status: 'not_started' } });
+  assert.deepEqual(r.body.assignments, { 'conestoga-20261208': { scout: 'Matt', helper: 'Eric', status: 'in_progress' } });
+  r = await call({ body: { action: 'assign', slug: 'conestoga-20261208', scout: '', helper: '', status: 'not_started' } });
   assert.deepEqual(r.body.assignments, {});
 });
 
 await test('report: save, read back, summary on the board, and a stale save is refused', async () => {
   const staff = (await call({ method: 'GET' })).body.staff;
   const code = (n) => staff.find((c) => c.name === n).code;
-  let r = await call({ body: { action: 'save', slug: 'conestoga', opp: 'Conestoga', expect: '', report: { overview: 'Fast', keys: ['Rebound'], personnel: [{ num: '3', name: 'A' }] } }, key: code('Eric') });
+  let r = await call({ body: { action: 'save', slug: 'conestoga-20261208', opp: 'Conestoga', expect: '', report: { overview: 'Fast', keys: ['Rebound'], personnel: [{ num: '3', name: 'A' }] } }, key: code('Eric') });
   assert.equal(r.status, 200);
   const first = r.body.report.updated_at;
   assert.equal(r.body.report.updated_by, 'Eric');
-  r = await call({ method: 'GET', query: '?opp=conestoga' });
+  r = await call({ method: 'GET', query: '?opp=conestoga-20261208' });
   assert.equal(r.body.report.overview, 'Fast');
   assert.equal(r.body.report.personnel[0].name, 'A');
   r = await call({ method: 'GET' });
-  assert.equal(r.body.reports.conestoga.updated_by, 'Eric');
-  assert.ok(r.body.reports.conestoga.pct > 0);
+  assert.equal(r.body.reports['conestoga-20261208'].updated_by, 'Eric');
+  assert.ok(r.body.reports['conestoga-20261208'].pct > 0);
   // Matt loaded the old version and saves over Eric's newer one: refused with the current copy.
-  r = await call({ body: { action: 'save', slug: 'conestoga', opp: 'Conestoga', expect: 'something-old', report: { overview: 'Slow' } }, key: code('Matt') });
+  r = await call({ body: { action: 'save', slug: 'conestoga-20261208', opp: 'Conestoga', expect: 'something-old', report: { overview: 'Slow' } }, key: code('Matt') });
   assert.equal(r.status, 409);
   assert.equal(r.body.error, 'stale');
   assert.equal(r.body.report.overview, 'Fast');
   // With the right expect it goes through.
-  r = await call({ body: { action: 'save', slug: 'conestoga', opp: 'Conestoga', expect: first, report: { overview: 'Slow' } }, key: code('Matt') });
+  r = await call({ body: { action: 'save', slug: 'conestoga-20261208', opp: 'Conestoga', expect: first, report: { overview: 'Slow' } }, key: code('Matt') });
   assert.equal(r.status, 200);
-  r = await call({ method: 'GET', query: '?opp=conestoga' });
+  r = await call({ method: 'GET', query: '?opp=conestoga-20261208' });
   assert.equal(r.body.report.overview, 'Slow');
   assert.equal(r.body.report.updated_by, 'Matt');
   // Slug and opponent must agree, and a slug has to be a slug.
-  r = await call({ body: { action: 'save', slug: 'conestoga', opp: 'Ridley', expect: '', report: {} } });
+  r = await call({ body: { action: 'save', slug: 'conestoga-20261208', opp: 'Ridley', expect: '', report: {} } });
+  assert.equal(r.status, 400);
+  r = await call({ body: { action: 'save', slug: 'conestoga', opp: 'Conestoga', expect: '', report: {} } });
   assert.equal(r.status, 400);
   r = await call({ method: 'GET', query: '?opp=../admins' });
   assert.equal(r.status, 400);

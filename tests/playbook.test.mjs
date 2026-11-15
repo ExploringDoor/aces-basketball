@@ -412,9 +412,17 @@ await test('quiz results, game plan, practice and progress reach the player', as
   assert.equal((await call({ action: 'set_board', on: false }, true)).statusCode, 200);
   assert.equal((await call({ action: 'board', token: tok })).body.on, false);
   assert.equal((await call({ action: 'scout_report', opponent: 'Radnor' }, true)).statusCode, 404);
-  fake.state.docs.set('scouting_reports/' + SITE_TAG + '_radnor', { fields: toFirestore({ site: SITE_TAG, opp: 'Radnor', keys: ['Box out'], personnel: [{ num: '23', name: 'Smith' }], matchups: [], plan: 'Run them.' }), createTime: 'x', updateTime: 'x' });
-  const sr = await call({ action: 'scout_report', opponent: 'Radnor' }, true);
-  assert.equal(sr.statusCode, 200); assert.deepEqual(sr.body.report.keys, ['Box out']);
+  // Reports are per game: the plan's own date wins, then the next game, then the last saved.
+  const rep = (day, keys, at) => fake.state.docs.set('scouting_reports/' + SITE_TAG + '_radnor-' + day, { fields: toFirestore({ site: SITE_TAG, opp: 'Radnor', keys, personnel: [{ num: '23', name: 'Smith' }], matchups: [], plan: 'Run them.', updated_at: at }), createTime: 'x', updateTime: 'x' });
+  rep('20200110', ['Old game'], '2020-01-11T00:00:00Z');
+  let sr = await call({ action: 'scout_report', opponent: 'Radnor' }, true);
+  assert.equal(sr.statusCode, 200); assert.deepEqual(sr.body.report.keys, ['Old game']);
+  rep('20991201', ['Next game'], '2020-01-01T00:00:00Z');
+  rep('20991220', ['Later game'], '2020-01-02T00:00:00Z');
+  sr = await call({ action: 'scout_report', opponent: 'Radnor' }, true);
+  assert.deepEqual(sr.body.report.keys, ['Next game']);
+  sr = await call({ action: 'scout_report', opponent: 'Radnor', date: '2099-12-20' }, true);
+  assert.deepEqual(sr.body.report.keys, ['Later game']);
 });
 await test('a removed player can no longer sign in', async () => {
   await call({ action: 'remove_player', id: codes[1].id }, true);

@@ -596,9 +596,18 @@ async function adminAction(action, body) {
     case 'scout_report': {
       // The coaches' scouting report (api/scouting.js) for this opponent, trimmed to what a
       // game plan can use. Players never call this; the coach decides what to carry over.
+      // Reports are per game ("conestoga-20261208"): this plan's own game first, then the next
+      // game against them, then whichever report was saved last.
       const slug = scoutSlug(body.opponent || '');
       if (!slug) return { status: 400, body: { error: 'missing_opponent' } };
-      const r = await fsGet(`scouting_reports/${SITE_TAG}_${slug}`);
+      const want = /^\d{4}-\d{2}-\d{2}$/.test(String(body.date || '')) ? String(body.date).replace(/-/g, '') : '';
+      const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()).replace(/-/g, '');
+      const pre = `${SITE_TAG}_${slug}-`;
+      const mine = (await fsList('scouting_reports')).filter((d) => d.site === SITE_TAG && typeof d.id === 'string' && d.id.startsWith(pre) && /^\d{8}$/.test(d.id.slice(pre.length)))
+        .map((d) => Object.assign(d, { day: d.id.slice(pre.length) }));
+      const r = (want && mine.find((d) => d.day === want))
+        || mine.filter((d) => d.day >= today).sort((a, b) => a.day.localeCompare(b.day))[0]
+        || mine.sort((a, b) => String(b.updated_at || '').localeCompare(String(a.updated_at || '')))[0];
       if (!r) return { status: 404, body: { error: 'no_report' } };
       return { status: 200, body: { report: { opp: r.opp || body.opponent, keys: r.keys || [], matchups: r.matchups || [], personnel: r.personnel || [], plan: r.plan || '', overview: r.overview || '', updated_at: r.updated_at || '', updated_by: r.updated_by || '' } } };
     }

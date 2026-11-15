@@ -112,6 +112,41 @@ export function opponentsFrom(games, now = Date.now()) {
   return out;
 }
 
+/** The game's calendar day in Philadelphia, "20261208". */
+function nyDay(iso) {
+  const d = new Date(iso);
+  if (!iso || Number.isNaN(d.getTime())) return '';
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(d).map((x) => [x.type, x.value]));
+  return `${p.year}${p.month}${p.day}`;
+}
+
+/** One game's id for assignments and reports: "conestoga-20261208". Adam, 11/14: each game
+ *  vs a team twice can have its own scout, so scouting is per game, not per opponent. */
+export function gameKey(g) {
+  const day = nyDay(g && g.iso);
+  return day ? `${slugOf(g.opp)}-${day}` : '';
+}
+/** True when `key` is a game id for this opponent. */
+export const isGameKey = (key, opp) => new RegExp(`^${slugOf(opp).replace(/[^a-z0-9-]/g, '')}-\\d{8}$`).test(String(key || ''));
+
+/** Every game on the schedule in date order, each its own scouting row. Tournaments (`multi`)
+ *  and scrimmages are left out. `meeting`/`meetings` say "game 1 of 2" against that team. */
+export function gamesFrom(games, now = Date.now()) {
+  const out = [];
+  for (const g of games || []) {
+    if (!g || !g.opp || g.multi || g.exhibition) continue;
+    const key = gameKey(g);
+    if (!key) continue;
+    const t = new Date(g.iso).getTime();
+    out.push({ key, slug: slugOf(g.opp), opp: g.opp, conf: !!g.conf, iso: g.iso, date: g.date || '', time: g.time || '', home: !!g.home, neutral: !!g.neutral, venue: g.venue || '', result: g.result || null, t, past: t < now - 3 * 3600000 });
+  }
+  out.sort((a, b) => a.t - b.t);
+  const total = {}, seen = {};
+  for (const g of out) total[g.slug] = (total[g.slug] || 0) + 1;
+  for (const g of out) { seen[g.slug] = (seen[g.slug] || 0) + 1; g.meeting = seen[g.slug]; g.meetings = total[g.slug]; }
+  return out;
+}
+
 export function cleanStaff(list) {
   const seen = new Set();
   const out = [];

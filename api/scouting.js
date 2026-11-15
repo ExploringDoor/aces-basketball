@@ -6,8 +6,10 @@
 // (api/_firestore.js). Reports are not public: an opponent's tendencies in a
 // public Blob would be readable by anyone with the link.
 //   scouting_meta/aces_staff          { site, names: [...] }
-//   scouting_meta/aces_assignments    { site, map: { [slug]: { scout, helper, status } } }
-//   scouting_reports/aces_<slug>      { site, opp, <sections>, personnel, keys, matchups, links, updated_at, updated_by }
+//   scouting_meta/aces_assignments    { site, map: { [game]: { scout, helper, status } } }
+//   scouting_reports/aces_<game>      { site, opp, <sections>, personnel, keys, matchups, links, updated_at, updated_by }
+// <game> is one game, "conestoga-20261208" (gameKey in _scouting.js). Adam, 11/14: two games
+// against the same team can have different scouts, so everything is per game.
 //
 // Auth (api/_staffauth.js): header x-scouting-key = a coach's OWN code (from
 // the staff list) or ADMIN_PASSWORD. Every save is stamped with the coach the code belongs to;
@@ -15,25 +17,25 @@
 // list and hands out codes. Adam, 11/6: "each coach to have their own
 // password", replacing the shared scores passcode here.
 //
-// GET  ?opp=<slug>  -> { report, updated_at }      one report
+// GET  ?opp=<game>  -> { report, updated_at }      one game's report
 // GET               -> { me, staff, assignments, reports: { [slug]: { updated_at, updated_by, pct } } }
 //                      staff carries codes only for the admin
 // POST { action: "check" }                                 -> { ok, me }
 //      { action: "staff_add", name } | { action: "staff_code", name } | { action: "staff_set", name, code }
 //      | { action: "staff_remove", name }                                                       admin only
-//      { action: "assign", slug, scout, helper, status }
-//      { action: "save", slug, opp, expect, report }   expect = updated_at the editor loaded;
+//      { action: "assign", slug: <game>, scout, helper, status }
+//      { action: "save", slug: <game>, opp, expect, report }   expect = updated_at the editor loaded;
 //                                                       a newer save answers 409 stale
 import { fbAdminConfigured, fsGet, fsPatch, fsList } from './_firestore.js';
 import { SITE_TAG } from './_site.js';
-import { LIMITS, normCode, codeKey, validCode, cleanAssignment, cleanReport, completeness, clip, slugOf, SECTIONS, cleanStaffList } from './_scouting.js';
+import { LIMITS, normCode, codeKey, validCode, cleanAssignment, cleanReport, completeness, clip, isGameKey, SECTIONS, cleanStaffList } from './_scouting.js';
 // The staff list and the per-coach sign-in live in _staffauth.js, shared with
 // /api/practice so one password opens both coach tools.
 import { resolveAuth, newCode, saveStaff, staffFor } from './_staffauth.js';
 
 const ASSIGN = `scouting_meta/${SITE_TAG}_assignments`;
 const reportPath = (slug) => `scouting_reports/${SITE_TAG}_${slug}`;
-const SLUG_RE = /^[a-z0-9-]{1,60}$/;
+const SLUG_RE = /^[a-z0-9-]{1,80}$/; // a game id, "conestoga-20261208"
 
 const json = (res, code, body) => { res.statusCode = code; res.setHeader('Content-Type', 'application/json'); res.setHeader('Cache-Control', 'no-store'); res.end(JSON.stringify(body)); };
 
@@ -122,8 +124,8 @@ export default async function handler(req, res) {
 
   if (body.action === 'save') {
     const opp = clip(body.opp, LIMITS.opp);
-    const slug = String(body.slug || slugOf(opp));
-    if (!opp || !SLUG_RE.test(slug) || slugOf(opp) !== slug) return json(res, 400, { error: 'bad_opp' });
+    const slug = String(body.slug || '');
+    if (!opp || !SLUG_RE.test(slug) || !isGameKey(slug, opp)) return json(res, 400, { error: 'bad_opp' });
     const current = await fsGet(reportPath(slug));
     const expect = typeof body.expect === 'string' ? body.expect : '';
     // Two coaches in one report: the second save would silently wipe the
