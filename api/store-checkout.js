@@ -11,7 +11,7 @@
 //   Firestore: FIREBASE_PROJECT_ID, FIREBASE_API_KEY, FB_ADMIN_EMAIL, FB_ADMIN_PASSWORD
 //   Optional: SITE_URL for redirect links
 
-import { SITE_TAG } from './_site.js';
+import { SITE_TAG, STATEMENT_SUFFIX } from './_site.js';
 import { fbConfigured, fbAdminConfigured, fsCreate, fsPatch, fsPatchVerified } from './_firestore.js';
 import { normalizeOrder, STORE } from './_store.js';
 
@@ -40,6 +40,7 @@ async function createStripeCheckout({ oid, order, base }) {
   params.set('payment_intent_data[metadata][site]', SITE_TAG);
   params.set('payment_intent_data[metadata][kind]', 'store_order');
   params.set('payment_intent_data[metadata][oid]', oid);
+  params.set('payment_intent_data[statement_descriptor_suffix]', STATEMENT_SUFFIX);
   params.set('phone_number_collection[enabled]', 'true');
   order.items.forEach((it, i) => {
     params.set(`line_items[${i}][quantity]`, String(it.qty || 1));

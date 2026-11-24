@@ -7,6 +7,10 @@
 // Untagged records (everything taken before the tag existed) belong to Downer.
 // Manual admin actions (refund, cancel, sync, send pay-links) still work on every record.
 export const SITE_TAG = 'aces';
+// Card statements: the shared Stripe account's descriptor is "ALWAYS COMPETING", which an Aces donor
+// or clinic parent won't recognize. Every Aces checkout adds this suffix, so the charge reads
+// "ALWAYS COMPETING* ACES" (Stripe caps the whole line at 22 characters). Downer charges are unchanged.
+export const STATEMENT_SUFFIX = 'ACES';
 const tagOf = (v) => String(v || 'downer');
 export const ownsRecord = (rec) => tagOf(rec && rec.site) === SITE_TAG;
 export const ownsSession = (s) => tagOf(s && s.metadata && s.metadata.site) === SITE_TAG;

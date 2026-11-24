@@ -94,3 +94,17 @@ await test("reconcile cron leaves the OTHER site's pending registration alone", 
 console.log(`\n${pass} passed, ${fail} failed`);
 fake.uninstall();
 if (fail) process.exit(1);
+
+// Card statement suffix: Stripe allows letters, numbers and spaces, at least one letter, and the
+// whole line ("ALWAYS COMPETING* " + suffix) at most 22 characters. Every Aces checkout sends it.
+import { STATEMENT_SUFFIX } from '../api/_site.js';
+import { readFileSync } from 'node:fs';
+test('statement suffix is valid and on every Stripe checkout', () => {
+  assert.match(STATEMENT_SUFFIX, /^[A-Za-z0-9 ]+$/);
+  assert.match(STATEMENT_SUFFIX, /[A-Za-z]/);
+  assert.ok(('ALWAYS COMPETING* ' + STATEMENT_SUFFIX).length <= 22);
+  for (const f of ['pledge.js', 'checkout.js', 'store-checkout.js']) {
+    const src = readFileSync(new URL('../api/' + f, import.meta.url), 'utf8');
+    assert.ok(src.includes("params.set('payment_intent_data[statement_descriptor_suffix]', STATEMENT_SUFFIX)"), f);
+  }
+});

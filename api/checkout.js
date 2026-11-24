@@ -13,7 +13,7 @@
 //   Firestore: FIREBASE_PROJECT_ID, FIREBASE_API_KEY, FB_ADMIN_EMAIL, FB_ADMIN_PASSWORD
 //   Optional: SITE_URL (e.g. https://aces-basketball.vercel.app) for redirect links
 
-import { SITE_TAG } from './_site.js';
+import { SITE_TAG, STATEMENT_SUFFIX } from './_site.js';
 import { fbConfigured, fbAdminConfigured, fsCreate, fsPatch, fsPatchVerified, fsQuery } from './_firestore.js';
 import { normalizeRegistration, expectedCents, cleanSessions, priceBreakdown, pastSessionIds, CLINIC, aidCodeValid } from './_clinic.js';
 import { sessionStatus, isCanceled, canceledIds } from './_status.js';
@@ -58,6 +58,7 @@ async function createStripeCheckout({ regId, reg, cents, base }) {
   params.set('metadata[site]', SITE_TAG);
   params.set('payment_intent_data[metadata][site]', SITE_TAG);
   params.set('payment_intent_data[metadata][rid]', regId);
+  params.set('payment_intent_data[statement_descriptor_suffix]', STATEMENT_SUFFIX);
   params.set('line_items[0][quantity]', '1');
   params.set('line_items[0][price_data][currency]', 'usd');
   params.set('line_items[0][price_data][unit_amount]', String(cents));

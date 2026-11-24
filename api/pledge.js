@@ -11,7 +11,7 @@
 // Donations roll up: a gift to a player counts toward that player, their team, and the org.
 // The per-shot charge is always recomputed server-side from the stored pledge × admin-entered makes.
 
-import { SITE_TAG } from './_site.js';
+import { SITE_TAG, STATEMENT_SUFFIX } from './_site.js';
 import { fbConfigured, fbAdminConfigured, fsGet, fsCreate, fsQuery, fsPatch, fsPatchVerified } from './_firestore.js';
 import { SHOOTATHON, normalizePledge, pledgeDescription, computePledgeCents, coverFeeCents } from './_shootathon.js';
 import { sendMail, buildPledgeEmail, emailConfigured, ADMIN_EMAIL } from './_email.js';
@@ -89,6 +89,7 @@ async function createDonationCheckout({ pledgeId, amountCents, label, donorEmail
   params.set('payment_intent_data[metadata][site]', SITE_TAG);
   params.set('payment_intent_data[metadata][kind]', 'donation');
   params.set('payment_intent_data[metadata][pledge_id]', pledgeId);
+  params.set('payment_intent_data[statement_descriptor_suffix]', STATEMENT_SUFFIX);
   params.set('line_items[0][quantity]', '1');
   params.set('line_items[0][price_data][currency]', 'usd');
   params.set('line_items[0][price_data][unit_amount]', String(amountCents));
