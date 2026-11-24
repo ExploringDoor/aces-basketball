@@ -111,7 +111,7 @@ export function buildConfirmationEmail(reg) {
         <p style="color:#555;line-height:1.6;font-size:13px;margin:16px 0 0">
           <strong>Waiver &amp; refund policy:</strong> Agreed${signer ? ' &mdash; signed by ' + signer : ''}${signedAt ? ' on ' + signedAt : ''}.
           Injury or withdrawal: credit toward a future Aces clinic. If the Aces cancel a session: credit or refund for that session. The card-processing fee is non-refundable.
-          Full policy: <a href="https://aces-basketball.vercel.app/policies.html#refunds" style="color:#840036">aces-basketball.vercel.app/policies</a>.
+          Full policy: <a href="https://www.aceshoops.com/policies.html#refunds" style="color:#840036">aceshoops.com/policies</a>.
         </p>
 
         <hr style="border:none;border-top:1px solid #eee;margin:18px 0">
@@ -195,7 +195,7 @@ export function buildRefundEmail(reg, refundedNowCents, fullyRefunded) {
           ${row('Player(s)', players.length ? players.join('<br>') : '&mdash;')}
           ${row('Refund amount', money(refundedNowCents), { strong: true })}
           ${last4 ? row('Refunded to', 'Card ending ' + last4 + ' (your original payment method)') : row('Refunded to', 'Your original payment method')}
-          ${!fullyRefunded ? row('Note', 'Partial refund &mdash; ' + money(totalRefunded) + ' of ' + money(paidTotal) + ' refunded to date') : (totalRefunded < paidTotal ? row('Note', 'The ' + money(paidTotal - totalRefunded) + ' card-processing fee is non-refundable per our <a href="https://aces-basketball.vercel.app/policies.html#refunds" style="color:#840036">refund policy</a>') : '')}
+          ${!fullyRefunded ? row('Note', 'Partial refund &mdash; ' + money(totalRefunded) + ' of ' + money(paidTotal) + ' refunded to date') : (totalRefunded < paidTotal ? row('Note', 'The ' + money(paidTotal - totalRefunded) + ' card-processing fee is non-refundable per our <a href="https://www.aceshoops.com/policies.html#refunds" style="color:#840036">refund policy</a>') : '')}
         </table>
 
         <p style="color:#999;font-size:12px;line-height:1.6;margin:16px 0 0">Payments are collected by Always Competing Sports LLC on behalf of the clinic's organizing booster club and remitted to them. Questions about your refund? Reply to this email or contact aceshoops@gmail.com.</p>
@@ -352,7 +352,7 @@ export function buildNoticeEmail(session, opts) {
         ${cancel ? `<div style="background:#fdecec;border:1px solid #f3b4b4;color:#840036;border-radius:8px;padding:10px 14px;font-weight:700;margin:0 0 16px">The ${esc(when)} clinic is cancelled</div>` : ''}
         <p style="color:#222;line-height:1.6;margin:0 0 12px">Hi -parent-,</p>
         <p style="color:#333;line-height:1.7;margin:0 0 16px">${body}</p>
-        <p style="color:#999;font-size:12px;line-height:1.6;margin:18px 0 0">Questions? Reply to this email or contact aceshoops@gmail.com. &middot; <a href="https://aces-basketball.vercel.app/policies.html#refunds" style="color:#999">Refund &amp; cancellation policy</a><br>Lower Merion Aces Basketball &middot; Fall Clinics 2026</p>
+        <p style="color:#999;font-size:12px;line-height:1.6;margin:18px 0 0">Questions? Reply to this email or contact aceshoops@gmail.com. &middot; <a href="https://www.aceshoops.com/policies.html#refunds" style="color:#999">Refund &amp; cancellation policy</a><br>Lower Merion Aces Basketball &middot; Fall Clinics 2026</p>
       </div>
     </div>`;
   const text = `Hi -parent-,\n\n${cancel ? `The ${when} clinic is cancelled.\n\n` : ''}${message}\n\nQuestions? Reply to this email or contact aceshoops@gmail.com.\nLower Merion Aces Basketball · Fall Clinics 2026`;
