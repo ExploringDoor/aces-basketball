@@ -395,7 +395,7 @@ function Report({ keyCode, user, game, earlier, onBack, onAuthFail }) {
         <div style={{ display: "grid", gap: 6, marginTop: 10 }}>
           {report.matchups.map((m, i) => (
             <div key={i} className="sc-mu" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1.4fr auto", gap: 6 }}>
-              <select style={select} value={m.ours} onChange={(e) => edit("matchups", report.matchups.map((x, j) => (j === i ? { ...x, ours: e.target.value } : x)))}><option value="">Aces</option>{roster.map((p) => <option key={p.number} value={`#${p.number} ${p.name}`}>#{p.number} {p.name}</option>)}</select>
+              <select style={select} value={m.ours} onChange={(e) => edit("matchups", report.matchups.map((x, j) => (j === i ? { ...x, ours: e.target.value } : x)))}><option value="">Aces</option>{roster.map((p) => { const v = p.number ? `#${p.number} ${p.name}` : p.name; return <option key={p.name} value={v}>{v}</option>; })}</select>
               <select style={select} value={m.theirs} onChange={(e) => edit("matchups", report.matchups.map((x, j) => (j === i ? { ...x, theirs: e.target.value } : x)))}><option value="">Them</option>{report.personnel.filter((p) => p.name).map((p) => <option key={p.num + p.name} value={`#${p.num} ${p.name}`}>#{p.num} {p.name}</option>)}</select>
               <input style={input} value={m.note} maxLength={LIMITS.key} placeholder="Note" onChange={(e) => edit("matchups", report.matchups.map((x, j) => (j === i ? { ...x, note: e.target.value } : x)))} />
               <button style={btn(false, true)} onClick={() => edit("matchups", report.matchups.filter((_, j) => j !== i))}>x</button>

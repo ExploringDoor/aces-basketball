@@ -24,9 +24,8 @@ const LAYOUTS = { gameday: GAME_DAY_LAYOUTS, final: FINAL_LAYOUTS, spotlight: SP
 const STORE_KEY = { gameday: "aces-gameday-layout", final: "aces-final-layout", spotlight: "aces-spotlight-layout", week: "aces-week-layout", season: "aces-season-layout" };
 const MODES = [["gameday", "Game Day"], ["final", "Final"], ["spotlight", "Player"], ["week", "Week"], ["season", "Season"]];
 
-// Player Spotlight card. The roster in shared/index.jsx is still placeholder
-// names ("Player One"), so picking a player fills number/position/grade and
-// only fills the name once real names are in.
+// Player Spotlight card. Picking a player from the roster in shared/index.jsx fills
+// the name and whatever number, position and grade we have for him.
 const SP_KEY = "aces-spotlight-card";
 const SP_DEFAULT = { name: "", num: "", pos: "", grade: "", kicker: "Player of the Game", stats: "", note: "", showGame: true };
 const KICKERS = ["Player of the Game", "Player Spotlight", "Senior Spotlight", "Senior Night", "Athlete of the Week", "Career High", "1,000 Point Club", "Milestone Night", "Birthday Shoutout", "Welcome to the Aces"];
@@ -204,7 +203,7 @@ export default function FlyerPage() {
   useEffect(() => { try { localStorage.setItem(SP_KEY, JSON.stringify(sp)); } catch { /* ignore */ } }, [sp]);
   const pickRoster = (e) => {
     const r = roster[Number(e.target.value)]; if (!r) return;
-    setSp((p) => ({ ...p, num: String(r.number), pos: r.pos || "", grade: r.grade || "", name: placeholderName(r.name) ? p.name : r.name }));
+    setSp((p) => ({ ...p, num: String(r.number || ""), pos: r.pos || "", grade: r.grade || "", name: placeholderName(r.name) ? p.name : r.name }));
   };
   const [format, setFormat] = useState(() => { try { return localStorage.getItem("aces-flyer-format") || "post"; } catch { return "post"; } });
   const pickFormat = (v) => { setFormat(v); try { localStorage.setItem("aces-flyer-format", v); } catch { /* ignore */ } };
@@ -439,7 +438,7 @@ export default function FlyerPage() {
                 <Field l="Player (fills # / position / grade)">
                   <select style={input} value="" onChange={pickRoster}>
                     <option value="" style={{ color: "#000" }}>Pick from the roster…</option>
-                    {roster.map((r, i) => <option key={i} value={i} style={{ color: "#000" }}>#{r.number}{placeholderName(r.name) ? "" : ` ${r.name}`} · {r.pos} · {r.grade}</option>)}
+                    {roster.map((r, i) => <option key={i} value={i} style={{ color: "#000" }}>{[r.number ? `#${r.number}` : "", placeholderName(r.name) ? "" : r.name].filter(Boolean).join(" ")}{[r.pos, r.grade].filter(Boolean).map((x) => ` · ${x}`).join("")}</option>)}
                   </select>
                 </Field>
                 <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 10 }}>

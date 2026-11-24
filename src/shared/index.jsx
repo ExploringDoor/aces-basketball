@@ -545,24 +545,28 @@ export async function loadLive(force = false) {
 }
 
 // ─── Roster ───────────────────────────────────────────────────
-// PLACEHOLDER roster. Replace `name` (and add `photo`/`hometown`/`bio`) with
-// the real 2026-27 varsity roster. Drop headshots in public/players and set
-// e.g. photo: "/players/firstname-lastname.jpg".
+// 2026-27 varsity, from the team's roster sheet (Adam, 11/24/26). Numbers are the ones
+// the returners wore in 2025-26 (MaxPreps) until the staff confirms this year's; grade,
+// position and height stay empty until we have them (the page skips empty fields).
+// Headshots: drop them in public/players and set e.g. photo: "/players/firstname-lastname.jpg".
 export const rosterSeason = "2026-27";
 export const roster = [
-  { number: 3,  name: "Player One",      grade: "Senior",    pos: "Guard",   height: "6'2\"" },
-  { number: 5,  name: "Player Two",      grade: "Senior",    pos: "Guard",   height: "6'0\"" },
-  { number: 10, name: "Player Three",    grade: "Junior",    pos: "Guard",   height: "6'3\"" },
-  { number: 11, name: "Player Four",     grade: "Junior",    pos: "Forward", height: "6'5\"" },
-  { number: 12, name: "Player Five",     grade: "Sophomore", pos: "Guard",   height: "5'11\"" },
-  { number: 14, name: "Player Six",      grade: "Senior",    pos: "Forward", height: "6'6\"" },
-  { number: 15, name: "Player Seven",    grade: "Junior",    pos: "Wing",    height: "6'4\"" },
-  { number: 21, name: "Player Eight",    grade: "Sophomore", pos: "Guard",   height: "6'1\"" },
-  { number: 23, name: "Player Nine",     grade: "Senior",    pos: "Wing",    height: "6'4\"" },
-  { number: 24, name: "Player Ten",      grade: "Junior",    pos: "Forward", height: "6'7\"" },
-  { number: 32, name: "Player Eleven",   grade: "Sophomore", pos: "Center",  height: "6'8\"" },
-  { number: 33, name: "Player Twelve",   grade: "Freshman",  pos: "Guard",   height: "5'10\"" },
-  { number: 44, name: "Player Thirteen", grade: "Senior",    pos: "Center",  height: "6'9\"" },
+  { number: "34", name: "Adam Abdulmalik" },
+  { number: "11", name: "Colin Beck" },
+  { number: "",   name: "Brian Bokosha" },
+  { number: "",   name: "Malik Brown" },
+  { number: "35", name: "Nick Dragut" },
+  { number: "5",  name: "Israel Ingram" },
+  { number: "",   name: "Mike Jarvis" },
+  { number: "15", name: "Charley Kocudak" },
+  { number: "",   name: "JJ Litton" },
+  { number: "50", name: "Chris Mamo" },
+  { number: "",   name: "Trey Martin" },
+  { number: "",   name: "Owen Mellett" },
+  { number: "",   name: "Brendan O'Connell" },
+  { number: "24", name: "Kyle Parrish" },
+  { number: "",   name: "Bodey Rogers" },
+  { number: "13", name: "Will Yard" },
 ];
 
 export const centralLeagueTeams = [
