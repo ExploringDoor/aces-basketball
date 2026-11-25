@@ -44,6 +44,48 @@ function Logo({ opp, size = 36 }) {
   );
 }
 
+// Coach sign ins (Adam only: the API sends the log to the admin password or Adam's own). One row per
+// coach with their last sign in, then the most recent sign ins. A sign in = first use of a coach tool
+// (Scouting, Practice plans, Team Playbook) in 20 minutes.
+const whenText = (iso) => {
+  const d = new Date(iso);
+  if (isNaN(d)) return "";
+  return d.toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+};
+function SignIns({ log, staff }) {
+  const [all, setAll] = useState(false);
+  const month = Date.now() - 30 * 864e5;
+  const names = [...new Set([...staff, ...log.map((e) => e.name)])];
+  const rows = names.map((name) => {
+    const mine = log.filter((e) => e.name === name);
+    return { name, last: mine[0], count: mine.filter((e) => Date.parse(e.at) >= month).length };
+  }).sort((a, b) => (b.last ? Date.parse(b.last.at) : 0) - (a.last ? Date.parse(a.last.at) : 0));
+  const recent = all ? log : log.slice(0, 25);
+  const muted = { fontFamily: SANS, fontSize: 13, color: "rgba(255,255,255,0.5)" };
+  return (
+    <div style={card}>
+      <div style={label}>Coach sign ins</div>
+      <div style={{ ...muted, margin: "4px 0 10px" }}>Only you can see this. Each line is a coach opening Scouting, Practice plans or the Team Playbook coach page with their password.</div>
+      <div style={{ display: "grid", gap: 6 }}>
+        {rows.map((r) => (
+          <div key={r.name} style={{ display: "grid", gridTemplateColumns: "minmax(70px, 0.7fr) 1.6fr auto", gap: 8, alignItems: "baseline", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: 6 }}>
+            <span style={{ fontFamily: SANS, fontSize: 15, color: "#fff" }}>{r.name}</span>
+            <span style={{ fontFamily: SANS, fontSize: 13, color: r.last ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.35)" }}>{r.last ? `${whenText(r.last.at)} · ${r.last.page}${r.last.device ? ` · ${r.last.device}` : ""}` : "Not yet"}</span>
+            <span style={{ ...muted, whiteSpace: "nowrap" }}>{r.count} in 30 days</span>
+          </div>
+        ))}
+      </div>
+      {log.length > 0 && <>
+        <div style={{ ...label, marginTop: 16 }}>Most recent</div>
+        <div style={{ display: "grid", gap: 4, marginTop: 6 }}>
+          {recent.map((e, i) => <div key={i} style={{ fontFamily: SANS, fontSize: 13, color: "rgba(255,255,255,0.7)" }}><span style={{ color: "#fff" }}>{e.name}</span> · {whenText(e.at)} · {e.page}{e.device ? ` · ${e.device}` : ""}</div>)}
+        </div>
+        {log.length > 25 && <button style={{ ...btn(false, true), marginTop: 10 }} onClick={() => setAll(!all)}>{all ? "Show fewer" : `Show all ${log.length}`}</button>}
+      </>}
+    </div>
+  );
+}
+
 function Board({ keyCode, user, onOpen, onAuthFail }) {
   const games = useMemo(() => gamesFrom(allGames), []);
   const [data, setData] = useState(null);
@@ -51,6 +93,7 @@ function Board({ keyCode, user, onOpen, onAuthFail }) {
   const [mine, setMine] = useState(false);
   const [hidePlayed, setHidePlayed] = useState(false);
   const [editStaff, setEditStaff] = useState(false);
+  const [showSignins, setShowSignins] = useState(false);
   const [newName, setNewName] = useState("");
   const [setting, setSetting] = useState({});
   const [pic, setPic] = useState(null);
@@ -87,6 +130,7 @@ function Board({ keyCode, user, onOpen, onAuthFail }) {
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
         {staff.map((s) => <span key={s} style={{ ...label, color: s === user ? "var(--gold)" : "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 999, padding: "6px 10px" }}>{s} · {counts[s] || 0}</span>)}
         {isAdmin && <button style={btn(false, true)} onClick={() => setEditStaff(!editStaff)}>{editStaff ? "Close" : "Staff and passwords"}</button>}
+        {data && Array.isArray(data.signins) && <button style={btn(false, true)} onClick={() => setShowSignins(!showSignins)}>{showSignins ? "Close" : "Coach sign ins"}</button>}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 14, alignItems: "center" }}>
         <button style={btn(true, true)} onClick={makePic} disabled={!data}>Share picture</button>
@@ -115,6 +159,7 @@ function Board({ keyCode, user, onOpen, onAuthFail }) {
           </div>
         </div>
       )}
+      {showSignins && data && Array.isArray(data.signins) && <SignIns log={data.signins} staff={staff} />}
       {err && <div style={{ fontFamily: SANS, fontSize: 13, color: "#f87171" }}>{err}</div>}
       {rows.map((g) => {
         const a = asg(g.key);

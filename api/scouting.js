@@ -19,7 +19,8 @@
 //
 // GET  ?opp=<game>  -> { report, updated_at }      one game's report
 // GET               -> { me, staff, assignments, reports: { [slug]: { updated_at, updated_by, pct } } }
-//                      staff carries codes only for the admin
+//                      staff carries codes only for the admin; signins (coach sign in log) only for
+//                      the admin password or Adam's own
 // POST { action: "check" }                                 -> { ok, me }
 //      { action: "staff_add", name } | { action: "staff_code", name } | { action: "staff_set", name, code }
 //      | { action: "staff_remove", name }                                                       admin only
@@ -31,7 +32,7 @@ import { SITE_TAG } from './_site.js';
 import { LIMITS, normCode, codeKey, validCode, cleanAssignment, cleanReport, completeness, clip, isGameKey, SECTIONS, cleanStaffList } from './_scouting.js';
 // The staff list and the per-coach sign-in live in _staffauth.js, shared with
 // /api/practice so one password opens both coach tools.
-import { resolveAuth, newCode, saveStaff, staffFor } from './_staffauth.js';
+import { resolveAuth, newCode, saveStaff, staffFor, seesSignIns, loadSignIns } from './_staffauth.js';
 
 const ASSIGN = `scouting_meta/${SITE_TAG}_assignments`;
 const reportPath = (slug) => `scouting_reports/${SITE_TAG}_${slug}`;
@@ -72,7 +73,9 @@ export default async function handler(req, res) {
       if (d.site !== SITE_TAG || typeof d.id !== 'string' || !d.id.startsWith(`${SITE_TAG}_`)) continue;
       summary[d.id.slice(SITE_TAG.length + 1)] = { updated_at: d.updated_at || '', updated_by: d.updated_by || '', pct: completeness(d) };
     }
-    return json(res, 200, { me: { name: auth.name, role: auth.role }, staff: staffFor(auth), assignments, reports: summary });
+    const out = { me: { name: auth.name, role: auth.role }, staff: staffFor(auth), assignments, reports: summary };
+    if (seesSignIns(auth.role, auth.name)) out.signins = await loadSignIns();   // Adam only
+    return json(res, 200, out);
   }
 
   if (req.method !== 'POST') return json(res, 405, { error: 'method_not_allowed' });

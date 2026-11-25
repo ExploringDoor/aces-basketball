@@ -65,6 +65,41 @@ export async function saveStaff(list, by) {
   return !(r && r.error);
 }
 
+// Coach sign ins (Adam, 11/25): every coach tool call carries the coach's password, so "signed in"
+// = the first call from that coach on that tool in 20 minutes. Newest first, last 400 kept.
+//   scouting_meta/aces_staff_signins   { site, log: [{ name, page, device, at }] }
+// Only the admin password (and Adam's own staff password) can read it.
+export const SIGNINS_PATH = `scouting_meta/${SITE_TAG}_staff_signins`;
+const SIGNIN_GAP = 20 * 60000;
+const noted = new Map();
+const pageOf = (req) => {
+  const u = String((req && req.url) || '');
+  return u.includes('/api/practice') ? 'Practice plans' : u.includes('/api/playbook') ? 'Team Playbook' : u.includes('/api/scouting') ? 'Scouting' : 'Coach tools';
+};
+const deviceOf = (req) => {
+  const ua = String((req && req.headers && req.headers['user-agent']) || '');
+  return /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? 'Android' : /CrOS/.test(ua) ? 'Chromebook' : /Macintosh/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows PC' : 'Other';
+};
+export async function noteSignIn(req, name) {
+  try {
+    const page = pageOf(req), key = `${String(name).toLowerCase()}|${page}`, now = Date.now();
+    if (now - (noted.get(key) || 0) < SIGNIN_GAP) return;
+    noted.set(key, now);
+    if (noted.size > 500) noted.clear();
+    const d = await fsGet(SIGNINS_PATH);
+    const log = Array.isArray(d && d.log) ? d.log.filter((e) => e && e.name && e.at) : [];
+    const prev = log.find((e) => e.name === name && e.page === page);
+    if (prev && now - Date.parse(prev.at) < SIGNIN_GAP) return;   // another server copy already noted it
+    log.unshift({ name, page, device: deviceOf(req), at: new Date(now).toISOString() });
+    await fsPatch(SIGNINS_PATH, { site: SITE_TAG, log: log.slice(0, 400) });
+  } catch { /* a missed note must never stop a coach from signing in */ }
+}
+export const seesSignIns = (role, name) => role === 'admin' || String(name || '').trim().toLowerCase() === 'adam';
+export async function loadSignIns() {
+  const d = await fsGet(SIGNINS_PATH).catch(() => null);
+  return Array.isArray(d && d.log) ? d.log.filter((e) => e && e.name && e.at).map((e) => ({ name: String(e.name), page: String(e.page || ''), device: String(e.device || ''), at: String(e.at) })) : [];
+}
+
 /** Who is calling: the admin, a coach by their own code, or null for nobody.
  *  { role: 'admin' | 'coach', name, staff } */
 export async function resolveAuth(req) {
@@ -75,7 +110,7 @@ export async function resolveAuth(req) {
   if (!code) return null;
   const staff = await loadStaff();
   const hit = staff.find((c) => c.code && ctEq(codeKey(c.code), codeKey(code)));
-  if (hit) return { role: 'coach', name: hit.name, staff };
+  if (hit) { await noteSignIn(req, hit.name); return { role: 'coach', name: hit.name, staff }; }
   await noteMiss(req);
   return null;
 }
@@ -91,7 +126,7 @@ export async function staffCodeName(req, key) {
   if (!code) return '';
   const staff = await loadStaff().catch(() => []);
   const hit = staff.find((c) => c.code && ctEq(codeKey(c.code), codeKey(code)));
-  if (hit) return hit.name;
+  if (hit) { await noteSignIn(req, hit.name); return hit.name; }
   await noteMiss(req);
   return '';
 }

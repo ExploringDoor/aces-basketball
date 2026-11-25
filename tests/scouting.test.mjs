@@ -206,5 +206,27 @@ await test('wrong passwords from one connection are slowed, then locked out for 
   assert.equal(r.body.error, 'too_many_tries');
 });
 
+await test('coach sign ins: noted once per 20 minutes per tool, readable by the admin and Adam only', async () => {
+  let r = await call({ method: 'GET' });
+  const code = (n) => r.body.staff.find((c) => c.name === n).code;
+  const gallman = code('Gallman'), adam = code('Adam'), downer = code('Downer');
+  const before = (fake.doc('scouting_meta/aces_staff_signins') || { log: [] }).log.length;
+  const req = { method: 'POST', url: '/api/scouting', headers: { 'x-scouting-key': gallman, 'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)' }, body: { action: 'check' } };
+  const res = { statusCode: 0, setHeader() {}, end() {} };
+  await handler(req, res); await handler(req, res);
+  const log = fake.doc('scouting_meta/aces_staff_signins').log;
+  assert.equal(log.length, before + 1);
+  assert.deepEqual({ name: log[0].name, page: log[0].page, device: log[0].device }, { name: 'Gallman', page: 'Scouting', device: 'iPhone' });
+  // A coach never gets the log; the admin password and Adam's own password do.
+  r = await call({ method: 'GET', key: downer });
+  assert.equal(r.body.signins, undefined);
+  r = await call({ method: 'GET', key: gallman });
+  assert.equal(r.body.signins, undefined);
+  r = await call({ method: 'GET', key: adam });
+  assert.ok(Array.isArray(r.body.signins) && r.body.signins.some((e) => e.name === 'Gallman'));
+  r = await call({ method: 'GET' });
+  assert.ok(Array.isArray(r.body.signins));
+});
+
 console.log(`\n${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);
