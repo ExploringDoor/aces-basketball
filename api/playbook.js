@@ -57,6 +57,16 @@ async function roleOf(req) {
   // opens the coach page too, so each coach has one password for all three.
   return (await staffCodeName(req, key)) ? 'coach' : '';
 }
+// Only the head coach's admin password may make a new player code (the response carries it).
+const HEAD_ONLY_ACTIONS = new Set(['new_code']);
+export function hideCodes(b) {
+  if (!b || typeof b !== 'object') return b;
+  if (Array.isArray(b.players)) b.players = b.players.map((p) => { const q = Object.assign({}, p); delete q.code; return q; });
+  if (Array.isArray(b.added)) b.added = b.added.map((p) => { const q = Object.assign({}, p); delete q.code; return q; });
+  if ('code' in b) delete b.code;
+  b.codes_hidden = true;
+  return b;
+}
 const ASSISTANT_ACTIONS = new Set(['admin_list', 'set_board', 'log_call', 'delete_call', 'add_note', 'save_game', 'answer', 'hide_question', 'unhide_question', 'set_tonight', 'save_practice', 'save_plan', 'scout_report']);
 function publicSettings(s) { const o = Object.assign({}, s); delete o.assistant_hash; o.assistant_set = !!s.assistant_hash; return o; }
 function safeId(id) { return /^[A-Za-z0-9_-]{1,128}$/.test(String(id || '')); }
@@ -675,7 +685,14 @@ export default async function handler(req, res) {
       const role = await roleOf(req);
       if (!role) r = { status: 401, body: { error: 'unauthorized' } };
       else if (role === 'assistant' && !ASSISTANT_ACTIONS.has(action)) r = { status: 403, body: { error: 'coaches_only' } };
-      else { r = await adminAction(action, body); if (action === 'admin_list' && r.body) r.body.role = role; }
+      else if (!authed(req) && HEAD_ONLY_ACTIONS.has(action)) r = { status: 403, body: { error: 'head_only' } };
+      else {
+        r = await adminAction(action, body);
+        if (action === 'admin_list' && r.body) r.body.role = role;
+        // Player codes are for the head coach's admin password only. Staff and assistant
+        // passwords still see every player, just never a code.
+        if (!authed(req)) hideCodes(r.body);
+      }
     }
     return res.status(r.status).json(r.body);
   } catch (e) {

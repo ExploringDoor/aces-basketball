@@ -440,5 +440,24 @@ await test('a coach own staff password opens the coach page; a wrong one does no
   assert.equal((await as('Test43!')).statusCode, 401);
 });
 
+await test('only the head coach password sees player codes; staff coaches see players without them', async () => {
+  const as = async (key, body) => { const res = mockRes(); await playbook({ method: 'POST', headers: { 'x-admin-key': key }, body }, res); return res; };
+  const head = await call({ action: 'admin_list' }, true);
+  assert.ok(head.body.players.length && head.body.players.every((p) => p.code));
+  assert.ok(!head.body.codes_hidden);
+  const staff = await as('Test42!', { action: 'admin_list' });
+  assert.equal(staff.statusCode, 200);
+  assert.equal(staff.body.players.length, head.body.players.length);
+  assert.ok(staff.body.players.every((p) => !('code' in p)));
+  assert.equal(staff.body.codes_hidden, true);
+  assert.ok(!JSON.stringify(staff.body).includes(head.body.players[0].code));
+  const nc = await as('Test42!', { action: 'new_code', id: head.body.players[0].id });
+  assert.equal(nc.statusCode, 403); assert.equal(nc.body.error, 'head_only');
+  const add = await as('Test42!', { action: 'add_players', players: [{ name: 'Staff Added', group: 'JV' }] });
+  assert.equal(add.statusCode, 200); assert.equal(add.body.added.length, 1); assert.ok(!('code' in add.body.added[0]));
+  const after = await call({ action: 'admin_list' }, true);
+  assert.ok(after.body.players.find((p) => p.name === 'Staff Added').code);
+});
+
 console.log(`\n${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);
