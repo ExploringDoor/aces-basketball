@@ -127,7 +127,7 @@ await test('due dates, film moments, game plans, practices and notes are cleaned
 });
 await test('box scores: stats clamp, points and rebounds fill in, headshots only from our store', () => {
   const g = cleanGame({ date: '2026-12-05', opponent: 'Radnor', where: 'away', us: '61', them: '55', source: 'hudl', lines: [
-    { player_id: 'pbp_1', name: 'Israel Ingram', num: '5', min: '28', fgm: 7, fga: 12, tpm: 2, tpa: 5, ftm: 3, fta: 4, oreb: 1, dreb: 6, ast: 4, stl: 2, blk: 0, to: 3, pf: 2 },
+    { player_id: 'pbp_1', name: 'Nile Ingram', num: '5', min: '28', fgm: 7, fga: 12, tpm: 2, tpa: 5, ftm: 3, fta: 4, oreb: 1, dreb: 6, ast: 4, stl: 2, blk: 0, to: 3, pf: 2 },
     { name: '', player_id: '' }, { name: 'Bench Guy', pts: '999', min: '99', reb: 3 }] });
   assert.equal(g.error, undefined);
   assert.equal(g.game.lines.length, 2);
@@ -242,7 +242,7 @@ await test('players and plays need the coach key', async () => {
   assert.equal((await call({ action: 'save_play', play: PLAY })).statusCode, 401);
 });
 await test('coach adds players and saves plays', async () => {
-  const r = await call({ action: 'add_players', players: [{ name: 'Israel Ingram', group: 'Varsity' }, { name: 'Sam JV', group: 'JV' }, { name: ' ' }] }, true);
+  const r = await call({ action: 'add_players', players: [{ name: 'Nile Ingram', group: 'Varsity' }, { name: 'Sam JV', group: 'JV' }, { name: ' ' }] }, true);
   assert.equal(r.statusCode, 200);
   assert.equal(r.body.added.length, 2);
   codes = r.body.added;
@@ -256,7 +256,7 @@ await test('a wrong code is refused, the right code signs in', async () => {
   assert.equal((await call({ action: 'login', code: 'QQQQQQ' })).statusCode, 401);
   const r = await call({ action: 'login', code: codes[0].code.toLowerCase() });
   assert.equal(r.statusCode, 200);
-  assert.equal(r.body.player.name, 'Israel Ingram');
+  assert.equal(r.body.player.name, 'Nile Ingram');
   token = r.body.token;
 });
 await test('a player sees only visible plays for their group, with the lineup as names', async () => {
@@ -264,7 +264,7 @@ await test('a player sees only visible plays for their group, with the lineup as
   const r = await call({ action: 'plays', token });
   assert.equal(r.statusCode, 200);
   assert.deepEqual(r.body.plays.map((p) => p.name), ['Horns Flare']);
-  assert.deepEqual(r.body.plays[0].lineup, { O1: { id: codes[0].id, name: 'Israel Ingram' } });
+  assert.deepEqual(r.body.plays[0].lineup, { O1: { id: codes[0].id, name: 'Nile Ingram' } });
   assert.equal(r.body.player.id, codes[0].id);
   assert.equal(r.body.plays[0].frames.length, 3);
   assert.equal((await call({ action: 'view', token, id: jvPlayId })).statusCode, 404);
@@ -274,7 +274,7 @@ await test('opening a play is logged once per 10 minutes', async () => {
   await call({ action: 'view', token, id: playId });
   const r = await call({ action: 'admin_list' }, true);
   assert.equal(r.body.views.length, 1);
-  assert.equal(r.body.views[0].player_name, 'Israel Ingram');
+  assert.equal(r.body.views[0].player_name, 'Nile Ingram');
   assert.equal(r.body.views[0].play_name, 'Horns Flare');
 });
 await test('turning access off, a new code, or closing the playbook locks the player out', async () => {
@@ -311,16 +311,16 @@ await test('players ask questions on a play, the coach answers, the team sees an
   const a = await call({ action: 'ask', token: me, id: playId, text: '  Do I fade or <b>curl</b> if they switch?  ' });
   assert.equal(a.statusCode, 200);
   assert.equal(fake.state.mail.length, 1, 'coach emailed');
-  assert.match(fake.state.mail[0].subject, /Israel Ingram/);
+  assert.match(fake.state.mail[0].subject, /Nile Ingram/);
   let q = (await call({ action: 'questions', token: me, id: playId })).body.questions;
   assert.equal(q.length, 1); assert.equal(q[0].mine, true); assert.equal(q[0].text, 'Do I fade or bcurl/b if they switch?'); assert.equal(q[0].answer, '');
   assert.equal((await call({ action: 'questions', token: t2, id: playId })).body.questions.length, 0, 'unanswered questions stay private');
   const admin = (await call({ action: 'admin_list' }, true)).body;
-  assert.equal(admin.questions.length, 1); assert.equal(admin.questions[0].player_name, 'Israel Ingram');
+  assert.equal(admin.questions.length, 1); assert.equal(admin.questions[0].player_name, 'Nile Ingram');
   assert.equal((await call({ action: 'answer', id: a.body.id, answer: '' }, true)).statusCode, 400);
   assert.equal((await call({ action: 'answer', id: a.body.id, answer: 'Fade. 5 will have the mismatch.' }, true)).statusCode, 200);
   q = (await call({ action: 'questions', token: t2, id: playId })).body.questions;
-  assert.equal(q.length, 1); assert.equal(q[0].player_name, 'Israel Ingram'); assert.equal(q[0].answer, 'Fade. 5 will have the mismatch.');
+  assert.equal(q.length, 1); assert.equal(q[0].player_name, 'Nile Ingram'); assert.equal(q[0].answer, 'Fade. 5 will have the mismatch.');
   await call({ action: 'hide_question', id: a.body.id }, true);
   assert.equal((await call({ action: 'questions', token: t2, id: playId })).body.questions.length, 0, 'hidden from teammates');
   assert.equal((await call({ action: 'questions', token: me, id: playId })).body.questions.length, 1, 'still visible to the asker');
@@ -341,14 +341,14 @@ await test('quiz results, game plan, practice and progress reach the player', as
   assert.equal(prac.statusCode, 200);
   await call({ action: 'save_practice', practice: { date: '2099-01-03', blocks: [{ name: 'Coaches only', minutes: 5 }], show_players: false } }, true);
   const r = (await call({ action: 'plays', token: tok })).body;
-  assert.equal(r.plan.opponent, 'Radnor'); assert.equal(r.plan.matchups[0].us.name, 'Israel Ingram');
+  assert.equal(r.plan.opponent, 'Radnor'); assert.equal(r.plan.matchups[0].us.name, 'Nile Ingram');
   assert.equal(r.practice.blocks[0].name, 'Shell');
   assert.deepEqual(r.done.viewed, [playId]); assert.equal(r.done.quiz[playId], 100);
   const n = await call({ action: 'add_note', player_id: codes[0].id, note: { kind: 'injury', text: 'ankle, limited' } }, true);
   assert.equal(n.statusCode, 200);
   const admin = (await call({ action: 'admin_list' }, true)).body;
   assert.equal(admin.quiz.length, 2); assert.equal(admin.plans.length, 2); assert.equal(admin.practices.length, 2); assert.equal(admin.notes[0].text, 'ankle, limited');
-  const gm = await call({ action: 'save_game', game: { date: '2026-12-05', opponent: 'Radnor', us: 61, them: 55, lines: [{ player_id: codes[0].id, name: 'Israel Ingram', num: '5', pts: 19, reb: 7 }] } }, true);
+  const gm = await call({ action: 'save_game', game: { date: '2026-12-05', opponent: 'Radnor', us: 61, them: 55, lines: [{ player_id: codes[0].id, name: 'Nile Ingram', num: '5', pts: 19, reb: 7 }] } }, true);
   assert.equal(gm.statusCode, 200);
   const pr2 = (await call({ action: 'plays', token: tok })).body;
   assert.equal(pr2.games.length, 1); assert.equal(pr2.games[0].lines[0].pts, 19); assert.equal(pr2.plans.length, 1, 'visible plans come along for the opponent pages');

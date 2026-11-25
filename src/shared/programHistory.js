@@ -108,7 +108,7 @@ export const programSeasons = [
   ["2022-23", "24-6", "14-4", "3-1", "1-1", 0, 0, "District Final Four, State Sweet 16", "Sam Brown (first team all league) surpasses 1000 points. 13th consecutive state playoff appearance.", "Gregg Downer"],
   ["2023-24", "28-2", "18-0", "4-0", "1-1", 0, 0, "Undefeated Central League Champions, District 1 Champions, State Sweet 16", "Undefeated Central League (2012, 2013, 2019, 2024). 3rd District 1 Title in 4 seasons. Owen McCabe and John Mobley 1st Team All-Central League. Adam Herrenkohl 2nd Team All-Central League.", "Gregg Downer"],
   ["2024-25", "22-7", "15-3", "2-2", "", 0, 0, "Central League Champions", "Gregg Downer 700th Win (12/20/25 at Haverford). Carson Kasmer 1st Team All-Central League. Sam'i Singletary 2nd Team All-Central League. Gus Wright and Rashyne Patterson Honorable Mention. 15th consecutive state playoff appearance", "Gregg Downer"],
-  ["2025-26", "15-9", "10-6", "", "", 0, 0, "", "State College Tourney Champ; Kyle Parrish 1st Team All Central; Israel Ingram Honorable Mention", "Gregg Downer"],
+  ["2025-26", "15-9", "10-6", "", "", 0, 0, "", "State College Tourney Champ; Kyle Parrish 1st Team All Central; Nile Ingram Honorable Mention", "Gregg Downer"],
 ];
 
 export const programTotals = {"wins": 1618, "losses": 816, "leagueW": 1003, "leagueL": 455, "districtW": 138, "districtL": 45, "stateW": 68, "stateL": 32, "seasons": 103};

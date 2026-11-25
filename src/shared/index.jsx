@@ -556,7 +556,7 @@ export const roster = [
   { number: "",   name: "Brian Bokosha" },
   { number: "",   name: "Malik Brown" },
   { number: "35", name: "Nick Dragut" },
-  { number: "5",  name: "Israel Ingram" },
+  { number: "5",  name: "Nile Ingram" },
   { number: "",   name: "Mike Jarvis" },
   { number: "15", name: "Charley Kocudak" },
   { number: "",   name: "JJ Litton" },
@@ -721,7 +721,7 @@ export const seasonData = {
 export const recordBookSeasons = {
   "2025-26": { record: "15-9", games: 24, leaders: [
     { name: "Kyle Parrish",     number: "24", gp: 24, pts: 310, reb: 72,  ast: 119, stl: 51, blk: 2,  threes: 29, fgPct: "43.1", ftPct: "70.8", mins: 651 },
-    { name: "Israel Ingram",    number: "5",  gp: 24, pts: 286, reb: 83,  ast: 33,  stl: 33, blk: 7,  threes: 54, fgPct: "37.3", ftPct: "60.3", mins: 626 },
+    { name: "Nile Ingram",    number: "5",  gp: 24, pts: 286, reb: 83,  ast: 33,  stl: 33, blk: 7,  threes: 54, fgPct: "37.3", ftPct: "60.3", mins: 626 },
     { name: "William Yard",     number: "13", gp: 24, pts: 168, reb: 86,  ast: 40,  stl: 28, blk: 10, threes: 36, fgPct: "52.5", ftPct: "66.7", mins: 540 },
     { name: "Finn Pulsifer",    number: "4",  gp: 24, pts: 165, reb: 94,  ast: 28,  stl: 29, blk: 18, threes: 3,  fgPct: "49.3", ftPct: "78.6", mins: 476 },
     { name: "Bereket Darsenie", number: "1",  gp: 24, pts: 140, reb: 40,  ast: 27,  stl: 17, blk: 2,  threes: 35, fgPct: "40.7", ftPct: "50.0", mins: 390 },

@@ -338,7 +338,7 @@ export const allTimeRoster = {
     { number:"1",  last:"Darsenie", first:"Bereket", height:"6'0", pos:"G",   grad:"2026", college:"" },
     { number:"35", last:"Dragut",   first:"Nicholas",height:"6'5", pos:"F",   grad:"2026", college:"" },
     { number:"1",  last:"Grier",    first:"LaMont",  height:"6'0", pos:"G",   grad:"2026", college:"" },
-    { number:"5",  last:"Ingram",   first:"Israel",  height:"6'2", pos:"G",   grad:"2026", college:"" },
+    { number:"5",  last:"Ingram",   first:"Nile",    height:"6'2", pos:"G",   grad:"2026", college:"" },
     { number:"0",  last:"Miller",   first:"Arjay",   height:"6'0", pos:"G",   grad:"2026", college:"" },
     { number:"2",  last:"Mitchell", first:"Darius",  height:"6'2", pos:"G",   grad:"2026", college:"" },
     { number:"24", last:"Parrish",  first:"Kyle",    height:"6'2", pos:"G",   grad:"2026", college:"" },
