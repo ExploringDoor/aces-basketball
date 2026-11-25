@@ -443,7 +443,8 @@ export const schedule = [
     { date: "Dec 15", opp: "Haverford",       home: false, time: "6:00 PM", iso: "2026-12-15T18:00:00-05:00", venue: "Haverford HS", conf: true, result: null },
     { date: "Dec 17", opp: "Upper Darby",     home: false, time: "5:15 PM", iso: "2026-12-17T17:15:00-05:00", venue: "Upper Darby HS", conf: true, result: null },
     { date: "Dec 22", opp: "Garnet Valley",   home: false, time: "7:00 PM", iso: "2026-12-22T19:00:00-05:00", venue: "Garnet Valley HS", conf: true, result: null },
-    { date: "Dec 26–31", opp: "Cactus Jam",   home: false, time: "3 Games", iso: "2026-12-26T12:00:00-05:00", venue: "Phoenix, AZ", multi: true, tag: "Tournament · Phoenix, AZ", result: null },
+    { date: "Dec 28", opp: "University (WA)", home: false, neutral: true, time: "11:00 AM", iso: "2026-12-28T09:00:00-07:00", venue: "Scottsdale Christian Academy", tag: "Cactus Jam · 9:00 AM Arizona time", result: null },
+    { date: "Dec 29–30", opp: "Cactus Jam",   home: false, time: "2 Games", iso: "2026-12-29T10:30:00-07:00", venue: "Phoenix, AZ", multi: true, tag: "Tournament · Opponents set by our results", result: null },
   ]},
   { month: "January 2027", games: [
     { date: "Jan 3",  opp: "Coatesville",     home: false, neutral: true, time: "7:00 PM", iso: "2027-01-03T19:00:00-05:00", venue: "West Chester University", tag: "Neutral Site · West Chester University", result: null },
@@ -545,28 +546,27 @@ export async function loadLive(force = false) {
 }
 
 // ─── Roster ───────────────────────────────────────────────────
-// 2026-27 varsity, from the team's roster sheet (Adam, 11/24/26). Numbers are the ones
-// the returners wore in 2025-26 (MaxPreps) until the staff confirms this year's; grade,
-// position and height stay empty until we have them (the page skips empty fields).
+// 2026-27 varsity, numbers and grades from the official roster sheet (Adam, 11/25/26).
+// Position and height stay empty until we have them (the page skips empty fields).
 // Headshots: drop them in public/players and set e.g. photo: "/players/firstname-lastname.jpg".
 export const rosterSeason = "2026-27";
 export const roster = [
-  { number: "34", name: "Adam Abdulmalik" },
-  { number: "11", name: "Colin Beck" },
-  { number: "",   name: "Brian Bokosha" },
-  { number: "",   name: "Malik Brown" },
-  { number: "35", name: "Nick Dragut" },
-  { number: "5",  name: "Nile Ingram" },
-  { number: "",   name: "Mike Jarvis" },
-  { number: "15", name: "Charley Kocudak" },
-  { number: "",   name: "JJ Litton" },
-  { number: "50", name: "Chris Mamo" },
-  { number: "",   name: "Trey Martin" },
-  { number: "",   name: "Owen Mellett" },
-  { number: "",   name: "Brendan O'Connell" },
-  { number: "24", name: "Kyle Parrish" },
-  { number: "",   name: "Bodey Rogers" },
-  { number: "13", name: "Will Yard" },
+  { number: "10", name: "Adam Abdulmalik",    grade: "Junior" },
+  { number: "4",  name: "Colin Beck",         grade: "Senior" },
+  { number: "22", name: "Brian Bokosha",      grade: "Sophomore" },
+  { number: "23", name: "Malik Brown",        grade: "Senior" },
+  { number: "35", name: "Nick Dragut",        grade: "Senior" },
+  { number: "5",  name: "Nile Ingram",        grade: "Junior" },
+  { number: "12", name: "Mike Jarvis",        grade: "Junior" },
+  { number: "11", name: "Charlie Kocudak",    grade: "Junior" },
+  { number: "30", name: "JJ Litton",          grade: "Senior" },
+  { number: "21", name: "Chris Mamo",         grade: "Junior" },
+  { number: "0",  name: "Trey Martin",        grade: "Sophomore" },
+  { number: "15", name: "Owen Mellett",       grade: "Senior" },
+  { number: "2",  name: "Brendan O'Connell",  grade: "Sophomore" },
+  { number: "24", name: "Kyle Parrish",       grade: "Senior" },
+  { number: "1",  name: "Bodey Rogers",       grade: "Junior" },
+  { number: "31", name: "Will Yard",          grade: "Senior" },
 ];
 
 export const centralLeagueTeams = [
