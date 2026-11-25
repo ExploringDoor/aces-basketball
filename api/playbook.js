@@ -47,15 +47,32 @@ function authed(req) { const want = process.env.ADMIN_PASSWORD || ''; return !!w
 // Who is on the coach board: the head coach (ADMIN_PASSWORD) or an assistant (a second code the
 // coach sets under Settings, stored hashed). Assistants run the bench, they don't edit the book.
 const assistantHash = (code) => _fwHash('sha256').update('aces-playbook-assistant:' + String(code || '')).digest('hex');
-async function roleOf(req) {
-  if (authed(req)) return 'coach';
+async function roleOf(req) { return (await whoOf(req)).role; }
+// Who is on the coach board: { role: 'coach' | 'assistant' | '', head: admin password, name: staff name }
+async function whoOf(req) {
+  if (authed(req)) return { role: 'coach', head: true, name: 'Admin' };
   const key = String(req.headers['x-admin-key'] || '');
-  if (!key) return '';
+  if (!key) return { role: '' };
   const s = await loadSettings();
-  if (s.assistant_hash && ctEq(assistantHash(key), s.assistant_hash)) return 'assistant';
+  if (s.assistant_hash && ctEq(assistantHash(key), s.assistant_hash)) return { role: 'assistant', head: false, name: '' };
   // A coach's own password from the staff list (the one they use on scouting and practice plans)
   // opens the coach page too, so each coach has one password for all three.
-  return (await staffCodeName(req, key)) ? 'coach' : '';
+  const name = await staffCodeName(req, key);
+  return name ? { role: 'coach', head: false, name } : { role: '' };
+}
+// Who has signed in, who has studied what, quiz scores and progress reports: Adam (admin password
+// or his own staff password), Grugan and Downer only (Adam, 11/25/26). Everyone else on the coach
+// board still runs plays, plans, practice and stats, just without that.
+export const STUDY_STAFF = ['adam', 'grugan', 'downer'];
+export const canSeeStudy = (who) => !!(who && (who.head || STUDY_STAFF.includes(String(who.name || '').toLowerCase())));
+export function hideStudy(b) {
+  if (!b || typeof b !== 'object') return b;
+  if (Array.isArray(b.players)) b.players = b.players.map((p) => { const q = Object.assign({}, p); ['last_seen', 'last_login', 'logins', 'report_note'].forEach((k) => delete q[k]); return q; });
+  if ('views' in b) b.views = [];
+  if ('vsum' in b) b.vsum = {};
+  if ('quiz' in b) b.quiz = [];
+  b.study_hidden = true;
+  return b;
 }
 // Only the head coach's admin password may make a new player code (the response carries it).
 const HEAD_ONLY_ACTIONS = new Set(['new_code']);
@@ -682,7 +699,8 @@ export default async function handler(req, res) {
     let r;
     if (PLAYER_ACTIONS.has(action)) r = await playerAction(action, body, req);
     else {
-      const role = await roleOf(req);
+      const who = await whoOf(req), role = who.role;
+      if (role && !canSeeStudy(who) && action === 'update_player') delete body.report_note;
       if (!role) r = { status: 401, body: { error: 'unauthorized' } };
       else if (role === 'assistant' && !ASSISTANT_ACTIONS.has(action)) r = { status: 403, body: { error: 'coaches_only' } };
       else if (!authed(req) && HEAD_ONLY_ACTIONS.has(action)) r = { status: 403, body: { error: 'head_only' } };
@@ -692,6 +710,7 @@ export default async function handler(req, res) {
         // Player codes are for the head coach's admin password only. Staff and assistant
         // passwords still see every player, just never a code.
         if (!authed(req)) hideCodes(r.body);
+        if (!canSeeStudy(who)) hideStudy(r.body);
       }
     }
     return res.status(r.status).json(r.body);

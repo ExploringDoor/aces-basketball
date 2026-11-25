@@ -459,5 +459,25 @@ await test('only the head coach password sees player codes; staff coaches see pl
   assert.ok(after.body.players.find((p) => p.name === 'Staff Added').code);
 });
 
+await test('sign ins, studying and progress reports: admin, Adam, Grugan and Downer only', async () => {
+  fake.state.docs.set('scouting_meta/' + SITE_TAG + '_staff', { fields: toFirestore({ site: SITE_TAG, staff: [{ name: 'Test', code: 'Test42!' }, { name: 'Grugan', code: 'Grugan42!' }, { name: 'Downer', code: 'Downer42!' }, { name: 'Adam', code: 'Adam42!' }] }), createTime: 'x', updateTime: 'x' });
+  const as = async (key, body) => { const res = mockRes(); await playbook({ method: 'POST', headers: { 'x-admin-key': key }, body }, res); return res; };
+  const head = await call({ action: 'admin_list' }, true);
+  assert.ok(!head.body.study_hidden);
+  for (const k of ['Grugan42!', 'Downer42!', 'Adam42!']) {
+    const r = await as(k, { action: 'admin_list' });
+    assert.equal(r.statusCode, 200); assert.ok(!r.body.study_hidden, k);
+    assert.deepEqual(r.body.views, head.body.views); assert.deepEqual(r.body.quiz, head.body.quiz);
+  }
+  const t = await as('Test42!', { action: 'admin_list' });
+  assert.equal(t.body.study_hidden, true);
+  assert.deepEqual(t.body.views, []); assert.deepEqual(t.body.vsum, {}); assert.deepEqual(t.body.quiz, []);
+  assert.ok(t.body.players.every((p) => !('last_login' in p) && !('last_seen' in p) && !('report_note' in p)));
+  assert.equal(t.body.plays.length, head.body.plays.length);
+  const pid = head.body.players[0].id;
+  await as('Test42!', { action: 'update_player', id: pid, report_note: 'from a staff coach' });
+  assert.notEqual((await call({ action: 'admin_list' }, true)).body.players.find((p) => p.id === pid).report_note, 'from a staff coach');
+});
+
 console.log(`\n${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);
