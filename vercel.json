@@ -80,6 +80,11 @@
   ],
   "redirects": [
     {
+      "source": "/attitude",
+      "destination": "/attitude/",
+      "permanent": false
+    },
+    {
       "source": "/:page(news|clinics|store|standings|history|thousand|schedule|story|championships|banners|rivalry|headtohead|seasons|nextlevel|numbers|league|alumni|coaching|roster|records|photos|videos|kobe|social|hof|support|youth|academics|sponsors|flyers|scores|scouting|practice|newsletter)/",
       "destination": "/:page",
       "permanent": true
@@ -114,10 +119,6 @@
     {
       "source": "/:page(news|clinics|store|standings|history|thousand|schedule|story|championships|banners|rivalry|headtohead|seasons|nextlevel|numbers|league|alumni|coaching|roster|records|photos|videos|kobe|social|hof|support|youth|academics|sponsors|flyers|scores|scouting|practice|newsletter)",
       "destination": "/:page.html"
-    },
-    {
-      "source": "/attitude",
-      "destination": "https://attitude-board.vercel.app/"
     },
     {
       "source": "/attitude/",
