@@ -14,7 +14,7 @@
 import { SITE_TAG, STATEMENT_SUFFIX } from './_site.js';
 import { fbConfigured, fbAdminConfigured, fsGet, fsCreate, fsQuery, fsPatch, fsPatchVerified } from './_firestore.js';
 import { SHOOTATHON, normalizePledge, pledgeDescription, computePledgeCents, coverFeeCents } from './_shootathon.js';
-import { sendMail, buildPledgeEmail, emailConfigured, ADMIN_EMAIL } from './_email.js';
+import { sendMail, buildPledgeEmail, emailConfigured } from './_email.js';
 import { clientIp, emailKey, firstBlocked, HOUR, DAY } from './_ratelimit.js';
 
 const PROVIDER = (process.env.PAYMENT_PROVIDER || '').toLowerCase();
@@ -38,7 +38,7 @@ async function loadEvent() { return (await fsGet(`shootathon/${SHOOTATHON.eventI
 function findTeam(event, slug) { return ((event && event.teams) || []).find((t) => t.slug === slug) || null; }
 function findPlayer(event, slug) { return ((event && event.players) || []).find((p) => p.slug === slug) || null; }
 function makesFor(event, slug) { const p = findPlayer(event, slug); return p ? (p.makes || 0) : 0; }
-function targetName(event, type, slug) {
+export function targetName(event, type, slug) {
   if (type === 'team') { const t = findTeam(event, slug); return t ? t.name : 'a team'; }
   if (type === 'player') { const p = findPlayer(event, slug); return p ? p.name : 'a player'; }
   return 'the whole program';
@@ -50,7 +50,7 @@ function firstNameLastInitial(name) {
   return parts.length === 1 ? first : `${first} ${parts[parts.length - 1][0].toUpperCase()}.`;
 }
 // Normalize legacy records (player_slug) onto the target_type/target_slug model used everywhere now.
-function targetOf(p) {
+export function targetOf(p) {
   if (p.target_type) return { type: p.target_type, slug: p.target_slug || '' };
   if (p.player_slug && p.player_slug !== 'general') return { type: 'player', slug: p.player_slug };
   return { type: 'org', slug: '' };
@@ -105,7 +105,7 @@ async function createDonationCheckout({ pledgeId, amountCents, label, donorEmail
 }
 
 // ── Build the public snapshot with rolled-up raised totals ─────────────────
-function buildSnapshot(event, pledges) {
+export function buildSnapshot(event, pledges) {
   const teams = (event.teams || []).map((t) => ({ slug: t.slug, name: t.name, goal_cents: t.goal_cents || 0, raised_cents: 0 }));
   const teamBySlug = {}; teams.forEach((t) => { teamBySlug[t.slug] = t; });
   const players = (event.players || []).map((p) => ({ slug: p.slug, name: p.name, team: p.team || '', blurb: p.blurb || '', goal_cents: p.goal_cents || 0, raised_cents: 0, makes: p.makes || 0 }));
@@ -282,7 +282,7 @@ async function handlePost(req, res) {
   if (emailConfigured() && pledge.donor_email) {
     try {
       const { subject, html } = buildPledgeEmail(Object.assign({ id }, pledge), targetName(event, pledge.target_type, pledge.target_slug));
-      const ok = await sendMail({ to: pledge.donor_email, subject, html, bcc: ADMIN_EMAIL });
+      const ok = await sendMail({ to: pledge.donor_email, subject, html });   // no copy to the admin: the nightly summary covers it (api/donation-digest.js)
       await fsPatch(`pledges/${id}`, { pledge_email_sent: !!ok, pledge_email_at: now });
     } catch (e) { /* best-effort */ }
   }

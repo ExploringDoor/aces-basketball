@@ -25,7 +25,7 @@ import { fbConfigured, fbAdminConfigured, fsGet, fsGetMeta, fsCreate, fsPatch, f
 import { SHOOTATHON, LIMITS, slugify, isSlug, intOrNull, computePledgeCents, pledgeDescription, normalizeTeam, coverFeeCents } from './_shootathon.js';
 import { clip, stripTags, validEmail } from './_clinic.js';
 import { verifyPayment, finalizeDonationPaid } from './_finalize.js';
-import { sendMail, buildPayLinkEmail, buildDonationRefundEmail, buildDonationReceiptEmail, emailConfigured, ADMIN_EMAIL } from './_email.js';
+import { sendMail, buildPayLinkEmail, buildDonationRefundEmail, buildDonationReceiptEmail, emailConfigured } from './_email.js';
 import { SITE_TAG } from './_site.js';
 import { refundStripe, refundSquare } from './_refund.js';
 
@@ -200,7 +200,7 @@ async function actionSendLinks(req, b) {
     invoiced++;
     try {
       const { subject, html } = buildPayLinkEmail(Object.assign({}, p, { status: 'invoiced', amount_cents: amount }), targetName(event, tg), payLink(base, p.id), makes);
-      const ok = await sendMail({ to: p.donor_email, subject, html, bcc: ADMIN_EMAIL });
+      const ok = await sendMail({ to: p.donor_email, subject, html });
       await fsPatch(`pledges/${p.id}`, { paylink_email_sent: !!ok, paylink_email_at: new Date().toISOString() });
       if (ok) emailed++;
     } catch (e) { /* invoiced stands; admin can resend */ }
@@ -218,7 +218,7 @@ async function actionResend(req, b) {
   const tg = targetOf(p);
   const makes = tg.type === 'player' ? (makesMap(event)[tg.slug] || 0) : 0;
   const { subject, html } = buildPayLinkEmail(p, targetName(event, tg), payLink(baseUrl(req), p.id), makes);
-  const ok = await sendMail({ to: p.donor_email, subject, html, bcc: ADMIN_EMAIL });
+  const ok = await sendMail({ to: p.donor_email, subject, html });
   await fsPatch(`pledges/${b.id}`, { paylink_email_sent: !!ok, paylink_email_at: new Date().toISOString() });
   return { status: ok ? 200 : 502, body: ok ? { ok: true } : { error: 'send_failed' } };
 }
@@ -262,7 +262,7 @@ async function actionRefund(b) {
   try {
     if (p.donor_email && emailConfigured()) {
       const { subject, html } = buildDonationRefundEmail(Object.assign({}, p, patch), cents);
-      await sendMail({ to: p.donor_email, subject, html, bcc: ADMIN_EMAIL });
+      await sendMail({ to: p.donor_email, subject, html });
     }
   } catch (e) { /* the refund already succeeded */ }
   return { status: 200, body: { ok: true, refunded_cents: cents } };
@@ -345,7 +345,7 @@ async function actionRestore(b) {
 async function sendReceipt(p) {
   if (!p.donor_email || !emailConfigured()) return false;
   const { subject, html } = buildDonationReceiptEmail(p);
-  return sendMail({ to: p.donor_email, subject, html, bcc: ADMIN_EMAIL });
+  return sendMail({ to: p.donor_email, subject, html });
 }
 
 async function actionAddOffline(b) {
@@ -363,7 +363,7 @@ async function actionAddOffline(b) {
     event_id: SHOOTATHON.eventId, site: SITE_TAG, kind: 'flat', offline: true,
     flat_cents: a, per_shot_cents: 0, cap_cents: 0, cover_fee: false, fee_cents: 0,
     amount_cents: a, amount_paid_cents: a, status: 'paid', paid_via: method,
-    check_no: stripTags(clip(b.check_no, 40)).trim(), created: day, paid_at: day,
+    check_no: stripTags(clip(b.check_no, 40)).trim(), created: day, paid_at: day, recorded_at: new Date().toISOString(),
     message: '', anonymous: false, note: '',
   }, donor, tg);
   const created = await fsCreate('pledges', doc);
@@ -389,7 +389,8 @@ async function actionMarkPaid(b) {
   if (b.amount_cents != null) { const a = intOrNull(b.amount_cents); if (a != null && a > 0) amount = a; }
   if (amount <= 0) return { status: 400, body: { error: 'nothing_owed' } };
   const now = new Date().toISOString();
-  const patch = { status: 'paid', offline: true, paid_via: OFFLINE_METHODS[b.method] || 'Cash', check_no: stripTags(clip(b.check_no, 40)).trim(), amount_cents: amount, amount_paid_cents: amount, paid_at: now };
+  // fee_cents 0: paid by cash/check, so no card fee comes off the gift (an invoice may have added one)
+  const patch = { status: 'paid', offline: true, paid_via: OFFLINE_METHODS[b.method] || 'Cash', check_no: stripTags(clip(b.check_no, 40)).trim(), amount_cents: amount, amount_paid_cents: amount, fee_cents: 0, paid_at: now };
   const w = await fsPatchVerified(`pledges/${b.id}`, patch);
   if (!w.ok) return { status: 502, body: { error: 'save_failed' } };
   let emailed = false;

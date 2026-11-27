@@ -135,7 +135,7 @@ export async function maybeSendDonationReceipt(id, pledge) {
   const claim = await fsPatchVerified(`pledges/${id}`, { receipt_email_sent: true, receipt_email_at: new Date().toISOString() }, 2, { ifUpdateTime: cur.updateTime });
   if (!claim.ok) return false; // another path already claimed it (or the write failed — sync will revisit)
   const { subject, html } = buildDonationReceiptEmail(Object.assign({}, cur.doc, pledge));
-  const ok = await sendMail({ to: pledge.donor_email, subject, html, bcc: ADMIN_EMAIL });
+  const ok = await sendMail({ to: pledge.donor_email, subject, html });   // no admin copy per gift: one nightly summary instead (api/donation-digest.js)
   if (!ok) await fsPatch(`pledges/${id}`, { receipt_email_sent: false, receipt_email_error: 'send_failed' });
   return ok;
 }

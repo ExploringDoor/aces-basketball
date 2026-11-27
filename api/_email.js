@@ -3,7 +3,8 @@
 // day-before reminder. (Stripe's own customer emails are deliberately OFF — this IS the receipt.)
 //
 // Env: SENDGRID_API_KEY, MAIL_FROM (a domain-authenticated sender, e.g. noreply@aces-basketball.vercel.app),
-//      MAIL_FROM_NAME (optional), ADMIN_EMAIL (optional — BCC'd a copy),
+//      MAIL_FROM_NAME (optional), ADMIN_EMAIL (optional: BCC'd a copy of clinic and store receipts; gets
+//      the nightly Shoot-a-Thon summary instead of a copy of every donation email),
 //      MAIL_REPLY_TO (optional — where "reply to this email" actually goes; defaults to aceshoops@gmail.com).
 
 import { priceBreakdown, sessionLabels } from './_clinic.js';
@@ -298,6 +299,65 @@ export function buildDonationRefundEmail(pledge, refundedCents) {
     </table>
     <p style="color:#777;font-size:13px;line-height:1.6;margin:18px 0 0">Questions? Just reply to this email.</p>`;
   return { subject: `Donation refunded (${amount})`, html: donShell('REFUND RECEIPT', inner) };
+}
+
+// The ONE nightly Shoot-a-Thon email to the admin (api/donation-digest.js), in place of a copy of
+// every donor's email. `d` comes from digestFor(). Amounts are the gifts themselves (a card fee a
+// donor chose to cover is left out), the same numbers the thermometers on the donate page show.
+// Built for a phone: two columns (who and what on the left, the amount on the right), totals first
+// so a very long night can't push them past Gmail's clipping point, long lists cut off.
+const usd = (c) => { const v = (c || 0) / 100; return '$' + v.toLocaleString('en-US', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 }); };
+const DIGEST_LIST_MAX = 60;
+export function buildDonationDigestEmail(d) {
+  const when = d.window_label;   // "today" or "since Tuesday"
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  const pct = (a, b) => (b > 0 ? Math.round((100 * a) / b) + '%' : '');
+  const head = (t) => `<tr><td colspan="2" style="padding:18px 0 6px;font-weight:700;font-size:15px;color:#840036">${t}</td></tr>`;
+  const row = (main, sub, amt, strong) => `<tr><td style="padding:8px 10px 8px 0;border-top:1px solid #eee;vertical-align:top;word-break:break-word">${main}${sub ? `<div style="color:#888;font-size:12px;margin-top:2px">${sub}</div>` : ''}</td><td style="padding:8px 0 8px 8px;border-top:1px solid #eee;text-align:right;white-space:nowrap;vertical-align:top${strong ? ';font-weight:700' : ''}">${amt}</td></tr>`;
+  const who = (x) => donEsc(x.donor_name || 'Someone') + (x.anonymous ? ' <span style="color:#999">(shows as Anonymous)</span>' : '');
+  const list = (items, draw) => {
+    const shown = items.slice(0, DIGEST_LIST_MAX).map(draw).join('');
+    const more = items.length - DIGEST_LIST_MAX;
+    return shown + (more > 0 ? row(`<span style="color:#888">and ${more} more on the Shoot-a-Thon admin page</span>`, '', '') : '');
+  };
+
+  let totals = '';
+  d.teams.forEach((t) => { totals += row(donEsc(t.name), t.goal_cents ? 'goal ' + usd(t.goal_cents) : '', usd(t.raised_cents) + (t.goal_cents ? ` <span style="color:#999;font-weight:400">${pct(t.raised_cents, t.goal_cents)}</span>` : '')); });
+  if (d.program_cents > 0) totals += row('Whole program', 'gifts to the program, not one team', usd(d.program_cents));
+  if (d.unteamed_cents > 0) totals += row('Players not on a team', '', usd(d.unteamed_cents));
+
+  let lists = '';
+  if (d.gifts.length) {
+    lists += head(`Came in ${when}`) + list(d.gifts, (g) => row(who(g), donEsc(g.supports) + ' &middot; ' + donEsc(g.how), usd(g.cents)));
+    lists += row('<strong>Total</strong>', '', usd(d.gift_cents), true);
+  }
+  if (d.pledges.length) lists += head(`New per throw pledges ${when}`) + list(d.pledges, (p) => row(who(p), donEsc(p.detail), donEsc(p.rate)));
+  if (d.refunds.length) lists += head(`Refunded ${when}`) + list(d.refunds, (r) => row(who(r), donEsc(r.supports), usd(r.cents)));
+
+  const notes = [];
+  if (d.adjust_cents) notes.push(`The total also ${d.adjust_cents > 0 ? 'went up' : 'went down'} ${usd(Math.abs(d.adjust_cents))} from changes to earlier gifts (edited, removed or put back on the admin page).`);
+  if (d.open_pledges) {
+    notes.push(d.open_with_makes
+      ? `${plural(d.open_pledges, 'per throw pledge is', 'per throw pledges are')} not billed yet. At the made throws entered so far that comes to about ${usd(d.open_projected_cents)}.`
+      : `${plural(d.open_pledges, 'per throw pledge', 'per throw pledges')} for ${plural(d.open_players, 'player', 'players')}, billed after the event.`);
+  }
+  if (d.invoiced) notes.push(`${plural(d.invoiced, 'pay link', 'pay links')} sent and not paid yet (${usd(d.invoiced_cents)} due).`);
+
+  const headline = d.gift_cents > 0 ? `${usd(d.gift_cents)} raised ${when}`
+    : d.pledges.length ? `${plural(d.pledges.length, 'new pledge', 'new pledges')} ${when}`
+    : d.refunds.length ? `${plural(d.refunds.length, 'refund', 'refunds')} ${when}`
+    : `Total changed ${when}`;
+  const inner = `
+    <h2 style="margin:0 0 6px">${donEsc(headline)}</h2>
+    <p style="color:#555;line-height:1.6;margin:0">${donEsc(d.date_label)}. Total raised so far: <strong>${usd(d.raised_cents)}</strong>${d.goal_cents ? ` of the ${usd(d.goal_cents)} goal (${pct(d.raised_cents, d.goal_cents)})` : ''}, from ${plural(d.donors, 'donor', 'donors')}.</p>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">${totals ? head('By team') + totals : ''}</table>
+    ${notes.length ? `<p style="color:#555;font-size:13px;line-height:1.6;margin:14px 0 0">${notes.map(donEsc).join('<br>')}</p>` : ''}
+    <table style="width:100%;border-collapse:collapse;font-size:14px">${lists}</table>
+    ${d.fee_cents > 0 ? `<p style="color:#999;font-size:12px;line-height:1.6;margin:12px 0 0">Donors also covered ${usd(d.fee_cents)} in card fees ${donEsc(when)}, not counted above.</p>` : ''}
+    <p style="color:#999;font-size:12px;line-height:1.6;margin:16px 0 0">One summary a night, only on nights something changed. Every donation is on the Shoot-a-Thon admin page.</p>`;
+  const subject = d.gift_cents > 0 ? `Shoot-a-Thon: ${usd(d.gift_cents)} raised ${when}, ${usd(d.raised_cents)} total`
+    : `Shoot-a-Thon: ${headline}, ${usd(d.raised_cents)} raised so far`;
+  return { subject, html: donShell('SHOOT-A-THON NIGHTLY SUMMARY', inner) };
 }
 
 // Branded "see you tomorrow" reminder for ONE clinic session (sent by api/remind.js

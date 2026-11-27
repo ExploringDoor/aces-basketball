@@ -218,3 +218,24 @@ export async function fsQuery(collection, field, op, value) {
     id: d.document.name.split('/').pop(), ...fromFirestore(d.document.fields)
   }));
 }
+// Like fsQuery, but a failed or partial read THROWS instead of looking like "no matches".
+// For callers that act on an empty result (the nightly donation summary would otherwise call a
+// Firestore blip a quiet night and skip that night's gifts for good).
+export async function fsQueryStrict(collection, field, op, value) {
+  const r = await fetch(`${FB_BASE}:runQuery?key=${FB_KEY}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json', ...(await authHeader()) },
+    body: JSON.stringify({
+      structuredQuery: {
+        from: [{ collectionId: collection }],
+        where: { fieldFilter: { field: { fieldPath: field }, op, value: toFsValue(value) } }
+      }
+    })
+  });
+  if (!r.ok) throw new Error('firestore_query_failed_' + r.status);
+  const data = await r.json();
+  if (!Array.isArray(data)) throw new Error('firestore_query_bad_body');
+  if (data.some((d) => d && d.error)) throw new Error('firestore_query_partial');
+  return data.filter(d => d.document).map(d => ({
+    id: d.document.name.split('/').pop(), ...fromFirestore(d.document.fields)
+  }));
+}
