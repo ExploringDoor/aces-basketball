@@ -32,7 +32,7 @@ import { cleanPlay, cleanClip, cleanPlan, cleanPractice, cleanDrill, cleanNote, 
 import { SITE_TAG } from './_site.js';
 import { del as blobDel } from '@vercel/blob';
 import { sendMail, emailConfigured, ADMIN_EMAIL } from './_email.js';
-import { staffCodeName } from './_staffauth.js';
+import { staffCodeName, isOwner } from './_staffauth.js';
 import { clip, stripTags } from './_clinic.js';
 import { slugOf as scoutSlug } from './_scouting.js';
 
@@ -58,7 +58,8 @@ async function whoOf(req) {
   // A coach's own password from the staff list (the one they use on scouting and practice plans)
   // opens the coach page too, so each coach has one password for all three.
   const name = await staffCodeName(req, key);
-  return name ? { role: 'coach', head: false, name } : { role: '' };
+  // Adam's own password is the head coach (player codes, new codes), same as the admin password
+  return name ? { role: 'coach', head: isOwner(name), name } : { role: '' };
 }
 // Who has signed in, who has studied what, quiz scores and progress reports: Adam (admin password
 // or his own staff password), Grugan and Downer only (Adam, 11/25/26). Everyone else on the coach
@@ -703,13 +704,13 @@ export default async function handler(req, res) {
       if (role && !canSeeStudy(who) && action === 'update_player') delete body.report_note;
       if (!role) r = { status: 401, body: { error: 'unauthorized' } };
       else if (role === 'assistant' && !ASSISTANT_ACTIONS.has(action)) r = { status: 403, body: { error: 'coaches_only' } };
-      else if (!authed(req) && HEAD_ONLY_ACTIONS.has(action)) r = { status: 403, body: { error: 'head_only' } };
+      else if (!who.head && HEAD_ONLY_ACTIONS.has(action)) r = { status: 403, body: { error: 'head_only' } };
       else {
         r = await adminAction(action, body);
         if (action === 'admin_list' && r.body) r.body.role = role;
-        // Player codes are for the head coach's admin password only. Staff and assistant
-        // passwords still see every player, just never a code.
-        if (!authed(req)) hideCodes(r.body);
+        // Player codes are for the head coach only (admin password or Adam's own). Staff and
+        // assistant passwords still see every player, just never a code.
+        if (!who.head) hideCodes(r.body);
         if (!canSeeStudy(who)) hideStudy(r.body);
       }
     }

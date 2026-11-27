@@ -459,6 +459,19 @@ await test('only the head coach password sees player codes; staff coaches see pl
   assert.ok(after.body.players.find((p) => p.name === 'Staff Added').code);
 });
 
+await test("Adam's own staff password is the head coach on the playbook: player codes and new codes", async () => {
+  fake.state.docs.set('scouting_meta/' + SITE_TAG + '_staff', { fields: toFirestore({ site: SITE_TAG, staff: [{ name: 'Test', code: 'Test42!' }, { name: 'Adam', code: 'Adam42!' }] }), createTime: 'x', updateTime: 'x' });
+  const as = async (key, body) => { const res = mockRes(); await playbook({ method: 'POST', headers: { 'x-admin-key': key }, body }, res); return res; };
+  const mine = await as('Adam42!', { action: 'admin_list' });
+  assert.equal(mine.statusCode, 200);
+  assert.ok(mine.body.players.length && mine.body.players.every((p) => p.code));
+  assert.ok(!mine.body.codes_hidden);
+  const nc = await as('Adam42!', { action: 'new_code', id: mine.body.players[0].id });
+  assert.equal(nc.statusCode, 200);
+  const other = await as('Test42!', { action: 'new_code', id: mine.body.players[0].id });
+  assert.equal(other.statusCode, 403);
+});
+
 await test('sign ins, studying and progress reports: admin, Adam, Grugan and Downer only', async () => {
   fake.state.docs.set('scouting_meta/' + SITE_TAG + '_staff', { fields: toFirestore({ site: SITE_TAG, staff: [{ name: 'Test', code: 'Test42!' }, { name: 'Grugan', code: 'Grugan42!' }, { name: 'Downer', code: 'Downer42!' }, { name: 'Adam', code: 'Adam42!' }] }), createTime: 'x', updateTime: 'x' });
   const as = async (key, body) => { const res = mockRes(); await playbook({ method: 'POST', headers: { 'x-admin-key': key }, body }, res); return res; };

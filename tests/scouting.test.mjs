@@ -228,5 +228,22 @@ await test('coach sign ins: noted once per 20 minutes per tool, readable by the 
   assert.ok(Array.isArray(r.body.signins));
 });
 
+await test("Adam's own password is the admin: sees every coach's password and runs the staff list; other coaches don't", async () => {
+  let r = await call({ method: 'GET' });
+  const code = (n) => r.body.staff.find((c) => c.name === n).code;
+  const adam = code('Adam'), gallman = code('Gallman');
+  r = await call({ method: 'GET', key: adam });
+  assert.equal(r.body.me.role, 'admin');
+  assert.equal(r.body.me.name, 'Adam');
+  assert.ok(r.body.staff.every((c) => typeof c.code === 'string' && c.code.length > 0));
+  r = await call({ method: 'POST', key: adam, body: { action: 'staff_add', name: 'Blakey' } });
+  assert.equal(r.status, 200);
+  r = await call({ method: 'GET', key: gallman });
+  assert.equal(r.body.me.role, 'coach');
+  assert.ok(r.body.staff.every((c) => !('code' in c)));
+  r = await call({ method: 'POST', key: gallman, body: { action: 'staff_add', name: 'Nope' } });
+  assert.equal(r.status, 403);
+});
+
 console.log(`\n${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);

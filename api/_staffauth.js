@@ -94,7 +94,10 @@ export async function noteSignIn(req, name) {
     await fsPatch(SIGNINS_PATH, { site: SITE_TAG, log: log.slice(0, 400) });
   } catch { /* a missed note must never stop a coach from signing in */ }
 }
-export const seesSignIns = (role, name) => role === 'admin' || String(name || '').trim().toLowerCase() === 'adam';
+/* Adam's own staff password is the admin everywhere (Adam, 11/27: "why wouldn't Adam be admin?"). The
+   ADMIN_PASSWORD env var still works too; nobody needs to know it. */
+export const isOwner = (name) => String(name || '').trim().toLowerCase() === 'adam';
+export const seesSignIns = (role, name) => role === 'admin' || isOwner(name);
 export async function loadSignIns() {
   const d = await fsGet(SIGNINS_PATH).catch(() => null);
   return Array.isArray(d && d.log) ? d.log.filter((e) => e && e.name && e.at).map((e) => ({ name: String(e.name), page: String(e.page || ''), device: String(e.device || ''), at: String(e.at) })) : [];
@@ -110,7 +113,7 @@ export async function resolveAuth(req) {
   if (!code) return null;
   const staff = await loadStaff();
   const hit = staff.find((c) => c.code && ctEq(codeKey(c.code), codeKey(code)));
-  if (hit) { await noteSignIn(req, hit.name); return { role: 'coach', name: hit.name, staff }; }
+  if (hit) { await noteSignIn(req, hit.name); return { role: isOwner(hit.name) ? 'admin' : 'coach', name: hit.name, staff }; }
   await noteMiss(req);
   return null;
 }
