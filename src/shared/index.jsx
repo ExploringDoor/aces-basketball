@@ -562,7 +562,7 @@ export const roster = [
   { number: "30", name: "JJ Litton",          grade: "Senior" },
   { number: "21", name: "Chris Mamo",         grade: "Junior" },
   { number: "0",  name: "Trey Martin",        grade: "Sophomore" },
-  { number: "15", name: "Owen Mellett",       grade: "Senior" },
+  { number: "15", name: "Owen Mellet",        grade: "Senior" },
   { number: "2",  name: "Brendan O'Connell",  grade: "Sophomore" },
   { number: "24", name: "Kyle Parrish",       grade: "Senior" },
   { number: "1",  name: "Bodey Rogers",       grade: "Junior" },
