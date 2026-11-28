@@ -56,6 +56,12 @@
     /* the bar's More has every section, so no hamburger wherever the bar shows (Adam, 11/28) */
     "@media (max-width:1099px){html.aces-tb .hamburger,html.aces-tb .acesnav .an-burger{display:none !important}}",
     "html.aces-tb-app .hamburger,html.aces-tb-app .acesnav .an-burger{display:none !important}",
+    /* locked sideways in the app (Adam: "the whole entire phone moves ... it should be locked");
+       tables and strips built to scroll sideways still do, and stop at their ends */
+    "html.aces-tb-app{overflow-x:hidden}",
+    "html.aces-tb-app,html.aces-tb-app body{overscroll-behavior-x:none}",
+    "html.aces-tb-app body{touch-action:pan-y pinch-zoom}",
+    "html.aces-tb-app *{overscroll-behavior-x:contain}",
     "@media print{.aces-tb-bar,.aces-tb-sheet{display:none !important}}"
   ].join("\n");
 
