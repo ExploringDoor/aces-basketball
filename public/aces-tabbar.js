@@ -22,12 +22,12 @@
   // EVERYTHING on the site, grouped like the site's own menu (keep in step with NAV in aces-nav.js
   // and src/App.jsx). Adam, 11/28: "when you click on more ... it doesn't open up all the things".
   var MORE = [
-    ["", [["Home", "/"], ["News", "/news"], ["Attitude Board", "/attitude/"], ["Kobe", "/kobe"]]],
+    ["", [["Home", "/"], ["News", "/news"], ["Kobe", "/kobe"]]],
     ["Season", [["Roster", "/roster"], ["Schedule", "/schedule"], ["Standings", "/standings"], ["Record Book", "/records"], ["Story of the Season", "/story"]]],
     ["History", [["Program History", "/history"], ["Championships", "/championships"], ["The Rafters", "/banners"], ["Every Season", "/seasons"],
       ["Aces vs. Chester", "/rivalry"], ["Head to Head", "/headtohead"], ["Central League", "/league"]]],
     ["People", [["1,000 Club", "/thousand"], ["Alumni", "/alumni"], ["Next Level", "/nextlevel"], ["Who Wore It", "/numbers"], ["Coaching Staff", "/coaching"], ["Hall of Fame", "/hof"]]],
-    ["More", [["Shoot-a-Thon", "/donate.html"], ["Team Playbook", "/playbook.html"], ["Clinics", "/clinics"], ["Photos", "/photos"], ["Videos", "/videos"],
+    ["More", [["Attitude Board", "/attitude/"], ["Shoot-a-Thon", "/donate.html"], ["Team Playbook", "/playbook.html"], ["Clinics", "/clinics"], ["Photos", "/photos"], ["Videos", "/videos"],
       ["Follow Us", "/social"], ["Support the Aces", "/support"], ["Sponsors", "/sponsors"], ["Team Store", "/store"]]]
   ];
 
