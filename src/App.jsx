@@ -468,7 +468,9 @@ export default function App() {
         .hamburger { display: none !important; }
         /* Compact nav on scroll */
         nav.topnav { transition: height 0.28s ease, box-shadow 0.28s ease; }
-        nav.topnav.compact { height: 60px !important; box-shadow: 0 8px 32px rgba(0,0,0,0.65) !important; }
+        nav.topnav.compact { height: calc(60px + env(safe-area-inset-top, 0px)) !important; box-shadow: 0 8px 32px rgba(0,0,0,0.65) !important; }
+        /* the home screen app: no rubber band at the top or bottom showing the page past the bars */
+        html, body { overscroll-behavior-y: none; }
         nav.topnav.compact .desktop-nav button, nav.topnav.compact .desktop-nav > div > button { height: 60px !important; }
         .nav-logo-img { transition: height 0.28s ease; }
         nav.topnav.compact .nav-logo-img { height: 44px !important; }
@@ -484,7 +486,7 @@ export default function App() {
 
       <nav className={`topnav${scrolled ? " compact" : ""}`} style={{
         position:"fixed", top:0, left:0, right:0, zIndex:1000,
-        display:"flex", alignItems:"center", height:82, padding:"0 40px",
+        display:"flex", alignItems:"center", height:"calc(82px + env(safe-area-inset-top, 0px))", padding:"0 40px", paddingTop:"env(safe-area-inset-top, 0px)",
         background:"rgba(8,0,4,0.99)",
         borderBottom:"1px solid rgba(132,0,54,0.4)",
         boxShadow:"0 4px 40px rgba(0,0,0,0.5)",
@@ -592,7 +594,7 @@ export default function App() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div style={{ position:"fixed", top:82, left:0, right:0, zIndex:999, background:"rgba(8,0,4,0.98)", borderBottom:"1px solid rgba(132,0,54,0.3)", padding:"8px 0", maxHeight:"80vh", overflowY:"auto" }}>
+        <div style={{ position:"fixed", top:"calc(82px + env(safe-area-inset-top, 0px))", left:0, right:0, zIndex:999, background:"rgba(8,0,4,0.98)", borderBottom:"1px solid rgba(132,0,54,0.3)", padding:"8px 0", maxHeight:"80vh", overflowY:"auto" }}>
           {NAV.map((item, i) =>
             item.children
               ? <div key={i}>
@@ -621,7 +623,7 @@ export default function App() {
       <div style={{ position:"fixed", inset:0, zIndex:900, pointerEvents:"none", opacity:0.5, backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.05'/%3E%3C/svg%3E\")" }} />
 
       {/* Page content */}
-      <div style={{ paddingTop:82, minHeight:"100vh", background:"#0a0005" }}>
+      <div style={{ paddingTop:"calc(82px + env(safe-area-inset-top, 0px))", minHeight:"100vh", background:"#0a0005" }}>
         {page === "home" ? <HomePage goTo={goTo} /> : PageComponent ? <PageComponent /> : <NotFound goTo={goTo} />}
         <footer style={{ background:"#050003", borderTop:"1px solid rgba(132,0,54,0.28)", marginTop:40 }}>
           <div style={{ maxWidth:1100, margin:"0 auto", padding:"18px 5% 16px", display:"flex", flexWrap:"wrap", alignItems:"center", justifyContent:"space-between", gap:"10px 24px" }}>
