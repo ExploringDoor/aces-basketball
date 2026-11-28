@@ -51,6 +51,9 @@
     ".aces-tb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}",
     ".aces-tb-grid a{display:block;padding:16px;border-radius:12px;background:#160A10;border:1px solid rgba(132,0,54,.35);color:#fff;text-decoration:none;font-family:'Oswald',system-ui,sans-serif;font-weight:600;font-size:17px;letter-spacing:.06em;text-transform:uppercase}",
     "@media (min-width:1100px){html.aces-tb:not(.aces-tb-app) .aces-tb-bar{display:none}html.aces-tb:not(.aces-tb-app) body{padding-bottom:0 !important}}",
+    /* the bar's More has every section, so no hamburger wherever the bar shows (Adam, 11/28) */
+    "@media (max-width:1099px){html.aces-tb .hamburger,html.aces-tb .acesnav .an-burger{display:none !important}}",
+    "html.aces-tb-app .hamburger,html.aces-tb-app .acesnav .an-burger{display:none !important}",
     "@media print{.aces-tb-bar,.aces-tb-sheet{display:none !important}}"
   ].join("\n");
 
