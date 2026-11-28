@@ -1,8 +1,7 @@
 /* Aces bottom app bar for the whole site (Adam, 11/28: "I want it on the entire aces hoops website",
    the home screen app opens to the main site). Home, Schedule, Roster, Stats (the Attitude Board),
    More. Same look as the bar the Attitude Board draws for itself (that page skips this script).
-   Shown on phones and iPads, and always in the home screen app; a big desktop browser already has
-   the menu across the top. Loaded by index.html (the main site) and by aces-nav.js (the standalone
+   Shown ONLY in the home screen app; a normal browser keeps the site's own menu. Loaded by index.html (the main site) and by aces-nav.js (the standalone
    pages: Shoot-a-Thon, Team Playbook). Inside the main site the links are plain links: the app's own
    click handler turns them into page changes without a reload. */
 (function () {
@@ -33,6 +32,9 @@
 
   var standalone = false;
   try { standalone = window.matchMedia("(display-mode: standalone)").matches || !!navigator.standalone; } catch (e) {}
+  // ONLY in the home screen app (Adam, 11/28: in Safari or Chrome "it shouldn't be like that. It should
+  // only be on the Web app"). A normal browser keeps the site's own menu.
+  if (!standalone) return;
 
   var css = [
     "html.aces-tb{background:#080004}",                                   /* any space the screen leaves below the bar is the bar's color */
