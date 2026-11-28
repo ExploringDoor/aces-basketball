@@ -19,10 +19,17 @@
     more: ic('<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>')
   };
   var ITEMS = [["home", "/", "Home"], ["schedule", "/schedule", "Schedule"], ["roster", "/roster", "Roster"], ["stats", "/attitude/", "Stats"]];
-  var MORE = [["News", "/news"], ["Standings", "/standings"], ["Record Book", "/records"], ["Story of the Season", "/story"],
-    ["Program History", "/history"], ["Championships", "/championships"], ["Every Season", "/seasons"], ["Coaching Staff", "/coaching"],
-    ["Alumni", "/alumni"], ["1,000 Club", "/thousand"], ["Kobe", "/kobe"], ["Photos", "/photos"], ["Videos", "/videos"],
-    ["Clinics", "/clinics"], ["Shoot-a-Thon", "/donate.html"], ["Team Playbook", "/playbook.html"], ["Support the Aces", "/support"], ["Sponsors", "/sponsors"]];
+  // EVERYTHING on the site, grouped like the site's own menu (keep in step with NAV in aces-nav.js
+  // and src/App.jsx). Adam, 11/28: "when you click on more ... it doesn't open up all the things".
+  var MORE = [
+    ["", [["Home", "/"], ["News", "/news"], ["Attitude Board", "/attitude/"], ["Kobe", "/kobe"]]],
+    ["Season", [["Roster", "/roster"], ["Schedule", "/schedule"], ["Standings", "/standings"], ["Record Book", "/records"], ["Story of the Season", "/story"]]],
+    ["History", [["Program History", "/history"], ["Championships", "/championships"], ["The Rafters", "/banners"], ["Every Season", "/seasons"],
+      ["Aces vs. Chester", "/rivalry"], ["Head to Head", "/headtohead"], ["Central League", "/league"]]],
+    ["People", [["1,000 Club", "/thousand"], ["Alumni", "/alumni"], ["Next Level", "/nextlevel"], ["Who Wore It", "/numbers"], ["Coaching Staff", "/coaching"], ["Hall of Fame", "/hof"]]],
+    ["More", [["Shoot-a-Thon", "/donate.html"], ["Team Playbook", "/playbook.html"], ["Clinics", "/clinics"], ["Photos", "/photos"], ["Videos", "/videos"],
+      ["Follow Us", "/social"], ["Support the Aces", "/support"], ["Sponsors", "/sponsors"], ["Team Store", "/store"]]]
+  ];
 
   var standalone = false;
   try { standalone = window.matchMedia("(display-mode: standalone)").matches || !!navigator.standalone; } catch (e) {}
@@ -35,7 +42,9 @@
     ".aces-tb-bar a,.aces-tb-bar button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 0;min-height:52px;color:rgba(255,255,255,.6);text-decoration:none;background:none;border:0;cursor:pointer;font-family:'Oswald',system-ui,sans-serif;font-weight:600;font-size:11px;line-height:1;letter-spacing:.12em;text-transform:uppercase}",
     ".aces-tb-bar svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}",
     ".aces-tb-bar .on{color:#c9a44a}",
-    ".aces-tb-sheet{position:fixed;inset:0;z-index:2100;background:rgba(8,0,4,.98);overflow-y:auto;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(90px + env(safe-area-inset-bottom,0px))}",
+    ".aces-tb-sheet{position:fixed;inset:0;z-index:2100;background:#080004;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(40px + env(safe-area-inset-bottom,0px))}",
+    ".aces-tb-h{margin:18px 2px 8px;font-family:'Oswald',system-ui,sans-serif;font-weight:600;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#c9a44a}",
+    "html.aces-tb-lock,html.aces-tb-lock body{overflow:hidden !important}",
     ".aces-tb-sheet[hidden]{display:none}",
     ".aces-tb-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-family:'Oswald',system-ui,sans-serif;font-weight:700;font-size:22px;letter-spacing:.2em;color:#fff}",
     ".aces-tb-x{background:#1B1016;border:1px solid rgba(132,0,54,.5);color:#fff;border-radius:12px;width:48px;height:48px;font-size:26px;line-height:1;cursor:pointer}",
@@ -72,7 +81,10 @@
     sheet.className = "aces-tb-sheet";
     sheet.hidden = true;
     sheet.innerHTML = '<div class="aces-tb-top">ACES<button type="button" class="aces-tb-x" aria-label="Close">&times;</button></div>' +
-      '<div class="aces-tb-grid">' + MORE.map(function (m) { return '<a href="' + m[1] + '">' + m[0] + "</a>"; }).join("") + "</div>";
+      MORE.map(function (g) {
+        return (g[0] ? '<div class="aces-tb-h">' + g[0] + "</div>" : "") +
+          '<div class="aces-tb-grid">' + g[1].map(function (m) { return '<a href="' + m[1] + '">' + m[0] + "</a>"; }).join("") + "</div>";
+      }).join("");
     document.body.appendChild(sheet);
 
     function mark() {
@@ -84,9 +96,24 @@
       });
     }
     mark();
-    bar.querySelector('[data-tb="more"]').addEventListener("click", function () { sheet.hidden = false; });
-    sheet.querySelector(".aces-tb-x").addEventListener("click", function () { sheet.hidden = true; });
-    sheet.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("a")) sheet.hidden = true; });
+    // the page under the sheet stays put (no scrolling behind it): pin the body where it is, put it back on close
+    var keepY = 0;
+    function openSheet() {
+      keepY = window.scrollY || 0;
+      document.documentElement.classList.add("aces-tb-lock");
+      document.body.style.position = "fixed"; document.body.style.top = -keepY + "px"; document.body.style.left = "0"; document.body.style.right = "0";
+      sheet.hidden = false; sheet.scrollTop = 0;
+    }
+    function closeSheet(keep) {
+      if (sheet.hidden) return;
+      sheet.hidden = true;
+      document.documentElement.classList.remove("aces-tb-lock");
+      document.body.style.position = ""; document.body.style.top = ""; document.body.style.left = ""; document.body.style.right = "";
+      if (keep !== false) window.scrollTo(0, keepY);
+    }
+    bar.querySelector('[data-tb="more"]').addEventListener("click", openSheet);
+    sheet.querySelector(".aces-tb-x").addEventListener("click", function () { closeSheet(); });
+    sheet.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("a")) closeSheet(false); });
     bar.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("a")) setTimeout(mark, 0); });
     // the main site changes pages without reloading: keep the lit tab in step
     window.addEventListener("popstate", function () { setTimeout(mark, 0); });
