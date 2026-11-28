@@ -35,7 +35,7 @@
     ".aces-tb-bar a,.aces-tb-bar button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 0;min-height:52px;color:rgba(255,255,255,.6);text-decoration:none;background:none;border:0;cursor:pointer;font-family:'Oswald',system-ui,sans-serif;font-weight:600;font-size:11px;line-height:1;letter-spacing:.12em;text-transform:uppercase}",
     ".aces-tb-bar svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}",
     ".aces-tb-bar .on{color:#c9a44a}",
-    ".aces-tb-sheet{position:fixed;inset:0;z-index:1000;background:rgba(8,0,4,.98);overflow-y:auto;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(90px + env(safe-area-inset-bottom,0px))}",
+    ".aces-tb-sheet{position:fixed;inset:0;z-index:2100;background:rgba(8,0,4,.98);overflow-y:auto;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(90px + env(safe-area-inset-bottom,0px))}",
     ".aces-tb-sheet[hidden]{display:none}",
     ".aces-tb-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-family:'Oswald',system-ui,sans-serif;font-weight:700;font-size:22px;letter-spacing:.2em;color:#fff}",
     ".aces-tb-x{background:#1B1016;border:1px solid rgba(132,0,54,.5);color:#fff;border-radius:12px;width:48px;height:48px;font-size:26px;line-height:1;cursor:pointer}",
