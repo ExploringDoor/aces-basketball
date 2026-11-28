@@ -9,6 +9,8 @@
 (function () {
   if (window.__acesNav) return;
   window.__acesNav = true;
+  // the bottom app bar (Home, Schedule, Roster, Stats, More) on every page, home screen app included
+  (function () { var t = document.createElement("script"); t.src = "/aces-tabbar.js?v=1"; t.defer = true; document.head.appendChild(t); })();
   try {
     if (window.matchMedia("(display-mode: standalone)").matches || navigator.standalone) return;
   } catch (e) {}
